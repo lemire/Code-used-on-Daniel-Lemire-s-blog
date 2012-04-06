@@ -1,0 +1,70 @@
+Code used on Daniel Lemire's blog
+
+by D. Lemire
+
+blog: http://lemire.me/blog/
+
+
+
+This code is meant to illustrate ideas
+that I present on my blog. Don't expect or
+ask for industrial-strength software. It is
+experimental code: it can be wrong, slow, poorly
+coded and poorly documented.
+
+I do maintain some software meant for actual
+use, with bona fide unit testing and documentation.
+The code here does not fit in this category.
+
+
+== Corresponding blog posts ==
+
+Code is provided in support of the following blog posts:
+
+  How fast is bit packing?
+  http://lemire.me/blog/archives/2012/03/06/how-fast-is-bit-packing/
+
+  Bitmaps are surprisingly efficient
+  http://lemire.me/blog/archives/2012/02/17/bitmaps-are-surprisingly-efficient/
+
+  Use random hashing if you care about security?
+  http://lemire.me/blog/archives/2012/01/17/use-random-hashing-if-you-care-about-security/
+
+  The language interpreters are the new machines
+  http://lemire.me/blog/archives/2011/06/14/the-language-interpreters-are-the-new-machines/
+
+
+  3 surprising facts about the computation of scalar products
+  http://lemire.me/blog/archives/2011/11/28/3-surprising-facts-about-the-computation-of-the-scalar-product/
+
+  Make your own programmable digital thermometer in an hour
+  http://lemire.me/blog/archives/2010/12/24/make-your-own-programmable-digital-thermometer-in-an-hour/
+
+  For your in-memory databases, do you really need an index?"
+  http://lemire.me/blog/archives/2010/12/20/for-your-in-memory-databases-do-you-really-need-an-index/
+
+  Is multiplication slower than addition?
+  http://lemire.me/blog/archives/2010/07/19/is-multiplication-slower-than-addition/
+
+  Sorting is fast and useful
+  http://lemire.me/blog/archives/2010/05/20/sorting-is-fast-and-useful/
+
+== languages ==
+
+You'll find code written in :
+
+- C
+- C++
+- Java
+- Python
+
+and possibly other languages.
+
+
+== licensing ==
+
+Unless otherwise stated, I make no copyright claim
+on this code: you may consider it to be in the public
+domain.
+
+Don't bother forking this code: just steal it.
