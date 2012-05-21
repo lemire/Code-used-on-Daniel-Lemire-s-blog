@@ -20,8 +20,10 @@ The code here does not fit in this category.
 == Corresponding blog posts ==
 
 Code is provided in support of the following blog posts:
-
-
+  
+  Fast bitmap decoding
+  http://lemire.me/blog/archives/2012/05/21/fast-bitmap-decoding/
+  
   Bit packing is fast, but integer logarithm is slow
   http://lemire.me/blog/archives/2012/04/05/bit-packing-is-fast-but-integer-logarithm-is-slow/
 
@@ -36,7 +38,6 @@ Code is provided in support of the following blog posts:
 
   The language interpreters are the new machines
   http://lemire.me/blog/archives/2011/06/14/the-language-interpreters-are-the-new-machines/
-
 
   3 surprising facts about the computation of scalar products
   http://lemire.me/blog/archives/2011/11/28/3-surprising-facts-about-the-computation-of-the-scalar-product/
