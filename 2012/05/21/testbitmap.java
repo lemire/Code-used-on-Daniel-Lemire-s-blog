@@ -86,7 +86,51 @@ public class testbitmap {
     }
     return ans;
   }
+  
+  static int[][] buffer;
+  public static void initBuf() {
+    buffer= new int[256][];
+    for(int i = 0; i<256;++i) {
+      buffer[i]=new int[Integer.bitCount(i)];
+      int counter = 0;
+      for (int c = 0; c < 8; ++c) {
+        if (((1 << c) & i) != 0) {
+          buffer[i][counter++] = c;
+        }
+      }
+    }
+      
+  }
 
+  public static int[] from32BitmapMemo(int[] bitmap, int N) {
+    int[] ans = new int[N];
+    int counter = 0;
+    for (int k = 0; k < bitmap.length; ++k) {
+      int v = bitmap[k];
+      for(int offset = 0; offset<32;offset+=8) {
+        int[] part = buffer[(v>>>offset)&0xFF];
+        for(int i = 0; i<part.length;++i)
+          ans[counter++] = part[i] + offset + k * 32;
+      }
+    }
+    return ans;
+  }
+
+
+  public static int[] from64BitmapMemo(long[] bitmap, int N) {
+    int[] ans = new int[N];
+    int counter = 0;
+    for (int k = 0; k < bitmap.length; ++k) {
+      long v = bitmap[k];
+      for(int offset = 0; offset<64;offset+=8) {
+        int[] part = buffer[(int)((v>>>offset)&0xFF)];
+        for(int i = 0; i<part.length;++i)
+          ans[counter++] = part[i] + offset + k * 64;
+      }
+    }
+    return ans;
+  }
+  
   public static int count(int[] bitmap) {
     int sum = 0;
     for (int k = 0; k < bitmap.length; ++k) {
@@ -143,6 +187,16 @@ public class testbitmap {
         throw new RuntimeException("bug32-fast");
       }
 
+      bef = System.currentTimeMillis();
+      for (int k = 0; k < N; ++k)
+        recov[k] = from32BitmapMemo(bitmaps32[k], 1 << nbr);
+      aft = System.currentTimeMillis();
+      line += "\t"+ df.format((1 << nbr) * 0.001 / (aft - bef));
+      if (!Arrays.deepEquals(recov, data)) {
+        for (int k = 0; k < 128; ++k)
+          System.out.println(recov[0][k] + " " + data[0][k]);
+        throw new RuntimeException("bug32-memo");
+      }
       bitmaps32 = new int[N][];
       recov = new int[N][];
       bef = System.currentTimeMillis();
@@ -169,6 +223,15 @@ public class testbitmap {
       if (!Arrays.deepEquals(recov, data))
         throw new RuntimeException("bug64 fast");
 
+      bef = System.currentTimeMillis();
+      for (int k = 0; k < N; ++k)
+        recov[k] = from64BitmapMemo(bitmaps64[k], 1 << nbr);
+      aft = System.currentTimeMillis();
+      line += "\t"+ df.format((1 << nbr) * 0.001 / (aft - bef));
+
+      if (!Arrays.deepEquals(recov, data))
+        throw new RuntimeException("bug64 memo");
+
       bitmaps64 = new long[N][];
       recov = new int[N][];
       if (verbose)
@@ -177,6 +240,7 @@ public class testbitmap {
   }
 
   public static void main(String[] args) {
+    initBuf();
     final int N = 15;
     final int nbr = 16;
     test(N, nbr, false); // dry run
