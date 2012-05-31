@@ -7,7 +7,6 @@
 #include <inttypes.h>
 #include <time.h>
 
-#define TEST_ALIGNED 0
 #define REPEAT_COUNT 100000
 uint16_t indexes[100000];
 uint32_t data1[32768];
