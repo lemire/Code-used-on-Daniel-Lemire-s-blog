@@ -21,6 +21,9 @@ The code here does not fit in this category.
 
 Code is provided in support of the following blog posts:
   
+  Data alignment for speed: myth or reality?
+  http://lemire.me/blog/archives/2012/05/31/data-alignment-for-speed-myth-or-reality/
+
   Fast bitmap decoding
   http://lemire.me/blog/archives/2012/05/21/fast-bitmap-decoding/
   
