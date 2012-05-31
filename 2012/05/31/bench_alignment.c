@@ -1,13 +1,9 @@
-/**
-* contributed by Laurent Gauthier.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
 #include <time.h>
 
-#define TEST_ALIGNED 1
+//#define TEST_ALIGNED 1
 #define REPEAT_COUNT 100000
 uint16_t indexes[100000];
 uint32_t data1[32768];
@@ -55,7 +51,7 @@ int main(int argc, char **argv) {
 		if (i & 0x1) {
 		indexes[i] = (rand() % (32768/8))*8*4 + 30;
 		} else {
-		indexes[i] = (rand() % (32768/8))*8*4 + 28;
+		indexes[i] = (rand() % (32768/8))*8*4 + 30;
 		}
 	#endif
 	}
