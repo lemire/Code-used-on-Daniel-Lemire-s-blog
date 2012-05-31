@@ -1,7 +1,3 @@
-/**
-* contributed by Laurent Gauthier.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
@@ -55,7 +51,7 @@ int main(int argc, char **argv) {
 		if (i & 0x1) {
 		indexes[i] = (rand() % (32768/8))*8*4 + 30;
 		} else {
-		indexes[i] = (rand() % (32768/8))*8*4 + 28;
+		indexes[i] = (rand() % (32768/8))*8*4 + 30;
 		}
 	#endif
 	}
