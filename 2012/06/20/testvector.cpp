@@ -115,7 +115,6 @@ int runtestnoalloc(size_t N, int * bigarray) {
 	int sum = 0;
 	for(unsigned int k = 0; k<N; ++k)
 	  sum += bigarray[k];
-	delete [] bigarray;
 	return sum;
 }
 
