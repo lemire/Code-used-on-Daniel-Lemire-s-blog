@@ -85,24 +85,12 @@ int runtestclassic(size_t N) {
 	delete [] bigarray;
 	return sum;
 }
-template <size_t N>
-int runteststatic() {
-	int bigarray[N];
-	for(unsigned int k = 0; k<N; ++k)
-	  bigarray[k] = k;
-	int sum = 0;
-	for(unsigned int k = 0; k<N; ++k)
-	  sum += bigarray[k];
-	delete [] bigarray;
-	return sum;
-}
 int runtestnoalloc(size_t N, int * bigarray) {
 	for(unsigned int k = 0; k<N; ++k)
 	  bigarray[k] = k;// unsafe
 	int sum = 0;
 	for(unsigned int k = 0; k<N; ++k)
 	  sum += bigarray[k];
-	delete [] bigarray;
 	return sum;
 }
 
@@ -132,10 +120,7 @@ int main() {
     time.reset();
     cout<<endl<<"ignore this:"<<runtestclassic(N)<<endl;
     cout<<"C++ new:"<<N/(1000.0*time.split())<<endl;
-    time.reset();
-    cout<<endl<<"ignore this:"<<runteststatic<N>()<<endl;
-    cout<<"static:"<<N/(1000.0*time.split())<<endl;
-	int * bigarray = new int[N];
+    int * bigarray = new int[N];
     time.reset();
     cout<<endl<<"ignore this:"<<runtestnoalloc(N,bigarray)<<endl;
     cout<<"without alloc:"<<N/(1000.0*time.split())<<endl;
