@@ -87,7 +87,7 @@ int runtestclassic(size_t N) {
 }
 template <size_t N>
 int runteststatic() {
-	int * bigarray = new int[N];
+	int bigarray[N];
 	for(unsigned int k = 0; k<N; ++k)
 	  bigarray[k] = k;
 	int sum = 0;
