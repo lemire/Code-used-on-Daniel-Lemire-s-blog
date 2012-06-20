@@ -1,6 +1,7 @@
 //  g++ -O2 -o test test.cpp
 
-
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -8,27 +9,50 @@
 #include <cassert>
 #include <vector>
 
+typedef unsigned int uint32;
+typedef unsigned long long uint64;
+typedef unsigned long long ticks;
+
+
 using namespace std;
 
-class WallClockTimer {
+
+static __inline__ unsigned long long startRDTSC (void) {
+    unsigned cycles_low, cycles_high;
+    asm volatile ("CPUID\n\t"
+            "RDTSC\n\t"
+            "mov %%edx, %0\n\t"
+            "mov %%eax, %1\n\t": "=r" (cycles_high), "=r" (cycles_low)::
+            "%rax", "%rbx", "%rcx", "%rdx");
+    return (static_cast<unsigned long long>(cycles_high) << 32) | cycles_low;
+}
+
+static __inline__ unsigned long long stopRDTSCP (void) {
+    unsigned cycles_low, cycles_high;
+    asm volatile("RDTSCP\n\t"
+            "mov %%edx, %0\n\t"
+            "mov %%eax, %1\n\t"
+            "CPUID\n\t": "=r" (cycles_high), "=r" (cycles_low):: "%rax",
+            "%rbx", "%rcx", "%rdx");
+    return (static_cast<unsigned long long>(cycles_high) << 32) | cycles_low;
+}
+
+class CPUBenchmark {
 public:
-    struct timeval t1, t2;
-    WallClockTimer() :
-        t1(), t2() {
-        gettimeofday(&t1, 0);
-        t2 = t1;
+    CPUBenchmark() :
+        ticktime(0) {
+        start();
     }
-    void reset() {
-        gettimeofday(&t1, 0);
-        t2 = t1;
+
+    unsigned long long ticktime;
+
+    void start() {
+        ticktime = startRDTSC();
     }
-    int elapsed() {
-        return ((t2.tv_sec - t1.tv_sec) * 1000) + ((t2.tv_usec - t1. tv_usec)
-                / 1000);
-    }
-    int split() {
-        gettimeofday(&t2, 0);
-        return elapsed();
+
+    unsigned long long stop() {
+        return stopRDTSCP() - ticktime;
+
     }
 };
 
@@ -85,17 +109,6 @@ int runtestclassic(size_t N) {
 	delete [] bigarray;
 	return sum;
 }
-template <size_t N>
-int runteststatic() {
-	int bigarray[N];
-	for(unsigned int k = 0; k<N; ++k)
-	  bigarray[k] = k;
-	int sum = 0;
-	for(unsigned int k = 0; k<N; ++k)
-	  sum += bigarray[k];
-	delete [] bigarray;
-	return sum;
-}
 int runtestnoalloc(size_t N, int * bigarray) {
 	for(unsigned int k = 0; k<N; ++k)
 	  bigarray[k] = k;// unsafe
@@ -113,32 +126,29 @@ int runtestnoalloc(size_t N, int * bigarray) {
 
 int main() {
 	
-    WallClockTimer time;
+    CPUBenchmark time;
     const size_t N = 100 * 1000 * 1000 ;
-    time.reset();
+    time.start();
     cout.precision(3);
-    cout<<" report speed in millions of integers per second"<<endl;
+    cout<<" report speed in CPU cycles per integer"<<endl;
     cout<<endl<<"ignore this:"<<runtestnice(N)<<endl;
-    cout<<"with push_back:"<<N/(1000.0*time.split())<<endl;
-    time.reset();
+    cout<<"with push_back:"<<(time.stop()*1.0/N)<<endl;
+    time.start();
     cout<<endl<<"ignore this:"<<runtestnicewreserve(N)<<endl;
-    cout<<"with push_back and reserve:"<<N/(1000.0*time.split())<<endl;
-    time.reset();
+    cout<<"with push_back and reserve:"<<(time.stop()*1.0/N)<<endl;
+    time.start();
     cout<<endl<<"ignore this:"<<runtestsafe(N)<<endl;
-    cout<<"init first:"<<N/(1000.0*time.split())<<endl;
-    time.reset();
+    cout<<"init first:"<<(time.stop()*1.0/N)<<endl;
+    time.start();
     cout<<endl<<"ignore this:"<<runtestunsafe(N)<<endl;
-    cout<<"reserve first:"<<N/(1000.0*time.split())<<endl;
-    time.reset();
+    cout<<"reserve first:"<<(time.stop()*1.0/N)<<endl;
+    time.start();
     cout<<endl<<"ignore this:"<<runtestclassic(N)<<endl;
-    cout<<"C++ new:"<<N/(1000.0*time.split())<<endl;
-    time.reset();
-    cout<<endl<<"ignore this:"<<runteststatic<N>()<<endl;
-    cout<<"static:"<<N/(1000.0*time.split())<<endl;
-	int * bigarray = new int[N];
-    time.reset();
+    cout<<"C++ new:"<<(time.stop()*1.0/N)<<endl;
+ 	int * bigarray = new int[N];
+    time.start();
     cout<<endl<<"ignore this:"<<runtestnoalloc(N,bigarray)<<endl;
-    cout<<"without alloc:"<<N/(1000.0*time.split())<<endl;
+    cout<<"without alloc:"<<(time.stop()*1.0/N)<<endl;
 
     return 0;
 }
