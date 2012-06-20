@@ -43,6 +43,17 @@ int runtestnice(size_t N) {
 	return sum;
 }
 
+int runtestnicewreserve(size_t N) {
+	vector<int> bigarray;
+	bigarray.reserve(N);
+	for(unsigned int k = 0; k<N; ++k)
+	  bigarray.push_back(k);
+	int sum = 0;
+	for(unsigned int k = 0; k<N; ++k)
+	  sum += bigarray[k];
+	return sum;
+}
+
 
 int runtestsafe(size_t N) {
 	vector<int> bigarray(N);
@@ -109,6 +120,9 @@ int main() {
     cout<<" report speed in millions of integers per second"<<endl;
     cout<<endl<<"ignore this:"<<runtestnice(N)<<endl;
     cout<<"with push_back:"<<N/(1000.0*time.split())<<endl;
+    time.reset();
+    cout<<endl<<"ignore this:"<<runtestnicewreserve(N)<<endl;
+    cout<<"with push_back and reserve:"<<N/(1000.0*time.split())<<endl;
     time.reset();
     cout<<endl<<"ignore this:"<<runtestsafe(N)<<endl;
     cout<<"init first:"<<N/(1000.0*time.split())<<endl;
