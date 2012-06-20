@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
+#include <iterator>
 
 typedef unsigned int uint32;
 typedef unsigned long long uint64;
@@ -118,7 +119,49 @@ int runtestnoalloc(size_t N, int * bigarray) {
 	return sum;
 }
 
+template <typename T>
+struct iota_iterator : std::iterator<std::forward_iterator_tag, T> {
+	iota_iterator(T value = T()) : value(value) { }
 
+	iota_iterator& operator ++() {
+		++value;
+		return *this;
+	}
+
+	iota_iterator operator ++(int) {
+		iota_iterator copy = *this;
+		++*this;
+		return copy;
+	}
+
+	T const& operator *() const {
+		return value;
+	}
+
+	T const* operator ->() const {
+		return &value;
+	}
+
+	friend bool operator ==(iota_iterator const& lhs, iota_iterator const& rhs) {
+		return lhs.value == rhs.value;
+	}
+
+	friend bool operator !=(iota_iterator const& lhs, iota_iterator const& rhs) {
+		return not (lhs == rhs);
+	}
+
+private:
+	T value;
+};
+
+int runtestgenerator(size_t N) {
+	// Extra parentheses to prevent most vexing parse.
+	vector<int> bigarray((iota_iterator<int>()), iota_iterator<int>(N));
+	int sum = 0;
+	for(unsigned int k = 0; k<N; ++k)
+	  sum += bigarray[k];
+	return sum;
+}
 
 
 
@@ -148,6 +191,9 @@ int main() {
     time.start();
     cout<<endl<<"ignore this:"<<runtestnoalloc(N,bigarray)<<endl;
     cout<<"without alloc:"<<(time.stop()*1.0/N)<<endl;
+    time.start();
+    cout<<endl<<"ignore this:"<<runtestgenerator(N)<<endl;
+    cout<<"generator iterators:"<<(time.stop()*1.0/N)<<endl;
 
     return 0;
 }
