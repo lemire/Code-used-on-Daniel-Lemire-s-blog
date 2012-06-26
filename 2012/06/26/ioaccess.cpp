@@ -146,12 +146,12 @@ int testfreadwithlargebuffer(char * name, int N) {
 }
 
 int testwmmap(char * name, int N) {
-	int answer = 0;
-	int fd = ::open(name, O_RDONLY);
-	size_t length = N * (512 + 1) * 4;
-    int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | MAP_PRIVATE, fd, 0));
-int * initaddr = addr;    
-if (addr == MAP_FAILED) {
+   int answer = 0;
+   int fd = ::open(name, O_RDONLY);
+   size_t length = N * (512 + 1) * 4;
+   int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | MAP_PRIVATE, fd, 0));
+   int * initaddr = addr;    
+   if (addr == MAP_FAILED) {
     	  cout<<"Data can't be mapped???"<<endl;
 		  return -1;
    }
@@ -162,20 +162,20 @@ if (addr == MAP_FAILED) {
 		numbers.resize(size);
 		answer += doSomeComputation(addr,size);
 		addr+=size;
-	}
-	munmap(initaddr,length);
-	return answer;
+   }
+   munmap(initaddr,length);
+   return answer;
 }
 
 int testread(char * name, int N) {
-	int answer = 0;
-	int fd = ::open(name, O_RDONLY);
+    int answer = 0;
+    int fd = ::open(name, O_RDONLY);
     if (fd < 0) {
       cerr << "problem" << endl;
       return -1;
     }
     vector<int> numbers(512);
-	for(int t = 0; t < N; ++t) {
+    for(int t = 0; t < N; ++t) {
 		int size = 0;
 		if(read(fd,&size, sizeof(int))!=sizeof(int)) {
 		  cout<<"Data can't be read???"<<endl;
@@ -187,9 +187,9 @@ int testread(char * name, int N) {
 		  return -1;
 		}
 		answer += doSomeComputation(&numbers[0],numbers.size());
-	}
-	::close(fd);
-	return answer;
+    }
+    ::close(fd);
+    return answer;
 }
 
 class WallClockTimer {
@@ -249,7 +249,6 @@ public:
                 );
     }
 
-
     unsigned long long split() {
         getrusage(RUSAGE_SELF, &t2);
         return elapsed();
@@ -268,7 +267,6 @@ int main() {
 	  cout<<endl;
 	  // don't report times
 	  tot += testread(name,N);
-
 
 	  // fread
 	  cput.reset();wct.reset();
@@ -295,12 +293,11 @@ int main() {
 	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N);
 	  cout<<"mmap \t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 
+          // C++
 	  cput.reset();wct.reset();
 	  for(int x = 0; x<10; ++x) tot += testwithCpp(name,N);
 	  cout<<"Cpp\t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 
   	  ::remove(name);
 	}
-	///
-
 }
