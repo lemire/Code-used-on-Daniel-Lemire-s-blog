@@ -7,6 +7,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cassert>
 
@@ -72,6 +73,22 @@ int testfread(char * name, int N) {
 		answer += doSomeComputation(&numbers[0],numbers.size());
 	}
 	::fclose(fd);
+	return answer;
+}
+
+
+int testwithCpp(char * name, int N) {
+	int answer = 0;
+	ifstream in(name,ios::binary);
+    vector<int> numbers(512);
+	for(int t = 0; t < N; ++t) {
+		int size = 0;
+		in.read(reinterpret_cast<char *>(&size),sizeof(int));
+		numbers.resize(size);
+		in.read(reinterpret_cast<char *>(&numbers[0]),sizeof(int)*size);
+		answer += doSomeComputation(&numbers[0],numbers.size());
+	}
+	in.close();
 	return answer;
 }
 
@@ -249,24 +266,25 @@ int main() {
 	  fillFile(N,name);
 
 	  cout<<endl;
-	  // read
-	  cput.reset();wct.reset();
+	  // don't report times
 	  tot += testread(name,N);
-	  cout<<"read1 \t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 
 
 	  // fread
 	  cput.reset();wct.reset();
 	  tot += testfread(name,N);
-	  cout<<"fread1\t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
-	  // fread with large buffer
+	  cout<<"fread\t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
+	  
+	  // fread with set buffer
 	  cput.reset();wct.reset();
 	  tot += testfreadwithsetbuffer(name,N);
 	  cout<<"fread w sbuffer\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
-		  // fread with large buffer
+	  
+	  // fread with large buffer
 	  cput.reset();wct.reset();
 	  tot += testfreadwithlargebuffer(name,N);
 	  cout<<"fread w lbuffer\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
+	  
 	  // read
 	  cput.reset();wct.reset();
 	  tot += testread(name,N);
@@ -278,8 +296,8 @@ int main() {
 	  cout<<"mmap \t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 
 	  cput.reset();wct.reset();
-	  tot += testfread(name,N);
-	  cout<<"fread2\t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
+	  tot += testwithCpp(name,N);
+	  cout<<"Cpp\t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 
   	  ::remove(name);
 	}
