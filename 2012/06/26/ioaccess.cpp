@@ -149,8 +149,10 @@ int testwmmap(char * name, int N) {
    int answer = 0;
    int fd = ::open(name, O_RDONLY);
    size_t length = N * (512 + 1) * 4;
-   int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | MAP_PRIVATE | MAP_POPULATE, fd, 0));
-   int * initaddr = addr;    
+   // for Linux:
+   //int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | MAP_PRIVATE | MAP_POPULATE, fd, 0));
+   int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | MAP_PRIVATE, fd, 0));
+   iint * initaddr = addr;    
    if (addr == MAP_FAILED) {
     	  cout<<"Data can't be mapped???"<<endl;
 		  return -1;
