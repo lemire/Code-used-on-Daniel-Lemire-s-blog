@@ -145,18 +145,23 @@ int testfreadwithlargebuffer(char * name, int N) {
 	return answer;
 }
 
-int testwmmap(char * name, int N) {
+int testwmmap(char * name, int N, bool advise) {
    int answer = 0;
    int fd = ::open(name, O_RDONLY);
    size_t length = N * (512 + 1) * 4;
    // for Linux:
-   //int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | MAP_PRIVATE | MAP_POPULATE, fd, 0));
+#ifdef __linux__
+   int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | MAP_PRIVATE | MAP_POPULATE, fd, 0));
+#else
    int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | MAP_PRIVATE, fd, 0));
-   iint * initaddr = addr;    
+#endif
+   int * initaddr = addr;    
    if (addr == MAP_FAILED) {
     	  cout<<"Data can't be mapped???"<<endl;
 		  return -1;
    }
+   if(advise)
+     madvise(addr,length,MADV_SEQUENTIAL|MADV_WILLNEED);
    close(fd);
    vector<int> numbers(512);
    for(int t = 0; t < N; ++t) {
@@ -292,8 +297,13 @@ int main() {
 	  
 	  // mmap
 	  cput.reset();wct.reset();
-	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N);
+	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N,false);
 	  cout<<"mmap \t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
+
+	  // fancy mmap
+	  cput.reset();wct.reset();
+	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N,true);
+	  cout<<"fancy mmap \t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 
           // C++
 	  cput.reset();wct.reset();
