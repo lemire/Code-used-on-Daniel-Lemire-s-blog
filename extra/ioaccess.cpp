@@ -272,31 +272,31 @@ int main() {
 
 	  // fread
 	  cput.reset();wct.reset();
-	  tot += testfread(name,N);
+	  for(int x = 0; x<10; ++x) tot += testfread(name,N);
 	  cout<<"fread\t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 	  
 	  // fread with set buffer
 	  cput.reset();wct.reset();
-	  tot += testfreadwithsetbuffer(name,N);
+	  for(int x = 0; x<10; ++x) tot += testfreadwithsetbuffer(name,N);
 	  cout<<"fread w sbuffer\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 	  
 	  // fread with large buffer
 	  cput.reset();wct.reset();
-	  tot += testfreadwithlargebuffer(name,N);
+	  for(int x = 0; x<10; ++x) tot += testfreadwithlargebuffer(name,N);
 	  cout<<"fread w lbuffer\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 	  
 	  // read
 	  cput.reset();wct.reset();
-	  tot += testread(name,N);
+	  for(int x = 0; x<10; ++x) tot += testread(name,N);
 	  cout<<"read2 \t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 	  
 	  // mmap
 	  cput.reset();wct.reset();
-	  tot += testwmmap(name,N);
+	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N);
 	  cout<<"mmap \t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 
 	  cput.reset();wct.reset();
-	  tot += testwithCpp(name,N);
+	  for(int x = 0; x<10; ++x) tot += testwithCpp(name,N);
 	  cout<<"Cpp\t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 
   	  ::remove(name);

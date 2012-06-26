@@ -1,4 +1,4 @@
-//  g++ -O2 -o test test.cpp
+//  g++ -O2 -o testvector testvector.cpp
 
 #include <stdio.h>
 #include <stdlib.h>
