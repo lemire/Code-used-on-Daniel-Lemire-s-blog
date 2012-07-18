@@ -10,6 +10,10 @@ $ g++-4.7  -funroll-loops -O3 -o unrolldeltas unrolldeltas.cpp
 $ ./unrolldeltas 
 */
 
+
+// This may require GCC 4.4/
+
+
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -45,7 +49,6 @@ public:
 
 
 
-
 vector<int>  givemeanarray(size_t N) {
 	vector<int> bigarray;
 	bigarray.reserve(N);
@@ -55,6 +58,8 @@ vector<int>  givemeanarray(size_t N) {
 }
 
 enum{minoffset=0};
+#pragma GCC optimize("unroll-loops","O3") 
+#pragma GCC push_options
 
 template <int mindist>
 void delta(vector<int> & data) {
@@ -100,6 +105,8 @@ void test(size_t N ) {
 
 }
 
+
+
 int main() {
 	cout << "reporting speed in million of integers per second "<<endl;
     size_t N = 50 * 1000 * 1000 ;
@@ -107,3 +114,5 @@ int main() {
     cout<<"============"<<endl;
     test<0>(N);
 }
+
+#pragma GCC pop_options
