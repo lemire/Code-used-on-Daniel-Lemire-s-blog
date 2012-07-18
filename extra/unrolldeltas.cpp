@@ -6,6 +6,8 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
+#include <stdexcept>
+
 using namespace std;
 
 class WallClockTimer {
@@ -42,84 +44,109 @@ vector<int>  givemeanarray(size_t N) {
 	return bigarray;
 }
 
+enum{minoffset=0};
 
+template <int mindist>
 void delta(vector<int> & data) {
+	  if(data.size() == 0) return;
       for (size_t i = data.size() - 1; i > 0; --i) {
-         data[i] = data[i] - data[i - 1] - 1;
+         data[i] -=  data[i - 1] + mindist;
       }
 }
 
 
-template<size_t width>
+template<size_t width, int mindist>
 void deltaUnrolled(vector<int> & data) {
+	  if(data.size() == 0) return;
       size_t i;
       for (i = data.size() - 1; i > width-1; i-=width) {
+        // for width sufficiently small, the compiler my unroll this next loop:
       	for(size_t j = 0; j < width; ++j) {
-      		data[i-j] = data[i-j] - data[i - 1 - j] - 1;
+      		data[i-j] -=  data[i - 1 - j] + mindist;
       	}
       }
       for (; i > 0; --i) {
-         data[i] = data[i] - data[i - 1] - 1;
+         data[i] -=  data[i - 1] + mindist;
       }
 
 }
 
+
+template <int mindist>
 void inverseDelta(vector<int> & data) {
       for (size_t i = 1; i < data.size(); ++i) {
-         data[i] = data[i] + data[i - 1] + 1;
+         data[i] += data[i - 1] + mindist;
       }
 }
 
-template<size_t width>
+template<size_t width, int mindist>
 void inverseDeltaUnrolled(vector<int> & data) {
-      size_t i;
-      for (i = 1; i < data.size(); i+=width) {
-      	for(size_t j = 0; j< width; ++j)
-         data[i + j] = data[i + j] + data[i + j - 1] + 1;
-      }
-      for (size_t i = 1; i < data.size(); ++i) {
-         data[i] = data[i] + data[i - 1] + 1;
+      size_t i = 1;
+      if(data.size()>=width)
+        for (; i <= data.size() - width; i+=width) {
+        	// for width sufficiently small, the compiler my unroll this next loop:
+        	for(size_t j = 0; j < width; ++j)
+              data[i + j] += data[i + j - 1] + mindist;
+        }
+      for (; i < data.size(); ++i) {
+         data[i] += data[i - 1] + mindist;
       }
 }
 
+template <int mindist>
+void test(size_t N ) {
+	cout << "min distance between ints is "<<mindist<<endl;
+    WallClockTimer time;
+    for(int t = 0; t<2;++t) {
+      cout <<" test # "<< t<<endl;
+      vector<int> data = givemeanarray(N) ;
+      vector<int> copydata(data);
+      
+      time.reset();
+      delta<1>(data);
+      cout<<"delta speed "<<N/(1000.0*time.split())<<endl;   
+      time.reset();
+      inverseDelta<1>(data);
+      cout<<"inverse delta speed "<<N/(1000.0*time.split())<<endl;   
+      if(data != copydata) throw runtime_error("bug!");
+      cout<<endl;
+
+
+      time.reset();
+      deltaUnrolled<1,1>(data);
+      cout<<"delta unrolled 1 speed "<<N/(1000.0*time.split())<<endl;   
+      time.reset();
+      inverseDeltaUnrolled<1,1>(data);
+      cout<<"inverse delta unrolled 1 speed "<<N/(1000.0*time.split())<<endl;   
+      if(data!= copydata) throw runtime_error("bug!"); 
+      cout<<endl;
+
+      time.reset();
+      deltaUnrolled<2,1>(data);
+      cout<<"delta unrolled 2 speed "<<N/(1000.0*time.split())<<endl;   
+      time.reset();
+      inverseDeltaUnrolled<2,1>(data);
+      cout<<"inverse delta unrolled 2 speed "<<N/(1000.0*time.split())<<endl;   
+      if(data!= copydata) throw runtime_error("bug!");
+      cout<<endl;
+      
+      time.reset();
+      deltaUnrolled<4,1>(data);
+      cout<<"delta unrolled 4 speed "<<N/(1000.0*time.split())<<endl;   
+      time.reset();
+      inverseDeltaUnrolled<4,1>(data);
+      cout<<"inverse delta unrolled 4 speed "<<N/(1000.0*time.split())<<endl;   
+      if(data!= copydata) throw runtime_error("bug!");
+
+      cout<<endl<<endl<<endl;
+    }
+
+}
 
 int main() {
 	cout << "reporting speed in million of integers per second "<<endl;
-    WallClockTimer time;
     size_t N = 50 * 1000 * 1000 ;
-    for(int t = 0; t<5;++t) {
-      vector<int> data = givemeanarray(N) ;
-      time.reset();
-      delta(data);
-      cout<<"delta speed "<<N/(1000.0*time.split())<<endl;   
-      time.reset();
-      inverseDelta(data);
-      cout<<"inverse delta speed "<<N/(1000.0*time.split())<<endl;   
-
-
-      time.reset();
-      deltaUnrolled<1>(data);
-      cout<<"delta unrolled 1 speed "<<N/(1000.0*time.split())<<endl;   
-      time.reset();
-      inverseDeltaUnrolled<1>(data);
-      cout<<"inverse delta 1 speed "<<N/(1000.0*time.split())<<endl;   
-
-      time.reset();
-      deltaUnrolled<2>(data);
-      cout<<"delta unrolled 2 speed "<<N/(1000.0*time.split())<<endl;   
-      time.reset();
-      inverseDeltaUnrolled<2>(data);
-      cout<<"inverse delta 2 speed "<<N/(1000.0*time.split())<<endl;   
-
-      time.reset();
-      deltaUnrolled<4>(data);
-      cout<<"delta unrolled 4 speed "<<N/(1000.0*time.split())<<endl;   
-      time.reset();
-      inverseDeltaUnrolled<4>(data);
-      cout<<"inverse delta 4 speed "<<N/(1000.0*time.split())<<endl;   
-
-
-      cout<<endl;
-    }
-
+    test<1>(N);
+    cout<<"============"<<endl;
+    test<0>(N);
 }
