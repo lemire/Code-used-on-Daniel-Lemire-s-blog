@@ -161,7 +161,8 @@ int testwmmap(char * name, int N, bool advise, bool shared) {
 		  return -1;
    }
    if(advise)
-     madvise(addr,length,MADV_SEQUENTIAL|MADV_WILLNEED);
+     if(madvise(addr,length,MADV_SEQUENTIAL|MADV_WILLNEED)!=0) 
+       cerr<<" Couldn't set hints"<<endl;
    close(fd);
    for(int t = 0; t < N; ++t) {
 		int size = *addr++;
