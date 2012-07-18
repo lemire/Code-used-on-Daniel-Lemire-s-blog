@@ -1,4 +1,77 @@
-//g++-fsf-4.7   -O3 -o unrolldeltas unrolldeltas.cpp
+/**
+* Testing delta coding and decoding.
+* D. Lemire, July 2012
+*
+* Best results with:
+* 
+
+$ g++-4.7  -funroll-loops -O3 -o unrolldeltas unrolldeltas.cpp
+
+$ ./unrolldeltas 
+
+reporting speed in million of integers per second 
+min distance between ints is 1
+ test # 0
+delta speed 2083.33
+inverse delta speed 1190.48
+
+delta unrolled 1 speed 2083.33
+inverse delta unrolled 1 speed 1190.48
+
+delta unrolled 2 speed 2083.33
+inverse delta unrolled 2 speed 1190.48
+
+delta unrolled 4 speed 1923.08
+inverse delta unrolled 4 speed 1190.48
+
+
+
+ test # 1
+delta speed 2083.33
+inverse delta speed 1190.48
+
+delta unrolled 1 speed 2083.33
+inverse delta unrolled 1 speed 1190.48
+
+delta unrolled 2 speed 2083.33
+inverse delta unrolled 2 speed 1190.48
+
+delta unrolled 4 speed 1923.08
+inverse delta unrolled 4 speed 1162.79
+
+
+
+============
+min distance between ints is 0
+ test # 0
+delta speed 2083.33
+inverse delta speed 1190.48
+
+delta unrolled 1 speed 2083.33
+inverse delta unrolled 1 speed 1190.48
+
+delta unrolled 2 speed 2083.33
+inverse delta unrolled 2 speed 1190.48
+
+delta unrolled 4 speed 1923.08
+inverse delta unrolled 4 speed 1190.48
+
+
+
+ test # 1
+delta speed 2083.33
+inverse delta speed 1190.48
+
+delta unrolled 1 speed 2000
+inverse delta unrolled 1 speed 1190.48
+
+delta unrolled 2 speed 2083.33
+inverse delta unrolled 2 speed 1190.48
+
+delta unrolled 4 speed 1923.08
+inverse delta unrolled 4 speed 1190.48
+
+*/
 
 #include <sys/stat.h>
 #include <sys/time.h>
