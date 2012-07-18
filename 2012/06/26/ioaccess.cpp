@@ -145,15 +145,15 @@ int testfreadwithlargebuffer(char * name, int N) {
 	return answer;
 }
 
-int testwmmap(char * name, int N, bool advise) {
+int testwmmap(char * name, int N, bool advise, bool shared) {
    int answer = 0;
    int fd = ::open(name, O_RDONLY);
    size_t length = N * (512 + 1) * 4;
    // for Linux:
 #ifdef __linux__
-   int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | MAP_PRIVATE | MAP_POPULATE, fd, 0));
+   int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | (shared?MAP_SHARED:MAP_PRIVATE) | MAP_POPULATE , fd, 0));
 #else
-   int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | MAP_PRIVATE, fd, 0));
+   int *  addr = reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | (shared?MAP_SHARED:MAP_PRIVATE), fd, 0));
 #endif
    int * initaddr = addr;    
    if (addr == MAP_FAILED) {
@@ -164,10 +164,8 @@ int testwmmap(char * name, int N, bool advise) {
      if(madvise(addr,length,MADV_SEQUENTIAL|MADV_WILLNEED)!=0) 
        cerr<<" Couldn't set hints"<<endl;
    close(fd);
-   vector<int> numbers(512);
    for(int t = 0; t < N; ++t) {
 		int size = *addr++;
-		numbers.resize(size);
 		answer += doSomeComputation(addr,size);
 		addr+=size;
    }
@@ -251,9 +249,9 @@ public:
                 );
     }
 
-    // returns the *user* CPU time in micro seconds (mu s)
+    // returns the *system* CPU time in micro seconds (mu s)
     unsigned long long systemelapsed() {
-        return ((t2.ru_utime.tv_sec - t1.ru_utime.tv_sec) * 1000ULL * 1000ULL) + ((t2.ru_utime.tv_usec - t1.ru_utime.tv_usec)
+        return ((t2.ru_stime.tv_sec - t1.ru_stime.tv_sec) * 1000ULL * 1000ULL) + ((t2.ru_stime.tv_usec - t1.ru_stime.tv_usec)
                 );
     }
 
@@ -298,13 +296,23 @@ int main() {
 	  
 	  // mmap
 	  cput.reset();wct.reset();
-	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N,false);
+	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N,false,false);
 	  cout<<"mmap \t\t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 
 	  // fancy mmap
 	  cput.reset();wct.reset();
-	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N,true);
+	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N,true,false);
 	  cout<<"fancy mmap \t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
+
+	  // mmap
+	  cput.reset();wct.reset();
+	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N,false,true);
+	  cout<<"mmap (shared) \t\t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
+
+	  // fancy mmap
+	  cput.reset();wct.reset();
+	  for(int x = 0; x<10; ++x) tot += testwmmap(name,N,true,true);
+	  cout<<"fancy mmap (shared) \t"<<512*N*1.0/cput.split()<<" "<<512*N*1.0/wct.split()<<endl;
 
           // C++
 	  cput.reset();wct.reset();
