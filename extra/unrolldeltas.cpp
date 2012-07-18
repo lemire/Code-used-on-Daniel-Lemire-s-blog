@@ -75,6 +75,22 @@ void inverseDelta(vector<int> & data) {
 
 
 
+template <int mindist>
+void inverseDeltaReverse(vector<int> & data) {
+	  if(data.size() == 0) return;
+      for (size_t i = data.size() - 1; i > 0; --i) {
+         data[i] +=  data[i - 1] + mindist;
+      }
+}
+
+
+template <int mindist>
+void deltaReverse(vector<int> & data) {
+	  if(data.size() == 0) return;
+      for (size_t i = 1; i != data.size(); ++i) {
+         data[i] -= data[i - 1] + mindist;
+      }
+}
 
 template <int mindist>
 void test(size_t N ) {
@@ -86,13 +102,23 @@ void test(size_t N ) {
       vector<int> copydata(data);
       
       time.reset();
-      delta<1>(data);
+      delta<mindist>(data);
       cout<<"delta speed "<<N/(1000.0*time.split())<<endl;   
       time.reset();
-      inverseDelta<1>(data);
+      inverseDelta<mindist>(data);
       cout<<"inverse delta speed "<<N/(1000.0*time.split())<<endl;   
       if(data != copydata) throw runtime_error("bug!");
       cout<<endl;
+
+      time.reset();
+      deltaReverse<mindist>(data);
+      cout<<"delta speed (reversed) "<<N/(1000.0*time.split())<<endl;   
+      time.reset();
+      inverseDeltaReverse<mindist>(data);
+      cout<<"inverse delta speed (reversed) "<<N/(1000.0*time.split())<<endl;   
+      if(data != copydata) throw runtime_error("bug!");
+      cout<<endl;
+
 
 
       cout<<endl<<endl<<endl;
