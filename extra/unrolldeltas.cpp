@@ -8,69 +8,6 @@
 $ g++-4.7  -funroll-loops -O3 -o unrolldeltas unrolldeltas.cpp
 
 $ ./unrolldeltas 
-
-reporting speed in million of integers per second 
-min distance between ints is 1
- test # 0
-delta speed 2083.33
-inverse delta speed 1190.48
-
-delta unrolled 1 speed 2083.33
-inverse delta unrolled 1 speed 1190.48
-
-delta unrolled 2 speed 2083.33
-inverse delta unrolled 2 speed 1190.48
-
-delta unrolled 4 speed 1923.08
-inverse delta unrolled 4 speed 1190.48
-
-
-
- test # 1
-delta speed 2083.33
-inverse delta speed 1190.48
-
-delta unrolled 1 speed 2083.33
-inverse delta unrolled 1 speed 1190.48
-
-delta unrolled 2 speed 2083.33
-inverse delta unrolled 2 speed 1190.48
-
-delta unrolled 4 speed 1923.08
-inverse delta unrolled 4 speed 1162.79
-
-
-
-============
-min distance between ints is 0
- test # 0
-delta speed 2083.33
-inverse delta speed 1190.48
-
-delta unrolled 1 speed 2083.33
-inverse delta unrolled 1 speed 1190.48
-
-delta unrolled 2 speed 2083.33
-inverse delta unrolled 2 speed 1190.48
-
-delta unrolled 4 speed 1923.08
-inverse delta unrolled 4 speed 1190.48
-
-
-
- test # 1
-delta speed 2083.33
-inverse delta speed 1190.48
-
-delta unrolled 1 speed 2000
-inverse delta unrolled 1 speed 1190.48
-
-delta unrolled 2 speed 2083.33
-inverse delta unrolled 2 speed 1190.48
-
-delta unrolled 4 speed 1923.08
-inverse delta unrolled 4 speed 1190.48
-
 */
 
 #include <sys/stat.h>
@@ -128,43 +65,16 @@ void delta(vector<int> & data) {
 }
 
 
-template<size_t width, int mindist>
-void deltaUnrolled(vector<int> & data) {
-	  if(data.size() == 0) return;
-      size_t i;
-      for (i = data.size() - 1; i > width-1; i-=width) {
-        // for width sufficiently small, the compiler my unroll this next loop:
-      	for(size_t j = 0; j < width; ++j) {
-      		data[i-j] -=  data[i - 1 - j] + mindist;
-      	}
-      }
-      for (; i > 0; --i) {
-         data[i] -=  data[i - 1] + mindist;
-      }
-
-}
-
-
 template <int mindist>
 void inverseDelta(vector<int> & data) {
-      for (size_t i = 1; i < data.size(); ++i) {
+	  if(data.size() == 0) return;
+      for (size_t i = 1; i != data.size(); ++i) {
          data[i] += data[i - 1] + mindist;
       }
 }
 
-template<size_t width, int mindist>
-void inverseDeltaUnrolled(vector<int> & data) {
-      size_t i = 1;
-      if(data.size()>=width)
-        for (; i <= data.size() - width; i+=width) {
-        	// for width sufficiently small, the compiler my unroll this next loop:
-        	for(size_t j = 0; j < width; ++j)
-              data[i + j] += data[i + j - 1] + mindist;
-        }
-      for (; i < data.size(); ++i) {
-         data[i] += data[i - 1] + mindist;
-      }
-}
+
+
 
 template <int mindist>
 void test(size_t N ) {
@@ -184,32 +94,6 @@ void test(size_t N ) {
       if(data != copydata) throw runtime_error("bug!");
       cout<<endl;
 
-
-      time.reset();
-      deltaUnrolled<1,1>(data);
-      cout<<"delta unrolled 1 speed "<<N/(1000.0*time.split())<<endl;   
-      time.reset();
-      inverseDeltaUnrolled<1,1>(data);
-      cout<<"inverse delta unrolled 1 speed "<<N/(1000.0*time.split())<<endl;   
-      if(data!= copydata) throw runtime_error("bug!"); 
-      cout<<endl;
-
-      time.reset();
-      deltaUnrolled<2,1>(data);
-      cout<<"delta unrolled 2 speed "<<N/(1000.0*time.split())<<endl;   
-      time.reset();
-      inverseDeltaUnrolled<2,1>(data);
-      cout<<"inverse delta unrolled 2 speed "<<N/(1000.0*time.split())<<endl;   
-      if(data!= copydata) throw runtime_error("bug!");
-      cout<<endl;
-      
-      time.reset();
-      deltaUnrolled<4,1>(data);
-      cout<<"delta unrolled 4 speed "<<N/(1000.0*time.split())<<endl;   
-      time.reset();
-      inverseDeltaUnrolled<4,1>(data);
-      cout<<"inverse delta unrolled 4 speed "<<N/(1000.0*time.split())<<endl;   
-      if(data!= copydata) throw runtime_error("bug!");
 
       cout<<endl<<endl<<endl;
     }
