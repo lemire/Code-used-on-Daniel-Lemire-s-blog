@@ -64,7 +64,7 @@ enum{minoffset=0};
 template <int mindist>
 void delta(vector<int> & data) {
 	  if(data.size() == 0) return;
-      for (size_t i = data.size() - 1; i > 0; --i) {
+      for (size_t i = data.size() - 1; i !=0 ; --i) {
          data[i] -=  data[i - 1] + mindist;
       }
 }
@@ -72,7 +72,6 @@ void delta(vector<int> & data) {
 
 template <int mindist>
 void inverseDelta(vector<int> & data) {
-	  if(data.size() == 0) return;
       for (size_t i = 1; i != data.size(); ++i) {
          data[i] += data[i - 1] + mindist;
       }
