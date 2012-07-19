@@ -58,8 +58,8 @@ vector<int>  givemeanarray(size_t N) {
 }
 
 enum{minoffset=0};
-#pragma GCC optimize("unroll-loops","O3") 
-#pragma GCC push_options
+//#pragma GCC optimize("unroll-loops","O3") 
+//#pragma GCC push_options
 
 template <int mindist>
 void delta(vector<int> & data) {
@@ -69,20 +69,33 @@ void delta(vector<int> & data) {
       }
 }
 
+template <int mindist>
+void slowishinverseDelta(vector<int> & data) {
+      if(data.size() == 0) return;
+      for (size_t i = 1; i != data.size(); ++i) {
+         data[i] += data[i - 1] + mindist;
+      }
+}
 
+// loop unrolling helps avoid the need for -funroll-loops
 template <int mindist>
 void inverseDelta(vector<int> & data) {
-      for (size_t i = 1; i != data.size(); ++i) {
+      if(data.size() == 0) return;
+      size_t i = 1;
+      for (; i < data.size() - 1; i+=2) {
+         data[i] += data[i - 1] + mindist;
+         data[i+1] += data[i ] + mindist;
+       }
+      for (; i != data.size(); ++i) {
          data[i] += data[i - 1] + mindist;
       }
 }
 
 
 
-
 template <int mindist>
 void test(size_t N ) {
-	cout << "min distance between ints is "<<mindist<<endl;
+    cout << "min distance between ints is "<<mindist<<endl;
     WallClockTimer time;
     for(int t = 0; t<2;++t) {
       cout <<" test # "<< t<<endl;
@@ -114,4 +127,4 @@ int main() {
     test<0>(N);
 }
 
-#pragma GCC pop_options
+//#pragma GCC pop_options
