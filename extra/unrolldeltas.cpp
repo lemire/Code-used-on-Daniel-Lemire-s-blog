@@ -77,6 +77,32 @@ void slowishinverseDelta(vector<int> & data) {
       }
 }
 
+
+// By Vasily Volkov
+template <int mindist>
+void inverseDeltaVolkov(vector<int> & data) {
+    if(data.size() == 0) return;
+
+    const int UnrollQty = 4;
+    size_t sz0 = (data.size() / UnrollQty)  * UnrollQty; // equal to 0, if data.size() < UnrollQty
+
+    if (sz0>=UnrollQty) sz0 -= UnrollQty;
+
+    size_t i = 1;
+
+    int a = data[0];
+    for (; i < sz0; i += UnrollQty) {
+        a = data[i] += a + mindist;
+        a = data[i + 1] += a + mindist;
+        a = data[i + 2] += a + mindist;
+        a = data[i + 3] += a + mindist;
+    }
+
+    for (; i != data.size(); ++i) {
+       data[i] += data[i- 1] + mindist;
+    }
+}
+
 // loop unrolling helps avoid the need for -funroll-loops
 template <int mindist>
 void inverseDelta(vector<int> & data) {
@@ -108,6 +134,13 @@ void test(size_t N ) {
       time.reset();
       inverseDelta<mindist>(data);
       cout<<"inverse delta speed "<<N/(1000.0*time.split())<<endl;   
+      if(data != copydata) throw runtime_error("bug!");
+      cout<<endl;
+
+      delta<mindist>(data);
+      time.reset();
+      inverseDeltaVolkov<mindist>(data);
+      cout<<"inverse delta speed (volkov) "<<N/(1000.0*time.split())<<endl;   
       if(data != copydata) throw runtime_error("bug!");
       cout<<endl;
 
