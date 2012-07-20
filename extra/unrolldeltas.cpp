@@ -78,6 +78,15 @@ void slowishinverseDelta(vector<int> & data) {
 }
 
 
+
+template <int mindist>
+void bufferedinverseDelta(vector<int> & data) {
+      if(data.size() == 0) return;
+      int a = data[0];
+      for (size_t i = 1; i != data.size(); ++i) {
+         a = (data[i] += a + mindist);
+      }
+}
 // By Vasily Volkov, improved by Daniel Lemire
 template <int mindist>
 void inverseDeltaVolkov(vector<int> & data) {
@@ -134,6 +143,22 @@ void test(size_t N ) {
       cout<<"inverse delta speed "<<N/(1000.0*time.split())<<endl;   
       if(data != copydata) throw runtime_error("bug!");
       cout<<endl;
+
+
+      delta<mindist>(data);
+      time.reset();
+      slowishinverseDelta<mindist>(data);
+      cout<<"slowish inverse delta speed "<<N/(1000.0*time.split())<<endl;   
+      if(data != copydata) throw runtime_error("bug!");
+      cout<<endl;
+
+      delta<mindist>(data);
+      time.reset();
+      bufferedinverseDelta<mindist>(data);
+      cout<<"buffered inverse delta speed "<<N/(1000.0*time.split())<<endl;   
+      if(data != copydata) throw runtime_error("bug!");
+      cout<<endl;
+
 
       delta<mindist>(data);
       time.reset();
