@@ -107,7 +107,6 @@ void sum(vector<int> & data) {
 
 
 void test(size_t N ) {
-    cout << "min distance between ints is "<<mindist<<endl;
     WallClockTimer time;
     for(int t = 0; t<2;++t) {
       cout <<" test # "<< t<<endl;
