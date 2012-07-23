@@ -106,7 +106,6 @@ void sum(vector<int> & data) {
 
 
 
-template <int mindist>
 void test(size_t N ) {
     cout << "min distance between ints is "<<mindist<<endl;
     WallClockTimer time;
@@ -141,8 +140,8 @@ void test(size_t N ) {
 int main() {
 	cout << "reporting speed in million of integers per second "<<endl;
     size_t N = 50 * 1000 * 1000 ;
-    test<1>(N);
+    test(N);
     cout<<"============"<<endl;
-    test<0>(N);
+    test(N);
 }
 
