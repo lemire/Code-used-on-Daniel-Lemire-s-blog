@@ -123,6 +123,7 @@ void sum(vector<int> & data) {
 
 void test(size_t N ) {
     WallClockTimer time;
+    int bogus = 0;
     for(int t = 0; t<2;++t) {
       cout <<" test # "<< t<<endl;
       vector<int> data = givemeanarray(N) ;
@@ -131,27 +132,32 @@ void test(size_t N ) {
       time.reset();
       straightsum(&data[0],N);
       cout<<"straight sum (C-like) "<<N/(1000.0*time.split())<<endl;   
-      
+      bogus += data.back();
+      data = copydata;
+
  
       time.reset();
       slowishSum(data);
       cout<<"basic sum (C++-like) "<<N/(1000.0*time.split())<<endl;   
-      
+      bogus += data.back();
       data = copydata;
 
       time.reset();
       sum(data);
       cout<<"smarter sum "<<N/(1000.0*time.split())<<endl;   
  
+      bogus += data.back();
       data = copydata;
 
       time.reset();
       fastSum(data);
       cout<<"fast sum "<<N/(1000.0*time.split())<<endl;   
  
+      bogus += data.back(); 
       cout<<endl<<endl<<endl;
 
     }
+    cout<<"ignore this: "<<bogus<<endl;
 
 }
 
