@@ -51,6 +51,14 @@ public:
 
 
 
+int* givemeanarray_simple(size_t N) {
+	int* bigarray;
+	bigarray=new int[N];
+	for(unsigned int k=0;k<N;k++)
+	  bigarray[k]=(k+k/3);
+	return bigarray;
+}
+
 vector<int>  givemeanarray(size_t N) {
 	vector<int> bigarray;
 	bigarray.reserve(N);
@@ -59,6 +67,13 @@ vector<int>  givemeanarray(size_t N) {
 	return bigarray;
 }
 
+
+void straightsum(int * data, size_t size) {
+      if(size == 0) return;
+      for (size_t i = 1; i != size; ++i) {
+         data[i] += data[i - 1] ;
+      }
+}
 
 void slowishSum(vector<int> & data) {
       if(data.size() == 0) return;
@@ -114,8 +129,13 @@ void test(size_t N ) {
       vector<int> copydata(data);
       
       time.reset();
+      straightsum(&data[0],N);
+      cout<<"straight sum (C-like) "<<N/(1000.0*time.split())<<endl;   
+      
+ 
+      time.reset();
       slowishSum(data);
-      cout<<"basic sum "<<N/(1000.0*time.split())<<endl;   
+      cout<<"basic sum (C++-like) "<<N/(1000.0*time.split())<<endl;   
       
       data = copydata;
 
@@ -130,6 +150,7 @@ void test(size_t N ) {
       cout<<"fast sum "<<N/(1000.0*time.split())<<endl;   
  
       cout<<endl<<endl<<endl;
+
     }
 
 }
