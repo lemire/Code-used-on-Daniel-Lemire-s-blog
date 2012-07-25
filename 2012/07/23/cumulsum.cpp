@@ -83,6 +83,14 @@ void slowishSum(vector<int> & data) {
 }
 
 
+// By David Stocking
+void iterSum(vector<int> & data) {
+        if(data.size() == 0) return;
+ 
+        for ( vector<int>::iterator i=data.begin(); i != data.end(); ) {
+                *(i+1) += *i++;
+        }
+}
 
 // By Vasily Volkov, improved by Daniel Lemire
 void fastSum(vector<int> & data) {
@@ -124,6 +132,7 @@ void sum(vector<int> & data) {
 void test(size_t N ) {
     WallClockTimer time;
     int bogus = 0;
+    cout<<"N = "<<N<<endl;
     for(int t = 0; t<2;++t) {
       cout <<" test # "<< t<<endl;
       vector<int> data = givemeanarray(N) ;
@@ -141,6 +150,13 @@ void test(size_t N ) {
       cout<<"basic sum (C++-like) "<<N/(1000.0*time.split())<<endl;   
       bogus += data.back();
       data = copydata;
+     
+      time.reset();
+      iterSum(data);
+      cout<<"iterator-based sum (C++-like) "<<N/(1000.0*time.split())<<endl;   
+      bogus += data.back();
+      data = copydata;
+
 
       time.reset();
       sum(data);
