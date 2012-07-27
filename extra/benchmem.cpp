@@ -6,10 +6,8 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <string.h>
 #include <iostream>
-#include <cassert>
-#include <vector>
-#include <stdexcept>
 
 using namespace std;
 
