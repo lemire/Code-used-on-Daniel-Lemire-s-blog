@@ -62,10 +62,26 @@ enum{minoffset=0};
 //#pragma GCC push_options
 
 template <int mindist>
+void cdelta(int * data, const size_t size) {
+      if(size == 0) return;
+      for (size_t i = size - 1; i !=0 ; --i) {
+         data[i] -=  data[i - 1] + mindist;
+      }
+}
+
+template <int mindist>
 void delta(vector<int> & data) {
 	  if(data.size() == 0) return;
       for (size_t i = data.size() - 1; i !=0 ; --i) {
          data[i] -=  data[i - 1] + mindist;
+      }
+}
+
+template <int mindist>
+void cinverseDelta(int * data, const size_t size) {
+      if(size == 0) return;
+      for (size_t i = 1; i != size; ++i) {
+         data[i] += data[i - 1] + mindist;
       }
 }
 
@@ -135,6 +151,15 @@ void test(size_t N ) {
       vector<int> data = givemeanarray(N) ;
       vector<int> copydata(data);
       
+      time.reset();
+      cdelta<mindist>(&data[0],data.size());
+      cout<<"c delta speed "<<N/(1000.0*time.split())<<endl;   
+      time.reset();
+      cinverseDelta<mindist>(&data[0],data.size());
+      cout<<"c inverse delta speed "<<N/(1000.0*time.split())<<endl;   
+      if(data != copydata) throw runtime_error("bug!");
+      cout<<endl;
+ 
       time.reset();
       delta<mindist>(data);
       cout<<"delta speed "<<N/(1000.0*time.split())<<endl;   
