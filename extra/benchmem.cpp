@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
@@ -40,19 +41,20 @@ int main() {
 
 	WallClockTimer t;
 	int total = 0;
-	double bestspeed1 = 0;
-	double bestspeed2 = 0;
+	double besttime1 = numeric_limits<double>::max();
+	double besttime2 = numeric_limits<double>::max();
 	for(int k = 0; k<10;++k) {
 		t.reset();
 		memset(a,k,N*sizeof(int));
-		double thisspeed1 = N/(t.split()*1000.0);
-		if(thisspeed1 > bestspeed1) bestspeed1 = thisspeed1;
+		double thistime1 = t.split()/1000.0;
+		if(thistime1 < besttime1) besttime1 = thistime1;
 		t.reset();
 		memcpy(b,a,N*sizeof(int));
-		double thisspeed2 = N/(t.split()*1000.0);
-		if(thisspeed2 > bestspeed2) bestspeed2 = thisspeed2;
+		double thistime2 = t.split()/1000.0;
+		if(thistime2 < besttime2) besttime2 = thistime2;
 		total += b[N-2];
 	}
-	cout<<bestspeed1<<" "<<bestspeed2 <<endl;
-	return total;
+        cout<<" memset speed = "<<N/(1000.0*1000.0*besttime1) <<" mis or "<< N*4/(1024.0*1024.0*besttime1)<<" MB/s"<<endl;
+        cout<<" memcpy speed = "<<N/(1000.0*1000.0*besttime2) <<" mis or "<< N*4/(1024.0*1024.0*besttime2)<<" MB/s"<<endl;
+        return total;
 }
