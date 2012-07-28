@@ -84,13 +84,61 @@ void slowishSum(vector<int> & data) {
 
 
 // By David Stocking
+// (reported as buggy?)
 void iterSum(vector<int> & data) {
         if(data.size() == 0) return;
  
-        for ( vector<int>::iterator i=data.begin(); i != data.end(); ) {
-                *(i+1) += *i++;
+        for ( vector<int>::iterator i=data.begin(); i != data.end(); ++i ) {
+                *(i+1) += *i;
         }
 }
+
+
+// by Nathanaël Schaeffer
+void sum2(vector<int> & data) {
+	size_t n = data.size();
+      if(n == 0) return;
+      int s0 = 0;
+      int s1 = 0;
+      size_t i = 0;
+      for (; i < n - 1; i+=2) {		// keep things aligned, starting at 0 (not 1)
+		int x0 = data[i];
+		int x1 = data[i+1];
+		s0 = s1+x0;
+		s1 += (x1+x0);
+		data[i] = s0;
+		data[i+1] = s1;
+	  }
+	  for (; i<n; i++) {
+		  data[i] += data[i-1];
+	  }
+}
+
+// by Nathanaël Schaeffer
+void sum3(vector<int> & data) {
+	size_t n = data.size();
+      if(n == 0) return;
+      int s0 = 0;
+      int s1 = 0;
+      int s2 = 0;
+      size_t i = 0;
+      for (; i < n - 2; i+=3) {		// keep things aligned, starting at 0 (not 1)
+		int x0 = data[i];
+		int x1 = data[i+1];
+		int x2 = data[i+2];
+		s0 = s2 + x0;			// three independant adds
+		s1 = s2 + (x1+x0);		// are performed in parallel
+		s2 = s0 + (x1+x2);		// on modern x86.
+		data[i] = s0;
+		data[i+1] = s1;
+		data[i+2] = s2;
+	  }
+	  for (; i<n; i++) {
+		  data[i] += data[i-1];
+	  }
+}
+
+
 
 // By Vasily Volkov, improved by Daniel Lemire
 void fastSum(vector<int> & data) {
@@ -157,6 +205,16 @@ void test(size_t N ) {
       bogus += data.back();
       data = copydata;
 
+
+      time.reset();
+      sum2(data);
+      cout<<"smarter sum2 "<<N/(1000.0*time.split())<<endl;   
+ 
+ 
+      time.reset();
+      sum3(data);
+      cout<<"smarter sum3 "<<N/(1000.0*time.split())<<endl;   
+ 
 
       time.reset();
       sum(data);
