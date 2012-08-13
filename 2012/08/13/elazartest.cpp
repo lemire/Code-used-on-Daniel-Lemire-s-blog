@@ -34,19 +34,19 @@ public:
     }
 };
 
-int totalsum(int * data, size_t length) {
+int totalsum(const int * data, const size_t length) {
 	int sum = 0;
 	for (int i=0; i<length;i++) sum+=data[i];
 	return sum;
 }
-
-int sum16(int * data, size_t length) {
+template <int offset>
+int sum(const int * data, const size_t length) {
 	int sum = 0;
-	for (int i=0; i<length;i+=16) sum+=data[i];
+	for (int i=0; i<length;i+=offset) sum+=data[i];
 	return sum;
 }
 
-int test(size_t N) {
+int test(const size_t N) {
 	int *  a = new int[N];
 	for(size_t k = 0; k< N; ++k)
 	  a[k] = k - 2 + k * k;
@@ -56,19 +56,26 @@ int test(size_t N) {
 	WallClockTimer t;
 	double besttime1 = numeric_limits<double>::max();
 	double besttime2 = numeric_limits<double>::max();
+	double besttime3 = numeric_limits<double>::max();
 	for(int k = 0; k<10;++k) {
 		t.reset();
 		fakecounter += totalsum(a,N);
 		double thistime1 = t.split();
 		if(thistime1 < besttime1) besttime1 = thistime1;
 		t.reset();
-		fakecounter += sum16(a,N);
+		fakecounter += sum<2>(a,N);
 		double thistime2 = t.split();
 		if(thistime2 < besttime2) besttime2 = thistime2;
+		t.reset();
+		fakecounter += sum<16>(a,N);
+		double thistime3 = t.split();
+		if(thistime3 < besttime3) besttime3 = thistime3;
 	}
     cout<<" total sum speed = "<<N/(1000*1000*besttime1) <<" mis or "<< N*sizeof(int)/(1024.0*1024.0*besttime1)<<" MB/s"<<endl;
     cout<<" partial sum speed = "<<N/(1000*1000*besttime2) <<" mis or "<< N*sizeof(int)/(1024.0*1024.0*besttime2)<<" MB/s"<<endl;
     cout<<" speed ratio = "<< besttime1 /besttime2<<endl;
+    cout<<" partial sum speed = "<<N/(1000*1000*besttime3) <<" mis or "<< N*sizeof(int)/(1024.0*1024.0*besttime3)<<" MB/s"<<endl;
+    cout<<" speed ratio = "<< besttime1 /besttime3<<endl;
     return fakecounter;
 }
 
