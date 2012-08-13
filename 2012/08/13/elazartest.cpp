@@ -36,13 +36,13 @@ public:
 
 int totalsum(const int * data, const size_t length) {
 	int sum = 0;
-	for (int i=0; i<length;i++) sum+=data[i];
+	for (size_t i=0; i<length;i++) sum+=data[i];
 	return sum;
 }
 template <int offset>
 int sum(const int * data, const size_t length) {
 	int sum = 0;
-	for (int i=0; i<length;i+=offset) sum+=data[i];
+	for (size_t i=0; i<length;i+=offset) sum+=data[i];
 	return sum;
 }
 
@@ -57,7 +57,7 @@ int test(const size_t N) {
 	double besttime1 = numeric_limits<double>::max();
 	double besttime2 = numeric_limits<double>::max();
 	double besttime3 = numeric_limits<double>::max();
-	for(int k = 0; k<10;++k) {
+	for(int k = 0; k<20;++k) {
 		t.reset();
 		fakecounter += totalsum(a,N);
 		double thistime1 = t.split();
