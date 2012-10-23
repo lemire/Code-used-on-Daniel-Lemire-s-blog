@@ -1,0 +1,64 @@
+# For each instance, we report the sparsity, the speed (union, intersection) for both the naive and bitmap approach(we also add two other bitmap approaches WAH and ConciseSet that you can ignore)
+# proba. that any given integer in the range appears = 0.5
+# generating random data...
+# generating random data... ok.
+# report speeds for union and intersection in millions of integers processed per second
+#bogus = 94371600
+#bogus = 141557370
+#bogus = 141563570
+#bogus = 141557370
+0.5 	190.266	238.313 	294.912	555.128 	68.584	182.891 	126.504	187.992
+# proba. that any given integer in the range appears = 0.25
+# generating random data...
+# generating random data... ok.
+# report speeds for union and intersection in millions of integers processed per second
+#bogus = 188742160
+#bogus = 283112590
+#bogus = 283162190
+#bogus = 283112590
+0.25 	187.246	272.751 	294.912	842.606 	69.493	238.313 	87.869	221.53
+# proba. that any given integer in the range appears = 0.125
+# generating random data...
+# generating random data... ok.
+# report speeds for union and intersection in millions of integers processed per second
+#bogus = 377482770
+#bogus = 566222110
+#bogus = 567279210
+#bogus = 566222110
+0.125 	187.992	304.425 	300.547	799.761 	56.107	259.263 	56.51	233.594
+# proba. that any given integer in the range appears = 0.0625
+# generating random data...
+# generating random data... ok.
+# report speeds for union and intersection in millions of integers processed per second
+#bogus = 754954990
+#bogus = 1132422870
+#bogus = 1145852070
+#bogus = 1132422870
+0.0625 	183.603	294.912 	179.414	458.116 	42.78	200.791 	37.719	183.603
+# proba. that any given integer in the range appears = 0.03125
+# generating random data...
+# generating random data... ok.
+# report speeds for union and intersection in millions of integers processed per second
+#bogus = 1509931050
+#bogus = 2264888200
+#bogus = 2424900280
+#bogus = 2264888200
+0.03125 	201.649	360.198 	100.61	268.102 	32.363	182.891 	29.658	120.372
+# proba. that any given integer in the range appears = 0.015625
+# generating random data...
+# generating random data... ok.
+# report speeds for union and intersection in millions of integers processed per second
+#bogus = 3019738610
+#bogus = 4529529660
+#bogus = 4966514960
+#bogus = 4529529660
+0.015625 	180.789	327.68 	60.495	163.84 	23.29	126.844 	20.944	78.382
+# proba. that any given integer in the range appears = 0.0078125
+# generating random data...
+# generating random data... ok.
+# report speeds for union and intersection in millions of integers processed per second
+#bogus = 6039081110
+#bogus = 9058266150
+#bogus = 10405957050
+#bogus = 9058266150
+0.0078125 	188.744	341.927 	38.772	115.652 	18.658	104.858 	18.226	58.689
