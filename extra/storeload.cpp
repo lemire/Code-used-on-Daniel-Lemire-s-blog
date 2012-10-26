@@ -2,6 +2,12 @@
 * Usage 
 * g++ -O3 -o storeload storeload.cpp
 */
+/**
+* Reference: 
+* http://electronics.stackexchange.com/questions/17549/i-know-why-dram-is-slower-to-write-than-to-read-but-why-is-the-l1-l2-cache-ra
+*
+* source: Reverend Eric Ha
+*/
 
 #include <sys/stat.h>
 #include <sys/time.h>
