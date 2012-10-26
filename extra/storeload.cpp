@@ -1,8 +1,15 @@
+/**
+* Usage 
+* g++ -O3 -o storeload storeload.cpp
+*/
+
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <vector>
 #include <iostream>
+#include <algorithm>
+#include <cassert>
 
 using namespace std;
 
@@ -51,24 +58,40 @@ int loadTest(vector<int> & data, vector<int> & bigdata, size_t N) {
 }
 
 
-int main() {
+
+int testStoreLoad(size_t M =  2048 * 4, size_t N = 2048 * 8, size_t repeat = 1) {
 	WallClockTimer timer;
 	vector<int> data;
 	int bogus;
-	size_t M = 2048 * 4;
-	size_t N = 2048 * 8;
 	for(size_t i = 0; i<M; ++i)
 	  data.push_back(i);
 	vector<int> bigdata;
 	bigdata.reserve(M * N);
 	for(size_t t = 0; t< 3; ++t) {
 		timer.reset();
-		bogus += storeTest(data,bigdata,N);
+		for (size_t r = 0; r < repeat; ++r)
+			bogus += storeTest(data,bigdata,N);
 		if(t>0) cout<<" store time = "<<timer.split()<<endl;
 		timer.reset();
-    	bogus += loadTest(data,bigdata,N);
+		for (size_t r = 0; r < repeat; ++r)
+	    	bogus += loadTest(data,bigdata,N);
 		if(t>0) cout<<" load time = "<<timer.split()<<endl;
 		bigdata.clear();
+		for(int i = 0; i<M; ++i)
+	  		assert(data[i] == i);
 	}
     return bogus;
+}
+
+int main() {
+	cout<<"cache-cache test:"<<endl;
+
+	cout<<"ignore:"<<testStoreLoad(2048,32,2048)<<endl;
+
+	cout<<"cache-RAM test:"<<endl;
+	
+	cout<<"ignore:"<<testStoreLoad()<<endl;
+
+
+	return 0;
 }
