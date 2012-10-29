@@ -1,24 +1,31 @@
+pack-unpack test:
+ pack time = 4
+ unpack time = 9
+ pack time = 4
+ unpack time = 9
+ pack time = 4
+ unpack time = 9
 cache-cache test:
  store time = 58
+ load time = 16
+ store time = 60
  load time = 17
- store time = 59
- load time = 17
-ignore:-186004192
+ignore:-1916347104
 cache-RAM test:
- store time = 58
- load time = 37
- store time = 58
- load time = 37
-ignore:-185709280
+ store time = 59
+ load time = 38
+ store time = 59
+ load time = 38
+ignore:-1916052192
 cache-cache test:
  store time = 58
- load time = 17
+ load time = 16
  store time = 59
- load time = 17
-ignore:-186004192
+ load time = 16
+ignore:-1916347104
 cache-RAM test:
- store time = 58
- load time = 37
- store time = 58
- load time = 37
-ignore:-185709280
+ store time = 59
+ load time = 38
+ store time = 59
+ load time = 38
+ignore:-1916052192
