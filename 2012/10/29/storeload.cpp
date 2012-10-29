@@ -154,16 +154,15 @@ void pack(bool * uncompressed, char * compressed, size_t N) {
 
 __attribute__ ((noinline)) 
 void unpack(char * compressed, bool * uncompressed, size_t N) {
-	int bogus = 0;
 	for(size_t x = 0; x+7<N; x+=8) {
 		uncompressed[x] = compressed[x] & 1;
-		uncompressed[x+1] = compressed[x] & (1<<1);
-		uncompressed[x+2] = compressed[x] & (1<<2);
-		uncompressed[x+3] = compressed[x] & (1<<3);
-		uncompressed[x+4] = compressed[x] & (1<<4);
-		uncompressed[x+5] = compressed[x] & (1<<5);
-		uncompressed[x+6] = compressed[x] & (1<<6);
-		uncompressed[x+7] = compressed[x] & (1<<7);
+		uncompressed[x+1] = compressed[x] & 2;
+		uncompressed[x+2] = compressed[x] & 4;
+		uncompressed[x+3] = compressed[x] & 8;
+		uncompressed[x+4] = compressed[x] & 16;
+		uncompressed[x+5] = compressed[x] & 32;
+		uncompressed[x+6] = compressed[x] & 64;
+		uncompressed[x+7] = compressed[x] & 128;
 	}
 }
 
