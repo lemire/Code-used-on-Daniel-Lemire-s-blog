@@ -35,7 +35,7 @@ public:
 };
 
 int main() {
-	const size_t N = 50 * 1000 * 1000;
+	const size_t N = 5 * 1000 * 1000;
 	int *  a = new int[N];
 	int *  b = new int[N];
 

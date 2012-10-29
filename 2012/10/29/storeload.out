@@ -1,0 +1,24 @@
+cache-cache test:
+ store time = 58
+ load time = 17
+ store time = 59
+ load time = 17
+ignore:-186004192
+cache-RAM test:
+ store time = 58
+ load time = 37
+ store time = 58
+ load time = 37
+ignore:-185709280
+cache-cache test:
+ store time = 58
+ load time = 17
+ store time = 59
+ load time = 17
+ignore:-186004192
+cache-RAM test:
+ store time = 58
+ load time = 37
+ store time = 58
+ load time = 37
+ignore:-185709280

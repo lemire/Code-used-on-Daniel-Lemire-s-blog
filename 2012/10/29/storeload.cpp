@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <string.h>
 #include <vector>
 #include <iostream>
 #include <algorithm>
