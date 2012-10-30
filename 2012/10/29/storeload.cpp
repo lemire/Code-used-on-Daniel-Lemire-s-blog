@@ -179,7 +179,7 @@ void testPackUnpackC(size_t N =  2048 * 32 * 2048) {
 		pack(data, &comp[0], N);
 		cout<<" pack time = "<<timer.split()<<endl;
 		timer.reset();
-		unpack(&comp[0], data, N/8);
+		unpack(&comp[0], data, N);
 		cout<<" unpack time = "<<timer.split()<<endl;
 		for(size_t i = 0; i<N; ++i) 
 			assert(data[i] == static_cast<bool>(i & 1));	  
