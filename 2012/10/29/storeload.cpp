@@ -139,7 +139,6 @@ int testStoreLoadC(size_t M =  2048 * 4, size_t N = 2048 * 8, size_t repeat = 1)
 
 __attribute__ ((noinline)) 
 void pack(bool * uncompressed, char * compressed, size_t N) {
-	int bogus = 0;
 	for(size_t i = 0; i < N/8; ++i) {
 		size_t x = i * 8;
 		compressed[i] = uncompressed[x] | 
@@ -155,15 +154,16 @@ void pack(bool * uncompressed, char * compressed, size_t N) {
 
 __attribute__ ((noinline)) 
 void unpack(char * compressed, bool * uncompressed, size_t N) {
-	for(size_t x = 0; x+7<N; x+=8) {
-		uncompressed[x] = compressed[x] & 1;
-		uncompressed[x+1] = compressed[x] & 2;
-		uncompressed[x+2] = compressed[x] & 4;
-		uncompressed[x+3] = compressed[x] & 8;
-		uncompressed[x+4] = compressed[x] & 16;
-		uncompressed[x+5] = compressed[x] & 32;
-		uncompressed[x+6] = compressed[x] & 64;
-		uncompressed[x+7] = compressed[x] & 128;
+	for(size_t i = 0; i < N/8; ++i) {
+		size_t x = i * 8;
+		uncompressed[x] = compressed[i] & 1;
+		uncompressed[x+1] = compressed[i] & 2;
+		uncompressed[x+2] = compressed[i] & 4;
+		uncompressed[x+3] = compressed[i] & 8;
+		uncompressed[x+4] = compressed[i] & 16;
+		uncompressed[x+5] = compressed[i] & 32;
+		uncompressed[x+6] = compressed[i] & 64;
+		uncompressed[x+7] = compressed[i] & 128;
 	}
 }
 
@@ -179,7 +179,7 @@ void testPackUnpackC(size_t N =  2048 * 32 * 2048) {
 		pack(data, &comp[0], N);
 		cout<<" pack time = "<<timer.split()<<endl;
 		timer.reset();
-		unpack(&comp[0], data, N);
+		unpack(&comp[0], data, N/8);
 		cout<<" unpack time = "<<timer.split()<<endl;
 		for(size_t i = 0; i<N; ++i) 
 			assert(data[i] == static_cast<bool>(i & 1));	  
