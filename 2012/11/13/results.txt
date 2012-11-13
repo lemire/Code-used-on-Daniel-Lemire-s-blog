@@ -1,26 +1,26 @@
 ### fastclear = false
 #=== N = 10000 sparsity = 0.1
-#BitSet 92
-#StaticBitSet 26
-#HashSet 130
-#TIntHashSet 98
-0.1	10.87	38.462	7.692	10.204	
+#BitSet 42
+#StaticBitSet 15
+#HashSet 77
+#TIntHashSet 70
+0.1	23.81	66.667	12.987	14.286	
 #=== N = 100000 sparsity = 0.01
-#BitSet 18
-#StaticBitSet 20
-#HashSet 115
-#TIntHashSet 82
-0.01	55.556	50	8.696	12.195	
-#=== N = 1000000 sparsity = 0.0010
-#BitSet 44
-#StaticBitSet 28
-#HashSet 108
-#TIntHashSet 82
-0.0010	22.727	35.714	9.259	12.195	
+#BitSet 12
+#StaticBitSet 13
+#HashSet 57
+#TIntHashSet 58
+0.01	83.333	76.923	17.544	17.241	
+#=== N = 1000000 sparsity = 0.001
+#BitSet 35
+#StaticBitSet 22
+#HashSet 52
+#TIntHashSet 62
+0.001	28.571	45.455	19.231	16.129	
 #=== N = 10000000 sparsity = 1.0E-4
-#BitSet 299
-#StaticBitSet 102
-#HashSet 106
-#TIntHashSet 75
-1.0E-4	3.344	9.804	9.434	13.333	
+#BitSet 246
+#StaticBitSet 88
+#HashSet 60
+#TIntHashSet 56
+1.0E-4	4.065	11.364	16.667	17.857	
 #ignore = 1389014272
