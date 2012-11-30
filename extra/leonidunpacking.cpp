@@ -177,7 +177,7 @@ void simdpack(const vector<uint32_t> & data,
     }
 }
 
-
+ __attribute__ ((noinline)) 
 static void unpackA(const  __m128i*  __restrict__ in, uint32_t *  __restrict__  _out) {
       
     __m128i*   out = reinterpret_cast<__m128i*>(_out);
@@ -284,7 +284,7 @@ static void unpackA(const  __m128i*  __restrict__ in, uint32_t *  __restrict__  
 }
 
 
-
+ __attribute__ ((noinline)) 
 void unpackB(const  __m128i*  __restrict__ in, uint32_t *  __restrict__  _out) 
  {
       
@@ -373,6 +373,7 @@ void unpackB(const  __m128i*  __restrict__ in, uint32_t *  __restrict__  _out)
     _mm_store_si128(out++, OutReg2);
 }
 
+ __attribute__ ((noinline)) 
 static void unpackC(const  __m128i*  __restrict__ in, uint32_t *  __restrict__  _out) {
       
     __m128i*   out = reinterpret_cast<__m128i*>(_out);
@@ -387,6 +388,8 @@ static void unpackC(const  __m128i*  __restrict__ in, uint32_t *  __restrict__  
 	}
 
 }
+
+ __attribute__ ((noinline)) 
 static void unpackD(const  __m128i*  __restrict__ in, uint32_t *  __restrict__  _out) {
     __m128i*   out = reinterpret_cast<__m128i*>(_out);
     __m128i    InReg1 = _mm_load_si128(in);
@@ -404,7 +407,7 @@ static void unpackD(const  __m128i*  __restrict__ in, uint32_t *  __restrict__  
 }
 
 
-
+ __attribute__ ((noinline)) 
 static void unpackE(const  __m128i*  __restrict__ in, uint32_t *  __restrict__  _out) {
     __m128i*   out = reinterpret_cast<__m128i*>(_out);
     __m128i    InReg1 = _mm_load_si128(in);
