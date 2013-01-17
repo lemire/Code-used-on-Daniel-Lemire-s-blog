@@ -1,8 +1,11 @@
 #include <fcntl.h>
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
 #include <sys/resource.h>
 #include <sys/types.h>
- #include <sys/time.h>
+#include <sys/time.h>
 #include <sys/uio.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -27,12 +30,26 @@ void fillFile(int N, char * name) {
 	  numbers[k] = k; // whatever
 	for(int t = 0; t < N; ++t) {
 		int size = 512;
-		if(fwrite(&size, sizeof(int),1,fd)!=1) {
-		  cout<<"Data can't be written???"<<endl;
+		size_t realsize;
+		int err, error;
+		if((realsize = fwrite(&size, sizeof(int),1,fd))!=1) {
+			err = errno;
+			error = ferror(fd);
+			if(error) {
+				cout<< "We written only " << realsize << " bytes" << endl;
+				cout<< "[ERROR] " << strerror(err) <<endl;
+				exit (EXIT_FAILURE);
+			}
 		  return;
-		}		
-		if(fwrite(&numbers[0], sizeof(int),512,fd)!=512) {
-		  cout<<"Data can't be written???"<<endl;
+		}
+		if((realsize = fwrite(&numbers[0], sizeof(int),512,fd))!=512) {
+			err = errno;
+			error = ferror(fd);
+			if(error) {
+				cout<< "We written only" << realsize << "bytes" << endl;
+				cout<< "[ERROR] " << strerror(err) <<endl;
+				exit (EXIT_FAILURE);
+			}
 		  return;
 		}
 	}
