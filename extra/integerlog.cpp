@@ -12,7 +12,8 @@ using namespace std;
 class WallClockTimer {
 public:
     struct timeval t1, t2;
-    WallClockTimer() :
+    
+    () :
         t1(), t2() {
         gettimeofday(&t1, 0);
         t2 = t1;
