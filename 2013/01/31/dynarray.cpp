@@ -33,7 +33,7 @@ public:
 };
 
 
-int test(size_t N) {
+int testSTL(size_t N) {
 	vector<int> x;
 	for(size_t i = 0 ; i < N ; ++i ) {
 		x.push_back(i);
@@ -42,30 +42,46 @@ int test(size_t N) {
 }
 
 
-int testManual(size_t N, const int multiplier, const int div = 1, const int constant = 0) {
+int testManual(size_t N, const int multiplier, const int div = 1) {
 	int * x = new int[1];
-	size_t s = 1;
+	size_t s = 2;
 	for(size_t i = 0 ; i < N ; ++i ) {
 		if(i == s) {
-			int * nx = new int[ multiplier * s / div + constant ];
+			int * nx = new int[ multiplier * s / div ];
 			memcpy(nx,x,s*sizeof(int));
 			delete[] x;
 			x = nx;
-			s = multiplier * s / div + constant;
-                        if( s <= i) cerr << "bug" << endl;
+			s = multiplier * s / div ;
 		}
 		x[i] = i;
 	}
 	return x[N-1];
 }
+double sim(size_t N, const int multiplier, const int div = 1) {
+	int copycost = 0;
+	size_t s = 2;
+	for(size_t i = 0 ; i < N ; ++i ) {
+		if(i == s) {
+			copycost += s;
+			s = multiplier * s / div;
+            if( s <= i) cerr << "bug" << endl;
+		}
+	}
+	return copycost * 1.0 / N;
+}
 
 
+void mathematicalmodel(size_t N) {
+    for(size_t factor = 1; factor <= 6; ++ factor) {
+    	cout << " "<< (factor +2)/2.0<< " : " << sim(N,2+factor,2) << endl;
+    }
+}
 
 int overall(size_t N) {
 	int bogus = 0;
 	WallClockTimer t;
 	t.reset();
-    bogus += test(N);
+    bogus += testSTL(N);
     int delay = t.split();
     cout << "STL vector " << N /(delay * 1000.0) << endl;
     
@@ -73,7 +89,7 @@ int overall(size_t N) {
         delay = INT_MAX;
         for(size_t T = 0 ; T < 10 ; ++T ) {
           t.reset();
-    	  bogus += testManual(N,2+factor,2,factor&1==0 ? 0 : 1);
+    	  bogus += testManual(N,2+factor,2);
     	  int tdelay = t.split();
           if(tdelay < delay) delay = tdelay;
         }
@@ -83,10 +99,15 @@ int overall(size_t N) {
 }
 
 int main() {
-	int bogus = overall(1024*1024);
-	bogus += overall(1024*1024);
-	bogus += overall(1024*1024*64);
-	bogus += overall(1024*1024*64);
+	size_t N = 1024*1024 + 5;
+	mathematicalmodel(N);
+	int bogus = overall(N);
+	bogus += overall(N);
+	//
+	N = 1024*1024*64 + 5;
+	mathematicalmodel(N);
+	bogus += overall(N);
+	bogus += overall(N);
 
 	return bogus;
 }
