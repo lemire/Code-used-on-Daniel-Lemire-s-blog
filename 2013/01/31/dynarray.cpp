@@ -67,7 +67,7 @@ double sim(size_t N, const int multiplier, const int div = 1) {
             if( s <= i) cerr << "bug" << endl;
 		}
 	}
-	return copycost * 1.0 / N;
+	return N * 1.0 / ( N + copycost ) ;
 }
 
 
@@ -75,6 +75,16 @@ void mathematicalmodel(size_t N) {
     for(size_t factor = 1; factor <= 6; ++ factor) {
     	cout << " "<< (factor +2)/2.0<< " : " << sim(N,2+factor,2) << endl;
     }
+}
+
+double median(vector<double> & vec) {
+  sort(vec.begin(), vec.end());
+  if (vec.size()  % 2 == 0) {
+      return (vec[vec.size() / 2 - 1] + vec[vec.size() / 2]) / 2;
+  }
+  else   {
+      return vec[vec.size() / 2];
+  }
 }
 
 int overall(size_t N) {
@@ -86,28 +96,24 @@ int overall(size_t N) {
     cout << "STL vector " << N /(delay * 1000.0) << endl;
     
     for(size_t factor = 1; factor <= 6; ++ factor) {
-        delay = INT_MAX;
-        for(size_t T = 0 ; T < 10 ; ++T ) {
+        vector<double> delays;
+        for(size_t T = 0 ; T < (N<=2*1024*1024 ? 20 : 3) ; ++T ) {
           t.reset();
     	  bogus += testManual(N,2+factor,2);
     	  int tdelay = t.split();
-          if(tdelay < delay) delay = tdelay;
+    	  delays.push_back(tdelay);
         }
-    	cout << "pointer-based "<< (factor +2)/2.0<< " : " << N /(delay * 1000.0) << endl;
+    	cout << "pointer-based "<< (factor +2)/2.0<< " : " << N /(median(delays) * 1000.0) << endl;
     }
     return bogus;
 }
 
 int main() {
-	size_t N = 1024*1024 + 5;
-	mathematicalmodel(N);
-	int bogus = overall(N);
-	bogus += overall(N);
-	//
-	N = 1024*1024*64 + 5;
-	mathematicalmodel(N);
-	bogus += overall(N);
-	bogus += overall(N);
-
+	int bogus = 0;
+	for(size_t N = 1024*1024 -5; N<= 1024*1024 +5; ++N) {
+		cout<<"N = "<<N<<endl;
+		mathematicalmodel(N);
+		bogus += overall(N);
+	}
 	return bogus;
 }
