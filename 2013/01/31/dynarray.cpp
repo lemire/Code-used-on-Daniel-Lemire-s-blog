@@ -7,6 +7,7 @@
 #include <climits>
 #include <limits>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -41,10 +42,20 @@ int testSTL(size_t N) {
 	return x.back();
 }
 
+int straight(size_t N) {
+        int * x = new int[N];
+	for(size_t i = 0 ; i < N ; ++i ) {
+		x[i] = i;
+	}
+        int answer = x[N-1];
+	delete[] x;
+	return answer;
+}
+
 
 int testManual(size_t N, const int multiplier, const int div = 1) {
-	int * x = new int[1];
 	size_t s = 2;
+	int * x = new int[s];
 	for(size_t i = 0 ; i < N ; ++i ) {
 		if(i == s) {
 			int * nx = new int[ multiplier * s / div ];
@@ -55,7 +66,9 @@ int testManual(size_t N, const int multiplier, const int div = 1) {
 		}
 		x[i] = i;
 	}
-	return x[N-1];
+        int answer = x[N-1];
+	delete[] x;
+	return answer;
 }
 double sim(size_t N, const int multiplier, const int div = 1) {
 	int copycost = 0;
@@ -94,10 +107,17 @@ int overall(size_t N) {
     bogus += testSTL(N);
     int delay = t.split();
     cout << "STL vector " << N /(delay * 1000.0) << endl;
-    
+    vector<double> idelays;
+    for(size_t T = 0 ; T < 20 ; ++T ) {
+          t.reset();
+    	  bogus += straight(N);
+    	  int tdelay = t.split();
+    	  idelays.push_back(tdelay);
+    }
+    cout << "static array : " << N /(median(idelays) * 1000.0) << endl;
     for(size_t factor = 1; factor <= 6; ++ factor) {
         vector<double> delays;
-        for(size_t T = 0 ; T < (N<=2*1024*1024 ? 20 : 3) ; ++T ) {
+        for(size_t T = 0 ; T < 20 ; ++T ) {
           t.reset();
     	  bogus += testManual(N,2+factor,2);
     	  int tdelay = t.split();
@@ -110,10 +130,11 @@ int overall(size_t N) {
 
 int main() {
 	int bogus = 0;
-	for(size_t N = 1024*1024 -5; N<= 1024*1024 +5; ++N) {
+	for(size_t N = 12*1024*1024 -5; N<= 12*1024*1024 +5; ++N) {
 		cout<<"N = "<<N<<endl;
 		mathematicalmodel(N);
 		bogus += overall(N);
+                cout << endl;
 	}
 	return bogus;
 }
