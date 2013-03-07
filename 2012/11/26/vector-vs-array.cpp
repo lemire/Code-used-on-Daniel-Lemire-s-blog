@@ -75,21 +75,5 @@ int main(void)
   }
   cout << "The C++ implementation took "
        << time_span_cumulative.count()/1000 << " seconds" << endl;
-  for(int i = 0; i < 1000; i++)
-  {
-    start = chrono::steady_clock::now();
-    v.resize(1000000);
-    for(int j = 0; j < 1000000; j++)
-    {
-      v[j] = j;
-    }
-    end = chrono::steady_clock::now();
-    time_span_cumulative += 
-      chrono::duration_cast<chrono::duration<double>>(end-start);
-    vector<int>().swap(v);
-  }
-  cout << "The fair C++ implementation took "
-       << time_span_cumulative.count()/1000 << " seconds" << endl;
-
   return 0;
 }
