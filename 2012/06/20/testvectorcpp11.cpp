@@ -1,4 +1,4 @@
-//  g++ -O3 -std=c++11 -o testvector testvector.cpp
+// g++ -O3 -std=c++11 -o testvectorcpp11 testvectorcpp11.cpp 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,157 +57,105 @@ public:
     }
 };
 
-
-int runtestnice(size_t N) {
-	vector<int> bigarray;
+template<class C>
+C runtestnice(size_t N) {
+	vector<C> bigarray;
 	for(unsigned int k = 0; k<N; ++k)
 	  bigarray.push_back(k);
-	int sum = 0;
+	C sum = 0;
 	for(unsigned int k = 0; k<N; ++k)
 	  sum += bigarray[k];
 	return sum;
 }
 
-int runtestnicewreserve(size_t N) {
-	vector<int> bigarray;
+template<class C>
+C runtestnicewreserve(size_t N) {
+	vector<C> bigarray;
 	bigarray.reserve(N);
 	for(unsigned int k = 0; k<N; ++k)
 	  bigarray.push_back(k);
-	int sum = 0;
+	C sum = 0;
 	for(unsigned int k = 0; k<N; ++k)
 	  sum += bigarray[k];
 	return sum;
 }
 
-int runtestemplacewreserve(size_t N) {
-	vector<int> bigarray;
+template<class C>
+C runtestemplacewreserve(size_t N) {
+	vector<C> bigarray;
 	bigarray.reserve(N);
 	for(unsigned int k = 0; k<N; ++k)
 	  bigarray.emplace_back(k);
-	int sum = 0;
+	C sum = 0;
 	for(unsigned int k = 0; k<N; ++k)
 	  sum += bigarray[k];
 	return sum;
 }
 
 
-int runtestsafe(size_t N) {
-	vector<int> bigarray(N);
-	for(unsigned int k = 0; k<N; ++k)
-	  bigarray[k] = k;
-	int sum = 0;
-	for(unsigned int k = 0; k<N; ++k)
-	  sum += bigarray[k];
-	return sum;
+// bogus class
+class BenchmarkTester {
+public:
+BenchmarkTester()
+: m_myVec(100)
+, m_myBool(false)
+, m_myPair(24.5, "Happy days are here again")
+, X(0)
+
+{
 }
 
-int runtestunsafe(size_t N) {
-	vector<int> bigarray;
-	bigarray.reserve(N);
-	for(unsigned int k = 0; k<N; ++k)
-	  bigarray[k] = k;// unsafe
-	int sum = 0;
-	for(unsigned int k = 0; k<N; ++k)
-	  sum += bigarray[k];
-	return sum;
-}
-int runtestclassic(size_t N) {
-	int * bigarray = new int[N];
-	for(unsigned int k = 0; k<N; ++k)
-	  bigarray[k] = k;
-	int sum = 0;
-	for(unsigned int k = 0; k<N; ++k)
-	  sum += bigarray[k];
-	delete [] bigarray;
-	return sum;
-}
-int runtestnoalloc(size_t N, int * bigarray) {
-	for(unsigned int k = 0; k<N; ++k)
-	  bigarray[k] = k;// unsafe
-	int sum = 0;
-	for(unsigned int k = 0; k<N; ++k)
-	  sum += bigarray[k];
-	return sum;
+BenchmarkTester(int x)
+: m_myVec(100)
+, m_myBool(false)
+, m_myPair(24.5, "Happy days are here again")
+, X(x)
+
+{
 }
 
-template <typename T>
-struct iota_iterator : std::iterator<std::forward_iterator_tag, T> {
-	iota_iterator(T value = T()) : value(value) { }
+BenchmarkTester& operator+= (const BenchmarkTester & o) {
+	X+= o.X;
+	return *this;
+}
 
-	iota_iterator& operator ++() {
-		++value;
-		return *this;
-	}
-
-	iota_iterator operator ++(int) {
-		iota_iterator copy = *this;
-		++*this;
-		return copy;
-	}
-
-	T const& operator *() const {
-		return value;
-	}
-
-	T const* operator ->() const {
-		return &value;
-	}
-
-	friend bool operator ==(iota_iterator const& lhs, iota_iterator const& rhs) {
-		return lhs.value == rhs.value;
-	}
-
-	friend bool operator !=(iota_iterator const& lhs, iota_iterator const& rhs) {
-		return not (lhs == rhs);
-	}
+operator int() {
+	return X;
+}
 
 private:
-	T value;
+vector<int> m_myVec;
+bool m_myBool;
+pair<double,string> m_myPair;
+int X;
 };
 
-int runtestgenerator(size_t N) {
-	// Extra parentheses to prevent most vexing parse.
-	vector<int> bigarray((iota_iterator<int>()), iota_iterator<int>(N));
-	int sum = 0;
-	for(unsigned int k = 0; k<N; ++k)
-	  sum += bigarray[k];
-	return sum;
-}
 
 
-
-
-int main() {
-	
+template <class C>
+void demo() {
     CPUBenchmark time;
-    const size_t N = 100 * 1000 * 1000 ;
+    const size_t N = 2 * 1000 * 1000 ;
     time.start();
     cout.precision(3);
-    cout<<" report speed in CPU cycles per integer"<<endl;
-    cout<<endl<<"ignore this:"<<runtestnice(N)<<endl;
+    cout<<" report speed indicator in CPU cycles per integer"<<endl;
+    cout<<endl<<"ignore this:"<<runtestnice<C>(N)<<endl;
     cout<<"with push_back:"<<(time.stop()*1.0/N)<<endl;
     time.start();
-    cout<<endl<<"ignore this:"<<runtestnicewreserve(N)<<endl;
+    cout<<endl<<"ignore this:"<<runtestnicewreserve<C>(N)<<endl;
     cout<<"with push_back and reserve:"<<(time.stop()*1.0/N)<<endl;
     time.start();
-    cout<<endl<<"ignore this:"<<runtestemplacewreserve(N)<<endl;
+    cout<<endl<<"ignore this:"<<runtestemplacewreserve<C>(N)<<endl;
     cout<<"with emplace_back and reserve:"<<(time.stop()*1.0/N)<<endl;
     time.start();
-    cout<<endl<<"ignore this:"<<runtestsafe(N)<<endl;
-    cout<<"init first:"<<(time.stop()*1.0/N)<<endl;
-    time.start();
-    cout<<endl<<"ignore this:"<<runtestunsafe(N)<<endl;
-    cout<<"reserve first:"<<(time.stop()*1.0/N)<<endl;
-    time.start();
-    cout<<endl<<"ignore this:"<<runtestclassic(N)<<endl;
-    cout<<"C++ new:"<<(time.stop()*1.0/N)<<endl;
- 	int * bigarray = new int[N];
-    time.start();
-    cout<<endl<<"ignore this:"<<runtestnoalloc(N,bigarray)<<endl;
-    cout<<"without alloc:"<<(time.stop()*1.0/N)<<endl;
-    time.start();
-    cout<<endl<<"ignore this:"<<runtestgenerator(N)<<endl;
-    cout<<"generator iterators:"<<(time.stop()*1.0/N)<<endl;
 
+}
+
+int main() {
+	cout<<"**With int primitive"<<endl;
+	demo<int>();
+	cout<<endl;
+	cout<<"**With BenchmarkTester"<<endl;
+	demo<BenchmarkTester>();
     return 0;
 }
