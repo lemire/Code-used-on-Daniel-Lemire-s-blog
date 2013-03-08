@@ -31,13 +31,31 @@ int main(void)
   // Begin C test. Fill declare array, fill it up, and repeat 10 times to
   // get average time taken to fill up 1000000 integers
   chrono::steady_clock::time_point start, end;
-  int* array;
-  chrono::duration<double> time_span_cumulative = 
-    chrono::duration<double>::zero();
+  chrono::duration<double> time_span_cumulative;
+  time_span_cumulative =  chrono::duration<double>::zero();
+  vector<int> arr;
   for(int i = 0; i < 1000; i++)
   {
     start = chrono::steady_clock::now();
-//    array = reinterpret_cast<int*>(malloc(1000000*sizeof(int)));
+    arr.resize(1000000);
+    for(int j = 0; j < 1000000; j++)
+    {
+      arr[j] = j;
+    }
+    end = chrono::steady_clock::now();
+    time_span_cumulative += 
+      chrono::duration_cast<chrono::duration<double>>(end-start);
+    vector<int>().swap(arr);
+  }
+  cout << "The fair C++ like implementation took "
+       << time_span_cumulative.count()/1000 << " seconds" << endl;
+  time_span_cumulative =  chrono::duration<double>::zero();
+       
+  int* array;
+  time_span_cumulative =  chrono::duration<double>::zero();
+  for(int i = 0; i < 1000; i++)
+  {
+    start = chrono::steady_clock::now();
     array = new int[1000000];
     if(array == nullptr)
     {
@@ -51,7 +69,6 @@ int main(void)
     end = chrono::steady_clock::now();
     time_span_cumulative += 
       chrono::duration_cast<chrono::duration<double>>(end-start);
-//    free(array);
     delete[] array;
   }
   cout << "The C like implementation took "
@@ -67,13 +84,15 @@ int main(void)
     for(int j = 0; j < 1000000; j++)
     {
       v.push_back(j);
+
     }
     end = chrono::steady_clock::now();
     time_span_cumulative += 
       chrono::duration_cast<chrono::duration<double>>(end-start);
     vector<int>().swap(v);
   }
-  cout << "The C++ implementation took "
+  cout << "The C++ push_back implementation took "
        << time_span_cumulative.count()/1000 << " seconds" << endl;
+
   return 0;
 }
