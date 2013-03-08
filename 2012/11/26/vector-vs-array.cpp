@@ -19,7 +19,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
-
+#include <array>
 #include <chrono>
 #include <ratio>
 #include <ctime>
@@ -31,45 +31,30 @@ int main(void)
   // Begin C test. Fill declare array, fill it up, and repeat 10 times to
   // get average time taken to fill up 1000000 integers
   chrono::steady_clock::time_point start, end;
-  chrono::duration<double> time_span_cumulative;
-  time_span_cumulative =  chrono::duration<double>::zero();
-  vector<int> arr;
-  for(int i = 0; i < 1000; i++)
+  int bogus = 0;
+  int* a;
+  int N = 1000000;
+  int T = 1000;
+  chrono::duration<double> time_span_cumulative = 
+    chrono::duration<double>::zero();
+  for(int i = 0; i < T; i++)
   {
     start = chrono::steady_clock::now();
-    arr.resize(1000000);
-    for(int j = 0; j < 1000000; j++)
-    {
-      arr[j] = j;
-    }
-    end = chrono::steady_clock::now();
-    time_span_cumulative += 
-      chrono::duration_cast<chrono::duration<double>>(end-start);
-    vector<int>().swap(arr);
-  }
-  cout << "The fair C++ like implementation took "
-       << time_span_cumulative.count()/1000 << " seconds" << endl;
-  time_span_cumulative =  chrono::duration<double>::zero();
-       
-  int* array;
-  time_span_cumulative =  chrono::duration<double>::zero();
-  for(int i = 0; i < 1000; i++)
-  {
-    start = chrono::steady_clock::now();
-    array = new int[1000000];
-    if(array == nullptr)
+    a = new int[N];
+    if(a == nullptr)
     {
       cerr << "Fatal error with memory allocation" << endl;
       return -1;
     }
-    for(int j = 0; j < 1000000; j++)
+    for(int j = 0; j < N; j++)
     {
-      array[j] = j;
+      a[j] = j;
     }
+    bogus += a[100001];
     end = chrono::steady_clock::now();
     time_span_cumulative += 
       chrono::duration_cast<chrono::duration<double>>(end-start);
-    delete[] array;
+    delete[] a;
   }
   cout << "The C like implementation took "
        << time_span_cumulative.count()/1000 << " seconds" << endl;
@@ -77,22 +62,40 @@ int main(void)
   // Begin the C++ STL implementation
   time_span_cumulative = chrono::duration<double>::zero();
   vector<int> v;
-  for(int i = 0; i < 1000; i++)
+  for(int i = 0; i < T; i++)
   {
     start = chrono::steady_clock::now();
-    v.reserve(1000000);
-    for(int j = 0; j < 1000000; j++)
+    v.reserve(N);
+    for(int j = 0; j < N; j++)
     {
       v.push_back(j);
 
     }
+    bogus += v[100001];
     end = chrono::steady_clock::now();
     time_span_cumulative += 
       chrono::duration_cast<chrono::duration<double>>(end-start);
     vector<int>().swap(v);
   }
-  cout << "The C++ push_back implementation took "
+  cout << "The STL push_back implementation took "
        << time_span_cumulative.count()/1000 << " seconds" << endl;
-
-  return 0;
+  time_span_cumulative = chrono::duration<double>::zero();
+  for(int i = 0; i < T; i++)
+  {
+    start = chrono::steady_clock::now();
+    v.resize(N);
+    for(int j = 0; j < N; j++)
+    {
+      v[j] = j;
+    }
+    bogus += v[100001];
+     end = chrono::steady_clock::now();
+    time_span_cumulative += 
+      chrono::duration_cast<chrono::duration<double>>(end-start);
+    vector<int>().swap(v);
+  }
+  cout << "The STL bracket implementation took "
+       << time_span_cumulative.count()/1000 << " seconds" << endl;
+   time_span_cumulative = chrono::duration<double>::zero();
+  return bogus;
 }
