@@ -97,5 +97,21 @@ int main(void)
   cout << "The STL bracket implementation took "
        << time_span_cumulative.count()/1000 << " seconds" << endl;
    time_span_cumulative = chrono::duration<double>::zero();
-  return bogus;
+  for(int i = 0; i < T; i++)
+  {
+    start = chrono::steady_clock::now();
+    v.reserve(N);
+    while(v.size()<N)
+    {
+      v.emplace_back(v.size());
+    }
+    bogus += v[100001];
+     end = chrono::steady_clock::now();
+    time_span_cumulative += 
+      chrono::duration_cast<chrono::duration<double>>(end-start);
+    vector<int>().swap(v);
+  }
+  cout << "The STL emplace_back implementation took "
+       << time_span_cumulative.count()/1000 << " seconds" << endl;
+   return bogus;
 }
