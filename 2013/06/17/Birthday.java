@@ -40,7 +40,7 @@ public class Birthday {
 	}
 	
 	
-	public static String[] fancylistStrings(int N) {
+	public static String[] listStrings(int N) {
 		String[] values = { "Ace","BDe","AdF","BEF"};
 		String[] answer = new String[N];
 		for(int k = 0;k<4;++k) answer[k] = values[k];
@@ -49,7 +49,7 @@ public class Birthday {
 		return answer;
 	}
 	
-	public static String[] listStrings(int N) {
+	public static String[] sillylistStrings(int N) {
 		String[] answer = new String[N];
 		for(int k = 0;k<N;++k) 
 		answer[k]=toString(k);
@@ -65,14 +65,14 @@ public class Birthday {
 		return new String(x);
 	}
     public static void test(int N) {
-    	System.out.println("N="+N);
-    	String[] values = listStrings(N);
+    	        System.out.println("N="+N);
+    	        String[] values = listStrings(N);
 		Arrays.sort(values);
 		for(int k = 0; k< values.length-1;++k)
 		  if(values[k]==values[k+1]) throw new RuntimeException("duplicate found");
 		int collisioncount = 0;
 		Random r = new Random();
-		int totalcount = 100;
+		int totalcount = 1000;
 		for(int k = 0; k < totalcount; ++k) {
 			JavaHasher hasher = new JavaHasher();
 			if(hasCollision(values,hasher)) ++collisioncount;
@@ -91,27 +91,23 @@ public class Birthday {
 			if(idealhasCollisionGivenNoDuplicate(values)) ++collisioncount;
 		}
 		System.out.println("proba = "+collisioncount * 100.0 / totalcount);
-
     }
 
 	
 	public static void main(String[] args) {
-		test(30000);
-		test(30500);
-		test(31000);
-		test(32000);
-		test(33000);
-		test(34000);
-		test(34500);
-		test(35000);
-		
-		test(40000);
+		test(10);
+		test(100);
+         	test(1000);
+		test(10000);
 		test(77163);
-		test(100000);
 	}
 }
 
-
+/**
+* Strongly universal hasher (Multilinear).
+* Reference: Owen Kaser and Daniel Lemire, Strongly universal string hashing is fast
+* http://arxiv.org/abs/1202.4961
+*/
 class StronglyUniversalHasher {
 	long A[];
 	public StronglyUniversalHasher (long[] a) {
