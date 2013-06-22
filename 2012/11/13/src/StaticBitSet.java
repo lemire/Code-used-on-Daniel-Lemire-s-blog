@@ -44,6 +44,7 @@ public class StaticBitSet {
   // index i here }
   public int nextSetBit(int i) {
     int x = i / 64;
+    if(x>=data.length) return -1;
     long w = data[x];
     w >>>= (i % 64);
     if (w != 0) {
