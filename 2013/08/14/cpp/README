@@ -1,0 +1,1 @@
+g++-fsf-4.7 -std=c++0x -o test test.cpp
