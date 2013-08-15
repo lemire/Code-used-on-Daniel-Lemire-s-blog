@@ -138,6 +138,7 @@ public:
         		ans[v] = k;
         	}
         }
+        sort(ans.begin(),ans.end());
         return ans;
     }
 

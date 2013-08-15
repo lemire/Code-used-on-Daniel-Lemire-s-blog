@@ -7,11 +7,14 @@ public class UniformDistinct {
 	public static void main(String[] args) {
 		int M = 20;
 		int Max = 1<<M;
+		System.out.println("reporting speed");
+		System.out.println("hash - hashwithnegate - hybridhashbitmap - reservoirsampling - tree");
 		DecimalFormat df = new DecimalFormat("0.###");
+		int TIMES = 10;
 
 		for(int times = 0; times < 3; ++times) 
 		
-		for(int k = M-3; k< M; ++k) {
+		for(int k = M-12; k< M; ++k) {
 			int[] x;
 			
 			long bef,aft;
@@ -20,31 +23,31 @@ public class UniformDistinct {
 			
 			
 			bef = System.nanoTime();
-			for(int T = 0 ; T < 10; ++T) {
-			x = generateUniform1(1<<k,Max);
+			for(int T = 0 ; T < TIMES; ++T) {
+			x = generateUniformHash(1<<k,Max);
 			if(x.length!= 1<<k) throw new RuntimeException("bug");
 			}
 			aft = System.nanoTime();			
 			time1 = aft-bef;
 			
 			bef = System.nanoTime();
-			for(int T = 0 ; T < 10; ++T) {
-			x = generateUniform2(1<<k,Max);
+			for(int T = 0 ; T < TIMES; ++T) {
+			x = generateUniformHashWithNegate(1<<k,Max);
 			if(x.length!= 1<<k) throw new RuntimeException("bug");
 			}
 		    aft = System.nanoTime();			
 			time2 = aft-bef;
 			
 			bef = System.nanoTime();
-			for(int T = 0 ; T < 10; ++T) {
-		    x = generateUniform3(1<<k,Max,2048);
+			for(int T = 0 ; T < TIMES; ++T) {
+		    x = generateUniformHybridHashBitmap(1<<k,Max,2048);
 			if(x.length!= 1<<k) throw new RuntimeException("bug");
 			}
 			aft = System.nanoTime();			
 			time3 = aft-bef;
 
 			bef = System.nanoTime();
-			for(int T = 0 ; T < 10; ++T) {
+			for(int T = 0 ; T < TIMES; ++T) {
 		    x = generateUniformReservoirSampling(1<<k,Max);
 			if(x.length!= 1<<k) throw new RuntimeException("bug");
 			}
@@ -52,7 +55,7 @@ public class UniformDistinct {
 			time4 = aft-bef;
 
 			bef = System.nanoTime();
-			for(int T = 0 ; T < 10; ++T) {
+			for(int T = 0 ; T < TIMES; ++T) {
 		    x = generateUniformTree(1<<k,Max);
 			if(x.length!= 1<<k) throw new RuntimeException("bug");
 			}
@@ -60,7 +63,7 @@ public class UniformDistinct {
 			time5 = aft-bef;
 
 
-			System.out.println(df.format(Max*1.0/(1<<k)*1.0)+" "+df.format((1<<k)*1000.0/time1)+" "+df.format((1<<k)*1000.0/time2)+" "+df.format((1<<k)*1000.0/time3)+" "+df.format((1<<k)*1000.0/time4)+" "+df.format((1<<k)*1000.0/time5));
+			System.out.println(df.format(Max*1.0/(1<<k)*1.0)+"\t"+df.format((1<<k)*TIMES*1000.0/time1)+"\t"+df.format((1<<k)*TIMES*1000.0/time2)+"\t"+df.format((1<<k)*TIMES*1000.0/time3)+"\t"+df.format((1<<k)*TIMES*1000.0/time4)+"\t"+df.format((1<<k)*TIMES*1000.0/time5));
 		}
 	}
 
@@ -85,7 +88,7 @@ public class UniformDistinct {
   /**
   * Generate N random integers from 0 to Max
   */
- static int[] generateUniform1(int N, int Max) {
+ static int[] generateUniformHash(int N, int Max) {
         if (N > Max)
             throw new RuntimeException("not possible");
         int[] ans = new int[N];
@@ -137,26 +140,28 @@ public class UniformDistinct {
         		ans[v] = k;
         	}
         }
+        Arrays.sort(ans);
         return ans;
     }
     
 /**
   * Generate N random integers from 0 to Max
   */
- static int[] generateUniform2(int N, int Max) {
+ static int[] generateUniformHashWithNegate(int N, int Max) {
  	if(2*N > Max) 
- 	  return negate(generateUniform1(Max-N, Max),Max);
- 	return generateUniform1(N, Max);
+ 	  return negate(generateUniformHash(Max-N, Max),Max);
+ 	return generateUniformHash(N, Max);
  }
 
 /**
   * Generate N random integers from 0 to Max
   */
- static int[] generateUniform3(int N, int Max, int T) {
+ static int[] generateUniformHybridHashBitmap(int N, int Max, int T) {
  	if(T*N > Max) 
  	  return generateUniformBitmap(N, Max);
- 	return generateUniform1(N, Max);
+ 	return generateUniformHash(N, Max);
  }
+ 
 static int[] generateUniformBitmap(int N, int Max) {
         if (N > Max)
             throw new RuntimeException("not possible");
