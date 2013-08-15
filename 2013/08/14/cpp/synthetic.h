@@ -120,8 +120,23 @@ public:
         		++card;
         	}
         }
-        
         return bs.toArray(N);
+    }
+    
+      vector<uint32_t> generateUniformReservoirSampling(uint32_t N, uint32_t Max) {
+        if(Max < N) throw runtime_error("can't generate enough distinct elements in small interval");
+        assert(Max >= 1);
+        vector<uint32_t> ans;
+        ans.resize(N);
+        for (uint32_t k = 0; k < N; ++k)
+                ans[k]=k;
+        for(uint32_t k = N ; k < Max; ++k) {
+        	uint32_t v = rand.getValue(k+1) ;
+        	if(v < N) {
+        		ans[v] = k;
+        	}
+        }
+        return ans;
     }
 
     // Max value is excluded from range

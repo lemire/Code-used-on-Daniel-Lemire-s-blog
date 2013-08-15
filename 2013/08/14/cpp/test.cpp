@@ -19,38 +19,40 @@ public:
 
 int main(int ac,char** av) 
 {
-        printf("Welcome!");
-cout<<"test"<<endl;
+
 	uint32_t max = 1<<20;
     UniformDataGenerator udg;
 	for(uint32_t N = max/2048; N < max; N*=2)     
     {
-        cout<<"N = "<<N*1.0/max;
+        cout<<max*1.0/N<<" ";
         cout.flush();
-            	if(N*1024 > max) {
-            		cout<<"bitmapmode"<<endl;
-            	}
+            	
 
         ZTimer t;
         for (int i=0; i<10; ++i) {
                 vector<uint32_t> array = udg.generateUniform(N,max);
                 if(array.size() != N) throw runtime_error("bug");
         }
-        int dt = t.split();
-        cout<<" ran in  "<<dt;
+        int dt1 = t.split();
         for (int i=0; i<10; ++i) {
                 vector<uint32_t> array = udg.generateUniformBitmap(N,max);
                 if(array.size() != N) throw runtime_error("bug");
         }
         int dt2 = t.split();
-        cout<<" ran in  "<<dt2;
         for (int i=0; i<10; ++i) {
                 vector<uint32_t> array = udg.generateUniformHash(N,max);
                 if(array.size() != N) throw runtime_error("bug");
         }
         int dt3 = t.split();
 
-        cout<<" ran in  "<<dt3<<endl;
+
+        for (int i=0; i<10; ++i) {
+                vector<uint32_t> array = udg.generateUniformReservoirSampling(N,max);
+                if(array.size() != N) throw runtime_error("bug");
+        }
+        int dt4 = t.split();
+
+        cout<<dt1<<" "<<dt2<<" "<<dt3<<" "<<dt4<<endl;
 
 	}
 

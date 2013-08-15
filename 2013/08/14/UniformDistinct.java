@@ -5,18 +5,18 @@ public class UniformDistinct {
 	
 	
 	public static void main(String[] args) {
-		int M = 24;
+		int M = 20;
 		int Max = 1<<M;
 		DecimalFormat df = new DecimalFormat("0.###");
 
 		for(int times = 0; times < 3; ++times) 
 		
-		for(int k = 5; k< Math.min(20,M-2); ++k) {
+		for(int k = M-3; k< M; ++k) {
 			int[] x;
 			
 			long bef,aft;
 			
-			long time1=0, time2=0, time3=0;
+			long time1=0, time2=0, time3=0, time4=0;
 			
 			
 			bef = System.nanoTime();
@@ -43,8 +43,15 @@ public class UniformDistinct {
 			aft = System.nanoTime();			
 			time3 = aft-bef;
 
-			
-			System.out.println(df.format(Max*1.0/(1<<k)*1.0)+" "+df.format((1<<k)*1000.0/time1)+" "+df.format((1<<k)*1000.0/time2)+" "+df.format((1<<k)*1000.0/time3));
+			bef = System.nanoTime();
+			for(int T = 0 ; T < 10; ++T) {
+		    x = generateUniformReservoirSampling(1<<k,Max);
+			if(x.length!= 1<<k) throw new RuntimeException("bug");
+			}
+			aft = System.nanoTime();			
+			time4 = aft-bef;
+
+			System.out.println(df.format(Max*1.0/(1<<k)*1.0)+" "+df.format((1<<k)*1000.0/time1)+" "+df.format((1<<k)*1000.0/time2)+" "+df.format((1<<k)*1000.0/time3)+" "+df.format((1<<k)*1000.0/time4));
 		}
 	}
 
@@ -87,6 +94,23 @@ public class UniformDistinct {
         Arrays.sort(ans);
         return ans;
     }
+    
+    
+   static int[] generateUniformReservoirSampling(int N, int Max) {
+        if (N > Max)
+            throw new RuntimeException("not possible");
+        int[] ans = new int[N];
+        for (int k = 0; k < N; ++k)
+                ans[k]=k;
+        for(int k = N ; k < Max; ++k) {
+        	int v = rand.nextInt(k+1);
+        	if(v < N) {
+        		ans[v] = k;
+        	}
+        }
+        return ans;
+    }
+    
 /**
   * Generate N random integers from 0 to Max
   */
