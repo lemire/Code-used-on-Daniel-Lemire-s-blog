@@ -120,7 +120,9 @@ public:
         		++card;
         	}
         }
-        return bs.toArray(N);
+        vector<uint32_t> ans(N);
+        bs.toArray(ans);
+        return  ans;
     }
     
       vector<uint32_t> generateUniformReservoirSampling(uint32_t N, uint32_t Max) {

@@ -42,20 +42,17 @@ public:
         sizeinbits = sizeib;
     }
     
-    vector<uint32_t> toArray(size_t expectedcardinality = 16) {
-    	vector<uint32_t> ans;
-    	ans.reserve(expectedcardinality);
+    void toArray(vector<uint32_t> & ans) {
+    	size_t pos = 0;
         for (size_t k = 0; k < buffer.size(); ++k) {
             const uint64_t myword = buffer[k];
             if(myword != 0)
             for(int offset = 0; offset<64;++offset) {
                     if((myword >> offset) == 0) break;
                     offset+=numberOfTrailingZeros((myword >> offset));
-                    ans.push_back(64 * k + offset);
+                    ans[pos++]=64 * k + offset;
                 }
             }
-        
-        return ans;
     }
 
 
@@ -71,7 +68,8 @@ public:
      * This is an expensive (random access) API, you really ought to
      * prepare a new word and then append it.
      */
-    void set(const size_t pos) {
+     __attribute__((always_inline))
+    inline void set(const size_t pos) {
         buffer[pos / 64] |= (static_cast<uint64_t> (1) << (pos
                 % 64));
     }
@@ -82,7 +80,8 @@ public:
      * This is an expensive (random access) API, you really ought to
      * prepare a new word and then append it.
      */
-    void unset(const size_t pos) {
+     __attribute__((always_inline))
+    inline void unset(const size_t pos) {
         buffer[pos / 64] |= ~(static_cast<uint64_t> (1) << (pos
                 % 64));
     }
@@ -90,7 +89,8 @@ public:
     /**
      * true of false? (set or unset)
      */
-    bool get(const size_t pos) const {
+     __attribute__((always_inline))
+    inline bool get(const size_t pos) const {
         return (buffer[pos / 64] & (static_cast<uint64_t> (1) << (pos
                 % 64))) != 0;
     }
