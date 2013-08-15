@@ -16,7 +16,7 @@ public class UniformDistinct {
 			
 			long bef,aft;
 			
-			long time1=0, time2=0, time3=0, time4=0;
+			long time1=0, time2=0, time3=0, time4=0, time5=0;
 			
 			
 			bef = System.nanoTime();
@@ -51,7 +51,16 @@ public class UniformDistinct {
 			aft = System.nanoTime();			
 			time4 = aft-bef;
 
-			System.out.println(df.format(Max*1.0/(1<<k)*1.0)+" "+df.format((1<<k)*1000.0/time1)+" "+df.format((1<<k)*1000.0/time2)+" "+df.format((1<<k)*1000.0/time3)+" "+df.format((1<<k)*1000.0/time4));
+			bef = System.nanoTime();
+			for(int T = 0 ; T < 10; ++T) {
+		    x = generateUniformTree(1<<k,Max);
+			if(x.length!= 1<<k) throw new RuntimeException("bug");
+			}
+			aft = System.nanoTime();			
+			time5 = aft-bef;
+
+
+			System.out.println(df.format(Max*1.0/(1<<k)*1.0)+" "+df.format((1<<k)*1000.0/time1)+" "+df.format((1<<k)*1000.0/time2)+" "+df.format((1<<k)*1000.0/time3)+" "+df.format((1<<k)*1000.0/time4)+" "+df.format((1<<k)*1000.0/time5));
 		}
 	}
 
@@ -95,6 +104,26 @@ public class UniformDistinct {
         return ans;
     }
     
+  /**
+  * Generate N random integers from 0 to Max
+  */
+ static int[] generateUniformTree(int N, int Max) {
+        if (N > Max)
+            throw new RuntimeException("not possible");
+        int[] ans = new int[N];
+        if (N == Max) {
+            for (int k = 0; k < N; ++k)
+                ans[k]=k;
+            return ans;
+        }
+        TreeSet<Integer> s = new TreeSet<Integer>();
+        while (s.size() < N)
+            s.add(new Integer(rand.nextInt(Max)));
+        Iterator<Integer> i = s.iterator();
+        for (int k = 0; k < N; ++k)
+            ans[k]=i.next().intValue();
+        return ans;
+    }
     
    static int[] generateUniformReservoirSampling(int N, int Max) {
         if (N > Max)
