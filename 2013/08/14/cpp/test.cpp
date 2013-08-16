@@ -56,6 +56,15 @@ void fillFromReservoir(uint32_t *buf, uint32_t N, uint32_t Max) {
 
     return;
 }
+void fillFromReservoirNoSort(uint32_t *buf, uint32_t N, uint32_t Max) {
+    for (uint32_t k = 0; k < N; ++k) buf[k] = k;
+
+    for(uint32_t k = N ; k < Max; ++k) {
+        uint32_t r = rand() % k;
+        if(r < N)  buf[r] = k;
+    }
+    return;
+}
 
 
 
@@ -110,8 +119,19 @@ int main(int ac,char** av)
         }
         int dt5 = t.split();
 
+		t.reset();
+        for (int i=0; i<TIMES; ++i) {
+        	
+  				uint32_t * buffer = (uint32_t*) malloc (sizeof(uint32_t) * N);
+  				if (buffer==NULL) exit (1);
+  				fillFromReservoirNoSort(buffer, N, max);
+  				if(buffer[N-1] == buffer[N-2]) throw runtime_error("bug"); 
+				free (buffer);
+        }
+        int dt6 = t.split();
 
-        cout<<std::setprecision(3)<<TIMES*N*1.0/dt1 <<"\t\t"<<TIMES*N*1.0/dt2<<"\t\t"<<TIMES*N*1.0/dt3<<"\t\t"<<TIMES*N*1.0/dt4<<"\t\t"<<TIMES*N*1.0/dt5<<endl;
+
+        cout<<std::setprecision(3)<<TIMES*N*1.0/dt1 <<"\t\t"<<TIMES*N*1.0/dt2<<"\t\t"<<TIMES*N*1.0/dt3<<"\t\t"<<TIMES*N*1.0/dt4<<"\t\t"<<TIMES*N*1.0/dt5<<"\t\t"<<TIMES*N*1.0/dt6<<endl;
 
 	}
 
