@@ -67,7 +67,7 @@ int main(int ac,char** av)
     uint32_t TIMES = 10;
     cout<<"reporting speed"<<endl;
     cout<<"tree -- bitmap -- hash -- reservoirsampling -- reservoirsamplingC"<<endl;
-	for(uint32_t N = max/2048; N < max; N*=2)     
+	for(uint32_t N = max/(2048*8); N < max; N*=2)     
     {
         cout<<std::setprecision(6)<<max*1.0/N<<"\t\t\t";
         cout.flush();
