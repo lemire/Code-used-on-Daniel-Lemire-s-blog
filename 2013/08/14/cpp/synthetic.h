@@ -71,7 +71,7 @@ public:
      * fill the vector with N numbers uniformly picked from  from 0 to Max, not including Max
      * if it is not possible, an exception is thrown
      */
-    vector<uint32_t> generateUniform(uint32_t N, uint32_t Max) {
+    vector<uint32_t> generateUniformTree(uint32_t N, uint32_t Max) {
         if(Max < N) throw runtime_error("can't generate enough distinct elements in small interval");
         vector < uint32_t > ans;
         if(N==0) return ans; // nothing to do

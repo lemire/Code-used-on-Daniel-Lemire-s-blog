@@ -183,6 +183,7 @@ public class UniformDistinct {
             for (int i = 0; i < N; ++i) {
                 a2[i] = a1[i];
             }
+            Arrays.sort(a2);
             return a2;
         }
     }
@@ -207,6 +208,7 @@ public class UniformDistinct {
         // Non-cheat
         int[] a2 = new int[N];
         System.arraycopy(a, 0, a2, 0, N);
+        Arrays.sort(a2);
         return a2;
     }
     /**

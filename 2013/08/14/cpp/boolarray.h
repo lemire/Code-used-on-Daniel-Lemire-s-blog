@@ -46,7 +46,6 @@ public:
     	size_t pos = 0;
         for (size_t k = 0; k < buffer.size(); ++k) {
             const uint64_t myword = buffer[k];
-            if(myword != 0)
             for(int offset = 0; offset<64;++offset) {
                     if((myword >> offset) == 0) break;
                     offset+=numberOfTrailingZeros((myword >> offset));
