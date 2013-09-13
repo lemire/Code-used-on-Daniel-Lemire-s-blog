@@ -41,7 +41,8 @@ int main() {
 	   size_t S = 1024 * 64;
 	   vector<uint8_t> counter8(S);
 	   vector<uint32_t> counter32(S);
-	
+	   vector<uint64_t> counter64(S);
+		
         WallClockTimer t;
         for(size_t init = 1; init < 1024; ++init) 
         for (size_t i=init; i<S*3; i+=3) {
@@ -54,8 +55,14 @@ int main() {
         	counter32[i%S] += 1;
         }
         int dt2 = t.split();
-        cout<<std::setprecision(4)<<dt1 <<"\t\t"<<dt2<<endl;
-        cout<<"ignore: "<<counter8[12]+counter32[32]<<endl;
+        t.reset();
+        for(size_t init = 1; init < 1024; ++init) 
+        for (size_t i=init; i<S*3; i+=3) {
+        	counter64[i%S] += 1;
+        }
+        int dt3 = t.split();
+         cout<<std::setprecision(4)<<dt1 <<"\t\t"<<dt2<<"\t\t"<<dt3<<endl;
+        cout<<"ignore: "<<counter8[12]+counter32[32]+counter64[444]<<endl;
 
 	
 }
