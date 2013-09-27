@@ -91,6 +91,7 @@ public class bytevsintcounters {
 	public static void main(String[] args) {
 	   System.out.println(" speeds for 8-bit, 16-bit, 32-bit and 64-bit counters");
 	   test(1024*64);	
+	   test(1024*64);	
 	   test(1024*1024*8);	
 	   test(1024*1024*32);	
 	   test(1024*1024*64);	
