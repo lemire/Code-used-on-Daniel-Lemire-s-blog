@@ -1,11 +1,7 @@
 /**
 * reports transfert rate.
 *
-<<<<<<< HEAD
 *  g++-fsf-4.7 -Ofast -mavx -g3  -o benchmem benchmem.cpp
-=======
-*  g++ -O0 -mavx -g3  -o benchmem benchmem.cpp
->>>>>>> 965a7c37c44a46a20b3a32833139fd44c8ec8861
 */
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -108,10 +104,14 @@ int run(const size_t N, const size_t howmany) {
         double thistime3 = t.split()/1000.0;
         if(thistime3 < besttime3) besttime3 = thistime3;
     }
-    cout<<" Fast SIMD memcpy speed = "<<N/(1000.0*1000.0*besttime3) <<" mis or "<< N*4/(1024.0*1024.0*besttime3)<<" MB/s"<<endl;
-    cout<<" SIMD memcpy speed = "<<N/(1000.0*1000.0*besttime0) <<" mis or "<< N*4/(1024.0*1024.0*besttime0)<<" MB/s"<<endl;
-    cout<<" memset speed = "<<N/(1000.0*1000.0*besttime1) <<" mis or "<< N*4/(1024.0*1024.0*besttime1)<<" MB/s"<<endl;
-    cout<<" memcpy speed = "<<N/(1000.0*1000.0*besttime2) <<" mis or "<< N*4/(1024.0*1024.0*besttime2)<<" MB/s"<<endl;
+    cout<<" Fast SIMD memcpy speed = "<<N*howmany/(1000.0*1000.0*besttime3) 
+        <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime3)<<" MB/s"<<endl;
+    cout<<" SIMD memcpy speed = "<<N*howmany/(1000.0*1000.0*besttime0) 
+        <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime0)<<" MB/s"<<endl;
+    cout<<" memset speed = "<<N*howmany/(1000.0*1000.0*besttime1) 
+        <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime1)<<" MB/s"<<endl;
+    cout<<" memcpy speed = "<<N*howmany/(1000.0*1000.0*besttime2) 
+        <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime2)<<" MB/s"<<endl;
     return total;
 }
 
