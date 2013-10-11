@@ -14,6 +14,7 @@
 #include <iostream>
 #include <limits>
 #include <immintrin.h>
+#include <vector>
 using namespace std;
 
 class WallClockTimer {
@@ -64,10 +65,14 @@ void ufastcopy(const int * in , int * out, size_t N) {// assumes N is a multiple
   }
 }
 
-int run(const size_t N) {
+int run(const size_t N, const size_t howmany) {
     cout<<"N = "<<N<<endl;
-    int *  a = new int[N];
-    int *  b = new int[N];
+    vector<vector<int> > a (howmany);
+    vector<vector<int> > b (howmany);
+    for(size_t k = 0 ; k < howmany; ++k) {
+        a[k].resize(N,k);
+        b[k].resize(N);
+    }
 
     WallClockTimer t;
     int total = 0;
@@ -76,22 +81,30 @@ int run(const size_t N) {
     double besttime2 = numeric_limits<double>::max();
     double besttime3 = numeric_limits<double>::max();
     
-    for(int k = 0; k<10;++k) {
+    for(int k = 0; k<2;++k) {
         t.reset();
-        fastcopy(b,a,N);
+        for(int L = 0; L < howmany; ++L) {
+          fastcopy(&b[L][0],&a[L][0],N);
+        }
         double thistime0 = t.split()/1000.0;
         if(thistime0 < besttime0) besttime0 = thistime0;
         t.reset();
-        memset(a,k,N*sizeof(int));
+        for(int L = 0; L < howmany; ++L) {
+          memset(&a[L][0],k,N*sizeof(int));
+        }
         double thistime1 = t.split()/1000.0;
         if(thistime1 < besttime1) besttime1 = thistime1;
         t.reset();
-        memcpy(b,a,N*sizeof(int));
+        for(int L = 0; L < howmany; ++L) {
+          memcpy(&b[L][0],&a[L][0],N*sizeof(int));
+        }
         double thistime2 = t.split()/1000.0;
         if(thistime2 < besttime2) besttime2 = thistime2;
-        total += b[N-2];
+        total += b[0][N-2];
         t.reset();
-        ufastcopy(b,a,N);
+        for(int L = 0; L < howmany; ++L) {
+          ufastcopy(&b[L][0],&a[L][0],N);
+        }
         double thistime3 = t.split()/1000.0;
         if(thistime3 < besttime3) besttime3 = thistime3;
     }
@@ -103,8 +116,8 @@ int run(const size_t N) {
 }
 
 int main() {
-    run(4000000);
-	run(20000000);
-	run(200000000);
+    run(4000000,50);
+	run(20000000,10);
+	run(200000000,1);
 	return 0;
 }
