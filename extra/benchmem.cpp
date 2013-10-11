@@ -1,7 +1,7 @@
 /**
 * reports transfert rate.
 *
-*  g++ -O0 -g3  -o benchmem benchmem.cpp
+*  g++ -O0 -mavx -g3  -o benchmem benchmem.cpp
 */
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -77,7 +77,8 @@ int run(const size_t N) {
 }
 
 int main() {
-	run(4000000);
+    run(4000000);
 	run(20000000);
+	run(200000000);
 	return 0;
 }
