@@ -43,8 +43,8 @@ void fastcopy(const int * in , int * out, size_t N) {// assumes N is a multiple 
 	}
 }
 
-int main() {
-	const size_t N = 4 * 1000 * 1000;
+int run(const size_t N) {
+	cout<<"N = "<<N<<endl;
 	int *  a = new int[N];
 	int *  b = new int[N];
 
@@ -73,4 +73,11 @@ int main() {
         cout<<" memset speed = "<<N/(1000.0*1000.0*besttime1) <<" mis or "<< N*4/(1024.0*1024.0*besttime1)<<" MB/s"<<endl;
         cout<<" memcpy speed = "<<N/(1000.0*1000.0*besttime2) <<" mis or "<< N*4/(1024.0*1024.0*besttime2)<<" MB/s"<<endl;
         return total;
+
+}
+
+int main() {
+	run(4000000);
+	run(20000000);
+	return 0;
 }
