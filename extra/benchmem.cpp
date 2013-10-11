@@ -125,7 +125,6 @@ int run(const size_t N, const size_t howmany) {
         <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime1)<<" MB/s"<<endl;
     cout<<" memcpy speed = "<<N*howmany/(1000.0*1000.0*besttime2) 
         <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime2)<<" MB/s"<<endl;
->>>>>>> d74fa5978a6ce0a7ac4f643fe588828f2b11bc44
     return total;
 }
 
