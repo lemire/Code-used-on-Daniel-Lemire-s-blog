@@ -62,7 +62,7 @@ void ufastcopy(const int * in , int * out, size_t N) {// assumes N is a multiple
 }
 
 int run(const size_t N, const size_t howmany) {
-    cout<<"N = "<<N<<endl;
+    cout<<"N = "<<N<<" volume = "<<N*howmany<<endl;
     vector<vector<int> > a (howmany);
     vector<vector<int> > b (howmany);
     for(size_t k = 0 ; k < howmany; ++k) {
@@ -116,7 +116,8 @@ int run(const size_t N, const size_t howmany) {
 }
 
 int main() {
-    run(4000000,50);
+    run(4000000,1);
+	run(4000000,50);
 	run(20000000,10);
 	run(200000000,1);
 	return 0;
