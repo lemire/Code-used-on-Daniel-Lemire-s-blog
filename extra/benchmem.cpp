@@ -116,8 +116,9 @@ int run(const size_t N, const size_t howmany) {
 }
 
 int main() {
-    run(4000000,1);
-	run(4000000,50);
+    run(65536,100);
+    run(65536,3051);
+    run(4000000,50);
 	run(20000000,10);
 	run(200000000,1);
 	return 0;
