@@ -80,8 +80,9 @@ int run(const size_t N, const size_t howmany) {
     double besttime1 = numeric_limits<double>::max();
     double besttime2 = numeric_limits<double>::max();
     double besttime3 = numeric_limits<double>::max();
+    double besttime4 = numeric_limits<double>::max();
     
-    for(int k = 0; k<2;++k) {
+    for(int k = 0; k<20;++k) {
         t.reset();
         for(int L = 0; L < howmany; ++L) {
           fastcopy(&b[L][0],&a[L][0],N);
@@ -107,17 +108,29 @@ int run(const size_t N, const size_t howmany) {
         }
         double thistime3 = t.split()/1000.0;
         if(thistime3 < besttime3) besttime3 = thistime3;
+        
+        t.reset();
+        for(int L = 0; L < howmany; ++L) {
+        	for(int z = 0 ; z < N ; ++z) 
+        	   b[L][z] = a[L][z];
+        }
+        total += b[0][N-2] + b[howmany-1][N-3];
+        double thistime4 = t.split()/1000.0;
+
+        if(thistime4 < besttime4) besttime4 = thistime4;
     }
-    cout<<" Fast SIMD memcpy speed = "<<N/(1000.0*1000.0*besttime3) <<" mis or "<< N*4/(1024.0*1024.0*besttime3)<<" MB/s"<<endl;
-    cout<<" SIMD memcpy speed = "<<N/(1000.0*1000.0*besttime0) <<" mis or "<< N*4/(1024.0*1024.0*besttime0)<<" MB/s"<<endl;
-    cout<<" memset speed = "<<N/(1000.0*1000.0*besttime1) <<" mis or "<< N*4/(1024.0*1024.0*besttime1)<<" MB/s"<<endl;
-    cout<<" memcpy speed = "<<N/(1000.0*1000.0*besttime2) <<" mis or "<< N*4/(1024.0*1024.0*besttime2)<<" MB/s"<<endl;
+    cout<<" naive = "<<N*howmany/(1000.0*1000.0*besttime4) <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime4)<<" MB/s"<<endl;
+
+    cout<<" Fast SIMD memcpy speed = "<<N*howmany/(1000.0*1000.0*besttime3) <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime3)<<" MB/s"<<endl;
+    cout<<" SIMD memcpy speed = "<<N*howmany/(1000.0*1000.0*besttime0) <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime0)<<" MB/s"<<endl;
+    cout<<" memset speed = "<<N*howmany/(1000.0*1000.0*besttime1) <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime1)<<" MB/s"<<endl;
+    cout<<" memcpy speed = "<<N*howmany/(1000.0*1000.0*besttime2) <<" mis or "<< N*howmany*4/(1024.0*1024.0*besttime2)<<" MB/s"<<endl;
     return total;
 }
 
 int main() {
-    run(4000000,50);
-	run(20000000,10);
-	run(200000000,1);
+    run(100000,100);
+	run(1000000,10);
+	run(10000000,1);
 	return 0;
 }
