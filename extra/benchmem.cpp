@@ -1,7 +1,11 @@
 /**
 * reports transfert rate.
 *
+<<<<<<< HEAD
 *  g++-fsf-4.7 -Ofast -mavx -g3  -o benchmem benchmem.cpp
+=======
+*  g++ -O0 -mavx -g3  -o benchmem benchmem.cpp
+>>>>>>> 965a7c37c44a46a20b3a32833139fd44c8ec8861
 */
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -100,6 +104,7 @@ int run(const size_t N) {
 
 int main() {
     run(4000000);
-    run(20000000);
-    return 0;
+	run(20000000);
+	run(200000000);
+	return 0;
 }
