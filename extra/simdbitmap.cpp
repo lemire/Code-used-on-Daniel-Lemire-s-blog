@@ -1,4 +1,4 @@
-
+//g++-4.7  -std=c++11 -O3 -o simdbitmap simdbitmap.cpp
 
 #include <sys/stat.h>
 #include <sys/time.h>
