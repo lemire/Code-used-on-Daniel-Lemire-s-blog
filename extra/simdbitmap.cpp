@@ -71,7 +71,7 @@ using namespace std;
         	 _mm_storeu_si128 (bout + 2*i, andp1p2);
         	__m128i p12 = _mm_load_si128 (bin + 2*i + 1);
         	__m128i p22 = _mm_load_si128 (bo + 2*i + 1);
-        	__m128i andp1p2 = _mm_and_si128 (p12,p22);
+        	__m128i andp1p22 = _mm_and_si128 (p12,p22);
         	 _mm_storeu_si128 (bout + 2*i +1, andp1p22);
 
         }
