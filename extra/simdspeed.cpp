@@ -1,9 +1,9 @@
 // Daniel Lemire, Nov 2nd 2013
 /***
 $ g++-4.8.0 -O3 -mavx -o simdspeed simdspeed.cpp 
-dlemire@fastpfor:~$ ./simdspeed 
-39 17 10
-2.56954e+08
+91 29 28
+1 3.14 3.25
+#ignore=724.07733 724.07733 724.07733
 **/
 #include <cmath>
 #include <vector>
