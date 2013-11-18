@@ -1,9 +1,9 @@
 // Daniel Lemire, Nov 2nd 2013
 /***
 $ g++-4.8.0 -O3 -mavx -o simdspeed simdspeed.cpp 
-dlemire@fastpfor:~$ ./simdspeed 
-39 17 10
-2.56954e+08
+91 29 28
+1 3.14 3.25
+#ignore=724.07733 724.07733 724.07733
 **/
 #include <cmath>
 #include <vector>
@@ -17,48 +17,23 @@ dlemire@fastpfor:~$ ./simdspeed
 
 #include <cassert>
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <immintrin.h>
 using namespace std;
 
- class WallClockTimer
-  {
+ class WallClockTimer {
   public:
       struct timeval t1, t2;
-  public:
       WallClockTimer() : t1(), t2(){ gettimeofday(&t1,0); t2 = t1; }
       void reset() {gettimeofday(&t1,0); t2 = t1;}
       int elapsed() { return ((t2.tv_sec - t1.tv_sec) * 1000) + ((t2.tv_usec - t1.tv_usec) / 1000); }
       int split() { gettimeofday(&t2,0); return elapsed(); }
   };
 
-float scalar128(float * a, float *b, size_t length) {
-	float sum = 0;
-	for(size_t i = 0; i < length/4;i+=4 ) {
-		__m128 veca= _mm_load_ps (a+4*i);
-		__m128 vecb= _mm_load_ps (b+4*i);
-		__m128 r1 = _mm_mul_ps(veca, vecb);
-        __m128 r2 = _mm_hadd_ps(r1, r1);
-        __m128 r3 = _mm_hadd_ps(r2, r2);
-		sum +=  _mm_extract_ps(r3,0);
-	}
-	return sqrt(sum);
-}
 
-float scalar256(float * a, float *b, size_t length) {
-	float sum = 0;
-	for(size_t i = 0; i < length/8;i+=8 ) {
-		__m256 veca= _mm256_loadu_ps (a+8*i);
-		__m256 vecb= _mm256_loadu_ps (b+8*i);
-		__m256 r1 = _mm256_mul_ps(veca, vecb);
-        __m256 r2 = _mm256_hadd_ps(r1, r1);
-        __m256 r3 = _mm256_hadd_ps(r2, r2);
-        __m256 r4 = _mm256_hadd_ps(r2, r2);
-        sum +=  _mm_extract_ps( _mm256_extractf128_ps (r4,0),0);
-	}
-	return sqrt(sum);
-}
-float scalar(float * a, float *b, size_t length) {
+__attribute__((__noinline__,__target__("no-avx")))
+float scalar(const float * a, const float *b, size_t length) {
 	float sum = 0;
 	for(size_t i = 0; i < length;i++ ) {
 		sum += a[i] * b[i];
@@ -66,26 +41,68 @@ float scalar(float * a, float *b, size_t length) {
 	return sqrt(sum);
 }
 
+#ifdef __SSE3__
+__attribute__((__noinline__,__target__("no-avx")))
+float scalar128(const float * a, const float *b, size_t length) {
+    __m128 sum = _mm_set1_ps(0);
+    assert(length/4*4==length);
+	for(size_t i = 0; i < length/4; ++i ) {
+		const __m128 veca = _mm_loadu_ps (a+4*i);
+		const __m128 vecb = _mm_loadu_ps (b+4*i);
+		const __m128 r1 = _mm_mul_ps(veca, vecb);
+        sum = _mm_add_ps(sum,r1);
+	}
+    __m128 r2 = _mm_hadd_ps(sum, sum);
+    __m128 r3 = _mm_hadd_ps(r2, r2);
+	return sqrt( _mm_cvtss_f32 (r3));
+}
+#endif
+
+#ifdef  __AVX__
+__attribute__((__noinline__))
+float scalar256(const float * a, const float *b, size_t length) {
+    __m256 sum =  _mm256_set1_ps (0);
+    assert(length/8*8==length);
+	for(size_t i = 0; i < length/8; ++i ) {
+		const __m256 veca = _mm256_loadu_ps (a+8*i);
+		const __m256 vecb = _mm256_loadu_ps (b+8*i);
+		const __m256 r1 = _mm256_mul_ps(veca, vecb);
+        sum =  _mm256_add_ps (sum,r1);
+	}
+    __m256 r2 = _mm256_hadd_ps(sum,sum);
+    __m256 r3 = _mm256_hadd_ps(r2, r2);
+    __m256 r4 = _mm256_hadd_ps(r3, r3);
+	return sqrt( _mm_cvtss_f32 ( _mm256_extractf128_ps (r4,0)) );
+}
+#endif
 
 int main() {
-	size_t N = 1024*1024*4;
-	vector<float> a(N,4);
+    int time1, time2, time3;
+	size_t N =  1024*1024;
+    int T=100;
+	vector<float> a(N,0.1);
 	vector<float> b(N,5);
 	WallClockTimer timer;
-	float bogus = 0;
+	float bogus1 = 0;
+    float bogus2 = 0;
+    float bogus3 = 0;
 	timer.reset();
-	for(int k = 0; k<10;++k)
-	bogus += scalar(&a[0], &b[0],N);
-	int time1 = timer.split();
+	for(int k = 0; k<T;++k)
+	bogus1 = scalar(&a[0], &b[0],N);
+	time1 = timer.split();
+#ifdef __SSE3__
 	timer.reset();
-    for(int k = 0; k<10;++k)
-	bogus += scalar128(&a[0], &b[0],N);
-    int time2 = timer.split();
+    for(int k = 0; k<T;++k)
+	bogus2 = scalar128(&a[0], &b[0],N);
+    time2 = timer.split();
+#endif
+#ifdef __AVX__
 	timer.reset();
-    for(int k = 0; k<10;++k)
-	bogus += scalar256(&a[0], &b[0],N);
-    int time3 = timer.split();
-
+    for(int k = 0; k<T;++k)
+	bogus3 = scalar256(&a[0], &b[0],N);
+    time3 = timer.split();
+#endif
     cout<<time1<<" "<<time2<<" "<<time3<<endl;
-    cout<<bogus<<endl;
+    cout<< std::setprecision(3)<<time1*1.0/time1<<" "<<time1*1.0/time2<<" "<<time1*1.0/time3<<endl;
+     cout<< std::setprecision(8)<<"#ignore="<<bogus1<<" "<<bogus2<<" "<<bogus3<<endl;
 }
