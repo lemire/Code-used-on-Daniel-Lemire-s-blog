@@ -39,8 +39,7 @@ public:
         t2 = t1;
     }
     int elapsed() {
-        return ((t2.tv_sec - t1.tv_sec) * 1000) + ((t2.tv_usec - t1. tv_usec)
-                / 1000);
+        return (t2.tv_sec * 1000 + t2.tv_usec / 1000) - (t1.tv_sec * 1000 + t1.tv_usec / 1000);
     }
     int split() {
         gettimeofday(&t2, 0);
