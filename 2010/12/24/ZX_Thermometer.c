@@ -292,8 +292,13 @@ extern "C" {
   #include <stdio.h>  //not needed yet
   #include <string.h> //needed for strlen()
   #include <inttypes.h>
-  #include "WConstants.h"  //all things wiring / arduino
 
+//#include "WConstants.h"  //all things wiring / arduino
+#if ARDUINO >= 100
+ #include "Arduino.h"
+#else
+ #include "WProgram.h"
+#endif
 }
 
 
