@@ -3,7 +3,7 @@ import java.util.*;
 public class bitextract {
 	
 	// copied from http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/java/lang/Long.java#Long.bitCount%28long%29
-	public static int bitCount(long i) {
+	public static int mybitCount(long i) {
         i = i - ((i >>> 1) & 0x5555555555555555L);
         i = (i & 0x3333333333333333L) + ((i >>> 2) & 0x3333333333333333L);
         i = (i + (i >>> 4)) & 0x0f0f0f0f0f0f0f0fL;
@@ -14,7 +14,7 @@ public class bitextract {
      }
      
      // copied from http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/java/lang/Long.java#Long.bitCount%28long%29
-     public static int numberOfTrailingZeros(long i) {
+     public static int mynumberOfTrailingZeros(long i) {
         int x, y;
         if (i == 0) return 64;
         int n = 63;
@@ -57,7 +57,7 @@ public class bitextract {
       	 long bitset = bitmaps[k];
          while (bitset != 0) {
            final long t = bitset & -bitset;
-           output[pos++] = k * 64 +  bitCount(t-1);
+           output[pos++] = k * 64 +  mybitCount(t-1);
            bitset ^= t;
          }
       }
@@ -82,7 +82,7 @@ public class bitextract {
       for(int k = 0; k < bitmaps.length; ++k) {  
         long data = bitmaps[k];
         while (data != 0) {
-          final int ntz = numberOfTrailingZeros(data);
+          final int ntz = mynumberOfTrailingZeros(data);
           output[pos++] = k * 64 + ntz;
           data ^= (1l << ntz);
         }
@@ -125,7 +125,7 @@ public class bitextract {
 		} 
 
 		int[] output = new int[bitcount];
-		for(int t = 0; t<3; ++t) {
+		for(int t = 0; t<5; ++t) {
 		  long bef0 = System.nanoTime();
 		  int c0 = 0;
 		  for(int t1=0;t1<100;++t1)
@@ -152,7 +152,7 @@ public class bitextract {
 		  long bef2f = System.nanoTime();
 		  int c2f = 0;
 		  for(int t1=0;t1<100;++t1)
-		    c2f = bitscan2(bitmap,output);
+		    c2f = bitscan2f(bitmap,output);
 		  long aft2f = System.nanoTime();
 		  if(c1 != c2f) throw new RuntimeException("bug2f");
 		  long bef3 = System.nanoTime();
@@ -161,7 +161,7 @@ public class bitextract {
 		    c3 = bitscan3(bitmap,output);
 		  long aft3 = System.nanoTime();
 		  if(c1 != c3) throw new RuntimeException("bug3");
-		  if(t==2)
+		  if(t>2)
 		    System.out.println(sb+" " +bitcount*100.0*1000 /(aft0-bef0)+" " +bitcount*100.0*1000 /(aft1-bef1)+" " +bitcount*100.0*1000 /(aft1f-bef1f)+" "+bitcount*100.0*1000/(aft2-bef2)+" "+bitcount*100.0*1000/(aft2f-bef2f)+" "+bitcount*100.0*1000/(aft3-bef3));
 		}
   	  }
