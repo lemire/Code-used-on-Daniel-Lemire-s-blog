@@ -1,6 +1,30 @@
 import java.util.*;
 
 public class bitextract {
+	
+	// copied from http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/java/lang/Long.java#Long.bitCount%28long%29
+	public static int bitCount(long i) {
+        i = i - ((i >>> 1) & 0x5555555555555555L);
+        i = (i & 0x3333333333333333L) + ((i >>> 2) & 0x3333333333333333L);
+        i = (i + (i >>> 4)) & 0x0f0f0f0f0f0f0f0fL;
+        i = i + (i >>> 8);
+        i = i + (i >>> 16);
+        i = i + (i >>> 32);
+        return (int)i & 0x7f;
+     }
+     
+     // copied from http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/java/lang/Long.java#Long.bitCount%28long%29
+     public static int numberOfTrailingZeros(long i) {
+        int x, y;
+        if (i == 0) return 64;
+        int n = 63;
+        y = (int)i; if (y != 0) { n = n -32; x = y; } else x = (int)(i>>>32);
+        y = x <<16; if (y != 0) { n = n -16; x = y; }
+        y = x << 8; if (y != 0) { n = n - 8; x = y; }
+        y = x << 4; if (y != 0) { n = n - 4; x = y; }
+        y = x << 2; if (y != 0) { n = n - 2; x = y; }
+        return n - ((x << 1) >>> 31);
+    }
 
   public static int bitscan0(long[] bitmaps, int[] output) {
    int counter = 0;
@@ -26,6 +50,19 @@ public class bitextract {
       }
       return pos;
   }
+  // inspired by http://www.steike.com/code/bits/debruijn/	
+  public static int bitscan1f(long[] bitmaps, int[] output) {
+	  int pos = 0;
+      for(int k = 0; k < bitmaps.length; ++k) {
+      	 long bitset = bitmaps[k];
+         while (bitset != 0) {
+           final long t = bitset & -bitset;
+           output[pos++] = k * 64 +  bitCount(t-1);
+           bitset ^= t;
+         }
+      }
+      return pos;
+  }
   
   public static int bitscan2(long[] bitmaps, int[] output) {
 	  int pos = 0;
@@ -40,6 +77,18 @@ public class bitextract {
       return pos;
   }
   
+  public static int bitscan2f(long[] bitmaps, int[] output) {
+	  int pos = 0;
+      for(int k = 0; k < bitmaps.length; ++k) {  
+        long data = bitmaps[k];
+        while (data != 0) {
+          final int ntz = numberOfTrailingZeros(data);
+          output[pos++] = k * 64 + ntz;
+          data ^= (1l << ntz);
+        }
+      }
+      return pos;
+  }
   
   
   // inspired by http://www.steike.com/code/bits/debruijn/	
@@ -88,12 +137,24 @@ public class bitextract {
 		    c1 = bitscan1(bitmap,output);
 		  long aft1 = System.nanoTime();
 		  if(c1 != c0) throw new RuntimeException("bug1");
-		   long bef2 = System.nanoTime();
+		  long bef1f = System.nanoTime();
+		  int c1f = 0;
+		  for(int t1=0;t1<100;++t1)
+		    c1f = bitscan1f(bitmap,output);
+		  long aft1f = System.nanoTime();
+		  if(c1f != c0) throw new RuntimeException("bug1f");
+		  long bef2 = System.nanoTime();
 		  int c2 = 0;
 		  for(int t1=0;t1<100;++t1)
 		    c2 = bitscan2(bitmap,output);
 		  long aft2 = System.nanoTime();
 		  if(c1 != c2) throw new RuntimeException("bug2");
+		  long bef2f = System.nanoTime();
+		  int c2f = 0;
+		  for(int t1=0;t1<100;++t1)
+		    c2f = bitscan2(bitmap,output);
+		  long aft2f = System.nanoTime();
+		  if(c1 != c2f) throw new RuntimeException("bug2f");
 		  long bef3 = System.nanoTime();
 		  int c3 = 0;
 		  for(int t1=0;t1<100;++t1)
@@ -101,7 +162,7 @@ public class bitextract {
 		  long aft3 = System.nanoTime();
 		  if(c1 != c3) throw new RuntimeException("bug3");
 		  if(t==2)
-		    System.out.println(sb+" " +bitcount*100.0*1000 /(aft0-bef0)+" " +bitcount*100.0*1000 /(aft1-bef1)+" "+bitcount*100.0*1000/(aft2-bef2)+" "+bitcount*100.0*1000/(aft3-bef3));
+		    System.out.println(sb+" " +bitcount*100.0*1000 /(aft0-bef0)+" " +bitcount*100.0*1000 /(aft1-bef1)+" " +bitcount*100.0*1000 /(aft1f-bef1f)+" "+bitcount*100.0*1000/(aft2-bef2)+" "+bitcount*100.0*1000/(aft2f-bef2f)+" "+bitcount*100.0*1000/(aft3-bef3));
 		}
   	  }
 
