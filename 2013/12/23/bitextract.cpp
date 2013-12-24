@@ -1,8 +1,8 @@
-// g++  -O3 -o bitextract bitextract.cpp 
+// g++ -msse4.2 -O3 -o bitextract bitextract.cpp 
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <immintrin.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -45,7 +45,7 @@ using namespace std;
       	 long bitset = bitmap[k];
          while (bitset != 0) {
            long t = bitset & -bitset;
-           out[pos++] = k * 64 +   __builtin_popcountl (t-1);
+           out[pos++] = k * 64 + _mm_popcnt_u32 (t-1);// __builtin_popcountl (t-1);
            bitset ^= t;
          }
       }
@@ -104,28 +104,28 @@ using namespace std;
 		  int c0 = 0;
 		  for(int t1=0;t1<100;++t1)
 		    c0 = bitscan0(&bitmap[0],N,&output[0]);
-		  int t0 = timer.split();
+		  int ti0 = timer.split();
 		  timer.reset();
 		  int c1 = 0;
 		  for(int t1=0;t1<100;++t1)
 		    c1 = bitscan1(&bitmap[0],N,&output[0]);
 		  assert(c1 == c0);
-		  int t1 = timer.split();
+		  int ti1 = timer.split();
 		  timer.reset();
 		  int c2 = 0;
 		  for(int t1=0;t1<100;++t1)
 		    c2 = bitscan2(&bitmap[0],N,&output[0]);
-		  int t2 = timer.split();
+		  int ti2 = timer.split();
 		  timer.reset();
 		  assert(c1 == c2);
 		  int c3 = 0;
 		  for(int t1=0;t1<100;++t1)
 		    c3 = bitscan3(&bitmap[0],N,&output[0]);
-		  int t3 = timer.split();
+		  int ti3 = timer.split();
 		  assert(c1 == c3);
 
 		  if(t>2)
-		    cout<<sb<<" " <<bitcount*100.0*0.001 /t0<<" "<<" " <<bitcount*100.0*0.001 /t1<<" " <<bitcount*100.0*0.001 /t2<<" " <<bitcount*100.0*0.001 /t3<<endl;
+		    cout<<sb<<" " <<bitcount*100.0*0.001 /ti0<<" "<<" " <<bitcount*100.0*0.001 /ti1<<" " <<bitcount*100.0*0.001 /ti2<<" " <<bitcount*100.0*0.001 /ti3<<endl;
 		}
   	  }
 
