@@ -1,4 +1,4 @@
-// g++  -O3 -o bitextract bitextract.cpp
+// g++  -O3 -o gcd gcd.cpp
 
 #include <stdio.h>
 #include <stdlib.h>
