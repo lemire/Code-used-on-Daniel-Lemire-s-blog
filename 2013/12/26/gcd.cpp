@@ -105,11 +105,16 @@ unsigned gcd_iterative_mod(unsigned a, unsigned b)
 }
 
 
+unsigned basicgcd(unsigned x, unsigned y) {
+    return (x % y) == 0 ? y :  gcd(y,x % y);
+}
+
 int main() {
     assert(sizeof(long)==8);
     assert(sizeof(int)==4);
     WallClockTimer timer;
     int N = 2000;
+    int ti1 = 0;
     int ti2 = 0;
     int ti3 = 0;
     int ti4 = 0;
@@ -121,8 +126,13 @@ int main() {
             assert(gcdwikipedia2(x,y)==gcdwikipedia2fast(x,y));
             assert(gcdwikipedia2(x,y)==gcd_recursive(x,y));
             assert(gcdwikipedia2(x,y)==gcd_iterative_mod(x,y));
-
+            assert(gcdwikipedia2(x,y)==basicgcd(x,y));
         }
+    timer.reset();
+    for(unsigned int x = 1; x<=N; ++x)
+        for(unsigned int y = 1; y<=N; ++y)
+            bogus +=  basicgcd(x,y);
+    ti1 += timer.split();
     timer.reset();
     for(unsigned int x = 1; x<=N; ++x)
         for(unsigned int y = 1; y<=N; ++y)
