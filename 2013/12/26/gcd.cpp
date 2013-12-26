@@ -143,6 +143,7 @@ int main() {
         for(unsigned int y = 1; y<=N; ++y)
             bogus +=  gcd_iterative_mod(x,y);
     ti5 += timer.split();
-    cout<<ti2<<" "<<ti3<<" "<<ti4<<" "<<ti5<<endl;
+    double q = (N-1)*(N-1);
+    cout<<q*0.001/ti2<<" "<<q*0.001/ti3<<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<endl;
     return bogus;
 }
