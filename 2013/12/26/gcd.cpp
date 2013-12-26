@@ -106,7 +106,7 @@ unsigned gcd_iterative_mod(unsigned a, unsigned b)
 
 
 unsigned basicgcd(unsigned x, unsigned y) {
-    return (x % y) == 0 ? y :  gcd(y,x % y);
+    return (x % y) == 0 ? y :  basicgcd(y,x % y);
 }
 
 int main() {
