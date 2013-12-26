@@ -154,6 +154,6 @@ int main() {
             bogus +=  gcd_iterative_mod(x,y);
     ti5 += timer.split();
     double q = (N-1)*(N-1);
-    cout<<q*0.001/ti2<<" "<<q*0.001/ti3<<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<endl;
+    cout<<q*0.001/ti1<<" "<<q*0.001/ti2<<" "<<q*0.001/ti3<<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<endl;
     return bogus;
 }
