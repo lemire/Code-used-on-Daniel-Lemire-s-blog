@@ -60,7 +60,31 @@ unsigned int gcdwikipedia2(unsigned int u, unsigned int v)
 }
 
 
-// from http://en.wikipedia.org/wiki/Binary_GCD_algorithm
+// based on wikipedia's article, 
+// fixed by D. Lemire, R. Corderoy, K. Willets
+unsigned int gcdwikipedia3fast(unsigned int u, unsigned int v)
+{
+    int shift;
+    if (u == 0) return v;
+    if (v == 0) return u;
+    shift = __builtin_ctz(u | v);
+    u >>= __builtin_ctz(u);
+    do {
+        v >>= __builtin_ctz(v);
+        if (u == v) 
+          break;
+        else if (u > v) {
+            unsigned int t = v;
+            v = u;
+            u = t;
+        }  
+        v = v - u;
+    } while (true);
+    return u << shift;
+}
+
+// based on wikipedia's article, 
+// fixed by D. Lemire and R. Corderoy
 unsigned int gcdwikipedia2fast(unsigned int u, unsigned int v)
 {
     int shift;
@@ -80,27 +104,6 @@ unsigned int gcdwikipedia2fast(unsigned int u, unsigned int v)
     return u << shift;
 }
 
-// from http://en.wikipedia.org/wiki/Binary_GCD_algorithm
-unsigned int doesCTZhelp(unsigned int u, unsigned int v)
-{
-    int shift;
-    if (u == 0) return v;
-    if (v == 0) return u;
-    shift = __builtin_ctz(u | v);
-    u >>= shift;
-    v >>= shift;
-    u >>= __builtin_ctz(u);
-    do {
-        v >>= __builtin_ctz(v);
-        if (u > v) {
-            unsigned int t = v;
-            v = u;
-            u = t;
-        }  
-        v = v - u;
-    } while (v != 0);
-    return u << shift;
-}
 
 // best from http://hbfs.wordpress.com/2013/12/10/the-speed-of-gcd/
 unsigned gcd_recursive(unsigned a, unsigned b)
@@ -158,39 +161,6 @@ unsigned gcdFranke (unsigned x, unsigned y)
   return x<<f;
 }
 
-bool doesCTZhelps (unsigned x, unsigned y)
-{
-  unsigned f;
-  unsigned s0, s1;
-
-  if(0 == x) return y;
-  if(0 == y) return x;
-
-  s0 = __builtin_ctz(x);
-  s1 = __builtin_ctz(y);
-  f = s0 < s1 ? s0 : s1; 
-  x >>= s0;
-  y >>= s1;
-  if(s0>0) return true;
-  if(s1>0) return true;
-  while(x!=y)
-  {
-    if(x<y)
-    {
-      y-=x;
-  if(__builtin_ctz(y)>0) return true;
-
-      y >>= __builtin_ctz(y);
-    }
-    else
-    {
-      x-=y;
-      x >>= __builtin_ctz(x);
-    }
-  }
-  return x<<f;
-}
-
 
 int main() {
     assert(sizeof(long)==8);
@@ -203,6 +173,7 @@ int main() {
     int ti4 = 0;
     int ti5 = 0;
     int ti6 = 0;
+    int ti7 = 0;
     int bogus = 0;
     timer.reset();
     for(unsigned int x = 1; x<=N; ++x)
@@ -243,7 +214,12 @@ int main() {
         for(unsigned int y = 1; y<=N; ++y)
             bogus +=  gcdFranke(x,y);
     ti6 += timer.split();
+    timer.reset();
+    for(unsigned int x = 1; x<=N; ++x)
+        for(unsigned int y = 1; y<=N; ++y)
+            bogus +=  gcdwikipedia3fast(x,y);
+    ti7 += timer.split();
     double q = (N-1)*(N-1);
-    cout<<q*0.001/ti1<<" "<<q*0.001/ti2<<" "<<q*0.001/ti3<<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<" "<<q*0.001/ti6<<endl;
+    cout<<q*0.001/ti1<<" "<<q*0.001/ti2<<" "<<q*0.001/ti3<<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<" "<<q*0.001/ti6<<" "<<q*0.001/ti7<<endl;
     return bogus;
 }
