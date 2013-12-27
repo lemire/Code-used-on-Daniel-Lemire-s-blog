@@ -67,9 +67,6 @@ unsigned int gcdwikipedia2fast(unsigned int u, unsigned int v)
     if (u == 0) return v;
     if (v == 0) return u;
     shift = __builtin_ctz(u | v);
-    u >>= shift;
-    v >>= shift;
-
     u >>= __builtin_ctz(u);
     do {
         v >>= __builtin_ctz(v);
@@ -83,6 +80,27 @@ unsigned int gcdwikipedia2fast(unsigned int u, unsigned int v)
     return u << shift;
 }
 
+// from http://en.wikipedia.org/wiki/Binary_GCD_algorithm
+unsigned int doesCTZhelp(unsigned int u, unsigned int v)
+{
+    int shift;
+    if (u == 0) return v;
+    if (v == 0) return u;
+    shift = __builtin_ctz(u | v);
+    u >>= shift;
+    v >>= shift;
+    u >>= __builtin_ctz(u);
+    do {
+        v >>= __builtin_ctz(v);
+        if (u > v) {
+            unsigned int t = v;
+            v = u;
+            u = t;
+        }  
+        v = v - u;
+    } while (v != 0);
+    return u << shift;
+}
 
 // best from http://hbfs.wordpress.com/2013/12/10/the-speed-of-gcd/
 unsigned gcd_recursive(unsigned a, unsigned b)
@@ -129,6 +147,39 @@ unsigned gcdFranke (unsigned x, unsigned y)
     if(x<y)
     {
       y-=x;
+      y >>= __builtin_ctz(y);
+    }
+    else
+    {
+      x-=y;
+      x >>= __builtin_ctz(x);
+    }
+  }
+  return x<<f;
+}
+
+bool doesCTZhelps (unsigned x, unsigned y)
+{
+  unsigned f;
+  unsigned s0, s1;
+
+  if(0 == x) return y;
+  if(0 == y) return x;
+
+  s0 = __builtin_ctz(x);
+  s1 = __builtin_ctz(y);
+  f = s0 < s1 ? s0 : s1; 
+  x >>= s0;
+  y >>= s1;
+  if(s0>0) return true;
+  if(s1>0) return true;
+  while(x!=y)
+  {
+    if(x<y)
+    {
+      y-=x;
+  if(__builtin_ctz(y)>0) return true;
+
       y >>= __builtin_ctz(y);
     }
     else
