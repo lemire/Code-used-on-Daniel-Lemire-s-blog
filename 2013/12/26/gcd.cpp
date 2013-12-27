@@ -161,12 +161,10 @@ unsigned gcdFranke (unsigned x, unsigned y)
   return x<<f;
 }
 
-
-int main() {
-    assert(sizeof(long)==8);
-    assert(sizeof(int)==4);
+unsigned int test(unsigned int offset) {
     WallClockTimer timer;
     int N = 2000;
+    cout<<"gcd between numbers in ["<<offset+1<<" and "<<offset+N<<"]"<<endl;
     int ti1 = 0;
     int ti2 = 0;
     int ti3 = 0;
@@ -176,8 +174,8 @@ int main() {
     int ti7 = 0;
     int bogus = 0;
     timer.reset();
-    for(unsigned int x = 1; x<=N; ++x)
-        for(unsigned int y = 1; y<=N; ++y) {
+    for(unsigned int x = 1+offset; x<=N+offset; ++x)
+        for(unsigned int y = 1+offset; y<=N+offset; ++y) {
             assert(gcdwikipedia2(x,y)==gcdwikipedia2fast(x,y));
             assert(gcdwikipedia2(x,y)==gcd_recursive(x,y));
             assert(gcdwikipedia2(x,y)==gcd_iterative_mod(x,y));
@@ -219,7 +217,15 @@ int main() {
         for(unsigned int y = 1; y<=N; ++y)
             bogus +=  gcdwikipedia3fast(x,y);
     ti7 += timer.split();
-    double q = (N-1)*(N-1);
+    double q = N*N;
     cout<<q*0.001/ti1<<" "<<q*0.001/ti2<<" "<<q*0.001/ti3<<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<" "<<q*0.001/ti6<<" "<<q*0.001/ti7<<endl;
     return bogus;
+}
+
+int main() {
+    assert(sizeof(long)==8);
+    assert(sizeof(int)==4);
+    unsigned int bogus = 0;
+    bogus += test(0);
+    bogus += test(1000*1000*1000);
 }
