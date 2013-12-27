@@ -108,6 +108,38 @@ unsigned gcd_iterative_mod(unsigned a, unsigned b)
 unsigned basicgcd(unsigned x, unsigned y) {
     return (x % y) == 0 ? y :  basicgcd(y,x % y);
 }
+// attributed to  Jens
+// Franke by Samuel Neves 
+unsigned gcdFranke (unsigned x, unsigned y)
+{
+  unsigned f;
+  unsigned s0, s1;
+
+  if(0 == x) return y;
+  if(0 == y) return x;
+
+  s0 = __builtin_ctz(x);
+  s1 = __builtin_ctz(y);
+  f = s0 < s1 ? s0 : s1; 
+  x >>= s0;
+  y >>= s1;
+
+  while(x!=y)
+  {
+    if(x<y)
+    {
+      y-=x;
+      y >>= __builtin_ctz(y);
+    }
+    else
+    {
+      x-=y;
+      x >>= __builtin_ctz(x);
+    }
+  }
+  return x<<f;
+}
+
 
 int main() {
     assert(sizeof(long)==8);
@@ -119,6 +151,7 @@ int main() {
     int ti3 = 0;
     int ti4 = 0;
     int ti5 = 0;
+    int ti6 = 0;
     int bogus = 0;
     timer.reset();
     for(unsigned int x = 1; x<=N; ++x)
@@ -127,7 +160,8 @@ int main() {
             assert(gcdwikipedia2(x,y)==gcd_recursive(x,y));
             assert(gcdwikipedia2(x,y)==gcd_iterative_mod(x,y));
             assert(gcdwikipedia2(x,y)==basicgcd(x,y));
-        }
+            assert(gcdwikipedia2(x,y)==gcdFranke(x,y));
+         }
     timer.reset();
     for(unsigned int x = 1; x<=N; ++x)
         for(unsigned int y = 1; y<=N; ++y)
@@ -153,7 +187,12 @@ int main() {
         for(unsigned int y = 1; y<=N; ++y)
             bogus +=  gcd_iterative_mod(x,y);
     ti5 += timer.split();
+    timer.reset();
+    for(unsigned int x = 1; x<=N; ++x)
+        for(unsigned int y = 1; y<=N; ++y)
+            bogus +=  gcdFranke(x,y);
+    ti6 += timer.split();
     double q = (N-1)*(N-1);
-    cout<<q*0.001/ti1<<" "<<q*0.001/ti2<<" "<<q*0.001/ti3<<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<endl;
+    cout<<q*0.001/ti1<<" "<<q*0.001/ti2<<" "<<q*0.001/ti3<<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<" "<<q*0.001/ti6<<endl;
     return bogus;
 }
