@@ -105,6 +105,50 @@ unsigned int gcdwikipedia2fast(unsigned int u, unsigned int v)
 }
 
 
+// based on wikipedia's article, 
+// fixed by D. Lemire,  K. Willets
+unsigned int gcdwikipedia5fast(unsigned int u, unsigned int v)
+{
+     int shift, uz, vz;
+     uz = __builtin_ctz(u);
+     if ( u == 0) return v;
+     vz = __builtin_ctz(v);
+     if ( v == 0) return u;
+     shift = uz > vz ? vz : uz;
+     u >>= uz;
+     do {
+       v >>= vz;
+       if (u > v) {
+         unsigned int t = v;
+         v = u;
+         u = t;
+       }
+       v = v - u;
+       vz = __builtin_ctz(v);
+     } while( v != 0 );
+     return u << shift;
+}
+
+// based on wikipedia's article, 
+// fixed by D. Lemire and R. Corderoy (twice)
+unsigned int gcdwikipedia4fast(unsigned int u, unsigned int v)
+{
+    int shift;
+    if (u == 0) return v;
+    if (v == 0) return u;
+    shift = __builtin_ctz(u | v);
+    u >>= __builtin_ctz(u);
+    do {
+        unsigned m;
+        v >>= __builtin_ctz(v);
+        m = (v ^ u) & -(v < u);
+        u ^= m;
+        v ^= m;
+        v -= u;
+    } while (v != 0);
+    return u << shift;
+}
+
 // best from http://hbfs.wordpress.com/2013/12/10/the-speed-of-gcd/
 unsigned gcd_recursive(unsigned a, unsigned b)
 {
@@ -172,11 +216,16 @@ unsigned int test(unsigned int offset) {
     int ti5 = 0;
     int ti6 = 0;
     int ti7 = 0;
+    int ti8 = 0;
+    int ti9 = 0;
     int bogus = 0;
     timer.reset();
     for(unsigned int x = 1+offset; x<=N+offset; ++x)
         for(unsigned int y = 1+offset; y<=N+offset; ++y) {
             assert(gcdwikipedia2(x,y)==gcdwikipedia2fast(x,y));
+            assert(gcdwikipedia2(x,y)==gcdwikipedia3fast(x,y));
+            assert(gcdwikipedia2(x,y)==gcdwikipedia4fast(x,y));
+            assert(gcdwikipedia2(x,y)==gcdwikipedia5fast(x,y));
             assert(gcdwikipedia2(x,y)==gcd_recursive(x,y));
             assert(gcdwikipedia2(x,y)==gcd_iterative_mod(x,y));
             assert(gcdwikipedia2(x,y)==basicgcd(x,y));
@@ -217,8 +266,20 @@ unsigned int test(unsigned int offset) {
         for(unsigned int y = 1; y<=N; ++y)
             bogus +=  gcdwikipedia3fast(x,y);
     ti7 += timer.split();
+    timer.reset();
+    for(unsigned int x = 1; x<=N; ++x)
+        for(unsigned int y = 1; y<=N; ++y)
+            bogus +=  gcdwikipedia4fast(x,y);
+    ti8 += timer.split();
+    timer.reset();
+    for(unsigned int x = 1; x<=N; ++x)
+        for(unsigned int y = 1; y<=N; ++y)
+            bogus +=  gcdwikipedia5fast(x,y);
+    ti9 += timer.split();
     double q = N*N;
-    cout<<q*0.001/ti1<<" "<<q*0.001/ti2<<" "<<q*0.001/ti3<<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<" "<<q*0.001/ti6<<" "<<q*0.001/ti7<<endl;
+    cout<<q*0.001/ti1<<" "<<q*0.001/ti2<<" "<<q*0.001/ti3
+    <<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<" "<<q*0.001/ti6
+    <<" "<<q*0.001/ti7<<" "<<q*0.001/ti8<<" "<<q*0.001/ti9<<endl;
     return bogus;
 }
 
