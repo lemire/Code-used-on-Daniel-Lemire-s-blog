@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <iostream>
 #include <cassert>
+#include <algorithm>
+#include <utility>
 
 using namespace std;
 class WallClockTimer
@@ -59,6 +61,44 @@ unsigned int gcdwikipedia2(unsigned int u, unsigned int v)
     return u << shift;
 }
 
+// based on wikipedia's article, 
+// fixed by D. Lemire and R. Corderoy
+unsigned int gcdwikipedia2fast(unsigned int u, unsigned int v)
+{
+    int shift;
+    if (u == 0) return v;
+    if (v == 0) return u;
+    shift = __builtin_ctz(u | v);
+    u >>= __builtin_ctz(u);
+    do {
+        v >>= __builtin_ctz(v);
+        if (u > v) {
+            unsigned int t = v;
+            v = u;
+            u = t;
+        }  
+        v = v - u;
+    } while (v != 0);
+    return u << shift;
+}
+
+// based on wikipedia's article, 
+// fixed by D. Lemire and R. Corderoy
+unsigned int gcdwikipedia2fastswap(unsigned int u, unsigned int v)
+{
+    int shift;
+    if (u == 0) return v;
+    if (v == 0) return u;
+    shift = __builtin_ctz(u | v);
+    u >>= __builtin_ctz(u);
+    do {
+        v >>= __builtin_ctz(v);
+        if(u>v) std::swap(u,v);
+        v = v - u;
+    } while (v != 0);
+    return u << shift;
+}
+
 
 // based on wikipedia's article, 
 // fixed by D. Lemire, R. Corderoy, K. Willets
@@ -80,27 +120,6 @@ unsigned int gcdwikipedia3fast(unsigned int u, unsigned int v)
         }  
         v = v - u;
     } while (true);
-    return u << shift;
-}
-
-// based on wikipedia's article, 
-// fixed by D. Lemire and R. Corderoy
-unsigned int gcdwikipedia2fast(unsigned int u, unsigned int v)
-{
-    int shift;
-    if (u == 0) return v;
-    if (v == 0) return u;
-    shift = __builtin_ctz(u | v);
-    u >>= __builtin_ctz(u);
-    do {
-        v >>= __builtin_ctz(v);
-        if (u > v) {
-            unsigned int t = v;
-            v = u;
-            u = t;
-        }  
-        v = v - u;
-    } while (v != 0);
     return u << shift;
 }
 
@@ -218,11 +237,13 @@ unsigned int test(unsigned int offset) {
     int ti7 = 0;
     int ti8 = 0;
     int ti9 = 0;
+    int ti10 = 0;
     int bogus = 0;
     timer.reset();
     for(unsigned int x = 1+offset; x<=N+offset; ++x)
         for(unsigned int y = 1+offset; y<=N+offset; ++y) {
             assert(gcdwikipedia2(x,y)==gcdwikipedia2fast(x,y));
+            assert(gcdwikipedia2(x,y)==gcdwikipedia2fastswap(x,y));
             assert(gcdwikipedia2(x,y)==gcdwikipedia3fast(x,y));
             assert(gcdwikipedia2(x,y)==gcdwikipedia4fast(x,y));
             assert(gcdwikipedia2(x,y)==gcdwikipedia5fast(x,y));
@@ -276,10 +297,16 @@ unsigned int test(unsigned int offset) {
         for(unsigned int y = 1; y<=N; ++y)
             bogus +=  gcdwikipedia5fast(x,y);
     ti9 += timer.split();
+    timer.reset();
+    for(unsigned int x = 1; x<=N; ++x)
+        for(unsigned int y = 1; y<=N; ++y)
+            bogus +=  gcdwikipedia2fastswap(x,y);
+    ti10 += timer.split();
     double q = N*N;
     cout<<q*0.001/ti1<<" "<<q*0.001/ti2<<" "<<q*0.001/ti3
     <<" "<<q*0.001/ti4<<" "<<q*0.001/ti5<<" "<<q*0.001/ti6
-    <<" "<<q*0.001/ti7<<" "<<q*0.001/ti8<<" "<<q*0.001/ti9<<endl;
+    <<" "<<q*0.001/ti7<<" "<<q*0.001/ti8<<" "<<q*0.001/ti9
+    <<" "<<q*0.001/ti10<<endl;
     return bogus;
 }
 
