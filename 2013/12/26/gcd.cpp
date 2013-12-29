@@ -82,10 +82,6 @@ unsigned int gcdwikipedia2fast(unsigned int u, unsigned int v)
     return u << shift;
 }
 
-#define xswap(a,b) __asm__ (\
-   "xchg %0, %1\n"\
-   : : "r"(a), "r" (b));
-
 // based on wikipedia's article, 
 // fixed by D. Lemire and R. Corderoy
 unsigned int gcdwikipedia2fastswap(unsigned int u, unsigned int v)
@@ -115,7 +111,7 @@ unsigned int gcdwikipedia2fastxchg(unsigned int u, unsigned int v)
     u >>= __builtin_ctz(u);
     do {
         v >>= __builtin_ctz(v);
-        if(u>v) __asm__ ("xchg %0, %1\n": : "r"(u), "r" (v));
+       if (u > v) asm volatile("xchg %0, %1\n":  "+r"(u), "+r" (v):);
         v = v - u;
     } while (v != 0);
     return u << shift;
@@ -191,7 +187,7 @@ unsigned int gcdwikipedia5fast(unsigned int u, unsigned int v)
 
 // based on wikipedia's article, 
 // fixed by D. Lemire,  K. Willets
-unsigned int gcdwikipedia6fast(unsigned int u, unsigned int v)
+unsigned int gcdwikipedia6fastxchg(unsigned int u, unsigned int v)
 {
      int shift, uz, vz;
      uz = __builtin_ctz(u);
@@ -202,7 +198,7 @@ unsigned int gcdwikipedia6fast(unsigned int u, unsigned int v)
      u >>= uz;
      do {
        v >>= vz;
-       if (u > v) __asm__ ("xchg %0, %1\n": : "r"(u), "r" (v));
+       if (u > v) asm volatile("xchg %0, %1\n":  "+r"(u), "+r" (v):);
        v = v - u;
        vz = __builtin_ctz(v);
      } while( v != 0 );
@@ -267,6 +263,7 @@ unsigned gcdFranke (unsigned x, unsigned y)
 }
 
 unsigned int test(unsigned int offset) {
+	const bool XCHG = true;
     WallClockTimer timer;
     int N = 2000;
     cout<<"gcd between numbers in ["<<offset+1<<" and "<<offset+N<<"]"<<endl;
@@ -288,11 +285,11 @@ unsigned int test(unsigned int offset) {
         for(unsigned int y = 1+offset; y<=N+offset; ++y) {
             assert(gcdwikipedia2(x,y)==gcdwikipedia2fast(x,y));
             assert(gcdwikipedia2(x,y)==gcdwikipedia2fastswap(x,y));
-            assert(gcdwikipedia2(x,y)==gcdwikipedia2fastxchg(x,y));
+            if(XCHG) assert(gcdwikipedia2(x,y)==gcdwikipedia2fastxchg(x,y));
             assert(gcdwikipedia2(x,y)==gcdwikipedia3fast(x,y));
             assert(gcdwikipedia2(x,y)==gcdwikipedia4fast(x,y));
             assert(gcdwikipedia2(x,y)==gcdwikipedia5fast(x,y));
-            assert(gcdwikipedia2(x,y)==gcdwikipedia6fast(x,y));
+            if(XCHG) assert(gcdwikipedia2(x,y)==gcdwikipedia6fastxchg(x,y));
             assert(gcdwikipedia2(x,y)==gcd_recursive(x,y));
             assert(gcdwikipedia2(x,y)==gcd_iterative_mod(x,y));
             assert(gcdwikipedia2(x,y)==basicgcd(x,y));
@@ -349,12 +346,12 @@ unsigned int test(unsigned int offset) {
             bogus +=  gcdwikipedia2fastswap(x,y);
     ti10 += timer.split();
     timer.reset();
-    for(unsigned int x = 1; x<=N; ++x)
+    if(XCHG) for(unsigned int x = 1; x<=N; ++x)
         for(unsigned int y = 1; y<=N; ++y)
-            bogus +=  gcdwikipedia6fast(x,y);
+            bogus +=  gcdwikipedia6fastxchg(x,y);
     ti11 += timer.split();
     timer.reset();
-    for(unsigned int x = 1; x<=N; ++x)
+    if(XCHG) for(unsigned int x = 1; x<=N; ++x)
         for(unsigned int y = 1; y<=N; ++y)
             bogus +=  gcdwikipedia2fastxchg(x,y);
     ti12 += timer.split();    
