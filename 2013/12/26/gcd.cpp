@@ -212,23 +212,22 @@ unsigned int gcdwikipedia6fastxchg(unsigned int u, unsigned int v)
 unsigned int gcdwikipedia7fast(unsigned int u, unsigned int v)
 {
      int shift, uz, vz;
-     uz = __builtin_ctz(u);
      if ( u == 0) return v;
-     vz = __builtin_ctz(v);
      if ( v == 0) return u;
+     uz = __builtin_ctz(u);
+     vz = __builtin_ctz(v);
      shift = uz > vz ? vz : uz;
      u >>= uz;
+
      do {
        v >>= vz;
-       long long int diff = v;
+       long long int diff = v ;
        diff -= u;
        vz = __builtin_ctz(diff);
-       if( diff == 0 ) break;
-       if ( v < u ) {
+       if ( diff == 0 ) break;
+       if ( diff <  0 ) 
          u = v;
-         v = 0 - diff;
-       } else
-       v = diff;
+       v = abs(diff);
 
      } while( 1 );
      return u << shift;
@@ -239,10 +238,10 @@ unsigned int gcdwikipedia7fast(unsigned int u, unsigned int v)
 unsigned int gcdwikipedia7fast32(unsigned int u, unsigned int v)
 {
      int shift, uz, vz;
-     uz = __builtin_ctz(u);
      if ( u == 0) return v;
-     vz = __builtin_ctz(v);
      if ( v == 0) return u;
+     uz = __builtin_ctz(u);
+     vz = __builtin_ctz(v);
      shift = uz > vz ? vz : uz;
      u >>= uz;
      do {
@@ -250,12 +249,10 @@ unsigned int gcdwikipedia7fast32(unsigned int u, unsigned int v)
        int diff = v;
        diff -= u;
        vz = __builtin_ctz(diff);
-       if( diff == 0 ) break;
-       if ( v < u ) {
+       if ( diff == 0 ) break;
+       if ( v <  u ) 
          u = v;
-         v = 0 - diff;
-       } else
-       v = diff;
+       v = abs(diff);
 
      } while( 1 );
      return u << shift;
