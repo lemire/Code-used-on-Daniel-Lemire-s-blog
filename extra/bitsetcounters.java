@@ -52,10 +52,13 @@ public class bitsetcounters {
     }
 	
 	public static long threshold4(int T, long[] buffers) {
-		if(T<128) 
-		  return threshold3(T,buffers);
-		else 
+		int B = 0;
+		for(int k = 0; k<buffers.length; ++k)
+		  B += Long.bitCount(buffers[k]);
+		if(B+64<T*buffers.length) 
 		  return threshold2(T,buffers);
+		else 
+		  return threshold3(T,buffers);
     }
 	
 	public static void test(long w, int N, int T,int r) {
@@ -107,8 +110,8 @@ public class bitsetcounters {
 	
 	public static void main(String[] args) {
 	    int r = 16*1024;
-	    int N = 32;
-	    int T = 15;
+	    int N = 128;
+	    int T = 63;
 		System.out.println("low density, T="+T+" N="+N);
 		test(1L<<5, N,T,r);
         System.out.println("medium density, T="+T+" N="+N);
