@@ -35,11 +35,13 @@ public class bitsetcounters {
           return result;
 	}
     private static int[] bufcounters = new int[64];
+    private static int[] zeroes64 = new int[64];
 
 	public static long threshold2buf(int T, long[] buffers) {
           long result = 0L;
           int[] counters = bufcounters;
-          Arrays.fill(counters,0);
+          System.arraycopy(zeroes64,0,counters,0,64);
+          //Arrays.fill(counters,0);
           for(long bitset : buffers) {
             while (bitset != 0) {
                long t = bitset & -bitset;
