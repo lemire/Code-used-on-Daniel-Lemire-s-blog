@@ -55,10 +55,10 @@ public class bitsetcounters {
 		int B = 0;
 		for(int k = 0; k<buffers.length; ++k)
 		  B += Long.bitCount(buffers[k]);
-		if(B+64<T*buffers.length) 
-		  return threshold2(T,buffers);
-		else 
+		if (B>=buffers.length*8 ) 
 		  return threshold3(T,buffers);
+		else 
+		  return threshold2(T,buffers);
     }
 	
 	public static void test(long w, int N, int T,int r) {
@@ -118,6 +118,17 @@ public class bitsetcounters {
 		test((1L<<5)|(1L<<6)|(1L<<9)|(1L<<16)|(1L<<30), N,T,r);
         System.out.println("high density, T="+T+" N="+N);
 		test(~((1L<<5)|(1L<<6)|(1L<<9)|(1L<<16)|(1L<<30)),N,T,r);
+		//
+	    N = 128;
+	    T = 12;
+	    r = 16*1024;
+        System.out.println("low density, T="+T+" N="+N);
+		test(1L<<5, N,T,r);
+        System.out.println("medium density, T="+T+" N="+N);
+		test((1L<<5)|(1L<<6)|(1L<<9)|(1L<<16)|(1L<<30), N,T,r);
+        System.out.println("high density, T="+T+" N="+N);
+		test(~((1L<<5)|(1L<<6)|(1L<<9)|(1L<<16)|(1L<<30)),N,T,r);
+
 		//
 	    N = 1024;
 	    T = 1023;
