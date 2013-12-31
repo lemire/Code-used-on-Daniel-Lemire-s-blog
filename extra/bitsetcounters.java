@@ -52,6 +52,8 @@ public class bitsetcounters {
     }
 	
 	public static long threshold4(int T, long[] buffers) {
+		if(buffers.length>128) 
+		  return threshold2(T,buffers);
 		int B = 0;
 		for(int k = 0; k<buffers.length; ++k)
 		  B += Long.bitCount(buffers[k]);
