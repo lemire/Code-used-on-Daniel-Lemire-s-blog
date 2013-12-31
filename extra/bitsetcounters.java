@@ -39,7 +39,7 @@ public class bitsetcounters {
 	public static long threshold2buf(int T, long[] buffers) {
           long result = 0L;
           int[] counters = bufcounters;
-          for (int pos=0; pos < 64; ++pos) counters[pos] = 0;
+          Arrays.fill(counters,0);
           for(long bitset : buffers) {
             while (bitset != 0) {
                long t = bitset & -bitset;
