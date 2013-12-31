@@ -30,7 +30,6 @@ public class bitsetcounters {
           }
           for (int pos=0; pos < 64; ++pos) {
           	result <<= 1;
-//          	System.out.println(pos+" "+counters[pos]);
             if (counters[pos] >= T) 
                   result |= 1;
           }
