@@ -34,6 +34,25 @@ public class bitsetcounters {
           }
           return result;
 	}
+    private static int[] bufcounters = new int[64];
+
+	public static long threshold2buf(int T, long[] buffers) {
+          long result = 0L;
+          int[] counters = bufcounters;
+          for (int pos=0; pos < 64; ++pos) counters[pos] = 0;
+          for(long bitset : buffers) {
+            while (bitset != 0) {
+               long t = bitset & -bitset;
+               counters[Long.bitCount(t-1)]++;
+               bitset ^= t;
+            }
+          }
+          for (int pos=0; pos < 64; ++pos) {
+            if (counters[pos] >= T) 
+                  result |= (1L<<pos);
+          }
+          return result;
+	}
 
 	public static long threshold3(int T, long[] buffers) {
 		if(buffers.length ==0 ) return 0;
@@ -53,14 +72,14 @@ public class bitsetcounters {
 	
 	public static long threshold4(int T, long[] buffers) {
 		if(buffers.length>128) 
-		  return threshold2(T,buffers);
+		  return threshold2buf(T,buffers);
 		int B = 0;
 		for(int k = 0; k<buffers.length; ++k)
 		  B += Long.bitCount(buffers[k]);
 		if (B>=buffers.length*8 ) 
 		  return threshold3(T,buffers);
 		else 
-		  return threshold2(T,buffers);
+		  return threshold2buf(T,buffers);
     }
 	
 	public static void test(long w, int N, int T,int r) {
@@ -69,6 +88,7 @@ public class bitsetcounters {
 
 	  long bogus1 = 0;
 	  long bogus2 = 0;
+	  long bogus2buf = 0;
 	  long bogus3 = 0;
 	  long bogus4 = 0;
 	  
@@ -83,6 +103,9 @@ public class bitsetcounters {
 	      if(threshold1(T,array[k])!=threshold2(T,array[k])) {
 	      	throw new RuntimeException("bug 12");
 	      }
+	      if(threshold1(T,array[k])!=threshold2buf(T,array[k])) {
+	      	throw new RuntimeException("bug 12buf");
+	      }
 
 	  }
 	  for(int time = 0; time<3;++time) {
@@ -95,6 +118,10 @@ public class bitsetcounters {
 	    for(int k = 0; k<r;++k)
 	      bogus2 += threshold2(T,array[k]);
 		long aft2 = System.currentTimeMillis();
+	    long bef2buf = System.currentTimeMillis();
+	    for(int k = 0; k<r;++k)
+	      bogus2buf += threshold2buf(T,array[k]);
+		long aft2buf = System.currentTimeMillis();
 	    long bef3 = System.currentTimeMillis();
 	    for(int k = 0; k<r;++k)
 	      bogus3 += threshold3(T,array[k]);
@@ -104,9 +131,9 @@ public class bitsetcounters {
 	      bogus4 += threshold4(T,array[k]);
 		long aft4 = System.currentTimeMillis();
 
-        System.out.println((aft1 - bef1)+" "+(aft2 - bef2)+" "+(aft3 - bef3)+" "+(aft4 - bef4));
+        System.out.println((aft1 - bef1)+" "+(aft2 - bef2)+" "+(aft2buf - bef2buf)+" "+(aft3 - bef3)+" "+(aft4 - bef4));
 	  }
-	  System.out.println("ignore:"+bogus1+" "+bogus2+" "+bogus3+" "+bogus4);
+	  System.out.println("ignore:"+bogus1+" "+bogus2+" "+bogus2buf+" "+bogus3+" "+bogus4);
 
 	}
 	
