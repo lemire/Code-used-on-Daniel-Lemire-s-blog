@@ -71,20 +71,18 @@ public class bitsetcounters {
     }
 	
 	public static long threshold4(int T, long[] buffers) {
-		if(buffers.length>128) 
+		if(T>=128  ) 
 		  return threshold2buf(T,buffers);
 		int B = 0;
 		for(int k = 0; k<buffers.length; ++k)
 		  B += Long.bitCount(buffers[k]);
-		if (B>=buffers.length*8 ) 
+		if (2*B>=buffers.length*T ) 
 		  return threshold3(T,buffers);
 		else 
 		  return threshold2buf(T,buffers);
     }
 	
 	public static void test(long w, int N, int T,int r) {
-
-
 
 	  long bogus1 = 0;
 	  long bogus2 = 0;
@@ -108,7 +106,7 @@ public class bitsetcounters {
 	      }
 
 	  }
-	  for(int time = 0; time<3;++time) {
+	  for(int time = 0; time<1;++time) {
 
 		long bef1 = System.currentTimeMillis();
 		for(int k = 0; k<r;++k)
@@ -133,42 +131,32 @@ public class bitsetcounters {
 
         System.out.println((aft1 - bef1)+" "+(aft2 - bef2)+" "+(aft2buf - bef2buf)+" "+(aft3 - bef3)+" "+(aft4 - bef4));
 	  }
-	  System.out.println("ignore:"+bogus1+" "+bogus2+" "+bogus2buf+" "+bogus3+" "+bogus4);
+	  //System.out.println("ignore:"+bogus1+" "+bogus2+" "+bogus2buf+" "+bogus3+" "+bogus4);
 
 	}
 	
+	public static void testalldensities(int N, int T,int r) {
+		long w = 0;
+		for(int pos = 0; pos<64; ++pos) {
+			w |= (1L << (~pos));
+			if((pos+1) / 8 * 8 != pos+1) continue;
+			System.out.print("density "+(pos+1)+": ");;
+			test(w, N,T,r);
+		} 
+	}
+	
+	
 	public static void main(String[] args) {
-	    int r = 16*1024;
-	    int N = 128;
-	    int T = 63;
-		System.out.println("low density, T="+T+" N="+N);
-		test(1L<<5, N,T,r);
-        System.out.println("medium density, T="+T+" N="+N);
-		test((1L<<5)|(1L<<6)|(1L<<9)|(1L<<16)|(1L<<30), N,T,r);
-        System.out.println("high density, T="+T+" N="+N);
-		test(~((1L<<5)|(1L<<6)|(1L<<9)|(1L<<16)|(1L<<30)),N,T,r);
-		//
-	    N = 128;
-	    T = 12;
-	    r = 16*1024;
-        System.out.println("low density, T="+T+" N="+N);
-		test(1L<<5, N,T,r);
-        System.out.println("medium density, T="+T+" N="+N);
-		test((1L<<5)|(1L<<6)|(1L<<9)|(1L<<16)|(1L<<30), N,T,r);
-        System.out.println("high density, T="+T+" N="+N);
-		test(~((1L<<5)|(1L<<6)|(1L<<9)|(1L<<16)|(1L<<30)),N,T,r);
-
-		//
-	    N = 1024;
-	    T = 1023;
-	    r = 16;
-        System.out.println("low density, T="+T+" N="+N);
-		test(1L<<5, N,T,r);
-        System.out.println("medium density, T="+T+" N="+N);
-		test((1L<<5)|(1L<<6)|(1L<<9)|(1L<<16)|(1L<<30), N,T,r);
-        System.out.println("high density, T="+T+" N="+N);
-		test(~((1L<<5)|(1L<<6)|(1L<<9)|(1L<<16)|(1L<<30)),N,T,r);
-		
+	    //int r = 16*1024;
+	    //int N = 128;
+	   for(int N = 16; N<=1024; N*=2) {
+	    System.out.println("N="+N);
+	    int r = 2097152/N;
+	    for(int T = 1; T<N;T+=N/4) {
+	    	System.out.println("T="+T);
+	      testalldensities( N,  T, r);
+	    }
+	   }
 	}
 
 
