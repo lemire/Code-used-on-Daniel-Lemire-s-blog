@@ -71,6 +71,22 @@ public class bitsetcounters {
         }
         return v[T-1];
     }
+	public static long threshold3min(int T, long[] buffers) {
+		if(buffers.length ==0 ) return 0;
+		long[] v = new long[T];
+		v[0] = buffers[0];
+        for(int k = 1 ; k < buffers.length; ++k) {
+            long c = buffers[k];
+            final int m = Math.min(T-1,k);
+            for(int j = m; j >= 1; --j) {
+                long ttemp = c;
+                ttemp &= v[j-1];
+                v[j] |= ttemp;
+            }
+            v[0]|=c;
+        }
+        return v[T-1];
+    }
 	
 	public static long threshold4(int T, long[] buffers) {
 		if(T>=128  ) 
@@ -90,6 +106,7 @@ public class bitsetcounters {
 	  long bogus2 = 0;
 	  long bogus2buf = 0;
 	  long bogus3 = 0;
+	  long bogus3min = 0;
 	  long bogus4 = 0;
 	  
 	  long[][] array = new long[r][N];
@@ -99,6 +116,9 @@ public class bitsetcounters {
 	  for(int k = 0; k<r;++k) {
 	      if(threshold1(T,array[k])!=threshold3(T,array[k])) {
 	      	throw new RuntimeException("bug 13");
+	      }
+	      if(threshold1(T,array[k])!=threshold3min(T,array[k])) {
+	      	throw new RuntimeException("bug 13min");
 	      }
 	      if(threshold1(T,array[k])!=threshold2(T,array[k])) {
 	      	throw new RuntimeException("bug 12");
@@ -126,12 +146,16 @@ public class bitsetcounters {
 	    for(int k = 0; k<r;++k)
 	      bogus3 += threshold3(T,array[k]);
 		long aft3 = System.currentTimeMillis();
+	    long bef3min = System.currentTimeMillis();
+	    for(int k = 0; k<r;++k)
+	      bogus3min += threshold3min(T,array[k]);
+		long aft3min = System.currentTimeMillis();
 	    long bef4 = System.currentTimeMillis();
 	    for(int k = 0; k<r;++k)
 	      bogus4 += threshold4(T,array[k]);
 		long aft4 = System.currentTimeMillis();
 
-        System.out.println((aft1 - bef1)+" "+(aft2 - bef2)+" "+(aft2buf - bef2buf)+" "+(aft3 - bef3)+" "+(aft4 - bef4));
+        System.out.println((aft1 - bef1)+" "+(aft2 - bef2)+" "+(aft2buf - bef2buf)+" "+(aft3 - bef3)+" "+(aft3min - bef3min)+" "+(aft4 - bef4));
 	  }
 	  //System.out.println("ignore:"+bogus1+" "+bogus2+" "+bogus2buf+" "+bogus3+" "+bogus4);
 
