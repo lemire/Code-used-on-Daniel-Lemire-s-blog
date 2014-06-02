@@ -72,6 +72,21 @@ uint192 asmscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) 
 	return s;
 }
 
+uint192 asmaltscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
+	uint192 s;
+	s.low = 0;
+	s.high = 0;
+	s.vhigh = 0;
+	for(size_t i = 0; i<length; ++i) {
+    __asm__ ("mulq %[v]\n"
+             "addq %%rax,  %[rl]\n"
+        "adcq %%rdx,  %[rh]\n"
+             "adcq $0,  %[rhh]\n"
+             :  [rh] "+g" (s.high), [rhh] "+g" (s.vhigh) , [rl] "+g" (s.low)  : [u] "a" (a[i]), [v] "g" (x[i])  :"rdx","cc");
+	}
+	return s;
+}
+
 
 uint192 asm2scalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
 	uint192 s;
@@ -162,7 +177,7 @@ int main() {
 	  a[i] = rand() + (((uint64_t)rand())<<32);
 	  x[i] = rand() + (((uint64_t)rand())<<32);
 	}
-	uint192 s1, s2;
+	uint192 s1, s2, s2alt;
 	int t1 = 0; 
 	int t2 = 0;
 	const clock_t S1 = clock();
@@ -183,12 +198,18 @@ int main() {
 	  s2 = asm4scalarproduct(N, a, x);
 	}
    	const clock_t S5 = clock();
-      cout<<"GCC time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
+   	for(int T=0; T<10000;++T) {
+	  s2alt = asmaltscalarproduct(N, a, x);
+	}
+   	const clock_t S6 = clock();
+       cout<<"GCC time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm time="<<(double)(S3-S2)/ CLOCKS_PER_SEC<<endl;
- cout<<"asm2 time="<<(double)(S4-S3)/ CLOCKS_PER_SEC<<endl;
+    cout<<"asm alt time="<<(double)(S6-S5)/ CLOCKS_PER_SEC<<endl;
+  cout<<"asm2 time="<<(double)(S4-S3)/ CLOCKS_PER_SEC<<endl;
  cout<<"asm4 time="<<(double)(S5-S4)/ CLOCKS_PER_SEC<<endl;
 
 
 	cout<<s1.low<<" "<<s1.high<<" "<<s1.vhigh<<endl;
 	cout<<s2.low<<" "<<s2.high<<" "<<s2.vhigh<<endl;
+	cout<<s2alt.low<<" "<<s2alt.high<<" "<<s2alt.vhigh<<endl;
 }
