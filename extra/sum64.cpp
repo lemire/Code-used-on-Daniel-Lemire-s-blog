@@ -55,6 +55,22 @@ uint192 scalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
 	s.high = (uint64_t)(base>>64);
 	return s;
 }
+uint192 carrylessscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
+	uint192 s;
+	s.low = 0;
+	s.high = 0;
+	s.vhigh = 0;
+	
+	__uint128_t base = 0;
+	for(size_t i = 0; i<length; ++i) {
+	  __uint128_t carryless = (__uint128_t) a[i] * (__uint128_t) x[i];
+	  base += carryless;
+	}
+	s.low = (uint64_t)base;
+	s.high = (uint64_t)(base>>64);
+	return s;
+}
+
 
 
 uint192 asmscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
@@ -245,21 +261,21 @@ int main() {
 	  a[i] = rand() + (((uint64_t)rand())<<32);
 	  x[i] = rand() + (((uint64_t)rand())<<32);
 	}
-	uint192 s1, s2, s2alt;
+	uint192 s1, s12, s21, s2,s22, s2alt, sbug;
 	int t1 = 0; 
 	int t2 = 0;
 	const clock_t S1 = clock();
 
 	for(int T=0; T<10000;++T) {
 	  s1 = scalarproduct(N, a, x);
-    }
+        }
 	const clock_t S2 = clock();
 	for(int T=0; T<10000;++T) {
-	  s2 = asmscalarproduct(N, a, x);
+	  s21 = asmscalarproduct(N, a, x);
 	}
-    const clock_t S3 = clock();
+        const clock_t S3 = clock();
 	for(int T=0; T<10000;++T) {
-	  s2 = asm2scalarproduct(N, a, x);
+	  s22 = asm2scalarproduct(N, a, x);
 	}
    	const clock_t S4 = clock();
 	for(int T=0; T<10000;++T) {
@@ -271,12 +287,17 @@ int main() {
 	}
    	const clock_t S6 = clock();
    	for(int T=0; T<10000;++T) {
-	  asm4scalarproductnocarry(N, a, x);
+	  sbug = asm4scalarproductnocarry(N, a, x);
 	}
    	const clock_t S7 = clock();
-
+        for(int T=0; T<10000;++T) {
+	  s12 = carrylessscalarproduct(N, a, x);
+        }
+	const clock_t S8 = clock();
+	
     cout<<"GCC time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
-    cout<<"asm time="<<(double)(S3-S2)/ CLOCKS_PER_SEC<<endl;
+    cout<<"GCC time(carryless)="<<(double)(S8-S7)/ CLOCKS_PER_SEC<<endl;
+     cout<<"asm time="<<(double)(S3-S2)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm alt time="<<(double)(S6-S5)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm2 time="<<(double)(S4-S3)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm4 time="<<(double)(S5-S4)/ CLOCKS_PER_SEC<<endl;
@@ -284,6 +305,10 @@ int main() {
 
 
 	cout<<s1.low<<" "<<s1.high<<" "<<s1.vhigh<<endl;
+	cout<<s12.low<<" "<<s12.high<<" "<<s12.vhigh<<endl;
 	cout<<s2.low<<" "<<s2.high<<" "<<s2.vhigh<<endl;
+	cout<<s21.low<<" "<<s21.high<<" "<<s21.vhigh<<endl;
+	cout<<s22.low<<" "<<s22.high<<" "<<s22.vhigh<<endl;
 	cout<<s2alt.low<<" "<<s2alt.high<<" "<<s2alt.vhigh<<endl;
+	cout<<sbug.low<<" "<<sbug.high<<endl;
 }
