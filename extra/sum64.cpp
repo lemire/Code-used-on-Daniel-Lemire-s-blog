@@ -72,6 +72,42 @@ uint192 asmscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) 
 	return s;
 }
 
+
+
+
+uint192 asmscalarproduct2(size_t length, const uint64_t * a, const uint64_t * x) {
+	uint192 s;
+	s.low = 0;
+	s.high = 0;
+	s.vhigh = 0;
+	for(int i = 0; i<length; i+= 4) {
+    __asm__ (
+    "movq %%rax,(%[u])\n"
+    "mulq (%[v])\n"
+             "addq %%rax,  %[rl]\n"
+        "adcq %%rdx,  %[rh]\n"
+             "adcq $0,  %[rhh]\n"
+    "movq %%rax,8(%[u])\n"
+    "mulq 8(%[v])\n"
+             "addq %%rax,  %[rl]\n"
+        "adcq %%rdx,  %[rh]\n"
+             "adcq $0,  %[rhh]\n"
+    "movq %%rax,16(%[u])\n"
+    "mulq 16(%[v])\n"
+             "addq %%rax,  %[rl]\n"
+        "adcq %%rdx,  %[rh]\n"
+             "adcq $0,  %[rhh]\n"
+    "movq %%rax,24(%[u])\n"
+    "mulq 24(%[v])\n"
+             "addq %%rax,  %[rl]\n"
+        "adcq %%rdx,  %[rh]\n"
+             "adcq $0,  %[rhh]\n"
+
+             :  [rh] "+r" (s.high), [rhh] "+r" (s.vhigh) , [rl] "+r" (s.low)  : [u] "r" (a+i), [v] "r" (x+i)  :"rdx","cc");
+	}
+	return s;
+}
+
 uint192 asmaltscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
 	uint192 s;
 	s.low = 0;
