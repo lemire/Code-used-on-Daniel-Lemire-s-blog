@@ -100,41 +100,40 @@ uint192 asmscalarproduct2(size_t length, const uint64_t * a, const uint64_t * x)
     __asm__ (
     "movq (%[u]),%%rax\n"
     "mulq (%[v])\n"
-             "addq %%rax,  %[rl]\n"
-        "adcq %%rdx,  %[rh]\n"
-             "adcq $0,  %[rhh]\n"
+    "addq %%rax,  %[rl]\n"
     "movq 8(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
     "mulq 8(%[v])\n"
-             "addq %%rax,  %[rl]\n"
-        "adcq %%rdx,  %[rh]\n"
-             "adcq $0,  %[rhh]\n"
+    "addq %%rax,  %[rl]\n"
     "movq 16(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
     "mulq 16(%[v])\n"
-             "addq %%rax,  %[rl]\n"
-        "adcq %%rdx,  %[rh]\n"
-             "adcq $0,  %[rhh]\n"
+    "addq %%rax,  %[rl]\n"
     "movq 24(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
     "mulq 24(%[v])\n"
-             "addq %%rax,  %[rl]\n"
-        "adcq %%rdx,  %[rh]\n"
-             "adcq $0,  %[rhh]\n"
-
+    "addq %%rax,  %[rl]\n"
     "movq 32(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
     "mulq 32(%[v])\n"
     "addq %%rax,  %[rl]\n"
+    "movq 40(%[u]),%%rax\n"
     "adcq %%rdx,  %[rh]\n"
     "adcq $0,  %[rhh]\n"
-    "movq 40(%[u]),%%rax\n"
     "mulq 40(%[v])\n"
     "addq %%rax,  %[rl]\n"
+    "movq 48(%[u]),%%rax\n"
     "adcq %%rdx,  %[rh]\n"
     "adcq $0,  %[rhh]\n"
-    "movq 48(%[u]),%%rax\n"
     "mulq 48(%[v])\n"
     "addq %%rax,  %[rl]\n"
+    "movq 56(%[u]),%%rax\n"
     "adcq %%rdx,  %[rh]\n"
     "adcq $0,  %[rhh]\n"
-    "movq 56(%[u]),%%rax\n"
     "mulq 56(%[v])\n"
     "addq %%rax,  %[rl]\n"
     "adcq %%rdx,  %[rh]\n"
@@ -215,33 +214,6 @@ uint192 asm4scalarproduct(size_t length, const uint64_t * a, const uint64_t * x)
 	return s;
 }
 
-uint192 asm4scalarproductnocarry(size_t length, const uint64_t * a, const uint64_t * x) {
-	uint192 s;
-	s.low = 0;
-	s.high = 0;
-	for(size_t i = 0; i+3<length; i+=4) {
-    __asm__ ("mulq %[v]\n"
-             "addq %%rax,  %[rl]\n"
-        "adcq %%rdx,  %[rh]\n"
-             
-             :  [rh] "+r" (s.high) , [rl] "+r" (s.low)  : [u] "a" (a[i]), [v] "r" (x[i])  :"rdx","cc");
-    __asm__ ("mulq %[v]\n"
-             "addq %%rax,  %[rl]\n"
-        "adcq %%rdx,  %[rh]\n"
-             :  [rh] "+r" (s.high) , [rl] "+r" (s.low)  : [u] "a" (a[i+1]), [v] "r" (x[i+1])  :"rdx","cc");
-    __asm__ ("mulq %[v]\n"
-             "addq %%rax,  %[rl]\n"
-        "adcq %%rdx,  %[rh]\n"
-             :  [rh] "+r" (s.high), [rl] "+r" (s.low)  : [u] "a" (a[i+2]), [v] "r" (x[i+2])  :"rdx","cc");
-    __asm__ ("mulq %[v]\n"
-             "addq %%rax,  %[rl]\n"
-        "adcq %%rdx,  %[rh]\n"
-             :  [rh] "+r" (s.high) , [rl] "+r" (s.low)  : [u] "a" (a[i+3]), [v] "r" (x[i+3])  :"rdx","cc");
-			}
-	return s;
-}
-
-
 
 void check() {
     uint64_t l1 = 0;
@@ -306,9 +278,6 @@ int main() {
 	  s2alt = asmaltscalarproduct(N, a, x);
 	}
    	const clock_t S6 = clock();
-   	for(int T=0; T<10000;++T) {
-	  sbug = asm4scalarproductnocarry(N, a, x);
-	}
    	const clock_t S7 = clock();
         for(int T=0; T<10000;++T) {
 	  s12 = carrylessscalarproduct(N, a, x);
@@ -326,7 +295,6 @@ int main() {
     cout<<"asm alt time="<<(double)(S6-S5)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm2 time="<<(double)(S4-S3)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm4 time="<<(double)(S5-S4)/ CLOCKS_PER_SEC<<endl;
-    cout<<"asm4 nocarry time="<<(double)(S7-S6)/ CLOCKS_PER_SEC<<endl;
 
 
 	cout<<s1.low<<" "<<s1.high<<" "<<s1.vhigh<<endl;
