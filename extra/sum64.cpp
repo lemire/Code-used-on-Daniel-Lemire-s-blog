@@ -305,5 +305,4 @@ int main() {
 
 	cout<<s22.low<<" "<<s22.high<<" "<<s22.vhigh<<endl;
 	cout<<s2alt.low<<" "<<s2alt.high<<" "<<s2alt.vhigh<<endl;
-	cout<<sbug.low<<" "<<sbug.high<<endl;
 }
