@@ -87,7 +87,7 @@ public class card {
             linput1[k/64] = ((long) i2 << 32)|i1;
             linput2[k/64] = ((long) i4 << 32)|i3;
         }
-        int times = 200000;
+        int times = 10000;
         int bogus = 0;
         long t1 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
@@ -141,7 +141,7 @@ public class card {
 
     
     public static void main(String[] args) {
-        for(int k = 0; k < 5; ++k) {
+        for(int k = 0; k < 10; ++k) {
           test();
           System.out.println();
         }
