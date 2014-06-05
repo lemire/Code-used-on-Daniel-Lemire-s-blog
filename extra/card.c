@@ -1,5 +1,11 @@
-// gcc -std=c99 -msse4.2 -O3 -o card card.c
-// icc -std=c99 -march=corei7 -O3 -o card card.c
+// gcc -std=c99 -msse4.2 -O2 -o card card.c
+// icc -std=c99 -march=corei7 -O2 -o card card.c
+// For IACA:
+//$ gcc -std=c99 -march=corei7 -DIACA -O2 -o card card.c
+//$ /opt/intel/iaca/bin/iaca -mark 2 -64 card 
+//$ /opt/intel/iaca/bin/iaca -mark 1 -64 card 
+
+
 #include <stdlib.h>
 #include <time.h>
 #include <stdint.h>
@@ -7,7 +13,7 @@
 #include <immintrin.h>
 
 
-//#define IACA
+#define IACA
 #ifdef IACA
 #include </opt/intel/iaca/include/iacaMarks.h>
 #else
