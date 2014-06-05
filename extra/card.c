@@ -16,7 +16,7 @@
 #endif
 
 void bitwiseor(uint64_t * input1, uint64_t * input2, uint64_t * output, size_t length) {
-    for(int k = 0; k < 128; ++k) {
+    for(int k = 0; k < length; ++k) {
         IACA_START;
         output[k] = input1[k] | input2[k];
         IACA_END;
@@ -47,7 +47,7 @@ int bitwiseorcard(uint64_t * input1, uint64_t * input2, uint64_t * output, size_
 
 
 int main() {
-    const int N = 1024*1024*8;
+    const int N = 1024*1024;
     uint64_t * input1 = (uint64_t *) malloc(N*sizeof(input1));
     uint64_t * input2 = (uint64_t *) malloc(N*sizeof(input1));
     uint64_t * output = (uint64_t *) malloc(N*sizeof(input1));
@@ -56,15 +56,19 @@ int main() {
       input2[k] = k * k * k + 3;
     }
     uint64_t bogus = 0;
-    int repeat = 20;
+    int repeat = 200;
     for(int k = 0; k<10;++k) {
       const clock_t S1 = clock();
-      for(int z = 0; z < repeat; ++z)
+      for(int z = 0; z < repeat; ++z) {
         bitwiseor(input1,input2,output,N);
-      bogus += output[10];
+        bogus += output[10];
+        input1[10] = z;
+      }
       const clock_t S2 = clock();
-      for(int z = 0; z < repeat; ++z)
+      for(int z = 0; z < repeat; ++z) {
         bogus += bitwiseorcard(input1,input2,output,N); 
+        input1[10] = z;
+      }
       const clock_t S3 = clock();    
       if(k>3) printf("%lu %lu %llu \n", (S2-S1), (S3-S2), bogus);
     }
