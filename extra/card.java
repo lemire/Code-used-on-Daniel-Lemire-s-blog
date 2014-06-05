@@ -87,47 +87,47 @@ public class card {
             linput1[k/64] = ((long) i2 << 32)|i1;
             linput2[k/64] = ((long) i4 << 32)|i3;
         }
-        int times = 1000;
+        int times = 100000;
         int bogus = 0;
-        long t1 = System.nanoTime();
+        long t1 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
           bitwiseor(input1,input2,output);
           bogus +=  output[10];
         }
-        long t2 = System.nanoTime();
+        long t2 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
           bitwiseor(linput1,linput2,loutput);
           bogus +=  loutput[10];
         }
-        long t3 = System.nanoTime();
+        long t3 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
           bitwiseor(input1,input2,output);
           bogus +=  card(output);
         }
-        long t4 = System.nanoTime();
+        long t4 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
           bitwiseor(linput1,linput2,loutput);
           bogus +=  card(loutput);
         }
-        long t5 = System.nanoTime();
+        long t5 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
           bogus += bitwiseorcard(input1,input2,output);
           bogus += output[10];
         }
-        long t6 = System.nanoTime();
+        long t6 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
           bogus += bitwiseorcard(linput1,linput2,loutput);
           bogus +=  loutput[10];
         }
-        long t7 = System.nanoTime();
+        long t7 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
           bogus += bitwiseorcard(input1,input2);
         }
-        long t8 = System.nanoTime();
+        long t8 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
           bogus += bitwiseorcard(linput1,linput2);
         }
-        long t9 = System.nanoTime();
+        long t9 = System.currentTimeMillis();
         System.out.println("bitwise or (32-bit)        "+(t2-t1));
         System.out.println("bitwise or (64-bit)        "+(t3-t2));
         System.out.println("bitwise or (32-bit) + card "+(t4-t3));
@@ -136,7 +136,7 @@ public class card {
         System.out.println("bitwise or (64-bit) w card "+(t7-t6));
         System.out.println("bitwise or (32-bit) j card "+(t8-t7));
         System.out.println("bitwise or (64-bit) j card "+(t9-t8));
-    
+        System.out.println("bogus = "+bogus);    
     }
 
     
