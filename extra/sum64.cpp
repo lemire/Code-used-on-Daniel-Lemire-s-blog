@@ -403,5 +403,4 @@ int main() {
 	cout<<s2alt.low<<" "<<s2alt.high<<" "<<s2alt.vhigh<<endl;
 	cout<<s2b.low<<" "<<s2b.high<<" "<<s2b.vhigh<<endl;
 
-	cout<<sbug.low<<" "<<sbug.high<<endl;
 }
