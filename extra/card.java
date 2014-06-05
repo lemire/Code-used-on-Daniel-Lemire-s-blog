@@ -67,7 +67,7 @@ public class card {
     }
     
     public static void test() {
-            final int N = (1<<16);// number of bits
+        final int N = (1<<16);// number of bits
         int[] input1 = new int[N/32];
         int[] input2 = new int[N/32];
         int[] output = new int[N/32];
@@ -87,56 +87,70 @@ public class card {
             linput1[k/64] = ((long) i2 << 32)|i1;
             linput2[k/64] = ((long) i4 << 32)|i3;
         }
-        int times = 10000;
+        int times = 100000;
+        int mintimes = 3;
         int bogus = 0;
+        long cost = Long.MAX_VALUE;
+        for(int z = 0; z<mintimes;++z) {
         long t1 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
           bitwiseor(input1,input2,output);
           bogus +=  output[10];
         }
         long t2 = System.currentTimeMillis();
-        for(int k = 0; k < times; ++k) {
-          bitwiseor(linput1,linput2,loutput);
-          bogus +=  loutput[10];
+        if(t2-t1 < cost) cost = t2-t1;
         }
-        long t3 = System.currentTimeMillis();
-        for(int k = 0; k < times; ++k) {
-          bitwiseor(input1,input2,output);
-          bogus +=  card(output);
-        }
-        long t4 = System.currentTimeMillis();
-        for(int k = 0; k < times; ++k) {
+        long cost2 = Long.MAX_VALUE;
+        for(int z = 0; z<mintimes;++z) {
+        long t1 = System.currentTimeMillis();
+         for(int k = 0; k < times; ++k) {
           bitwiseor(linput1,linput2,loutput);
           bogus +=  card(loutput);
         }
-        long t5 = System.currentTimeMillis();
-        for(int k = 0; k < times; ++k) {
-          bogus += bitwiseorcard(input1,input2,output);
-          bogus += output[10];
+        long t2 = System.currentTimeMillis();
+        if(t2-t1 < cost2) cost2 = t2-t1;
         }
-        long t6 = System.currentTimeMillis();
-        for(int k = 0; k < times; ++k) {
+        long cost3 = Long.MAX_VALUE;
+        for(int z = 0; z<mintimes;++z) {
+        long t1 = System.currentTimeMillis();
+         for(int k = 0; k < times; ++k) {
           bogus += bitwiseorcard(linput1,linput2,loutput);
-          bogus +=  loutput[10];
         }
-        long t7 = System.currentTimeMillis();
+        long t2 = System.currentTimeMillis();
+        if(t2-t1 < cost3) cost3 = t2-t1;
+        }
+        for(int z = 0; z<mintimes;++z) {
+        long t1 = System.currentTimeMillis();
         for(int k = 0; k < times; ++k) {
-          bogus += bitwiseorcard(input1,input2);
+          bitwiseor(input1,input2,output);
+          bogus +=  output[10];
         }
-        long t8 = System.currentTimeMillis();
-        for(int k = 0; k < times; ++k) {
-          bogus += bitwiseorcard(linput1,linput2);
+        long t2 = System.currentTimeMillis();
+        if(t2-t1 < cost) cost = t2-t1;
         }
-        long t9 = System.currentTimeMillis();
-        System.out.println("bitwise or (32-bit)        "+(t2-t1));
-        System.out.println("bitwise or (64-bit)        "+(t3-t2));
-        System.out.println("bitwise or (32-bit) + card "+(t4-t3));
-        System.out.println("bitwise or (64-bit) + card "+(t5-t4));
-        System.out.println("bitwise or (32-bit) w card "+(t6-t5));
-        System.out.println("bitwise or (64-bit) w card "+(t7-t6));
-        System.out.println("bitwise or (32-bit) j card "+(t8-t7));
-        System.out.println("bitwise or (64-bit) j card "+(t9-t8));
-        System.out.println("bogus = "+bogus);    
+        for(int z = 0; z<mintimes;++z) {
+        long t1 = System.currentTimeMillis();
+         for(int k = 0; k < times; ++k) {
+          bitwiseor(linput1,linput2,loutput);
+          bogus +=  card(loutput);
+        }
+        long t2 = System.currentTimeMillis();
+        if(t2-t1 < cost2) cost2 = t2-t1;
+        }
+        for(int z = 0; z<mintimes;++z) {
+        long t1 = System.currentTimeMillis();
+         for(int k = 0; k < times; ++k) {
+          bogus += bitwiseorcard(linput1,linput2,loutput);
+        }
+        long t2 = System.currentTimeMillis();
+        if(t2-t1 < cost3) cost3 = t2-t1;
+        }
+         System.out.println("bitwise or (64-bit)        "+cost);
+        System.out.println("bitwise or (64-bit) + card "+cost2);
+        System.out.println("bitwise or (64-bit) w card "+cost3);
+        System.out.println("ratio bitwise or + card over bitwise or = "+ (double)cost2/cost);
+        System.out.println("ratio bitwise or w card over bitwise or = "+ (double)cost3/cost);
+         System.out.println("bogus = "+bogus);    
     }
 
     
