@@ -1,10 +1,10 @@
+// gcc -std=c99 -msse4.2 -O3 -o card card.c
+// icc -std=c99 -march=corei7 -O3 -o card card.c
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
+#include <time.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <popcntintrin.h>
+#include <immintrin.h>
 
 void bitwiseor(uint64_t * input1, uint64_t * input2, uint64_t * output, size_t length) {
     for(int k = 0; k < length; ++k) {
@@ -34,7 +34,7 @@ int bitwiseorcard(uint64_t * input1, uint64_t * input2, uint64_t * output, size_
 
 
 int main() {
-    const int N = 1024*1024;
+    const int N = 1024*1024*8;
     uint64_t * input1 = (uint64_t *) malloc(N*sizeof(input1));
     uint64_t * input2 = (uint64_t *) malloc(N*sizeof(input1));
     uint64_t * output = (uint64_t *) malloc(N*sizeof(input1));
@@ -43,12 +43,15 @@ int main() {
       input2[k] = k * k * k + 3;
     }
     uint64_t bogus = 0;
+    int repeat = 20;
     for(int k = 0; k<10;++k) {
       const clock_t S1 = clock();
-      bitwiseor(input1,input2,output,N);
+      for(int z = 0; z < repeat; ++z)
+        bitwiseor(input1,input2,output,N);
       bogus += output[10];
       const clock_t S2 = clock();
-      bogus += bitwiseorcard(input1,input2,output,N); 
+      for(int z = 0; z < repeat; ++z)
+        bogus += bitwiseorcard(input1,input2,output,N); 
       const clock_t S3 = clock();    
       if(k>3) printf("%lu %lu %llu \n", (S2-S1), (S3-S2), bogus);
     }
