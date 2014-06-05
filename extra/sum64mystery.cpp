@@ -64,6 +64,49 @@ __uint128_t asmcarrylessscalarproduct(size_t length, const uint64_t * a, const u
 	return (((__uint128_t) part2)<<64)  + part1 ;
 }
 
+__uint128_t asmcarrylessscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
+	uint64_t part1 = 0;
+	uint64_t part2 = 0;
+	uint64_t part3 = 0;
+	assert(length / 8 * 8 == length);
+	for(int i = 0; i<length; i+= 8) {
+    __asm__ (
+    "movq (%[u]),%%rax\n"
+    "mulq (%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 8(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "mulq 8(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 16(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "mulq 16(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 24(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "mulq 24(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 32(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "mulq 32(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 40(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "mulq 40(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 48(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "mulq 48(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 56(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "mulq 56(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "adcq %%rdx,  %[rh]\n"
+                 :  [rh] "+r" (part2) , [rl] "+r" (part1)  : [u] "r" (a+i), [v] "r" (x+i)  :"rdx","rax","memory","cc");
+	}
+	return (((__uint128_t) part2)<<64)  + part1 ;
+}
 int main() {
 	const size_t N = 100*128;
 	uint64_t a[N];

@@ -143,6 +143,62 @@ uint192 asmscalarproduct2(size_t length, const uint64_t * a, const uint64_t * x)
 	return s;
 }
 
+
+uint192 asmscalarproduct3(size_t length, const uint64_t * a, const uint64_t * x) {
+	uint192 s;
+	s.low = 0;
+	s.high = 0;
+	s.vhigh = 0;
+	for(int i = 0; i<length; i+= 8) {
+    __asm__ (
+    "movq (%[u]),%%rax\n"
+    "mulq (%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 8(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
+    "mulq 8(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 16(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
+    "mulq 16(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 24(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
+    "mulq 24(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 32(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
+    "mulq 32(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 40(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
+    "mulq 40(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 48(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
+    "mulq 48(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "movq 56(%[u]),%%rax\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
+    "mulq 56(%[v])\n"
+    "addq %%rax,  %[rl]\n"
+    "adcq %%rdx,  %[rh]\n"
+    "adcq $0,  %[rhh]\n"
+             :  [rh] "+g" (s.high), [rhh] "+g" (s.vhigh) , [rl] "+g" (s.low)  : [u] "r" (a+i), [v] "r" (x+i)  :"rdx","rax","memory","cc");
+	}
+	return s;
+}
+
+
+
+
 uint192 asmaltscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
 	uint192 s;
 	s.low = 0;
@@ -214,6 +270,35 @@ uint192 asm4scalarproduct(size_t length, const uint64_t * a, const uint64_t * x)
 	return s;
 }
 
+uint192 asm4bscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
+	uint192 s;
+	s.low = 0;
+	s.high = 0;
+	s.vhigh = 0;
+	for(size_t i = 0; i+3<length; i+=4) {
+    __asm__ ("mulq %[v]\n"
+             "addq %%rax,  %[rl]\n"
+        "adcq %%rdx,  %[rh]\n"
+             "adcq $0,  %[rhh]\n"
+             :  [rh] "+g" (s.high), [rhh] "+g" (s.vhigh) , [rl] "+g" (s.low)  : [u] "a" (a[i]), [v] "g" (x[i])  :"rdx","cc");
+    __asm__ ("mulq %[v]\n"
+             "addq %%rax,  %[rl]\n"
+        "adcq %%rdx,  %[rh]\n"
+             "adcq $0,  %[rhh]\n"
+             :  [rh] "+g" (s.high), [rhh] "+g" (s.vhigh) , [rl] "+g" (s.low)  : [u] "a" (a[i+1]), [v] "g" (x[i+1])  :"rdx","cc");
+    __asm__ ("mulq %[v]\n"
+             "addq %%rax,  %[rl]\n"
+        "adcq %%rdx,  %[rh]\n"
+             "adcq $0,  %[rhh]\n"
+             :  [rh] "+g" (s.high), [rhh] "+g" (s.vhigh) , [rl] "+g" (s.low)  : [u] "a" (a[i+2]), [v] "g" (x[i+2])  :"rdx","cc");
+    __asm__ ("mulq %[v]\n"
+             "addq %%rax,  %[rl]\n"
+        "adcq %%rdx,  %[rh]\n"
+             "adcq $0,  %[rhh]\n"
+             :  [rh] "+g" (s.high), [rhh] "+g" (s.vhigh) , [rl] "+g" (s.low)  : [u] "a" (a[i+3]), [v] "g" (x[i+3])  :"rdx","cc");
+			}
+	return s;
+}
 
 void check() {
     uint64_t l1 = 0;
@@ -253,7 +338,7 @@ int main() {
 	  a[i] = rand() + (((uint64_t)rand())<<32);
 	  x[i] = rand() + (((uint64_t)rand())<<32);
 	}
-	uint192 s1, s12, s21, s212,s2,s22, s2alt, sbug;
+	uint192 s1, s12, s21, s2b, s212, s213, s2,s22, s2alt, sbug;
 	int t1 = 0; 
 	int t2 = 0;
 	const clock_t S1 = clock();
@@ -279,22 +364,32 @@ int main() {
 	}
    	const clock_t S6 = clock();
    	const clock_t S7 = clock();
-        for(int T=0; T<10000;++T) {
+    for(int T=0; T<10000;++T) {
 	  s12 = carrylessscalarproduct(N, a, x);
-        }
+    }
 	const clock_t S8 = clock();
 	for(int T=0; T<10000;++T) {
 	  s212 = asmscalarproduct2(N, a, x);
 	}
     const clock_t S9 = clock();
+	for(int T=0; T<10000;++T) {
+	  s213 = asmscalarproduct3(N, a, x);
+	}
+    const clock_t S10 = clock();
+	for(int T=0; T<10000;++T) {
+	  s2b = asm4bscalarproduct(N, a, x);
+	}
+   	const clock_t S11 = clock();
 	
     cout<<"GCC time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
     cout<<"GCC time(carryless)="<<(double)(S8-S7)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm time="<<(double)(S3-S2)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm2 time="<<(double)(S9-S8)/ CLOCKS_PER_SEC<<endl;
+    cout<<"asm3 time="<<(double)(S10-S9)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm alt time="<<(double)(S6-S5)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm2 time="<<(double)(S4-S3)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm4 time="<<(double)(S5-S4)/ CLOCKS_PER_SEC<<endl;
+    cout<<"asm4b time="<<(double)(S11-S10)/ CLOCKS_PER_SEC<<endl;
 
 
 	cout<<s1.low<<" "<<s1.high<<" "<<s1.vhigh<<endl;
@@ -302,8 +397,11 @@ int main() {
 	cout<<s2.low<<" "<<s2.high<<" "<<s2.vhigh<<endl;
 	cout<<s21.low<<" "<<s21.high<<" "<<s21.vhigh<<endl;
 	cout<<s212.low<<" "<<s212.high<<" "<<s212.vhigh<<endl;
+	cout<<s213.low<<" "<<s213.high<<" "<<s213.vhigh<<endl;
 
 	cout<<s22.low<<" "<<s22.high<<" "<<s22.vhigh<<endl;
 	cout<<s2alt.low<<" "<<s2alt.high<<" "<<s2alt.vhigh<<endl;
+	cout<<s2b.low<<" "<<s2b.high<<" "<<s2b.vhigh<<endl;
+
 	cout<<sbug.low<<" "<<sbug.high<<endl;
 }
