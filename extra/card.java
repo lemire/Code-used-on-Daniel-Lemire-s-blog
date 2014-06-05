@@ -67,7 +67,7 @@ public class card {
     }
     
     public static void test() {
-        final int N = (1<<16);// number of bits
+        final int N = (1<<22);// number of bits
         int[] input1 = new int[N/32];
         int[] input2 = new int[N/32];
         int[] output = new int[N/32];
@@ -87,8 +87,8 @@ public class card {
             linput1[k/64] = ((long) i2 << 32)|i1;
             linput2[k/64] = ((long) i4 << 32)|i3;
         }
-        int times = 100000;
-        int mintimes = 3;
+        int times = 1000;
+        int mintimes = 2;
         int bogus = 0;
         long cost = Long.MAX_VALUE;
         for(int z = 0; z<mintimes;++z) {
