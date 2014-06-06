@@ -33,11 +33,8 @@ int bitwiseorcard(uint64_t * input1, uint64_t * input2, uint64_t * output, size_
     }
     return card;
 } 
-
-
-
-int main() {
-    const int N = 1024*1024;
+void test(const int N) {
+    printf("array sizes = %i kB \n",N*sizeof(uint64_t)/1024);
     uint64_t * input1 = (uint64_t *) malloc(N*sizeof(input1));
     uint64_t * input2 = (uint64_t *) malloc(N*sizeof(input1));
     uint64_t * output = (uint64_t *) malloc(N*sizeof(input1));
@@ -46,7 +43,7 @@ int main() {
       input2[k] = k * k * k + 3;
     }
     uint64_t bogus = 0;
-    int repeat = 200;
+    int repeat = 200*1024*1024.0/N;
     for(int k = 0; k<10;++k) {
       const clock_t S1 = clock();
       for(int z = 0; z < repeat; ++z) {
@@ -66,4 +63,14 @@ int main() {
     free(input1);
     free(input2);    
     free(output);
+}
+
+
+int main() {
+    test(1024*1024);
+    test(512*1024);
+    test(128*1024);
+    test(64*1024);
+     test(32*1024);
+    test(1024);
 }
