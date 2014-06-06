@@ -6,7 +6,7 @@
 #include <time.h>
 #include <stdint.h>
 #include <stdio.h>
-
+#include <assert.h>
 
 
 void bitwiseor(uint64_t * input1, uint64_t * input2, uint64_t * output, size_t length) {
@@ -27,9 +27,24 @@ int card(uint64_t * input, size_t length) {
 
 int bitwiseorcard(uint64_t * input1, uint64_t * input2, uint64_t * output, size_t length) {
     int card = 0;
-    for(int k = 0; k < length; ++k) {
+    assert(length / 8 * 8 == length);
+    for(int k = 0; k < length; k+=8) {
         output[k] = input1[k] | input2[k];
         card += __builtin_popcountl(output[k]);
+        output[k+1] = input1[k+1] | input2[k+1];
+        card += __builtin_popcountl(output[k+1]);
+        output[k+2] = input1[k+2] | input2[k+2];
+        card += __builtin_popcountl(output[k+2]);
+        output[k+3] = input1[k+3] | input2[k+3];
+        card += __builtin_popcountl(output[k+3]);
+        output[k+4] = input1[k+4] | input2[k+4];
+        card += __builtin_popcountl(output[k+4]);
+        output[k+5] = input1[k+5] | input2[k+5];
+        card += __builtin_popcountl(output[k+5]);
+        output[k+6] = input1[k+6] | input2[k+6];
+        card += __builtin_popcountl(output[k+6]);
+        output[k+7] = input1[k+7] | input2[k+7];
+        card += __builtin_popcountl(output[k+7]);
     }
     return card;
 } 
