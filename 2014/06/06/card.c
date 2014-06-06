@@ -38,9 +38,9 @@ int bitwiseorcard(uint64_t * input1, uint64_t * input2, uint64_t * output, size_
 
 int main() {
     const int N = 1024*1024;
-    uint64_t * input1 = (uint64_t *) malloc(N*sizeof(input1));
-    uint64_t * input2 = (uint64_t *) malloc(N*sizeof(input1));
-    uint64_t * output = (uint64_t *) malloc(N*sizeof(input1));
+    uint64_t * input1 = (uint64_t *) malloc(N*sizeof(uint64_t));
+    uint64_t * input2 = (uint64_t *) malloc(N*sizeof(uint64_t));
+    uint64_t * output = (uint64_t *) malloc(N*sizeof(uint64_t));
     for(int k = 0; k<N; ++k) {
       input1[k] = k * k;
       input2[k] = k * k * k + 3;
