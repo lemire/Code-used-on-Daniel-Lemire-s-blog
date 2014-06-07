@@ -111,32 +111,6 @@ public class card {
             long t2 = System.currentTimeMillis();
             if(t2-t1 < cost3) cost3 = t2-t1;
         }
-        for(int z = 0; z<mintimes; ++z) {
-            long t1 = System.currentTimeMillis();
-            for(int k = 0; k < times; ++k) {
-                bitwiseor(linput1,linput2,loutput);
-                bogus +=  loutput[10];
-            }
-            long t2 = System.currentTimeMillis();
-            if(t2-t1 < cost) cost = t2-t1;
-        }
-        for(int z = 0; z<mintimes; ++z) {
-            long t1 = System.currentTimeMillis();
-            for(int k = 0; k < times; ++k) {
-                bitwiseor(linput1,linput2,loutput);
-                bogus +=  card(loutput);
-            }
-            long t2 = System.currentTimeMillis();
-            if(t2-t1 < cost2) cost2 = t2-t1;
-        }
-        for(int z = 0; z<mintimes; ++z) {
-            long t1 = System.currentTimeMillis();
-            for(int k = 0; k < times; ++k) {
-                bogus += bitwiseorcard(linput1,linput2,loutput);
-            }
-            long t2 = System.currentTimeMillis();
-            if(t2-t1 < cost3) cost3 = t2-t1;
-        }
         System.out.println("Number of integers         "+N/64);
         System.out.println("bitwise or (64-bit)        "+(N/64)*0.001*times/cost+" millions integers per second");
         System.out.println("bitwise or (64-bit) + card "+(N/64)*0.001*times/cost2+" millions integers per second");
@@ -149,7 +123,7 @@ public class card {
 
     public static void main(String[] args) {
         for(int k = 0; k < 10; ++k) {
-            test(1<<21);
+            test(4096*64);
             System.out.println();
         }
 
