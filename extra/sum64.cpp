@@ -1,6 +1,6 @@
 /**
 * Scalar product over 64-bit integers
-g++ -O3 -o sum64 sum64.cpp && ./sum64
+g++ -O3 -mbmi2 -o sum64 sum64.cpp && ./sum64
 */
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -8,6 +8,8 @@ g++ -O3 -o sum64 sum64.cpp && ./sum64
 #include <sys/types.h>
 #include <iostream>
 #include <stdint.h>
+#include <x86intrin.h>
+#include <adxintrin.h>
 using namespace std;
 
 
@@ -71,6 +73,20 @@ uint192 carrylessscalarproduct(size_t length, const uint64_t * a, const uint64_t
 	return s;
 }
 
+uint192 fancyscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
+	uint192 s;
+	s.low = 0;
+	s.high = 0;
+	s.vhigh = 0;
+	for(size_t i = 0; i<length; ++i) {
+	   uint64_t low;
+	   uint64_t high = _mulx_u64(x[i],a[i],&low);
+	   char carry1 = _addcarryx_u64(0, low,s.low,&s.low);
+	   char carry2 = _addcarryx_u64(carry1, high,s.high,&s.high);
+	   s.vhigh += carry2;
+	}
+	return s;
+}
 
 
 uint192 asmscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
@@ -338,7 +354,7 @@ int main() {
 	  a[i] = rand() + (((uint64_t)rand())<<32);
 	  x[i] = rand() + (((uint64_t)rand())<<32);
 	}
-	uint192 s1, s12, s21, s2b, s212, s213, s2,s22, s2alt, sbug;
+	uint192 s1, s12, s21, s2b, s212, s213, s2,s22, s2alt, sbug,sfancy;
 	int t1 = 0; 
 	int t2 = 0;
 	const clock_t S1 = clock();
@@ -381,6 +397,11 @@ int main() {
 	}
    	const clock_t S11 = clock();
 	
+	for(int T=0; T<10000;++T) {
+	  sfancy = fancyscalarproduct(N, a, x);
+	}
+   	const clock_t S12 = clock();
+
     cout<<"GCC time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
     cout<<"GCC time(carryless)="<<(double)(S8-S7)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm time="<<(double)(S3-S2)/ CLOCKS_PER_SEC<<endl;
@@ -390,6 +411,7 @@ int main() {
     cout<<"asm2 time="<<(double)(S4-S3)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm4 time="<<(double)(S5-S4)/ CLOCKS_PER_SEC<<endl;
     cout<<"asm4b time="<<(double)(S11-S10)/ CLOCKS_PER_SEC<<endl;
+    cout<<"fancy time="<<(double)(S12-S11)/ CLOCKS_PER_SEC<<endl;
 
 
 	cout<<s1.low<<" "<<s1.high<<" "<<s1.vhigh<<endl;
@@ -402,5 +424,6 @@ int main() {
 	cout<<s22.low<<" "<<s22.high<<" "<<s22.vhigh<<endl;
 	cout<<s2alt.low<<" "<<s2alt.high<<" "<<s2alt.vhigh<<endl;
 	cout<<s2b.low<<" "<<s2b.high<<" "<<s2b.vhigh<<endl;
+	cout<<sfancy.low<<" "<<sfancy.high<<" "<<sfancy.vhigh<<endl;
 
 }
