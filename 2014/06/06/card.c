@@ -10,8 +10,9 @@
 
 
 void bitwiseor(uint64_t * input1, uint64_t * input2, uint64_t * output, size_t length) {
-    for(int k = 0; k < length; ++k) {
-        output[k] = input1[k] | input2[k];
+    for(int j = 0; j < length; j+=4) {
+        for(int k = 0; k<4; ++k)
+        output[k+j] = input1[k+j] | input2[k+j];
     }
 } 
 

@@ -79,10 +79,10 @@ uint192 fancyscalarproduct(size_t length, const uint64_t * a, const uint64_t * x
 	s.high = 0;
 	s.vhigh = 0;
 	for(size_t i = 0; i<length; ++i) {
-	   uint64_t low;
-	   uint64_t high = _mulx_u64(x[i],a[i],&low);
-	   char carry1 = _addcarryx_u64(0, low,s.low,&s.low);
-	   char carry2 = _addcarryx_u64(carry1, high,s.high,&s.high);
+	   unsigned long long  high;
+	   unsigned long long  low = _mulx_u64(x[i],a[i],&high);
+	   char carry1 = _addcarryx_u64(0, low,s.low,(unsigned long long *)&s.low);
+	   char carry2 = _addcarryx_u64(carry1, high,s.high,(unsigned long long *)&s.high);
 	   s.vhigh += carry2;
 	}
 	return s;
