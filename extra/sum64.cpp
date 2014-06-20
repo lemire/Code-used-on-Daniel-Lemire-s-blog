@@ -9,7 +9,7 @@ g++ -O3 -mbmi2 -o sum64 sum64.cpp && ./sum64
 #include <iostream>
 #include <stdint.h>
 #include <x86intrin.h>
-#include <adxintrin.h>
+//#include <adxintrin.h>
 using namespace std;
 
 
@@ -72,7 +72,7 @@ uint192 carrylessscalarproduct(size_t length, const uint64_t * a, const uint64_t
 	s.high = (uint64_t)(base>>64);
 	return s;
 }
-
+#ifdef FANCY
 uint192 fancyscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
 	uint192 s;
 	s.low = 0;
@@ -81,13 +81,13 @@ uint192 fancyscalarproduct(size_t length, const uint64_t * a, const uint64_t * x
 	for(size_t i = 0; i<length; ++i) {
 	   unsigned long long  high;
 	   unsigned long long  low = _mulx_u64(x[i],a[i],&high);
-	   char carry1 = _addcarryx_u64(0, low,s.low,(unsigned long long *)&s.low);
-	   char carry2 = _addcarryx_u64(carry1, high,s.high,(unsigned long long *)&s.high);
+	   char carry1 = _addcarry_u64(0, low,s.low,(unsigned long long *)&s.low);
+	   char carry2 = _addcarry_u64(carry1, high,s.high,(unsigned long long *)&s.high);
 	   s.vhigh += carry2;
 	}
 	return s;
 }
-
+#endif
 
 uint192 asmscalarproduct(size_t length, const uint64_t * a, const uint64_t * x) {
 	uint192 s;
@@ -396,10 +396,11 @@ int main() {
 	  s2b = asm4bscalarproduct(N, a, x);
 	}
    	const clock_t S11 = clock();
-	
+#ifdef FANCY
 	for(int T=0; T<10000;++T) {
 	  sfancy = fancyscalarproduct(N, a, x);
 	}
+#endif
    	const clock_t S12 = clock();
 
     cout<<"GCC time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
