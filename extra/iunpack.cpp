@@ -505,6 +505,217 @@ IACA_END;
     return initOffset;
 
 }
+// unpack without prefix sum
+__m128i iunpack8_justfirststep(__m128i  initOffset, const  __m128i   *in, uint32_t    *_out) {
+IACA_START;
+    __m128i   *out = reinterpret_cast<__m128i *>(_out);
+    __m128i    InReg = _mm_load_si128(in);
+    __m128i    OutReg;
+    __m128i     tmp;
+    const __m128i mask =  _mm_set1_epi32((1U << 8) - 1);
+
+
+
+    tmp = InReg;
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 8);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 16);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 24);
+    OutReg = tmp;
+    ++in;    InReg = _mm_load_si128(in);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = InReg;
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 8);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 16);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 24);
+    OutReg = tmp;
+    ++in;    InReg = _mm_load_si128(in);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = InReg;
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 8);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 16);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 24);
+    OutReg = tmp;
+    ++in;    InReg = _mm_load_si128(in);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = InReg;
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 8);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 16);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 24);
+    OutReg = tmp;
+    ++in;    InReg = _mm_load_si128(in);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = InReg;
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 8);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 16);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 24);
+    OutReg = tmp;
+    ++in;    InReg = _mm_load_si128(in);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = InReg;
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 8);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 16);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 24);
+    OutReg = tmp;
+    ++in;    InReg = _mm_load_si128(in);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = InReg;
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 8);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 16);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 24);
+    OutReg = tmp;
+    ++in;    InReg = _mm_load_si128(in);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = InReg;
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 8);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 16);
+    OutReg = _mm_and_si128(tmp, mask);
+    
+    
+    _mm_store_si128(out++, OutReg);
+
+    tmp = _mm_srli_epi32(InReg, 24);
+    OutReg = tmp;
+    
+    
+    _mm_store_si128(out++, OutReg);
+IACA_END;
+    return initOffset;
+
+}
+
 
 int main() {
     return 0;
