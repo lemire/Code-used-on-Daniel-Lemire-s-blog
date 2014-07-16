@@ -3,6 +3,7 @@
 //$ /opt/intel/iaca/bin/iaca.sh -mark 1 -64 iunpack
 //$ /opt/intel/iaca/bin/iaca.sh -mark 2 -64 iunpack
 
+#include <cstdint>
 #include <x86intrin.h>
 
 
