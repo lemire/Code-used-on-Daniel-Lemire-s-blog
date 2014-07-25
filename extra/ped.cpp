@@ -1,8 +1,8 @@
-//g++  -mbmi2 -msse4.1   -O2 -o ped ped.cpp
+//g++ -std=c++11 -mbmi2 -msse4.1   -O2 -o ped ped.cpp
 #include <x86intrin.h>
 #include <bmi2intrin.h>
 #include <smmintrin.h>
-
+#include <cstdint>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -37,7 +37,7 @@ public:
 using namespace std;
 
 
-#define IACA
+//#define IACA
 #ifdef IACA
 #include </opt/intel/iaca/include/iacaMarks.h>
 #else
@@ -202,7 +202,7 @@ int main() {
     for(int k = 0; k < N; k += 32) {
         bmidecode2(codeddata[k/32],outdata+k);
     }
-    cout<<"bmi speed "<<N*REPEAT/(1000.0*time.split())<<endl;
+    cout<<"bmi2 speed "<<N*REPEAT/(1000.0*time.split())<<endl;
 
     for(int k = 0; k < N; ++k) {
         if(data[k] != outdata[k]) {
@@ -211,6 +211,19 @@ int main() {
         }
     }
     
+
+    for(int T = 0; T < REPEAT; ++T) 
+    for(int k = 0; k < N; k += 32) {
+        bmidecode2alt(codeddata[k/32],outdata+k);
+    }
+    cout<<"bmi2alt speed "<<N*REPEAT/(1000.0*time.split())<<endl;
+
+    for(int k = 0; k < N; ++k) {
+        if(data[k] != outdata[k]) {
+            cout << " bug  " <<endl;
+            return -1;
+        }
+    }
     
 
     return 0;
