@@ -72,6 +72,26 @@ public class counters {
         return answer;
     }
     
+    public static int[] merge5(int N, int T, int[][] arrays) {
+        HashMap<Integer,Integer> s = new HashMap<Integer,Integer>();
+        for(int k = 0; k < arrays.length; ++k) {
+            for(int v : arrays[k]) {
+                if(s.containsKey(v))
+                  s.put(v, s.get(v).intValue()+1);
+                else
+                  s.put(v, 1); 
+            }
+        }
+        ArrayList<Integer> ss = new ArrayList<Integer>();
+        for(Map.Entry<Integer,Integer> v: s.entrySet())
+          if(v.getValue() > T) ss.add(v.getKey());
+        int[] answer = new int[ss.size()];
+        int pos = 0;
+        for(int v: ss)
+        answer[pos++] = v;
+        return answer;
+    }
+    
     public static void main(String[] args) {
         int N = 1000*1000*100;
         Random r = new Random();
@@ -94,11 +114,14 @@ public class counters {
         for(int k = 0; k<5; ++k)
         System.out.println(merge4(C,k,2,arrays).length);
         long t5 = System.currentTimeMillis();
+        for(int k = 0; k<5; ++k)
+        System.out.println(merge5(N,2,arrays).length);
+        long t6 = System.currentTimeMillis();
 
         System.out.println("timings using hash "+(t2-t1));
         System.out.println("timings using naive "+(t3-t2));
         System.out.println("timings using packed naive "+(t4-t3));
-        System.out.println("timings using packed naive "+(t5-t4));
-
+        System.out.println("uninit "+(t5-t4));
+        System.out.println("hash "+(t6-t5));
     }
 }
