@@ -80,7 +80,7 @@ using namespace std;
         return pos;
     }
    
- char hugearray[256][10] ={{0,8},
+ unsigned char hugearray[256][10] ={{0,8},
 {1,0,7},
 {1,1,6},
 {2,0,1,6},
@@ -340,9 +340,9 @@ using namespace std;
   
    int bitscan4(long *bitmap, int bitmapsize, int *out) {
         int pos = 0;
-        char * b8 = (char *) bitmap;
+        unsigned char * b8 = (unsigned char *) bitmap;
         for (int k = 0; k < bitmapsize*sizeof(long); ++k) {
-            char* codes = hugearray[b8[k]];
+            unsigned char* codes = hugearray[b8[k]];
             for(int offset = 0; offset<codes[0];++offset){
                     out[pos++]=8 * k + codes[offset +1];                
             }
