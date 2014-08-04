@@ -339,15 +339,16 @@ using namespace std;
   
   
    int bitscan4(long *bitmap, int bitmapsize, int *out) {
-        int pos = 0;
+        int *initout = out;
         unsigned char * b8 = (unsigned char *) bitmap;
         for (int k = 0; k < bitmapsize*sizeof(long); ++k) {
             unsigned char* codes = hugearray[b8[k]];
             for(int offset = 0; offset<codes[0];++offset){
-                    out[pos++]=8 * k + codes[offset +1];                
+                    out[offset]=8 * k + codes[offset +1];                
             }
+            out += codes[0];
         }
-        return pos;
+        return out-initout;
     }
   int main() {
   	  assert(sizeof(long)==8);
