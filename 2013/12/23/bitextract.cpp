@@ -350,6 +350,23 @@ using namespace std;
         }
         return out-initout;
     }
+    
+    // just counts
+   int bitscan5(long *bitmap, int bitmapsize, int *out) {
+        int *initout = out;
+        unsigned char * b8 = (unsigned char *) bitmap;
+        for (int k = 0; k < bitmapsize*sizeof(long); k+=8) {
+            out += hugearray[b8[k]][0];
+            out += hugearray[b8[k+1]][0];
+            out += hugearray[b8[k+2]][0];
+            out += hugearray[b8[k+3]][0];
+            out += hugearray[b8[k+4]][0];
+            out += hugearray[b8[k+5]][0];
+            out += hugearray[b8[k+6]][0];
+            out += hugearray[b8[k+7]][0];
+        }
+        return out-initout;
+    }
   int main() {
   	  assert(sizeof(long)==8);
   	  assert(sizeof(int)==4);
@@ -398,9 +415,15 @@ using namespace std;
 		    c4 = bitscan4(&bitmap[0],N,&output[0]);
 		  int ti4 = timer.split();
 		  assert(c4 == c3);
+		  timer.reset();
+		  int c5 = 0;
+		  for(int t1=0;t1<100;++t1)
+		    c5 = bitscan4(&bitmap[0],N,&output[0]);
+		  int ti5 = timer.split();
+		  assert(c5 == c3);
 
 		  if(t>2)
-		    cout<<sb<<" " <<bitcount*100.0*0.001 /ti0<<" "<<" " <<bitcount*100.0*0.001 /ti1<<" " <<bitcount*100.0*0.001 /ti2<<" " <<bitcount*100.0*0.001 /ti3<<" " <<bitcount*100.0*0.001 /ti4<<endl;
+		    cout<<sb<<" " <<bitcount*100.0*0.001 /ti0<<" "<<" " <<bitcount*100.0*0.001 /ti1<<" " <<bitcount*100.0*0.001 /ti2<<" " <<bitcount*100.0*0.001 /ti3<<" " <<bitcount*100.0*0.001 /ti4<<" " <<bitcount*100.0*0.001 /ti5<<endl;
 		}
   	  }
 
