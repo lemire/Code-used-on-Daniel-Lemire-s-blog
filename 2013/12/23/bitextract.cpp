@@ -2172,7 +2172,7 @@ int main() {
     assert(sizeof(long)==8);
     assert(sizeof(int)==4);
     WallClockTimer timer;
-    int N = 100000;
+    int N = 10000;
     for(int sb = 1; sb<=64; sb*=2) {
         int setbitsmax = sb*N;
         vector<long> bitmap(N);
