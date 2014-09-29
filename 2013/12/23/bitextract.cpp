@@ -65,6 +65,23 @@ int bitscan1(long *bitmap, int bitmapsize, int *out) {
 }
 
 
+
+int bitscan1unary(long *bitmap, int bitmapsize, int *out) {
+    int pos = 0;
+    int val = 0, newval = 0;
+    for(int k = 0; k < bitmapsize; ++k) {
+        long bitset = bitmap[k];
+        while (bitset != 0) {
+            long t = bitset & -bitset;
+            newval = k * 64 + _mm_popcnt_u64 (t-1);// __builtin_popcountl (t-1);
+            out[pos++] = newval - val;
+            val = newval;
+            bitset ^= t;
+        }
+    }
+    return pos;
+}
+
 int bitscan2(long *bitmap, int bitmapsize, int *out) {
     int pos = 0;
     for(int k = 0; k < bitmapsize; ++k) {
@@ -2198,6 +2215,10 @@ int main() {
             assert(c1 == c0);
             int ti1 = timer.split();
             timer.reset();
+            for(int t1=0; t1<100; ++t1)
+                c1 = bitscan1unary(&bitmap[0],N,&output[0]);
+            int ti1unary = timer.split();
+            timer.reset();
             int c2 = 0;
             for(int t1=0; t1<100; ++t1)
                 c2 = bitscan2(&bitmap[0],N,&output[0]);
@@ -2219,12 +2240,12 @@ int main() {
             timer.reset();
             int c5 = 0;
             for(int t1=0; t1<100; ++t1)
-                c5 = bitscan4(&bitmap[0],N,&output[0]);
+                c5 = bitscan5(&bitmap[0],N,&output[0]);
             int ti5 = timer.split();
             assert(c5 == c3);
 
             if(t>2)
-                cout<<c1*1.0/(N*sizeof(long)*8.0)<<" " <<bitcount*100.0*0.001 /ti0<<" "<<" " <<bitcount*100.0*0.001 /ti1<<" " <<bitcount*100.0*0.001 /ti2<<" " <<bitcount*100.0*0.001 /ti3<<" " <<bitcount*100.0*0.001 /ti4<<" " <<bitcount*100.0*0.001 /ti5<<endl;
+                cout<<c1*1.0/(N*sizeof(long)*8.0)<<" " <<bitcount*100.0*0.001 /ti0<<" " <<bitcount*100.0*0.001 /ti1unary<<" " <<bitcount*100.0*0.001 /ti1<<" " <<bitcount*100.0*0.001 /ti2<<" " <<bitcount*100.0*0.001 /ti3<<" " <<bitcount*100.0*0.001 /ti4<<" " <<bitcount*100.0*0.001 /ti5<<endl;
         }
     }
 
