@@ -1,6 +1,6 @@
 //  g++ -O2 -o test test.cpp
 
-
+#include <stdint.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
