@@ -12,7 +12,8 @@ public class prefixsum {
     
     
     public static void main(String[] args) {
-        int[] x = new int[64000];
+        int N = 64000;
+        int[] x = new int[N];
         for(int k = 0; k < x.length; ++k) 
           x[k] = k * k - k;
         for(int j = 0; j < 100 ; ++j) {
@@ -25,7 +26,7 @@ public class prefixsum {
           long t2 = System.nanoTime();
           prefixsum(x);
           long t3 = System.nanoTime();
-          System.out.println((t3-t2)+" "+(t2-t1));
+          System.out.println(N*1.0/(t3-t2)+" "+N*1.0/(t2-t1));
         }
         for(int k = 0; k < x.length; ++k) 
           if(  x[k] != k * k - k) throw new RuntimeException("bug");
