@@ -3,6 +3,8 @@ import java.util.HashSet;
 import java.util.Random;
 
 public final class bitcount {
+    
+    public static byte[] arraycnt = new byte[1<<16];
 
 
     // use small functions that Java can compile, not inline code
@@ -19,8 +21,27 @@ public final class bitcount {
             card+=Integer.bitCount(ints[k]);
         return card;
     }
-
+    public static int summe2(long[] ints) {
+        int card = 0;
+        for(int k=0; k<ints.length; k++)
+            card+=Long.bitCount(ints[k]);
+        return card;
+    }
+    
+    public static int summe3(int[] ints) {
+        int card = 0;
+        for(int k=0; k<ints.length; k++)
+            card+=countlookup(ints[k]);
+        return card;
+    }
+    public static int summe3(long[] ints) {
+        int card = 0;
+        for(int k=0; k<ints.length; k++)
+            card+=countlookup(ints[k]);
+        return card;
+    }
     public static void main(String[] args) {
+         for(int k = 0; k< 1<<16; ++k) arraycnt[k] = (byte)Integer.bitCount(k);
         // always do a dry-run so that Java has time to compile
         for(int n=100; n<=1000000; n*=10) {
             System.out.println("Dry-run Number of ints = "+n);
@@ -35,7 +56,20 @@ public final class bitcount {
             for(int i=0; i<100; i++) {
                 card += summe2(ints);
             }
-
+            card = 0;
+            for(int i=0; i<100; i++) {
+                card += summe3(ints);
+            }
+            long[] longs = new long[ints.length];
+            for(int k = 0; k < ints.length; ++k) longs[k] = ints[k];
+            card = 0;
+            for(int i=0; i<100; i++) {
+                card += summe2(longs);
+            }
+            card = 0;
+            for(int i=0; i<100; i++) {
+                card += summe3(longs);
+            }
         }
 
         for(int n=100; n<=10000000; n*=10) {
@@ -63,6 +97,36 @@ public final class bitcount {
             after = System.nanoTime();
 
             System.out.println("card = "+card+", Integer.bitCount(popcnt) time = "+((after-bef)/100)+" nanosec");
+            
+            //trying table look-up
+            card = 0;
+            bef = System.nanoTime();
+            for(int i=0; i<100; i++) {
+                card += summe3(ints);
+            }
+            after = System.nanoTime();
+
+            System.out.println("card = "+card+", table look-up time = "+((after-bef)/100)+" nanosec");
+            long[] longs = new long[ints.length];
+            for(int k = 0; k < ints.length; ++k) longs[k] = ints[k];
+            card = 0;
+            bef = System.nanoTime();
+            for(int i=0; i<100; i++) {
+                card += summe2(longs);
+            }
+            after = System.nanoTime();
+
+            System.out.println("card = "+card+", Long.bitCount(popcnt) time = "+((after-bef)/100)+" nanosec");
+            
+            //trying table look-up
+            card = 0;
+            bef = System.nanoTime();
+            for(int i=0; i<100; i++) {
+                card += summe3(longs);
+            }
+            after = System.nanoTime();
+
+            System.out.println("card = "+card+", table look-up time = "+((after-bef)/100)+" nanosec");
 
         }
     }
@@ -83,6 +147,33 @@ public final class bitcount {
         return (word * 0x01010101) >>> 24;
     }
 
+    /**
+     * Population count
+     * <p>
+     * It counts a single word
+     *
+     * @param word
+     *            word to count
+     * @return population count
+     */
+    public static int countlookup(int word) {
+        return arraycnt[word & 0xFFFF] + arraycnt[(word>>>16) & 0xFFFF];
+    }
+
+
+
+    /**
+     * Population count
+     * <p>
+     * It counts a single word
+     *
+     * @param word
+     *            word to count
+     * @return population count
+     */
+    public static int countlookup(long word) {
+        return arraycnt[(int)(word & 0xFFFF)] + arraycnt[(int)((word>>>16) & 0xFFFF)] + arraycnt[(int)((word>>>32) & 0xFFFF)] + arraycnt[(int)((word>>>24) & 0xFFFF)];
+    }
 }
 
 class DataGenerator {

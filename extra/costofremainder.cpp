@@ -196,6 +196,150 @@ void NHsum(const uint64_t* kp, const uint64_t *  mp, const size_t length, uint64
 }
 
 
+void completesum2(const uint64_t* a, const uint64_t *  x, const size_t length, uint64_t * out) {
+    uint192 s;
+    s.low = 0;
+    s.high = 0;
+    s.vhigh = 0;
+    size_t i = 0;
+    for(; i<length*8/8; i+= 8) {
+#ifdef IACA
+        IACA_START;
+#endif
+        __asm__ (
+            "movq (%[u]),%%rax\n"
+            "mulq (%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 8(%[u]),%%rax\n"
+            "addq %%rdx,  %[rh]\n"
+            "addq $0,  %[rhh]\n"
+            "mulq 8(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 16(%[u]),%%rax\n"
+            "addq %%rdx,  %[rh]\n"
+            "addq $0,  %[rhh]\n"
+            "mulq 16(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 24(%[u]),%%rax\n"
+            "addq %%rdx,  %[rh]\n"
+            "addq $0,  %[rhh]\n"
+            "mulq 24(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 32(%[u]),%%rax\n"
+            "addq %%rdx,  %[rh]\n"
+            "addq $0,  %[rhh]\n"
+            "mulq 32(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 40(%[u]),%%rax\n"
+            "addq %%rdx,  %[rh]\n"
+            "addq $0,  %[rhh]\n"
+            "mulq 40(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 48(%[u]),%%rax\n"
+            "addq %%rdx,  %[rh]\n"
+            "addq $0,  %[rhh]\n"
+            "mulq 48(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 56(%[u]),%%rax\n"
+            "addq %%rdx,  %[rh]\n"
+            "addq $0,  %[rhh]\n"
+            "mulq 56(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "addq %%rdx,  %[rh]\n"
+            "addq $0,  %[rhh]\n"
+                        :  [rh] "+r" (s.high), [rhh] "+r" (s.vhigh) , [rl] "+r" (s.low)  : [u] "r" (a+i), [v] "r" (x+i)  :"rdx","rax","memory","cc");
+#ifdef IACA
+        IACA_END;
+#endif
+    }
+    for(; i<length; ++i) {
+        __asm__ ("mulq %[v]\n"
+                 "addq %%rax,  %[rl]\n"
+                 "adcq %%rdx,  %[rh]\n"
+                 "adcq $0,  %[rhh]\n"
+                 :  [rh] "+r" (s.high), [rhh] "+r" (s.vhigh) , [rl] "+r" (s.low)  : [u] "a" (a[i]), [v] "r" (x[i])  :"rdx","cc");
+    }
+    out[0] = s.low;
+    out[1] = s.high;
+    out[2] = s.vhigh;
+}
+
+
+
+void completesumi(const uint64_t* a, const uint64_t *  x, const size_t length, uint64_t * out) {
+    uint192 s;
+    s.low = 0;
+    s.high = 0;
+    s.vhigh = 0;
+    uint192 ss;
+    ss.low = 0;
+    ss.high = 0;
+    ss.vhigh = 0;
+
+    size_t i = 0;
+    for(; i<length*8/8; i+= 8) {
+#ifdef IACA
+        IACA_START;
+#endif
+        __asm__ (
+            "movq (%[u]),%%rax\n"
+            "mulq (%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 8(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "adcq $0,  %[rhh]\n"
+            "mulq 8(%[v])\n"
+            "addq %%rax,  %[rrl]\n"
+            "movq 16(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rrh]\n"
+            "adcq $0,  %[rrhh]\n"
+            "mulq 16(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 24(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "adcq $0,  %[rhh]\n"
+            "mulq 24(%[v])\n"
+            "addq %%rax,  %[rrl]\n"
+            "movq 32(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rrh]\n"
+            "adcq $0,  %[rrhh]\n"
+            "mulq 32(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 40(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "adcq $0,  %[rhh]\n"
+            "mulq 40(%[v])\n"
+            "addq %%rax,  %[rrl]\n"
+            "movq 48(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rrh]\n"
+            "adcq $0,  %[rrhh]\n"
+            "mulq 48(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 56(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "adcq $0,  %[rhh]\n"
+            "mulq 56(%[v])\n"
+            "addq %%rax,  %[rrl]\n"
+            "adcq %%rdx,  %[rrh]\n"
+            "adcq $0,  %[rrhh]\n"
+            :  [rh] "+r" (s.high), [rhh] "+r" (s.vhigh) , [rl] "+r" (s.low) ,[rrh] "+r" (ss.high), [rrhh] "+r" (ss.vhigh) , [rrl] "+r" (ss.low)  : [u] "r" (a+i), [v] "r" (x+i)  :"rdx","rax","memory","cc");
+#ifdef IACA
+        IACA_END;
+#endif
+    }
+    
+    for(; i<length; ++i) {
+        __asm__ ("mulq %[v]\n"
+                 "addq %%rax,  %[rl]\n"
+                 "adcq %%rdx,  %[rh]\n"
+                 "adcq $0,  %[rhh]\n"
+                 :  [rh] "+r" (s.high), [rhh] "+r" (s.vhigh) , [rl] "+r" (s.low)  : [u] "a" (a[i]), [v] "r" (x[i])  :"rdx","cc");
+    }
+    out[0] = s.low;
+    out[1] = s.high;
+    out[2] = s.vhigh;
+}
+
 int main() {
     const size_t N = 100*128;
     uint64_t a[N];
@@ -207,22 +351,37 @@ int main() {
     }
     uint192 s1, s2;
     const clock_t S1 = clock();
-
+    out[0]=0; out[1]=0; out[2]=0;   
     for(int T=0; T<10000; ++T) {
         completesum( a, x, N,out);
     }
+    cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
+    out[0]=0; out[1]=0; out[2]=0;  
     const clock_t S2 = clock();
     for(int T=0; T<10000; ++T) {
         MMHsum( a, x, N,out);
     }
+    cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
+    out[0]=0; out[1]=0; out[2]=0;  
+
     const clock_t S3 = clock();
     for(int T=0; T<10000; ++T) {
         NHsum( a, x, N,out);
     }
+    cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
+    out[0]=0; out[1]=0; out[2]=0;  
+
     const clock_t S4 = clock();
+    for(int T=0; T<10000; ++T) {
+        completesumi( a, x, N,out);
+    }
+    const clock_t S5 = clock();
+    cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
+     
 
     cout<<"complete sum time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
     cout<<"MMH sum ="<<(double)(S3-S2)/ CLOCKS_PER_SEC<<endl;
     cout<<"NH sum ="<<(double)(S4-S3)/ CLOCKS_PER_SEC<<endl;
+    cout<<"complete sum time="<<(double)(S5-S4)/ CLOCKS_PER_SEC<<endl;
 
 }
