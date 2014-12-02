@@ -121,6 +121,20 @@ public class bitextract {
 
 
   public static void main(String[] args) {
+      {
+		long[] bitmap = new long[10];
+		bitmap[1]=10; bitmap[2]=10;
+		int[] output = new int[64];
+		int sum = 0;
+		for(int t = 0; t< 10; ++t) {
+		  for(int k = 0; k < 1000000; ++k)
+		    sum +=  bitscan0(bitmap,output) + bitscan1(bitmap,output) + bitscan1Kaser(bitmap,output)+  bitscan1f(bitmap,output)+ bitscan2(bitmap,output) +  bitscan2f(bitmap,output)+ bitscan3(bitmap,output);
+		  System.out.print(".");
+		  System.out.flush();
+		}
+		System.out.println("ignore = "+sum);
+
+      }
   	  int N = 100000;
   	  for(int sb = 1; sb<=32;sb*=2) {
   	    int setbitsmax = sb*N;
