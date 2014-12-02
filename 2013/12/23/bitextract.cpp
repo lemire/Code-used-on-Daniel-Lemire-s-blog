@@ -73,8 +73,9 @@ int bitscan1OKaser(long *bitmap, int bitmapsize, int *out) {
         long bitset = bitmap[k];
         while (bitset != 0) {
             long t = bitset & -bitset;
+            long newbitset = bitset & (bitset - 1);
             out[pos++] = k * 64 + _mm_popcnt_u64 (t-1);// __builtin_popcountl (t-1);
-            bitset &= bitset - 1;
+            bitset = newbitset;
         }
     }
     return pos;
