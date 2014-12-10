@@ -55,7 +55,7 @@ __asm__( "mulq %5\n" \
         :"a"(x[ii]), "g"(a[ ii ]) : "rdx", "cc" ); \
 }
 
-#if COMPLETESUM_ALT_stuff_TYPE == 1
+#if COMPLETESUM_ALT_stuff_TYPE == 0
 
 #define COMPLETESUM_ALT_stuff_T2 COMPLETESUM_ALT_stuff_T1
 #define COMPLETESUM_ALT_stuff_FINALIZE
