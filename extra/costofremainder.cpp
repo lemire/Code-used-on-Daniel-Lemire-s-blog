@@ -36,6 +36,138 @@ struct uint192 {
     uint64_t vhigh;
 } ;
 
+////// completesum_alt stuff begin /////
+
+#define COMPLETESUM_ALT_stuff_TYPE 1
+
+#define COMPLETESUM_ALT_stuff_DECLARE \
+	  uint64_t ctr0 = 0, ctr1 = 0, ctr2 = 0; \
+	  uint64_t ctr2_0 = 0, ctr2_1 = 0, ctr2_2 = 0, ctr2_3 = 0; \
+	  uint64_t mulLow, mulHigh;
+
+#define COMPLETESUM_ALT_stuff_T1( ii ) { \
+uint64_t rhi;  /*Dummy variable to tell the compiler that the register rax is input and clobbered but not actually output; see assembler code below. Better syntactic expression is very welcome.*/ \
+__asm__( "mulq %5\n" \
+        "addq %%rax, %0\n" \
+        "adcq %%rdx, %1\n" \
+        "adcq $0, %2\n" \
+        : "+g" (ctr0), "+g" (ctr1), "+g" (ctr2), "=a" (rhi) \
+        :"a"(x[ii]), "g"(a[ ii ]) : "rdx", "cc" ); \
+}
+
+#if COMPLETESUM_ALT_stuff_TYPE == 1
+
+#define COMPLETESUM_ALT_stuff_T2 COMPLETESUM_ALT_stuff_T1
+#define COMPLETESUM_ALT_stuff_FINALIZE
+
+#elif COMPLETESUM_ALT_stuff_TYPE == 1
+
+#define COMPLETESUM_ALT_stuff_T2( ii ) { \
+uint64_t rhi;  /*Dummy variable to tell the compiler that the register rax is input and clobbered but not actually output; see assembler code below. Better syntactic expression is very welcome.*/ \
+__asm__( "mulq %6\n" \
+        "addq %%rdx, %1\n" \
+        "adcq $0, %2\n" \
+        "addq %%rax, %0\n" \
+        "shrq $32, %%rax\n" \
+        "addq %%rax, %3\n" \
+        : "+g" (ctr2_0), "+g" (ctr1), "+g" (ctr2), "+g" (ctr2_1), "=a" (rhi) \
+        :"a"(x[ii]), "g"(a[ ii ]) : "rdx", "rcx", "cc" ); \
+}
+
+#define COMPLETESUM_ALT_stuff_FINALIZE { \
+	uint32_t xx = ctr2_0 >> 32; \
+	uint32_t yy = ctr2_1; \
+	uint64_t zz = xx - yy; \
+	ctr2_1 += zz; \
+	ctr2_0 = (uint32_t)ctr2_0; \
+	ctr2_0 += ((uint64_t)(uint32_t)ctr2_1) << 32; \
+    uint64_t xyz = (ctr2_1)>>32; \
+__asm__("addq %3, %0\n" \
+        "adcq %4, %1\n" \
+        "adcq $0, %2\n" \
+        : "+g" (ctr0), "+g" (ctr1), "+g" (ctr2) \
+        : "g" (ctr2_0), "g" (xyz) : "cc" ); \
+}
+
+#elif COMPLETESUM_ALT_stuff_TYPE == 2
+
+#define COMPLETESUM_ALT_stuff_T2( ii ) { \
+        MUL64( mulHigh, mulLow, x[ii], a[ ii ] ); \
+        ctr2_0 += mulLow; \
+        mulLow >>= 32; \
+        ctr2_1 += mulLow; \
+        ctr2_2 += mulHigh; \
+        mulHigh >>= 32; \
+        ctr2_3 += mulHigh; \
+}
+
+#define COMPLETESUM_ALT_stuff_FINALIZE { \
+	uint32_t xx = ctr2_0 >> 32; \
+	uint32_t yy = ctr2_1; \
+	uint64_t zz = xx - yy; \
+	ctr2_1 += zz; \
+	ctr2_0 = (uint32_t)ctr2_1; \
+	ctr2_0 += ((uint64_t)(uint32_t)ctr2_1) << 32; \
+    uint64_t xyz = (ctr2_1)>>32; \
+__asm__("addq %3, %0\n" \
+        "adcq %4, %1\n" \
+        "adcq $0, %2\n" \
+        : "+g" (ctr0), "+g" (ctr1), "+g" (ctr2) \
+        : "g" (ctr2_0), "g" (xyz) : "cc" ); \
+	xx = ctr2_2 >> 32; \
+	yy = ctr2_3; \
+	zz = xx - yy; \
+	ctr2_3 += zz; \
+	ctr2_2 = (uint32_t)ctr2_3; \
+	ctr2_2 += ((uint64_t)(uint32_t)ctr2_3) << 32; \
+    xyz = ctr2_3>>32; \
+__asm__("addq %2, %0\n" \
+        "adcq %3, %1\n" \
+        : "+g" (ctr1), "+g" (ctr2) \
+        : "g" (ctr2_2), "g" (xyz) : "cc" ); \
+}
+
+#endif
+
+void completesum_alt(const uint64_t* a, const uint64_t *  x, const size_t length, uint64_t * out) 
+{
+	COMPLETESUM_ALT_stuff_DECLARE
+	
+    size_t i = 0;
+    for(; i<length*8/8; i+= 8) {
+#ifdef IACA
+        IACA_START;
+#endif
+
+	COMPLETESUM_ALT_stuff_T2( i + 0 )
+	COMPLETESUM_ALT_stuff_T1( i + 1 )
+	COMPLETESUM_ALT_stuff_T2( i + 2 )
+	COMPLETESUM_ALT_stuff_T1( i + 3 )
+	COMPLETESUM_ALT_stuff_T2( i + 4 )
+	COMPLETESUM_ALT_stuff_T1( i + 5 )
+	COMPLETESUM_ALT_stuff_T2( i + 6 )
+	COMPLETESUM_ALT_stuff_T1( i + 7 )
+
+#ifdef IACA
+        IACA_END;
+#endif
+    }
+	
+    for(; i<length; ++i) 
+	{
+	COMPLETESUM_ALT_stuff_T1( i )
+    }
+	
+	COMPLETESUM_ALT_stuff_FINALIZE
+	
+    out[0] = ctr0;
+    out[1] = ctr1;
+    out[2] = ctr2;
+}
+
+////// completesum_alt stuff end /////
+
+
 void completesum(const uint64_t* a, const uint64_t *  x, const size_t length, uint64_t * out) {
     uint192 s;
     s.low = 0;
@@ -266,79 +398,6 @@ void completesum2(const uint64_t* a, const uint64_t *  x, const size_t length, u
 
 
 
-void completesumi(const uint64_t* a, const uint64_t *  x, const size_t length, uint64_t * out) {
-    uint192 s;
-    s.low = 0;
-    s.high = 0;
-    s.vhigh = 0;
-    uint192 ss;
-    ss.low = 0;
-    ss.high = 0;
-    ss.vhigh = 0;
-
-    size_t i = 0;
-    for(; i<length*8/8; i+= 8) {
-#ifdef IACA
-        IACA_START;
-#endif
-        __asm__ (
-            "movq (%[u]),%%rax\n"
-            "mulq (%[v])\n"
-            "addq %%rax,  %[rl]\n"
-            "movq 8(%[u]),%%rax\n"
-            "adcq %%rdx,  %[rh]\n"
-            "adcq $0,  %[rhh]\n"
-            "mulq 8(%[v])\n"
-            "addq %%rax,  %[rrl]\n"
-            "movq 16(%[u]),%%rax\n"
-            "adcq %%rdx,  %[rrh]\n"
-            "adcq $0,  %[rrhh]\n"
-            "mulq 16(%[v])\n"
-            "addq %%rax,  %[rl]\n"
-            "movq 24(%[u]),%%rax\n"
-            "adcq %%rdx,  %[rh]\n"
-            "adcq $0,  %[rhh]\n"
-            "mulq 24(%[v])\n"
-            "addq %%rax,  %[rrl]\n"
-            "movq 32(%[u]),%%rax\n"
-            "adcq %%rdx,  %[rrh]\n"
-            "adcq $0,  %[rrhh]\n"
-            "mulq 32(%[v])\n"
-            "addq %%rax,  %[rl]\n"
-            "movq 40(%[u]),%%rax\n"
-            "adcq %%rdx,  %[rh]\n"
-            "adcq $0,  %[rhh]\n"
-            "mulq 40(%[v])\n"
-            "addq %%rax,  %[rrl]\n"
-            "movq 48(%[u]),%%rax\n"
-            "adcq %%rdx,  %[rrh]\n"
-            "adcq $0,  %[rrhh]\n"
-            "mulq 48(%[v])\n"
-            "addq %%rax,  %[rl]\n"
-            "movq 56(%[u]),%%rax\n"
-            "adcq %%rdx,  %[rh]\n"
-            "adcq $0,  %[rhh]\n"
-            "mulq 56(%[v])\n"
-            "addq %%rax,  %[rrl]\n"
-            "adcq %%rdx,  %[rrh]\n"
-            "adcq $0,  %[rrhh]\n"
-            :  [rh] "+r" (s.high), [rhh] "+r" (s.vhigh) , [rl] "+r" (s.low) ,[rrh] "+r" (ss.high), [rrhh] "+r" (ss.vhigh) , [rrl] "+r" (ss.low)  : [u] "r" (a+i), [v] "r" (x+i)  :"rdx","rax","memory","cc");
-#ifdef IACA
-        IACA_END;
-#endif
-    }
-    
-    for(; i<length; ++i) {
-        __asm__ ("mulq %[v]\n"
-                 "addq %%rax,  %[rl]\n"
-                 "adcq %%rdx,  %[rh]\n"
-                 "adcq $0,  %[rhh]\n"
-                 :  [rh] "+r" (s.high), [rhh] "+r" (s.vhigh) , [rl] "+r" (s.low)  : [u] "a" (a[i]), [v] "r" (x[i])  :"rdx","cc");
-    }
-    out[0] = s.low;
-    out[1] = s.high;
-    out[2] = s.vhigh;
-}
 
 int main() {
     const size_t N = 100*128;
@@ -350,6 +409,14 @@ int main() {
         x[i] = rand() + (((uint64_t)rand())<<32);
     }
     uint192 s1, s2;
+	
+    const clock_t S0 = clock();
+    out[0]=0; out[1]=0; out[2]=0;   
+    for(int T=0; T<10000; ++T) {
+        completesum_alt( a, x, N,out);
+    }
+    cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
+	
     const clock_t S1 = clock();
     out[0]=0; out[1]=0; out[2]=0;   
     for(int T=0; T<10000; ++T) {
@@ -372,16 +439,11 @@ int main() {
     out[0]=0; out[1]=0; out[2]=0;  
 
     const clock_t S4 = clock();
-    for(int T=0; T<10000; ++T) {
-        completesumi( a, x, N,out);
-    }
-    const clock_t S5 = clock();
-    cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
      
 
-    cout<<"complete sum time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
+    cout<<"complete_alt sum time="<<(double)(S1-S0)/ CLOCKS_PER_SEC<<endl;
+	cout<<"complete sum time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
     cout<<"MMH sum ="<<(double)(S3-S2)/ CLOCKS_PER_SEC<<endl;
     cout<<"NH sum ="<<(double)(S4-S3)/ CLOCKS_PER_SEC<<endl;
-    cout<<"complete sum time="<<(double)(S5-S4)/ CLOCKS_PER_SEC<<endl;
 
 }
