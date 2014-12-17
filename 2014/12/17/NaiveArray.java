@@ -5,7 +5,6 @@ public final class NaiveArray implements Array {
         array = new int[cap];
     }
     
-    
     public int get(int i) {
         return array[i];
     }

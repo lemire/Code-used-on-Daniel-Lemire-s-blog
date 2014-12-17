@@ -5,6 +5,7 @@ public class Benchmark {
         FastSummer fs = new FastSummer(N);
         BasicSummer gs = new BasicSummer(new NaiveArray(N));
         SmartSummer ss = new SmartSummer(new NaiveArray(N));
+        SillySummer sis = new SillySummer(new NaiveArray(N));
         FixedSummer ffs = new FixedSummer(N);
         int bogus = 0;
         for(int k = 0; k < 100; ++k) {
@@ -15,9 +16,12 @@ public class Benchmark {
             long t3 = System.nanoTime();
             bogus += ss.compute();
             long t4 = System.nanoTime();
-            bogus += ffs.compute();
+            bogus += sis.compute();
             long t5 = System.nanoTime();
-            System.out.println((t2-t1)*1.0/N+" "+(t3-t2)*1.0/N+" "+(t4-t3)*1.0/N+" "+(t5-t4)*1.0/N);
+            bogus += ffs.compute();
+            long t6 = System.nanoTime();
+            System.out.println("fast basic smart silly fixed ");
+            System.out.println((t2-t1)*1.0/N+" "+(t3-t2)*1.0/N+" "+(t4-t3)*1.0/N+" "+(t5-t4)*1.0/N+" "+(t6-t5)*1.0/N);
         }
     }
 }
