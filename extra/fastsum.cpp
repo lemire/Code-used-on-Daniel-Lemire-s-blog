@@ -42,6 +42,13 @@ int sum(int *  data, size_t length) {
 	}
 	return answer;
 }
+int resum(int *  data, int length) {
+	int answer = 0;
+	for(int i = length - 1; i >=0 ;--i){
+		answer += data[i];
+	}
+	return answer;
+}
 #ifdef __SSE
 
 template <class T>
@@ -108,15 +115,21 @@ int AVXsum(int * data, size_t length) {
 }*/
 
 int main() {
-	const size_t N = 1024*1024*32;
+	const size_t N = 1024*1024*32*4;
 	vector<int> x(N);
 	for( size_t i = 0; i < N; ++i)
 	  x[i] = i;
+        int a1 = 0;
+        int a2 = 0;
 	WallClockTimer t;
 	t.reset();
-	int a1 = sum(&x[0],N);
+	for(int k =  0; k < 100 ; ++k) a1 += sum(&x[0],N);
 	cout<<"time = "<<t.split()<<endl;
 	cout<<"a1 = "<<a1<<endl;
+	t.reset();
+	for(int k =  0; k < 100 ; ++k) a2 += resum(&x[0],N);
+	cout<<"re time = "<<t.split()<<endl;
+	cout<<"a2 = "<<a2<<endl;
 	t.reset();
 #ifdef __SSE
 	int a2 = SSEsum(&x[0],N);
