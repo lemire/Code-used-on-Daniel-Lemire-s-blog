@@ -17,7 +17,7 @@ public class Benchmark {
             long t4 = System.nanoTime();
             bogus += ffs.compute();
             long t5 = System.nanoTime();
-            System.out.println((t2-t1)/N+" "+(t3-t2)/N+" "+(t4-t3)/N+" "+(t5-t4)/N);
+            System.out.println((t2-t1)*1.0/N+" "+(t3-t2)*1.0/N+" "+(t4-t3)*1.0/N+" "+(t5-t4)*1.0/N);
         }
     }
 }
