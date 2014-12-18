@@ -5,6 +5,7 @@ public class Benchmark {
         ReverseFastSummer refs = new ReverseFastSummer(N);
         FastSummer fs = new FastSummer(N);
         BasicSummer gs = new BasicSummer(new NaiveArray(N));
+        ReverseBasicSummer regs = new ReverseBasicSummer(new NaiveArray(N));
         SmartSummer ss = new SmartSummer(new NaiveArray(N));
         ReverseSmartSummer ress = new ReverseSmartSummer(new NaiveArray(N));
         SillySummer sis = new SillySummer(new NaiveArray(N));
@@ -29,8 +30,11 @@ public class Benchmark {
             long t7 = System.nanoTime();
             bogus += reffs.compute();
             long t8 = System.nanoTime();
-             System.out.println("refast fast basic smart resmart silly fixed ");
-            System.out.println((t1-t0)*1.0/N+" "+(t2-t1)*1.0/N+" "+(t3-t2)*1.0/N+" "+(t4-t3)*1.0/N+" "+(t5-t4)*1.0/N+" "+(t6-t5)*1.0/N+" "+(t7-t6)*1.0/N+" "+(t8-t7)*1.0/N);
+            bogus += regs.compute();
+            long t9 = System.nanoTime();
+ 
+              System.out.println("refast fast basic smart resmart silly fixed rebasic");
+            System.out.println((t1-t0)*1.0/N+" "+(t2-t1)*1.0/N+" "+(t3-t2)*1.0/N+" "+(t4-t3)*1.0/N+" "+(t5-t4)*1.0/N+" "+(t6-t5)*1.0/N+" "+(t7-t6)*1.0/N+" "+(t8-t7)*1.0/N+" "+(t9-t8)*1.0/N);
         }
     }
 }
