@@ -401,6 +401,7 @@ void completesum2(const uint64_t* a, const uint64_t *  x, const size_t length, u
 
 int main() {
     const size_t N = 100*128;
+    const size_t repeat = 10000;
     uint64_t a[N];
     uint64_t x[N];
     uint64_t out[3];
@@ -412,38 +413,35 @@ int main() {
 	
     const clock_t S0 = clock();
     out[0]=0; out[1]=0; out[2]=0;   
-    for(int T=0; T<10000; ++T) {
+    for(int T=0; T<repeat; ++T) {
         completesum_alt( a, x, N,out);
     }
     cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
-	
     const clock_t S1 = clock();
     out[0]=0; out[1]=0; out[2]=0;   
-    for(int T=0; T<10000; ++T) {
+    for(int T=0; T<repeat; ++T) {
         completesum( a, x, N,out);
     }
     cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
     out[0]=0; out[1]=0; out[2]=0;  
     const clock_t S2 = clock();
-    for(int T=0; T<10000; ++T) {
+    for(int T=0; T<repeat; ++T) {
         MMHsum( a, x, N,out);
     }
     cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
     out[0]=0; out[1]=0; out[2]=0;  
-
     const clock_t S3 = clock();
-    for(int T=0; T<10000; ++T) {
+    for(int T=0; T<repeat; ++T) {
         NHsum( a, x, N,out);
     }
     cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
     out[0]=0; out[1]=0; out[2]=0;  
-
     const clock_t S4 = clock();
-     
-
-    cout<<"complete_alt sum time="<<(double)(S1-S0)/ CLOCKS_PER_SEC<<endl;
-	cout<<"complete sum time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
-    cout<<"MMH sum ="<<(double)(S3-S2)/ CLOCKS_PER_SEC<<endl;
-    cout<<"NH sum ="<<(double)(S4-S3)/ CLOCKS_PER_SEC<<endl;
+    double numberofinputpairs = (double) N * repeat/1000000.0;
+    cout<<"We report the number of millions of input pairs processed per second"<<endl;
+    cout<<"complete_alt sumtime="<<numberofinputpairs/((double)(S1-S0)/ CLOCKS_PER_SEC)<<endl;
+    cout<<"complete sum time="<<numberofinputpairs/((double)(S2-S1)/ CLOCKS_PER_SEC)<<endl;
+    cout<<"MMH sum ="<<numberofinputpairs/((double)(S3-S2)/ CLOCKS_PER_SEC)<<endl;
+    cout<<"NH sum ="<<numberofinputpairs/((double)(S4-S3)/ CLOCKS_PER_SEC)<<endl;
 
 }

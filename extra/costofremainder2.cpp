@@ -957,6 +957,7 @@ void completesumi(const uint64_t* a, const uint64_t *  x, const size_t length, u
 
 int main() {
     const size_t N = 1000*128;
+    const size_t repeat = 10000;
 #ifdef USE_SSE
 	// for SSE at least one of args should be 16-byte aligned; this is OK for predefined sets of coefficients
     uint64_t _a_[N+4];
@@ -974,34 +975,34 @@ int main() {
 	
     const clock_t S0 = clock();
     out[0]=0; out[1]=0; out[2]=0;   
-    for(int T=0; T<10000; ++T) {
+    for(int T=0; T<repeat; ++T) {
         completesum_alt( a, x, N,out);
     }
     cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
 	
     const clock_t S1 = clock();
     out[0]=0; out[1]=0; out[2]=0;   
-    for(int T=0; T<10000; ++T) {
+    for(int T=0; T<repeat; ++T) {
         completesum32blocks( a, x, N,out);
     }
     cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
     out[0]=0; out[1]=0; out[2]=0;  
     const clock_t S2 = clock();
-    for(int T=0; T<10000; ++T) {
+    for(int T=0; T<repeat; ++T) {
         MMHsum( a, x, N,out);
     }
     cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
     out[0]=0; out[1]=0; out[2]=0;  
 
     const clock_t S3 = clock();
-    for(int T=0; T<10000; ++T) {
+    for(int T=0; T<repeat; ++T) {
         NHsum( a, x, N,out);
     }
     cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
     out[0]=0; out[1]=0; out[2]=0;  
 
     const clock_t S4 = clock();
-    for(int T=0; T<10000; ++T) {
+    for(int T=0; T<repeat; ++T) {
         completesumi( a, x, N,out);
     }
     const clock_t S5 = clock();
@@ -1009,7 +1010,7 @@ int main() {
 	
 #ifdef USE_SSE
     out[0]=0; out[1]=0; out[2]=0;   
-    for(int T=0; T<10000; ++T) {
+    for(int T=0; T<repeat; ++T) {
         completesum_alt_with_sse( a, x, N,out);
     }
     const clock_t S6 = clock();
@@ -1018,7 +1019,7 @@ int main() {
      
 
     cout<<"complete_alt sum time="<<(double)(S1-S0)/ CLOCKS_PER_SEC<<endl;
-	cout<<"complete sum time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
+    cout<<"complete sum time="<<(double)(S2-S1)/ CLOCKS_PER_SEC<<endl;
     cout<<"MMH sum ="<<(double)(S3-S2)/ CLOCKS_PER_SEC<<endl;
     cout<<"NH sum ="<<(double)(S4-S3)/ CLOCKS_PER_SEC<<endl;
     cout<<"complete sum time="<<(double)(S5-S4)/ CLOCKS_PER_SEC<<endl;
