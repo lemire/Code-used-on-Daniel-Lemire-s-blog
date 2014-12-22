@@ -36,18 +36,18 @@ struct uint192 {
     uint64_t vhigh;
 } ;
 
-////// completesum_alt staff begin /////
+////// completesum_alt STUFF begin /////
 
-#define COMPLETESUM_ALT_STAFF_TYPE 1
+#define COMPLETESUM_ALT_STUFF_TYPE 1
 #define USE_SSE
 
-#define COMPLETESUM_ALT_STAFF_DECLARE \
+#define COMPLETESUM_ALT_STUFF_DECLARE \
 	  uint64_t ctr0 = 0, ctr1 = 0, ctr2 = 0; \
 	  uint64_t ctr1_0 = 0, ctr1_1 = 0, ctr1_2 = 0, ctr1_3 = 0; \
 	  uint64_t ctr2_0 = 0, ctr2_1 = 0, ctr2_2 = 0, ctr2_3 = 0; \
 	  uint64_t mulLow, mulHigh;
 
-#define COMPLETESUM_ALT_STAFF_T_BASE( ii ) { \
+#define COMPLETESUM_ALT_STUFF_T_BASE( ii ) { \
 uint64_t rhi;  /*Dummy variable to tell the compiler that the register rax is input and clobbered but not actually output; see assembler code below. Better syntactic expression is very welcome.*/ \
 __asm__( "mulq %5\n" \
         "addq %%rax, %0\n" \
@@ -57,17 +57,17 @@ __asm__( "mulq %5\n" \
         :"a"(x[ii]), "g"(coeff[ ii ]) : "rdx", "cc" ); \
 }
 
-#if COMPLETESUM_ALT_STAFF_TYPE == 0
+#if COMPLETESUM_ALT_STUFF_TYPE == 0
 
-#define COMPLETESUM_ALT_STAFF_T1 COMPLETESUM_ALT_STAFF_T_BASE
-#define COMPLETESUM_ALT_STAFF_T2 COMPLETESUM_ALT_STAFF_T_BASE
-#define COMPLETESUM_ALT_STAFF_FINALIZE
+#define COMPLETESUM_ALT_STUFF_T1 COMPLETESUM_ALT_STUFF_T_BASE
+#define COMPLETESUM_ALT_STUFF_T2 COMPLETESUM_ALT_STUFF_T_BASE
+#define COMPLETESUM_ALT_STUFF_FINALIZE
 
-#elif COMPLETESUM_ALT_STAFF_TYPE == 1
+#elif COMPLETESUM_ALT_STUFF_TYPE == 1
 
-#define COMPLETESUM_ALT_STAFF_T1 COMPLETESUM_ALT_STAFF_T_BASE
+#define COMPLETESUM_ALT_STUFF_T1 COMPLETESUM_ALT_STUFF_T_BASE
 
-#define COMPLETESUM_ALT_STAFF_T2( ii ) { \
+#define COMPLETESUM_ALT_STUFF_T2( ii ) { \
 uint64_t rhi;  /*Dummy variable to tell the compiler that the register rax is input and clobbered but not actually output; see assembler code below. Better syntactic expression is very welcome.*/ \
 __asm__( "mulq %6\n" \
         "addq %%rax, %0\n" \
@@ -79,7 +79,7 @@ __asm__( "mulq %6\n" \
         :"a"(x[ii]), "g"(coeff[ ii ]) : "rdx", "cc" ); \
 }
 
-#define COMPLETESUM_ALT_STAFF_FINALIZE { \
+#define COMPLETESUM_ALT_STUFF_FINALIZE { \
 	uint32_t xx = ctr2_0 >> 32; \
 	uint32_t yy = ctr2_1; \
 	uint64_t zz = xx - yy; \
@@ -94,11 +94,11 @@ __asm__("addq %3, %0\n" \
         : "g" (ctr2_0), "g" (xyz) : "cc" ); \
 }
 
-#elif COMPLETESUM_ALT_STAFF_TYPE == 2
+#elif COMPLETESUM_ALT_STUFF_TYPE == 2
 
-#define COMPLETESUM_ALT_STAFF_T1 COMPLETESUM_ALT_STAFF_T_BASE
+#define COMPLETESUM_ALT_STUFF_T1 COMPLETESUM_ALT_STUFF_T_BASE
 
-#define COMPLETESUM_ALT_STAFF_T2( ii ) { \
+#define COMPLETESUM_ALT_STUFF_T2( ii ) { \
         MUL64( mulHigh, mulLow, x[ii], coeff[ ii ] ); \
         ctr2_0 += mulLow; \
         mulLow >>= 32; \
@@ -108,7 +108,7 @@ __asm__("addq %3, %0\n" \
         ctr2_3 += mulHigh; \
 }
 
-#define COMPLETESUM_ALT_STAFF_FINALIZE { \
+#define COMPLETESUM_ALT_STUFF_FINALIZE { \
 	uint32_t xx = ctr2_0 >> 32; \
 	uint32_t yy = ctr2_1; \
 	uint64_t zz = xx - yy; \
@@ -134,11 +134,11 @@ __asm__("addq %2, %0\n" \
         : "g" (ctr2_2), "g" (xyz) : "cc" ); \
 }
 
-#elif COMPLETESUM_ALT_STAFF_TYPE == 3
+#elif COMPLETESUM_ALT_STUFF_TYPE == 3
 
-#define COMPLETESUM_ALT_STAFF_T1 COMPLETESUM_ALT_STAFF_T_BASE
+#define COMPLETESUM_ALT_STUFF_T1 COMPLETESUM_ALT_STUFF_T_BASE
 
-#define COMPLETESUM_ALT_STAFF_T2( ii ) { \
+#define COMPLETESUM_ALT_STUFF_T2( ii ) { \
 uint64_t rhi;  /*Dummy variable to tell the compiler that the register rax is input and clobbered but not actually output; see assembler code below. Better syntactic expression is very welcome.*/ \
 __asm__( "mulq %6\n" \
         "addq %%rdx, %1\n" \
@@ -151,7 +151,7 @@ __asm__( "mulq %6\n" \
         :"a"(x[ii]), "g"(coeff[ ii ]) : "rdx", "cc" ); \
 }
 
-#define COMPLETESUM_ALT_STAFF_FINALIZE { \
+#define COMPLETESUM_ALT_STUFF_FINALIZE { \
 	uint32_t xx = ctr2_0 >> 32; \
 	uint32_t yy = ctr2_1; \
 	uint64_t zz = xx - yy; \
@@ -177,9 +177,9 @@ __asm__("addq %2, %0\n" \
         : "g" (ctr2_2), "g" (xyz) : "cc" ); \
 }
 
-#elif COMPLETESUM_ALT_STAFF_TYPE == 4
+#elif COMPLETESUM_ALT_STUFF_TYPE == 4
 
-#define COMPLETESUM_ALT_STAFF_T1( ii ) { \
+#define COMPLETESUM_ALT_STUFF_T1( ii ) { \
 uint64_t rhi;  /*Dummy variable to tell the compiler that the register rax is input and clobbered but not actually output; see assembler code below. Better syntactic expression is very welcome.*/ \
 __asm__( "mulq %6\n" \
         "addq %%rdx, %1\n" \
@@ -192,7 +192,7 @@ __asm__( "mulq %6\n" \
         :"a"(x[ii]), "g"(coeff[ ii ]) : "rdx", "cc" ); \
 }
 
-#define COMPLETESUM_ALT_STAFF_T2( ii ) { \
+#define COMPLETESUM_ALT_STUFF_T2( ii ) { \
 uint64_t rhi;  /*Dummy variable to tell the compiler that the register rax is input and clobbered but not actually output; see assembler code below. Better syntactic expression is very welcome.*/ \
 __asm__( "mulq %6\n" \
         "addq %%rdx, %1\n" \
@@ -205,7 +205,7 @@ __asm__( "mulq %6\n" \
         :"a"(x[ii]), "g"(coeff[ ii ]) : "rdx", "cc" ); \
 }
 
-#define COMPLETESUM_ALT_STAFF_FINALIZE { \
+#define COMPLETESUM_ALT_STUFF_FINALIZE { \
 	uint32_t xx = ctr1_0 >> 32; \
 	uint32_t yy = ctr1_1; \
 	uint64_t zz = xx - yy; \
@@ -258,7 +258,7 @@ __asm__("addq %2, %0\n" \
 
 void completesum_alt(const uint64_t* coeff, const uint64_t *  x, const size_t length, uint64_t * out) 
 {
-	COMPLETESUM_ALT_STAFF_DECLARE
+	COMPLETESUM_ALT_STUFF_DECLARE
 	
     size_t i = 0;
     for(; i<length*32/32; i+= 32) {
@@ -268,38 +268,38 @@ void completesum_alt(const uint64_t* coeff, const uint64_t *  x, const size_t le
         IACA_START;
 #endif
 
-	COMPLETESUM_ALT_STAFF_T2( i + 0 )
-	COMPLETESUM_ALT_STAFF_T1( i + 1 )
-	COMPLETESUM_ALT_STAFF_T2( i + 2 )
-	COMPLETESUM_ALT_STAFF_T1( i + 3 )
-	COMPLETESUM_ALT_STAFF_T2( i + 4 )
-	COMPLETESUM_ALT_STAFF_T1( i + 5 )
-	COMPLETESUM_ALT_STAFF_T2( i + 6 )
-	COMPLETESUM_ALT_STAFF_T1( i + 7 )
-	COMPLETESUM_ALT_STAFF_T2( i + 8 )
-	COMPLETESUM_ALT_STAFF_T1( i + 9 )
-	COMPLETESUM_ALT_STAFF_T2( i + 10 )
-	COMPLETESUM_ALT_STAFF_T1( i + 11 )
-	COMPLETESUM_ALT_STAFF_T2( i + 12 )
-	COMPLETESUM_ALT_STAFF_T1( i + 13 )
-	COMPLETESUM_ALT_STAFF_T2( i + 14 )
-	COMPLETESUM_ALT_STAFF_T1( i + 15 )
-	COMPLETESUM_ALT_STAFF_T2( i + 16 )
-	COMPLETESUM_ALT_STAFF_T1( i + 17 )
-	COMPLETESUM_ALT_STAFF_T2( i + 18 )
-	COMPLETESUM_ALT_STAFF_T1( i + 19 )
-	COMPLETESUM_ALT_STAFF_T2( i + 20 )
-	COMPLETESUM_ALT_STAFF_T1( i + 21 )
-	COMPLETESUM_ALT_STAFF_T2( i + 22 )
-	COMPLETESUM_ALT_STAFF_T1( i + 23 )
-	COMPLETESUM_ALT_STAFF_T2( i + 24 )
-	COMPLETESUM_ALT_STAFF_T1( i + 25 )
-	COMPLETESUM_ALT_STAFF_T2( i + 26 )
-	COMPLETESUM_ALT_STAFF_T1( i + 27 )
-	COMPLETESUM_ALT_STAFF_T2( i + 28 )
-	COMPLETESUM_ALT_STAFF_T1( i + 29 )
-	COMPLETESUM_ALT_STAFF_T2( i + 30 )
-	COMPLETESUM_ALT_STAFF_T1( i + 31 )
+	COMPLETESUM_ALT_STUFF_T2( i + 0 )
+	COMPLETESUM_ALT_STUFF_T1( i + 1 )
+	COMPLETESUM_ALT_STUFF_T2( i + 2 )
+	COMPLETESUM_ALT_STUFF_T1( i + 3 )
+	COMPLETESUM_ALT_STUFF_T2( i + 4 )
+	COMPLETESUM_ALT_STUFF_T1( i + 5 )
+	COMPLETESUM_ALT_STUFF_T2( i + 6 )
+	COMPLETESUM_ALT_STUFF_T1( i + 7 )
+	COMPLETESUM_ALT_STUFF_T2( i + 8 )
+	COMPLETESUM_ALT_STUFF_T1( i + 9 )
+	COMPLETESUM_ALT_STUFF_T2( i + 10 )
+	COMPLETESUM_ALT_STUFF_T1( i + 11 )
+	COMPLETESUM_ALT_STUFF_T2( i + 12 )
+	COMPLETESUM_ALT_STUFF_T1( i + 13 )
+	COMPLETESUM_ALT_STUFF_T2( i + 14 )
+	COMPLETESUM_ALT_STUFF_T1( i + 15 )
+	COMPLETESUM_ALT_STUFF_T2( i + 16 )
+	COMPLETESUM_ALT_STUFF_T1( i + 17 )
+	COMPLETESUM_ALT_STUFF_T2( i + 18 )
+	COMPLETESUM_ALT_STUFF_T1( i + 19 )
+	COMPLETESUM_ALT_STUFF_T2( i + 20 )
+	COMPLETESUM_ALT_STUFF_T1( i + 21 )
+	COMPLETESUM_ALT_STUFF_T2( i + 22 )
+	COMPLETESUM_ALT_STUFF_T1( i + 23 )
+	COMPLETESUM_ALT_STUFF_T2( i + 24 )
+	COMPLETESUM_ALT_STUFF_T1( i + 25 )
+	COMPLETESUM_ALT_STUFF_T2( i + 26 )
+	COMPLETESUM_ALT_STUFF_T1( i + 27 )
+	COMPLETESUM_ALT_STUFF_T2( i + 28 )
+	COMPLETESUM_ALT_STUFF_T1( i + 29 )
+	COMPLETESUM_ALT_STUFF_T2( i + 30 )
+	COMPLETESUM_ALT_STUFF_T1( i + 31 )
 
 #ifdef IACA
         IACA_END;
@@ -308,10 +308,10 @@ void completesum_alt(const uint64_t* coeff, const uint64_t *  x, const size_t le
 	
     for(; i<length; ++i) 
 	{
-	COMPLETESUM_ALT_STAFF_T1( i )
+	COMPLETESUM_ALT_STUFF_T1( i )
     }
 	
-	COMPLETESUM_ALT_STAFF_FINALIZE
+	COMPLETESUM_ALT_STUFF_FINALIZE
 	
     out[0] = ctr0;
     out[1] = ctr1;
@@ -322,7 +322,7 @@ void completesum_alt(const uint64_t* coeff, const uint64_t *  x, const size_t le
 
 void completesum_alt_with_sse(const uint64_t* coeff, const uint64_t *  x, const size_t length, uint64_t * out) 
 {
-	COMPLETESUM_ALT_STAFF_DECLARE
+	COMPLETESUM_ALT_STUFF_DECLARE
 
 	__m256i sse_ctr0, sse_ctr1, sse_ctr2, sse_ctr3, a, a_shifted, a_low, data, data_low, product, temp, mask_low;
 	sse_ctr0 = _mm256_setzero_si256 (); // Sets the 128-bit value to zero.
@@ -349,7 +349,7 @@ void completesum_alt_with_sse(const uint64_t* coeff, const uint64_t *  x, const 
 		temp = _mm256_and_si256 ( mask_low, product );
 		sse_ctr0 = _mm256_add_epi64 ( sse_ctr0, temp );
 
-		COMPLETESUM_ALT_STAFF_T1( 4 + i )
+		COMPLETESUM_ALT_STUFF_T1( 4 + i )
 		// first cross
 		a_shifted = _mm256_srli_epi64( a, 32 );
 		product = _mm256_mul_epu32 ( data_low, a_shifted ); // A 128-bit value that contains two 64-bit unsigned integers. The result can be expressed by the following equations. r0 := a0 * b0; r1 := a2 * b2
@@ -358,7 +358,7 @@ void completesum_alt_with_sse(const uint64_t* coeff, const uint64_t *  x, const 
 		temp = _mm256_and_si256 ( mask_low, product );
 		sse_ctr1 = _mm256_add_epi64 ( sse_ctr1, temp );
 
-		COMPLETESUM_ALT_STAFF_T2( 5 + i )
+		COMPLETESUM_ALT_STUFF_T2( 5 + i )
 		// second cross
 		data = _mm256_srli_epi64( data, 32 );
 		product = _mm256_mul_epu32 ( data, a_low ); // A 128-bit value that contains two 64-bit unsigned integers. The result can be expressed by the following equations. r0 := a0 * b0; r1 := a2 * b2
@@ -367,14 +367,14 @@ void completesum_alt_with_sse(const uint64_t* coeff, const uint64_t *  x, const 
 		temp = _mm256_and_si256 ( mask_low, product );
 		sse_ctr1 = _mm256_add_epi64 ( sse_ctr1, temp );
 
-		COMPLETESUM_ALT_STAFF_T1( 6 + i )
+		COMPLETESUM_ALT_STUFF_T1( 6 + i )
 		// upper 32 bits
 		product = _mm256_mul_epu32 ( data, a_shifted ); // A 128-bit value that contains two 64-bit unsigned integers. The result can be expressed by the following equations. r0 := a0 * b0; r1 := a2 * b2
 		temp = _mm256_srli_epi64( product, 32 ); // Shifts the 2 signed or unsigned 64-bit integers in a right by count bits while shifting in zeros.
 		sse_ctr3 = _mm256_add_epi64 ( sse_ctr3, temp );
 		temp = _mm256_and_si256 ( mask_low, product );
 		sse_ctr2 = _mm256_add_epi64 ( sse_ctr2, temp );
-		COMPLETESUM_ALT_STAFF_T2( 7 + i )		
+		COMPLETESUM_ALT_STUFF_T2( 7 + i )		
 
 
 
@@ -390,7 +390,7 @@ void completesum_alt_with_sse(const uint64_t* coeff, const uint64_t *  x, const 
 		temp = _mm256_and_si256 ( mask_low, product );
 		sse_ctr0 = _mm256_add_epi64 ( sse_ctr0, temp );
 
-		COMPLETESUM_ALT_STAFF_T1( 12 + i )
+		COMPLETESUM_ALT_STUFF_T1( 12 + i )
 
 		// first cross
 		a_shifted = _mm256_srli_epi64( a, 32 );
@@ -400,7 +400,7 @@ void completesum_alt_with_sse(const uint64_t* coeff, const uint64_t *  x, const 
 		temp = _mm256_and_si256 ( mask_low, product );
 		sse_ctr1 = _mm256_add_epi64 ( sse_ctr1, temp );
 
-		COMPLETESUM_ALT_STAFF_T2( 13 + i )
+		COMPLETESUM_ALT_STUFF_T2( 13 + i )
 
 		// second cross
 		data = _mm256_srli_epi64( data, 32 );
@@ -410,14 +410,14 @@ void completesum_alt_with_sse(const uint64_t* coeff, const uint64_t *  x, const 
 		temp = _mm256_and_si256 ( mask_low, product );
 		sse_ctr1 = _mm256_add_epi64 ( sse_ctr1, temp );
 
-		COMPLETESUM_ALT_STAFF_T1( 14 + i )
+		COMPLETESUM_ALT_STUFF_T1( 14 + i )
 		// upper 32 bits
 		product = _mm256_mul_epu32 ( data, a_shifted ); // A 128-bit value that contains two 64-bit unsigned integers. The result can be expressed by the following equations. r0 := a0 * b0; r1 := a2 * b2
 		temp = _mm256_srli_epi64( product, 32 ); // Shifts the 2 signed or unsigned 64-bit integers in a right by count bits while shifting in zeros.
 		sse_ctr3 = _mm256_add_epi64 ( sse_ctr3, temp );
 		temp = _mm256_and_si256 ( mask_low, product );
 		sse_ctr2 = _mm256_add_epi64 ( sse_ctr2, temp );
-		COMPLETESUM_ALT_STAFF_T2( 15 + i )		
+		COMPLETESUM_ALT_STUFF_T2( 15 + i )		
 
 #ifdef IACA
         IACA_END;
@@ -426,7 +426,7 @@ void completesum_alt_with_sse(const uint64_t* coeff, const uint64_t *  x, const 
 	
     for(; i<length; ++i) 
 	{
-	COMPLETESUM_ALT_STAFF_T1( i )
+	COMPLETESUM_ALT_STUFF_T1( i )
     }
 	
 	uint64_t t0, t1, t2, t3;
@@ -450,7 +450,7 @@ void completesum_alt_with_sse(const uint64_t* coeff, const uint64_t *  x, const 
 	ctr2 += t3 >> 32;
 
 
-	COMPLETESUM_ALT_STAFF_FINALIZE
+	COMPLETESUM_ALT_STUFF_FINALIZE
 	
     out[0] = ctr0;
     out[1] = ctr1;
@@ -459,7 +459,7 @@ void completesum_alt_with_sse(const uint64_t* coeff, const uint64_t *  x, const 
 
 #endif // USE_SSE 
 
-////// completesum_alt staff end /////
+////// completesum_alt STUFF end /////
 
 
 void completesum(const uint64_t* a, const uint64_t *  x, const size_t length, uint64_t * out) {
