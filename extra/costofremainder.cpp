@@ -641,6 +641,166 @@ void MMHsum(const uint64_t* randomsource, const uint64_t *  string, const size_t
 }
 
 
+// like MHH, this is essentially multilinear with 64bit multiplication
+// summed up over a 128-bit counter
+void MMHsum32blocks(const uint64_t* randomsource, const uint64_t *  string, const size_t length, uint64_t * out) {
+
+    uint64_t low = 0;
+    uint64_t high = 0;
+    size_t i = 0;
+    for(; i<length/32*32; ) {
+        __asm__ (
+            "movq (%[u]),%%rax\n"
+            "mulq (%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 8(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 8(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 16(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 16(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 24(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 24(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 32(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 32(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 40(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 40(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 48(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 48(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 56(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 56(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "adcq %%rdx,  %[rh]\n"
+            :  [rh] "+r" (high) , [rl] "+r" (low)  : [u] "r" (randomsource+i), [v] "r" (string+i)  :"rdx","rax","memory","cc");
+            i+=8;
+        __asm__ (
+            "movq (%[u]),%%rax\n"
+            "mulq (%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 8(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 8(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 16(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 16(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 24(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 24(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 32(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 32(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 40(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 40(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 48(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 48(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 56(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 56(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "adcq %%rdx,  %[rh]\n"
+            :  [rh] "+r" (high) , [rl] "+r" (low)  : [u] "r" (randomsource+i), [v] "r" (string+i)  :"rdx","rax","memory","cc");
+            i+=8;
+        __asm__ (
+            "movq (%[u]),%%rax\n"
+            "mulq (%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 8(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 8(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 16(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 16(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 24(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 24(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 32(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 32(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 40(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 40(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 48(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 48(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 56(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 56(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "adcq %%rdx,  %[rh]\n"
+            :  [rh] "+r" (high) , [rl] "+r" (low)  : [u] "r" (randomsource+i), [v] "r" (string+i)  :"rdx","rax","memory","cc");
+            i+=8;
+        __asm__ (
+            "movq (%[u]),%%rax\n"
+            "mulq (%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 8(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 8(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 16(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 16(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 24(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 24(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 32(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 32(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 40(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 40(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 48(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 48(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "movq 56(%[u]),%%rax\n"
+            "adcq %%rdx,  %[rh]\n"
+            "mulq 56(%[v])\n"
+            "addq %%rax,  %[rl]\n"
+            "adcq %%rdx,  %[rh]\n"
+            :  [rh] "+r" (high) , [rl] "+r" (low)  : [u] "r" (randomsource+i), [v] "r" (string+i)  :"rdx","rax","memory","cc");
+            i+=8;
+    }
+
+    for(; i<length; ++i) {
+        __asm__ ("mulq %[v]\n"
+                 "addq %%rax,  %[rl]\n"
+                 "adcq %%rdx,  %[rh]\n"
+                 :  [rh] "+r" (high), [rl] "+r" (low)  : [u] "a" (randomsource[i]), [v] "r" (string[i])  :"rdx","cc");
+    }
+    out[0] = low;
+    out[1] = high;
+}
+
 // a sum with half the number of multiplications
 void NHsum(const uint64_t* kp, const uint64_t *  mp, const size_t length, uint64_t * out) {
     uint64_t th, tl;
@@ -787,6 +947,13 @@ int main() {
     cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
     out[0]=0; out[1]=0; out[2]=0;  
     const clock_t S5 = clock();
+    out[0]=0; out[1]=0; out[2]=0;   
+    for(int T=0; T<repeat; ++T) {
+        MMHsum32blocks( a, x, N,out);
+    }
+    cout<<out[0]<<" "<<out[1]<<" "<<out[2]<<endl;
+    out[0]=0; out[1]=0; out[2]=0;  
+    const clock_t S6 = clock();
     double numberofinputpairs = (double) N * repeat/1000000.0;
     cout<<"We report the number of millions of input pairs processed per second"<<endl;
     cout<<"complete_alt sum ="<<numberofinputpairs/((double)(S1-S0)/ CLOCKS_PER_SEC)<<endl;
@@ -794,5 +961,6 @@ int main() {
     cout<<"MMH sum ="<<numberofinputpairs/((double)(S3-S2)/ CLOCKS_PER_SEC)<<endl;
     cout<<"NH sum ="<<numberofinputpairs/((double)(S4-S3)/ CLOCKS_PER_SEC)<<endl;
     cout<<"complete sum (32 ints)="<<numberofinputpairs/((double)(S5-S4)/ CLOCKS_PER_SEC)<<endl;
+    cout<<"MMH sum (32 ints)="<<numberofinputpairs/((double)(S6-S5)/ CLOCKS_PER_SEC)<<endl;
 
 }
