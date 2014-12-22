@@ -912,6 +912,7 @@ int main() {
         a[i] = rand() + (((uint64_t)rand())<<32);
         x[i] = rand() + (((uint64_t)rand())<<32);
     }
+    for(int k = 0; k < 10; ++k) {
     uint192 s1, s2;
 	
     const clock_t S0 = clock();
@@ -962,5 +963,5 @@ int main() {
     cout<<"NH sum ="<<numberofinputpairs/((double)(S4-S3)/ CLOCKS_PER_SEC)<<endl;
     cout<<"complete sum (32 ints)="<<numberofinputpairs/((double)(S5-S4)/ CLOCKS_PER_SEC)<<endl;
     cout<<"MMH sum (32 ints)="<<numberofinputpairs/((double)(S6-S5)/ CLOCKS_PER_SEC)<<endl;
-
+    }
 }
