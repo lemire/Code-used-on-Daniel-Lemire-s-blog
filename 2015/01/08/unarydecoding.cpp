@@ -2,7 +2,7 @@
 
 /**
 
-The idea here is to decode unary numbers. E.g., 
+The idea here is to decode unary numbers. E.g.,
 
 0 is written as 1
 1 is written as 01
@@ -58,7 +58,7 @@ int bitscanunary_naive(long *bitmap, int bitmapsize, int *out) {
                 newval = k * 64+ bit;
                 out[pos++] = newval - val;
                 val = newval;
-            } 
+            }
         }
     }
     return pos;
@@ -363,6 +363,7 @@ int main() {
     WallClockTimer timer;
     int repeat = 100;
     int N = 10000;
+    cout<<"# We report bits-per-integer speed-of-naive speed-of-popcnt speed-of-table where speeds are in millions of integers per second "<<endl;
     for(int sb = 1; sb<=64; sb*=2) {
         int setbitsmax = sb*N;
         vector<long> bitmap(N);
@@ -378,41 +379,37 @@ int main() {
         vector<int> outputnaive(bitcount);
         vector<int> outputpopcnt(bitcount);
         vector<int> outputtable(bitcount);
-        
+
         cout<<"# Stored "<<bitcount<<" unary numbers in  ";
         cout<< N*sizeof(long)<<" bytes " ;
         cout<<" ("<<bitsperinteger<<" bits per number)"<<endl;
-        cout<<"#We report bits-per-integer speed-of-naive speed-of-popcnt speed-of-table where speeds are in millions of integers per second "<<endl;
-        
-        for(int t = 0; t<5; ++t) {
-            timer.reset();
-            int c0 = 0;
-            for(int t1=0; t1<repeat; ++t1)
-                c0 = bitscanunary_naive(&bitmap[0],N,&outputnaive[0]);
-            int tinaive = timer.split();
-            //cout<<"Decoded "<<c0<<" values with naive"<<endl;
-            timer.reset();
-            int c1 = 0;
-            for(int t1=0; t1<repeat; ++t1)
-                c1 = bitscanunary_popcnt(&bitmap[0],N,&outputpopcnt[0]);
-            assert(c1 == c0);
-            int tipopcnt = timer.split();
-            //cout<<"Decoded "<<c1<<" values with pop"<<endl;
-            timer.reset();
-            int c2 = 0;
-            for(int t1=0; t1<repeat; ++t1)
-                c2 = bitscanunary_table(&bitmap[0],N,&outputtable[0]);
-            assert(c2 == c0);
-            int titable = timer.split();
-            //cout<<"Decoded "<<c2<<" values with naive"<<endl;
-            assert (outputnaive == outputpopcnt);
-            assert (outputnaive == outputtable);
-            cout << bitsperinteger<<" " ;
-            cout << bitcount * 1.0 /tinaive <<" ";
-            cout << bitcount * 1.0 /tipopcnt <<" ";
-            cout << bitcount * 1.0 /titable <<" ";
-            cout << endl ;
-        }
+        timer.reset();
+        int c0 = 0;
+        for(int t1=0; t1<repeat; ++t1)
+            c0 = bitscanunary_naive(&bitmap[0],N,&outputnaive[0]);
+        int tinaive = timer.split();
+        //cout<<"Decoded "<<c0<<" values with naive"<<endl;
+        timer.reset();
+        int c1 = 0;
+        for(int t1=0; t1<repeat; ++t1)
+            c1 = bitscanunary_popcnt(&bitmap[0],N,&outputpopcnt[0]);
+        assert(c1 == c0);
+        int tipopcnt = timer.split();
+        //cout<<"Decoded "<<c1<<" values with pop"<<endl;
+        timer.reset();
+        int c2 = 0;
+        for(int t1=0; t1<repeat; ++t1)
+            c2 = bitscanunary_table(&bitmap[0],N,&outputtable[0]);
+        assert(c2 == c0);
+        int titable = timer.split();
+        //cout<<"Decoded "<<c2<<" values with naive"<<endl;
+        assert (outputnaive == outputpopcnt);
+        assert (outputnaive == outputtable);
+        cout << bitsperinteger<<" " ;
+        cout << bitcount * 1.0 /tinaive <<" ";
+        cout << bitcount * 1.0 /tipopcnt <<" ";
+        cout << bitcount * 1.0 /titable <<" ";
+        cout << endl ;
     }
 
     return 0;
