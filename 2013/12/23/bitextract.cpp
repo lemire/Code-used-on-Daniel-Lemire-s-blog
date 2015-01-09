@@ -138,6 +138,21 @@ int bitscan3(long *bitmap, int bitmapsize, int *out) {
     return pos;
 }
 
+int bitscan3b(long *bitmap, int bitmapsize, int *out) {
+    int pos = 0;
+    for (int k = 0; k < bitmapsize; ++k) {
+        long myword = bitmap[k];
+        while (myword != 0) {
+            long t = myword & -myword;
+            int r = __builtin_ctzl(myword);
+            out[pos++] = k * 64 +  r;
+            myword ^= t;
+        }
+    }
+    return pos;
+}
+
+
 unsigned char hugearray[256][10] = {{0,8},
     {1,0,7},
     {1,1,6},
@@ -2260,7 +2275,12 @@ int main() {
                 c3 = bitscan3(&bitmap[0],N,&output[0]);
             int ti3 = timer.split();
             assert(c1 == c3);
-
+            timer.reset();
+            int c3b = 0;
+            for(int t1=0; t1<100; ++t1)
+                c3b = bitscan3b(&bitmap[0],N,&output[0]);
+            int ti3b = timer.split();
+            assert(c1 == c3b);
             timer.reset();
             int c4 = 0;
             for(int t1=0; t1<100; ++t1)
@@ -2285,8 +2305,21 @@ int main() {
            
 
 
-            if(t>2)
-                cout<<c1*1.0/(N*sizeof(long)*8.0)<<" " <<bitcount*100.0*0.001 /ti0<<" " <<bitcount*100.0*0.001 /ti1unary<<" " <<bitcount*100.0*0.001 /ti1<<" " <<bitcount*100.0*0.001 /ti2<<" " <<bitcount*100.0*0.001 /ti3<<" " <<bitcount*100.0*0.001 /ti4<<" " <<bitcount*100.0*0.001 /ti5<<" "<<bitcount*100.0*0.001 /ti1Kaser<<" "<<bitcount*100.0*0.001 /ti1Kaser2<<endl;
+            if(t>2) {
+                cout<<"# density ti0 ti1unary ti1 ti2 t3 ti3b ti4 ti5 ti1Kaser ti1Kaser2"<<endl;
+                cout
+                <<c1*1.0/(N*sizeof(long)*8.0)
+                <<" " <<bitcount*100.0*0.001 /ti0
+                <<" " <<bitcount*100.0*0.001 /ti1unary
+                <<" " <<bitcount*100.0*0.001 /ti1
+                <<" " <<bitcount*100.0*0.001 /ti2
+                <<" " <<bitcount*100.0*0.001 /ti3
+                <<" " <<bitcount*100.0*0.001 /ti3b
+                <<" " <<bitcount*100.0*0.001 /ti4
+                <<" " <<bitcount*100.0*0.001 /ti5
+                <<" "<<bitcount*100.0*0.001 /ti1Kaser
+                <<" "<<bitcount*100.0*0.001 /ti1Kaser2<<endl;
+            }
         }
     }
 
