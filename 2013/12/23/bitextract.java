@@ -127,6 +127,18 @@ public class bitextract {
       }
       return pos;
   }
+  public static int bitscan2nn(long[] bitmaps, int[] output) {
+	  int pos = 0;
+      for(int k = 0; k < bitmaps.length; ++k) {  
+        long data = bitmaps[k];
+        while (data != 0) {
+          final int ntz = mynumberOfTrailingZeros(data);
+          output[pos++] = k * 64 + ntz;
+          data &= data - 1;
+        }
+      }
+      return pos;
+  }
   
   // inspired by http://www.steike.com/code/bits/debruijn/	
   public static int bitscan3(long[] bitmaps, int[] output) {
@@ -224,6 +236,12 @@ public class bitextract {
 		    c2n = bitscan2n(bitmap,output);
 		  long aft2n = System.nanoTime();
 		  if(c1 != c2n) throw new RuntimeException("bug2n");
+		  long bef2nn = System.nanoTime();
+		  int c2nn = 0;
+		  for(int t1=0;t1<100;++t1)
+		    c2nn = bitscan2nn(bitmap,output);
+		  long aft2nn = System.nanoTime();
+		  if(c1 != c2nn) throw new RuntimeException("bug2n");
 		  long bef3 = System.nanoTime();
 		  int c3 = 0;
 		  for(int t1=0;t1<100;++t1)
@@ -231,7 +249,7 @@ public class bitextract {
 		  long aft3 = System.nanoTime();
 		  if(c1 != c3) throw new RuntimeException("bug3");
 		  if(t>2) {
-		    System.out.println("# density 0 1 1f 2 2f 2n 3 1k 1k2");
+		    System.out.println("# density 0 1 1f 2 2f 2n 2nn 3 1k 1k2");
 		    System.out.println(sb+" " 
 		    +bitcount*100.0*1000 /(aft0-bef0)
 		    +" " +bitcount*100.0*1000 /(aft1-bef1)
@@ -239,6 +257,7 @@ public class bitextract {
 		    +" "+bitcount*100.0*1000/(aft2-bef2)
 		    +" "+bitcount*100.0*1000/(aft2f-bef2f)
 		    +" "+bitcount*100.0*1000/(aft2n-bef2n)
+		    +" "+bitcount*100.0*1000/(aft2nn-bef2nn)
 		    +" "+bitcount*100.0*1000/(aft3-bef3)
 		    +" "+bitcount*100.0*1000/(aft1Kaser-bef1Kaser)
 		    +" "+bitcount*100.0*1000/(aft1Kaser2-bef1Kaser2));
