@@ -432,10 +432,10 @@ int main() {
         assert (outputnaive == outputctz);
         
         cout << bitsperinteger<<" " ;
-        cout << bitcount * 0.001 /tinaive <<" ";
-        cout << bitcount * 0.001 /tipopcnt <<" ";
-        cout << bitcount * 0.001 /titable <<" ";
-        cout << bitcount * 0.001 /tictz <<" ";
+        cout << bitcount * repeat * 0.001 /tinaive <<" ";
+        cout << bitcount * repeat * 0.001 /tipopcnt <<" ";
+        cout << bitcount * repeat * 0.001 /titable <<" ";
+        cout << bitcount * repeat * 0.001 /tictz <<" ";
         cout << endl ;
     }
 
