@@ -114,7 +114,19 @@ public class bitextract {
       }
       return pos;
   }
-  
+  public static int bitscan2n(long[] bitmaps, int[] output) {
+	  int pos = 0;
+      for(int k = 0; k < bitmaps.length; ++k) {  
+        long data = bitmaps[k];
+        while (data != 0) {
+          long t = data & -data;
+          final int ntz = mynumberOfTrailingZeros(data);
+          output[pos++] = k * 64 + ntz;
+          data ^= t;
+        }
+      }
+      return pos;
+  }
   
   // inspired by http://www.steike.com/code/bits/debruijn/	
   public static int bitscan3(long[] bitmaps, int[] output) {
@@ -206,14 +218,31 @@ public class bitextract {
 		    c2f = bitscan2f(bitmap,output);
 		  long aft2f = System.nanoTime();
 		  if(c1 != c2f) throw new RuntimeException("bug2f");
+		  long bef2n = System.nanoTime();
+		  int c2n = 0;
+		  for(int t1=0;t1<100;++t1)
+		    c2n = bitscan2n(bitmap,output);
+		  long aft2n = System.nanoTime();
+		  if(c1 != c2n) throw new RuntimeException("bug2n");
 		  long bef3 = System.nanoTime();
 		  int c3 = 0;
 		  for(int t1=0;t1<100;++t1)
 		    c3 = bitscan3(bitmap,output);
 		  long aft3 = System.nanoTime();
 		  if(c1 != c3) throw new RuntimeException("bug3");
-		  if(t>2)
-		    System.out.println(sb+" " +bitcount*100.0*1000 /(aft0-bef0)+" " +bitcount*100.0*1000 /(aft1-bef1)+" " +bitcount*100.0*1000 /(aft1f-bef1f)+" "+bitcount*100.0*1000/(aft2-bef2)+" "+bitcount*100.0*1000/(aft2f-bef2f)+" "+bitcount*100.0*1000/(aft3-bef3)+" "+bitcount*100.0*1000/(aft1Kaser-bef1Kaser)+" "+bitcount*100.0*1000/(aft1Kaser2-bef1Kaser2));
+		  if(t>2) {
+		    System.out.println("# density 0 1 1f 2 2f 2n 3 1k 1k2");
+		    System.out.println(sb+" " 
+		    +bitcount*100.0*1000 /(aft0-bef0)
+		    +" " +bitcount*100.0*1000 /(aft1-bef1)
+		    +" " +bitcount*100.0*1000 /(aft1f-bef1f)
+		    +" "+bitcount*100.0*1000/(aft2-bef2)
+		    +" "+bitcount*100.0*1000/(aft2f-bef2f)
+		    +" "+bitcount*100.0*1000/(aft2n-bef2n)
+		    +" "+bitcount*100.0*1000/(aft3-bef3)
+		    +" "+bitcount*100.0*1000/(aft1Kaser-bef1Kaser)
+		    +" "+bitcount*100.0*1000/(aft1Kaser2-bef1Kaser2));
+		  }
 		}
   	  }
 
