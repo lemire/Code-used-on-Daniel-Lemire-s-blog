@@ -18,4 +18,4 @@ set out "results.png"
 plot "results.txt"  u 1:2 ti "naive" with lp ls 1,\
    "" u 1:4 ti "popcnt" with lp ls 2,\
    "" u 1:5 ti "table" with lp ls 3,\
-   "" u 1:5 ti "tzcnt" with lp ls 4
+   "" u 1:6 ti "tzcnt" with lp ls 4
