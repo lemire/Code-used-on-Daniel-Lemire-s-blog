@@ -1,15 +1,15 @@
-# We report bits-per-integer speed-of-naive speed-of-popcnt speed-of-table where speeds are in millions of integers per second 
+# We report bits-per-integer speed-of-naive speed-of-popcnt1 speed-of-popcnt2 speed-of-table speed-of-tzcnt1 speed-of-tzcnt2 where speeds are in millions of integers per second 
 # Stored 9931 unary numbers in  80000 bytes  (64.4447 bits per number)
-64.4447 19.4725 165.517 55.1722 
+64.4447 17.1224 198.62 141.871 52.2684 141.871 198.62 
 # Stored 19669 unary numbers in  80000 bytes  (32.5385 bits per number)
-32.5385 33.9121 245.863 70.2464 
+32.5385 30.7328 245.863 245.863 70.2464 245.863 280.986 
 # Stored 38784 unary numbers in  80000 bytes  (16.5017 bits per number)
-16.5017 52.4108 352.582 86.1867 
+16.5017 51.0316 323.2 387.84 86.1867 387.84 387.84 
 # Stored 75072 unary numbers in  80000 bytes  (8.52515 bits per number)
-8.52515 69.5111 469.2 129.434 
+8.52515 77.3938 417.067 500.48 129.434 577.477 536.229 
 # Stored 141495 unary numbers in  80000 bytes  (4.52313 bits per number)
-4.52313 88.9906 565.98 205.065 
+4.52313 100.351 524.056 643.159 202.136 744.711 786.083 
 # Stored 251680 unary numbers in  80000 bytes  (2.54291 bits per number)
-2.54291 121.585 645.333 326.857 
+2.54291 123.373 599.238 762.667 318.582 838.933 786.5 
 # Stored 404380 unary numbers in  80000 bytes  (1.58267 bits per number)
-1.58267 206.316 697.207 475.741 
+1.58267 201.184 641.873 825.265 459.523 842.458 842.458 
