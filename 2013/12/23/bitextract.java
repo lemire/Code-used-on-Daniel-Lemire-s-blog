@@ -127,6 +127,19 @@ public class bitextract {
       }
       return pos;
   }
+  public static int bitscan2nn(long[] bitmaps, int[] output) {
+	  int pos = 0;
+      for(int k = 0; k < bitmaps.length; ++k) {  
+        long data = bitmaps[k];
+        while (data != 0) {
+          final int ntz = mynumberOfTrailingZeros(data);
+          output[pos++] = k * 64 + ntz;
+          data &= data - 1;
+        }
+      }
+      return pos;
+  }
+
   public static int bitscan2nnn(long[] bitmaps, int[] output) {
 	  int pos = 0;
       for(int k = 0; k < bitmaps.length; ++k) {  
