@@ -44,7 +44,7 @@ int findSIMD(uint32_t * begin, uint32_t * end, uint32_t val) {
 
 int main() {
     const size_t N = 128;
-    const size_t repeat = 100000;
+    const size_t repeat = 5000000;
     uint32_t a[N];
     uint32_t target = rand();
     for(size_t i = 0; i < N; ++i) {
@@ -69,7 +69,7 @@ int main() {
         dummy += findSIMD( &a[0], &a[N],a[repeat%N]);
     }
     const clock_t S2 = clock();
-    cout<<"we report the speed."<<endl;
+    cout<<"We report the speed in millions of values checked per second."<<endl;
     double oneoveronemillion = 1 / (1000 * 1000.0);
     double normalizedvolume = N * repeat * oneoveronemillion; 
     cout<<"find ="<<normalizedvolume/((double)(S1-S0)/ CLOCKS_PER_SEC)<<endl;

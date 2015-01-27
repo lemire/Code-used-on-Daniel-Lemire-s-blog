@@ -1,3 +1,7 @@
+
+// stolen from Leonid
+//g++ -std=c++11 -O3 -o test_mem_latency test_mem_latency.cpp 
+// g++ -DuseHugePage=1 -std=c++11 -O3 -o test_mem_latency test_mem_latency.cpp 
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
