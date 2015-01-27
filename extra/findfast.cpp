@@ -1,6 +1,9 @@
 /**
+searching values over small blocks of integers.
 g++ -O2 -march=native -o findfast findfast.cpp && ./findfast
 
+TODO: might want to use a binary search for comparison. (But this is most
+likely to help large blocks whereas we want to focus on small blocks.)
 */
 #include <stdlib.h>
 #include <sys/stat.h>
