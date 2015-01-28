@@ -1,6 +1,6 @@
 /**
+searching values over small blocks of integers.
 g++ -O2 -march=native -o findfast findfast.cpp && ./findfast
-
 */
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -8,7 +8,8 @@ g++ -O2 -march=native -o findfast findfast.cpp && ./findfast
 #include <sys/types.h>
 #include <iostream>
 #include <cassert>
-
+#include <vector>
+#include <algorithm>
 #include <stdint.h>
 #include <x86intrin.h>
 using namespace std;
@@ -17,6 +18,14 @@ using namespace std;
 int find(uint32_t * begin, uint32_t * end, uint32_t val) {
     for(uint32_t * i = begin; i != end; ++i) {
         if(*i == val) return i - begin;
+    }
+    return -1;
+}
+
+int findbs(uint32_t * begin, uint32_t * end, uint32_t val) {
+    uint32_t * i = lower_bound (begin,end, val);
+    if(i != end) {
+      if(*i == val) return i - begin;
     }
     return -1;
 }
@@ -43,36 +52,44 @@ int findSIMD(uint32_t * begin, uint32_t * end, uint32_t val) {
 
 
 int main() {
-    const size_t N = 128;
-    const size_t repeat = 100000;
-    uint32_t a[N];
-    uint32_t target = rand();
+    const size_t repeat = 50000000;
+    srand(12);
+    size_t dummy = 0;
+    for(size_t N = 16; N <= 128; N*=2) {
+    cout<<"block size = "<<N<<endl;
+    vector<uint32_t> a(N);
     for(size_t i = 0; i < N; ++i) {
         a[i] = rand() ;
     }
-    cout<<"Checking that the code is correct....";
-    cout.flush();
+    sort( &a[0], &a[0]+N);
     for(int T=0; T<N; ++T) {
-        int x = find( &a[0], &a[N],a[repeat%N]);
-        int y = findSIMD( &a[0], &a[N],a[repeat%N]);
+        int x = find( &a[0], &a[0]+N,a[T%N]);
+        int y = findSIMD( &a[0], &a[0]+N,a[T%N]);
+        int z = findbs( &a[0], &a[0]+N,a[T%N]);
         assert(x == y);
+        assert(x == z);
     }
-    cout<<"ok, we are good."<<endl;
  
-    int dummy = 0;
     const clock_t S0 = clock();
     for(int T=0; T<repeat; ++T) {
-        dummy += find( &a[0], &a[N],a[repeat%N]);
+        dummy += find( &a[0], &a[0]+N,a[T%N]);
     }
     const clock_t S1 = clock();
     for(int T=0; T<repeat; ++T) {
-        dummy += findSIMD( &a[0], &a[N],a[repeat%N]);
+        dummy += findSIMD( &a[0], &a[0]+N,a[T%N]);
     }
     const clock_t S2 = clock();
-    cout<<"we report the speed."<<endl;
+    for(int T=0; T<repeat; ++T) {
+        dummy += findbs( &a[0], &a[0]+N,a[T%N]);
+    }
+    const clock_t S3 = clock();
+     cout<<"We report the speed in millions of values checked per second."<<endl;
     double oneoveronemillion = 1 / (1000 * 1000.0);
     double normalizedvolume = N * repeat * oneoveronemillion; 
-    cout<<"find ="<<normalizedvolume/((double)(S1-S0)/ CLOCKS_PER_SEC)<<endl;
-    cout<<"findSIMD ="<<normalizedvolume/((double)(S2-S1)/ CLOCKS_PER_SEC)<<endl;
+    cout<<"scalar sequential search = "<<normalizedvolume/((double)(S1-S0)/ CLOCKS_PER_SEC)<<endl;
+    cout<<"SIMD sequential search = "<<normalizedvolume/((double)(S2-S1)/ CLOCKS_PER_SEC)<<endl;
+    cout<<"binary search = "<<normalizedvolume/((double)(S3-S2)/ CLOCKS_PER_SEC)<<endl;
+    cout<<endl;
+    }
     return dummy;
 }
