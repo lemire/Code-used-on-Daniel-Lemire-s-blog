@@ -31,8 +31,9 @@ uint16_t interleaved (keyvalue * inter, size_t number)  {
     uint16_t maxvalue = inter[number - 1].key;
     uint16_t answer = 0;
     for(uint16_t query = 0; query <= maxvalue; ++query) {
-        keyvalue * val = lower_bound(inter, inter+number, query);
-        if(val->key == query) answer += val->value;
+        uint16_t q = (uint16_t) (rand() % maxvalue);
+        keyvalue * val = lower_bound(inter, inter+number, q);
+        if(val->key == q) answer += val->value;
     }
     return answer;
 }
@@ -42,8 +43,9 @@ uint16_t noninterleaved (uint16_t * keys, uint16_t * values, size_t number)  {
     uint16_t maxvalue = keys[number - 1];
     uint16_t answer = 0;
     for(uint16_t query = 0; query <= maxvalue; ++query) {
-        uint16_t * val = lower_bound(&keys[0], (&keys[0])+number, query);
-        if(*val == query) answer += values[val-keys];
+        uint16_t q = (uint16_t) (rand() % maxvalue);
+        uint16_t * val = lower_bound(&keys[0], (&keys[0])+number, q);
+        if(*val == q) answer += values[val-keys];
     }
     return answer;
 }
