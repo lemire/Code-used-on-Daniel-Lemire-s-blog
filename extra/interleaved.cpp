@@ -31,7 +31,7 @@ uint16_t interleaved (keyvalue * inter, size_t number)  {
     uint16_t maxvalue = inter[number - 1].key;
     uint16_t answer = 0;
     for(uint16_t query = 0; query <= maxvalue; ++query) {
-        uint16_t q = (uint16_t) (rand() % maxvalue);
+        uint16_t q = (uint16_t) ((1023 * query) % maxvalue);
         keyvalue * val = lower_bound(inter, inter+number, q);
         if(val->key == q) answer += val->value;
     }
@@ -43,12 +43,37 @@ uint16_t noninterleaved (uint16_t * keys, uint16_t * values, size_t number)  {
     uint16_t maxvalue = keys[number - 1];
     uint16_t answer = 0;
     for(uint16_t query = 0; query <= maxvalue; ++query) {
-        uint16_t q = (uint16_t) (rand() % maxvalue);
+        uint16_t q = (uint16_t) ((1023 * query) % maxvalue);
         uint16_t * val = lower_bound(&keys[0], (&keys[0])+number, q);
         if(*val == q) answer += values[val-keys];
     }
     return answer;
 }
+
+// values must be sorted
+uint16_t interleavedseq (keyvalue * inter, size_t number)  {
+    uint16_t maxvalue = inter[number - 1].key;
+    uint16_t answer = 0;
+    for(uint16_t query = 0; query <= maxvalue; ++query) {
+        uint16_t q = query;
+        keyvalue * val = lower_bound(inter, inter+number, q);
+        if(val->key == q) answer += val->value;
+    }
+    return answer;
+}
+
+// values must be sorted
+uint16_t noninterleavedseq (uint16_t * keys, uint16_t * values, size_t number)  {
+    uint16_t maxvalue = keys[number - 1];
+    uint16_t answer = 0;
+    for(uint16_t query = 0; query <= maxvalue; ++query) {
+        uint16_t q = query;
+        uint16_t * val = lower_bound(&keys[0], (&keys[0])+number, q);
+        if(*val == q) answer += values[val-keys];
+    }
+    return answer;
+}
+
 
 int main() {
     const size_t number = 1024;
@@ -68,7 +93,7 @@ int main() {
     
     const size_t repeat = 100;
 
-    for(int k = 0; k < 10; ++k) {
+    for(int k = 0; k < 3; ++k) {
       const clock_t S0 = clock();
       uint16_t bogus1 = 0;   
       for(int T=0; T<repeat; ++T) {
@@ -83,6 +108,23 @@ int main() {
       cout<<"ignore:"<<bogus1<<" "<<bogus2<<endl;
       cout<<"interleaved: "<<S1-S0<<endl;
       cout<<"non-interleaved: "<<S2-S1<<endl;
+      cout<<endl;
+    }
+    for(int k = 0; k < 3; ++k) {
+      const clock_t S0 = clock();
+      uint16_t bogus1 = 0;   
+      for(int T=0; T<repeat; ++T) {
+        bogus1 += interleavedseq( inter.data(), inter.size());
+      }
+      const clock_t S1 = clock();
+      uint16_t bogus2 = 0;   
+      for(int T=0; T<repeat; ++T) {
+        bogus2 += noninterleavedseq(keys,values,number);
+      }
+      const clock_t S2 = clock();
+      cout<<"ignore:"<<bogus1<<" "<<bogus2<<endl;
+      cout<<"interleaved sequential: "<<S1-S0<<endl;
+      cout<<"non-interleaved sequential: "<<S2-S1<<endl;
       cout<<endl;
     }
 }
