@@ -42,7 +42,10 @@ uint32_t branchingextract (__m128i out, int i)  {
 int main() {
     __m128i out = _mm_set_epi32(4,3,2,1);
     const size_t repeat = 10000;
-
+    for(int T=0; T<4; ++T) {
+        assert(branchlessextract (out,T) ==  branchingextract (out,T));
+    }
+ 
     for(int k = 0; k < 3; ++k) {
       const clock_t S0 = clock();
       uint32_t bogus1 = 0;   
