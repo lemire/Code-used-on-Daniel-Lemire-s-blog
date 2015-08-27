@@ -422,7 +422,6 @@ int bitscanunary_ctzl2(long *bitmap, int bitmapsize, int *out) {
 #ifdef IACA
         IACA_START;
 #endif
-            long t = bitset & -bitset;
             int r = __builtin_ctzl(bitset);
             newval = k * 64 +  r;
             out[pos++] = newval - val;
