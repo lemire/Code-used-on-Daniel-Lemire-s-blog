@@ -63,7 +63,7 @@ int bitscanunary_naive(long *bitmap, int bitmapsize, int *out) {
             if((bitset & (1UL<<bit)) != 0) {
                 newval = k * 64+ bit;
                 out[pos++] = newval - val;
-                val = newval;
+                val = newval + 1;
             }
         }
     }
@@ -83,7 +83,7 @@ int bitscanunary_popcnt1(long *bitmap, int bitmapsize, int *out) {
             int r = __builtin_popcountl (t-1);//_mm_popcnt_u64 (t-1);
             newval = k * 64 +  r;
             out[pos++] = newval - val;
-            val = newval;
+            val = newval + 1;
             bitset ^= t;
 #ifdef IACA
         IACA_END;
@@ -105,7 +105,7 @@ int bitscanunary_popcnt2(long *bitmap, int bitmapsize, int *out) {
             int r = __builtin_popcountl (t-1);//_mm_popcnt_u64 (t-1);
             newval = k * 64 +  r;
             out[pos++] = newval - val;
-            val = newval;
+            val = newval + 1;
             bitset &=  bitset - 1;
 #ifdef IACA
         IACA_END;
@@ -384,7 +384,7 @@ int bitscanunary_table(long *bitmap, int bitmapsize, int *out) {
         for(int offset = 0; offset<codes[0]; ++offset) {
             newval = 8 * k + codes[offset +1];
             out[offset] = newval - val;
-            val = newval;
+            val = newval + 1;
         }
         out += codes[0];
     }
@@ -404,7 +404,7 @@ int bitscanunary_ctzl1(long *bitmap, int bitmapsize, int *out) {
             int r = __builtin_ctzl(bitset);
             newval = k * 64 +  r;
             out[pos++] = newval - val;
-            val = newval;
+            val = newval + 1;
             bitset ^= t;
 #ifdef IACA
         IACA_END;
@@ -422,11 +422,10 @@ int bitscanunary_ctzl2(long *bitmap, int bitmapsize, int *out) {
 #ifdef IACA
         IACA_START;
 #endif
-            long t = bitset & -bitset;
             int r = __builtin_ctzl(bitset);
             newval = k * 64 +  r;
             out[pos++] = newval - val;
-            val = newval;
+            val = newval + 1;
             bitset &= bitset - 1;
 #ifdef IACA
         IACA_END;
