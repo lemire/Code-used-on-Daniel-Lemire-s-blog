@@ -86,7 +86,7 @@ __m128i branchfree_search4_avx(int* source, size_t n, int target1, int target2, 
     __m128i target = _mm_setr_epi32(target1,target2,target3,target4);
     __m128i offsets = _mm_setzero_si128();
     size_t oldn = n;
-    __m128 ha = _mm_set1_epi32(n);
+    __m128i ha = _mm_set1_epi32(n);
     while(n>1) {
         ha = _mm_srli_epi32(ha,1);
         __m128i offsetsplushalf = _mm_add_epi32(offsets,ha);
