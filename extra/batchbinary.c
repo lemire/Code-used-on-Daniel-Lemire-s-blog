@@ -53,6 +53,28 @@ void branchfree_search2(int* source, size_t n, int target1, int target2, size_t 
     *index2 = ((base2 < source+oldn)?(*base2 < target2):0) + base2 - source;
 }
 
+void branchfree_search4(int* source, size_t n, int target1, int target2, int target3, int target4, size_t * index1, size_t * index2, size_t * index3, size_t * index4) {
+
+    int * base1 = source;
+    int * base2 = source;
+    int * base3 = source;
+    int * base4 = source;
+    size_t oldn = n;
+    while(n>1) {
+        size_t half = n >> 1;
+        base1 = (base1[half] < target1) ? &base1[half] : base1;
+        base2 = (base2[half] < target2) ? &base2[half] : base2;
+        base3 = (base3[half] < target3) ? &base3[half] : base3;
+        base4 = (base4[half] < target4) ? &base4[half] : base4;
+        n -= half;
+    }
+    *index1 = ((base1 < source+oldn)?(*base1 < target1):0) + base1 - source;
+    *index2 = ((base2 < source+oldn)?(*base2 < target2):0) + base2 - source;
+    *index3 = ((base3 < source+oldn)?(*base3 < target3):0) + base3 - source;
+    *index4 = ((base4 < source+oldn)?(*base4 < target4):0) + base4 - source;
+}
+
+
 void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2, size_t * index1, size_t * index2) {
     int * base1 = source;
     int * base2 = source;
@@ -70,6 +92,34 @@ void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2
     *index2 = ((base2 < source+n)?(*base2 < target2):0) + base2 - source;
 }
 
+void branchfree_search4_prefetch(int* source, size_t n, int target1, int target2, int target3, int target4, size_t * index1, size_t * index2, size_t * index3, size_t * index4) {
+    int * base1 = source;
+    int * base2 = source;
+    int * base3 = source;
+    int * base4 = source;
+    size_t oldn = n;
+    while(n>1) {
+        size_t half = n >> 1;
+        __builtin_prefetch(base1+(half>>1),0,0);
+        __builtin_prefetch(base1+half+(half>>1),0,0);
+        __builtin_prefetch(base2+(half>>1),0,0);
+        __builtin_prefetch(base2+half+(half>>1),0,0);
+        __builtin_prefetch(base3+(half>>1),0,0);
+        __builtin_prefetch(base3+half+(half>>1),0,0);
+        __builtin_prefetch(base4+(half>>1),0,0);
+        __builtin_prefetch(base4+half+(half>>1),0,0);
+
+        base1 = (base1[half] < target1) ? &base1[half] : base1;
+        base2 = (base2[half] < target2) ? &base2[half] : base2;
+        base3 = (base3[half] < target3) ? &base3[half] : base3;
+        base4 = (base4[half] < target4) ? &base4[half] : base4;
+        n -= half;
+    }
+    *index1 = ((base1 < source+oldn)?(*base1 < target1):0) + base1 - source;
+    *index2 = ((base2 < source+oldn)?(*base2 < target2):0) + base2 - source;
+    *index3 = ((base3 < source+oldn)?(*base3 < target3):0) + base3 - source;
+    *index4 = ((base4 < source+oldn)?(*base4 < target4):0) + base4 - source;
+}
 
 
 size_t branchfree_search_prefetch(int* source, size_t n, int target) {
@@ -95,6 +145,8 @@ int demo(size_t N, size_t Nq) {
   size_t bogus = 0;
   size_t bogus1 = 0;
   size_t bogus2 = 0;
+  size_t bogus3 = 0;
+  size_t bogus4 = 0;
   size_t i, k, ti;
   printf("===============\n");
 
@@ -112,7 +164,7 @@ int demo(size_t N, size_t Nq) {
   printf("\n");
 
   for(ti = 0; ti < 3; ++ti) {
-      struct timeval t1, t2, t3, t4, t5, t6;
+      struct timeval t1, t2, t3, t4, t5, t6, t7, t8;
 
       gettimeofday(&t6, 0);
        for(k = 0; k+1 < Nq; k+=2)
@@ -130,21 +182,29 @@ int demo(size_t N, size_t Nq) {
       for(k = 0; k+1 < Nq; k+=2)
           branchfree_search2(source,N,queries[k],queries[k+1],&bogus1,&bogus2);
       gettimeofday(&t5, 0);
+      for(k = 0; k+3 < Nq; k+=4)
+          branchfree_search4(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],&bogus1,&bogus2,&bogus3,&bogus4);
+      gettimeofday(&t7, 0);
+      for(k = 0; k+3 < Nq; k+=4)
+          branchfree_search4_prefetch(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],&bogus1,&bogus2,&bogus3,&bogus4);
+      gettimeofday(&t8, 0);
 
 
 
       printf("branchless time=%llu  \n",t2.tv_sec  * 1000ULL * 1000ULL + t2.tv_usec - (t1.tv_sec  * 1000ULL * 1000ULL + t1.tv_usec));
       printf("branchy time=%llu  \n",t3.tv_sec  * 1000ULL * 1000ULL + t3.tv_usec - (t2.tv_sec  * 1000ULL * 1000ULL + t2.tv_usec));
       printf("branchless time with prefetch=%llu \n",t4.tv_sec  * 1000ULL * 1000ULL + t4.tv_usec - (t3.tv_sec  * 1000ULL * 1000ULL + t3.tv_usec));
-      printf("branchless interleaved time=%llu  \n",t5.tv_sec  * 1000ULL * 1000ULL + t5.tv_usec - (t4.tv_sec  * 1000ULL * 1000ULL + t4.tv_usec));
-      printf("branchless interleaved (prefetch) time=%llu  \n",t1.tv_sec  * 1000ULL * 1000ULL + t1.tv_usec - (t6.tv_sec  * 1000ULL * 1000ULL + t6.tv_usec));
+      printf("branchless interleaved (2) time=%llu  \n",t5.tv_sec  * 1000ULL * 1000ULL + t5.tv_usec - (t4.tv_sec  * 1000ULL * 1000ULL + t4.tv_usec));
+      printf("branchless interleaved (2) (prefetch) time=%llu  \n",t1.tv_sec  * 1000ULL * 1000ULL + t1.tv_usec - (t6.tv_sec  * 1000ULL * 1000ULL + t6.tv_usec));
+      printf("branchless interleaved (4) time=%llu  \n",t7.tv_sec  * 1000ULL * 1000ULL + t7.tv_usec - (t5.tv_sec  * 1000ULL * 1000ULL + t5.tv_usec));
+      printf("branchless interleaved (4) (prefetch) time=%llu  \n",t8.tv_sec  * 1000ULL * 1000ULL + t8.tv_usec - (t7.tv_sec  * 1000ULL * 1000ULL + t7.tv_usec));
 
 
       printf("\n");
   }
   free(source);
   free(queries);
-  return (int) bogus+bogus1+bogus2;
+  return (int) bogus+bogus1+bogus2+bogus3+bogus4;
 
 }
 
