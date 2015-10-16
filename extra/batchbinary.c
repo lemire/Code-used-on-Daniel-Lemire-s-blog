@@ -74,60 +74,32 @@ void branchfree_search4(int* source, size_t n, int target1, int target2, int tar
     *index3 = ((base3 < source+oldn)?(*base3 < target3):0) + base3 - source;
     *index4 = ((base4 < source+oldn)?(*base4 < target4):0) + base4 - source;
 }
-
-#ifdef MYAVX
 #ifdef __AVX2__
+#define MYAVX
+#ifdef MYAVX
 
 void print(__m128i bog) {
     printf("%d %d %d %d \n",_mm_extract_epi32(bog,0),_mm_extract_epi32(bog,1),_mm_extract_epi32(bog,2),_mm_extract_epi32(bog,3));
 
 }
 __m128i branchfree_search4_avx(int* source, size_t n, int target1, int target2, int target3, int target4) {
-
-//    int * base1 = source;
-    //  int * base2 = source;
-    //int * base3 = source;
-    //int * base4 = source;
     __m128i target = _mm_setr_epi32(target1,target2,target3,target4);
     __m128i offsets = _mm_setzero_si128();
     size_t oldn = n;
     __m128 ha = _mm_set1_epi32(n);
     while(n>1) {
-        //size_t half = n >> 1;
-//size_t half = n >> 1;
-        printf("target ");
-        print(target);
-
         ha = _mm_srli_epi32(ha,1);
         __m128i offsetsplushalf = _mm_add_epi32(offsets,ha);
-        printf("indexes ");
-        print(offsetsplushalf);
-        __m128i keys = _mm_i32gather_epi32(source,offsetsplushalf,1);
-        printf("keys ");
-        print(keys);
-        __m128i lt = _mm_cmplt_epi32(target,keys);
-        printf("lt ");
-        print(lt);
-        offsets = _mm_blendv_epi8(offsetsplushalf,offsets,lt);
-        printf("next offsets ");
-        print(offsets);
-        //      base1 = (base1[half] < target1) ? &base1[half] : base1;
-        //    base2 = (base2[half] < target2) ? &base2[half] : base2;
-        //  base3 = (base3[half] < target3) ? &base3[half] : base3;
-        //base4 = (base4[half] < target4) ? &base4[half] : base4;
+        __m128i keys = _mm_i32gather_epi32(source,offsetsplushalf,4);
+        __m128i lt = _mm_cmplt_epi32(keys,target);
+        offsets = _mm_blendv_epi8(offsets,offsetsplushalf,lt);
         n -= (n >> 1);
     }
-    printf("=======last\n");
-
     __m128i lastkeys = _mm_i32gather_epi32(source,offsets,4);
     __m128i lastlt = _mm_cmplt_epi32(lastkeys,target);
     __m128i oneswhereneeded = _mm_srli_epi32(lastlt,31);
-    return _mm_add_epi32(offsets,oneswhereneeded);;
-
-//    *index1 = ((base1 < source+oldn)?(*base1 < target1):0) + base1 - source;
-    //  *index2 = ((base2 < source+oldn)?(*base2 < target2):0) + base2 - source;
-    //  *index3 = ((base3 < source+oldn)?(*base3 < target3):0) + base3 - source;
-    //*index4 = ((base4 < source+oldn)?(*base4 < target4):0) + base4 - source;
+    __m128i  answer = _mm_add_epi32(offsets,oneswhereneeded);
+    return answer;
 }
 #endif
 #endif
@@ -212,8 +184,15 @@ int demo(size_t N, size_t Nq) {
     for(i = 0; i < N; ++i) {
         source[i] = rand();
     }
-    int maxval = source[N-1];
     qsort (source, N, sizeof(int), compare);
+    k = 0;
+    for(i = 1; i < N; ++i) {
+      if(source[i]!=source[k]) {
+        source[++k] = source[i];
+      }
+    }
+    N = k+1;
+    int maxval = source[N-1];
     for(i = 0; i < Nq; ++i) {
         queries[i] = rand()%(maxval+1);
     }
@@ -285,21 +264,30 @@ int check(size_t N, size_t Nq) {
     size_t bogus2 = 0;
     size_t i, k, ti;
     for(i = 0; i < N; ++i) {
-        source[i] = rand() %0x0FFFFFFF;
+        source[i] = rand() ;
     }
-    int maxval = source[N-1];
     qsort (source, N, sizeof(int), compare);
+    k = 0;
+    for(i = 1; i < N; ++i) {
+      if(source[i]!=source[k]) {
+        source[++k] = source[i];
+      }
+    }
+    printf("\n");
+    N = k+1;
+
+    int maxval = source[N-1];
     for(i = 0; i < Nq; ++i) {
         queries[i] = rand()%(maxval+1);
     }
-    /*    for(k = 0; k < Nq; ++k)
+    for(k = 0; k < Nq; ++k)
            if(branchy_search(source,N,queries[k]) != branchfree_search(source,N,queries[k])) {
              printf("bug1\n");
              free(source);
              free(queries);
 
              return -1;
-           }*/
+    }
     for(k = 0; k+1 < Nq; k+=2) {
         size_t i1, i2;
         branchfree_search2(source,N,queries[k],queries[k+1],&i1,&i2);
@@ -324,11 +312,9 @@ int check(size_t N, size_t Nq) {
         size_t i1, i2, i3, i4;
         __m128i bog = branchfree_search4_avx(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3]);
         branchfree_search4(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],&i1,&i2,&i3,&i4);
-        if((_mm_extract_epi32(bog,0)!= i1) || (_mm_extract_epi32(bog,1)!= i2) || (_mm_extract_epi32(bog,2)!= i3) || (_mm_extract_epi32(bog,3)!= i3)) {
+        if((_mm_extract_epi32(bog,0)!= i1) || (_mm_extract_epi32(bog,1)!= i2) || (_mm_extract_epi32(bog,2)!= i3) || (_mm_extract_epi32(bog,3)!= i4)) {
             printf("bug\n");
-            printf("%d %d %d %d \n",i1,i2,i3,i4);
-            printf("%d %d %d %d \n",_mm_extract_epi32(bog,0),_mm_extract_epi32(bog,1),_mm_extract_epi32(bog,2),_mm_extract_epi32(bog,3));
-
+            return -1;
         }
     }
     #endif
