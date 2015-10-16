@@ -133,11 +133,11 @@ int demo(size_t N, size_t Nq) {
 
 
 
-      printf("branchless time=%llu  \n",((t2.tv_sec - t1.tv_sec) * 1000ULL * 1000ULL) + t2.tv_usec-t1.tv_usec);
-      printf("branchy time=%llu  \n",((t3.tv_sec - t2.tv_sec) * 1000ULL * 1000ULL) + t3.tv_usec-t2.tv_usec);
-      printf("branchless time with prefetch=%llu \n",((t4.tv_sec - t3.tv_sec) * 1000ULL * 1000ULL) + t4.tv_usec-t2.tv_usec);
-      printf("branchless interleaved time=%llu  \n",((t5.tv_sec - t4.tv_sec) * 1000ULL * 1000ULL) + t5.tv_usec-t4.tv_usec);
-      printf("branchless interleaved (prefetch) time=%llu  \n",((t1.tv_sec - t6.tv_sec) * 1000ULL * 1000ULL) + t1.tv_usec-t6.tv_usec);
+      printf("branchless time=%llu  \n",t2.tv_sec  * 1000ULL * 1000ULL + t2.tv_usec - (t1.tv_sec  * 1000ULL * 1000ULL + t1.tv_usec));
+      printf("branchy time=%llu  \n",t3.tv_sec  * 1000ULL * 1000ULL + t3.tv_usec - (t2.tv_sec  * 1000ULL * 1000ULL + t2.tv_usec));
+      printf("branchless time with prefetch=%llu \n",t4.tv_sec  * 1000ULL * 1000ULL + t4.tv_usec - (t3.tv_sec  * 1000ULL * 1000ULL + t3.tv_usec));
+      printf("branchless interleaved time=%llu  \n",t5.tv_sec  * 1000ULL * 1000ULL + t5.tv_usec - (t4.tv_sec  * 1000ULL * 1000ULL + t4.tv_usec));
+      printf("branchless interleaved (prefetch) time=%llu  \n",t1.tv_sec  * 1000ULL * 1000ULL + t1.tv_usec - (t6.tv_sec  * 1000ULL * 1000ULL + t6.tv_usec));
 
 
       printf("\n");
