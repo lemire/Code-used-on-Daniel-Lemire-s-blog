@@ -313,7 +313,7 @@ int check(size_t N, size_t Nq) {
         __m128i bog = branchfree_search4_avx(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3]);
         branchfree_search4(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],&i1,&i2,&i3,&i4);
         if((_mm_extract_epi32(bog,0)!= i1) || (_mm_extract_epi32(bog,1)!= i2) || (_mm_extract_epi32(bog,2)!= i3) || (_mm_extract_epi32(bog,3)!= i4)) {
-            printf("bug\n");
+            printf("bug3\n");
             return -1;
         }
     }
