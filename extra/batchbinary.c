@@ -27,27 +27,30 @@ size_t branchy_search(int* source, size_t n, int target) {
 }
 
 
+
 size_t branchfree_search(int* source, size_t n, int target) {
+    size_t oldn = n;
     int * base = source;
     while(n>1) {
         size_t half = n >> 1;
         base = (base[half] < target) ? &base[half] : base;
         n -= half;
     }
-    return ((base < source+n)?(*base < target):0) + base - source;
+    return ((base < source+oldn)?(*base < target):0) + base - source;
 }
 
 void branchfree_search2(int* source, size_t n, int target1, int target2, size_t * index1, size_t * index2) {
     int * base1 = source;
     int * base2 = source;
+    size_t oldn = n;
     while(n>1) {
         size_t half = n >> 1;
         base1 = (base1[half] < target1) ? &base1[half] : base1;
         base2 = (base2[half] < target2) ? &base2[half] : base2;
         n -= half;
     }
-    *index1 = ((base1 < source+n)?(*base1 < target1):0) + base1 - source;
-    *index2 = ((base2 < source+n)?(*base2 < target2):0) + base2 - source;
+    *index1 = ((base1 < source+oldn)?(*base1 < target1):0) + base1 - source;
+    *index2 = ((base2 < source+oldn)?(*base2 < target2):0) + base2 - source;
 }
 
 void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2, size_t * index1, size_t * index2) {
@@ -93,7 +96,6 @@ int demo(size_t N, size_t Nq) {
   size_t bogus1 = 0;
   size_t bogus2 = 0;
   size_t i, k, ti;
-  int unittests = 1;
   printf("===============\n");
 
   printf("array size (N)=%zu,  number of queries (Nq)=%zu...\n",N,Nq);
@@ -105,33 +107,6 @@ int demo(size_t N, size_t Nq) {
   qsort (source, N, sizeof(int), compare);
   for(i = 0; i < Nq; ++i) {
       queries[i] = rand()%(maxval+1);
-  }
-  if(unittests) {
-    printf("sanity tests...\n");
-    for(k = 0; k < Nq; ++k)
-       /*if(branchy_search(source,N,queries[k]) != branchfree_search(source,N,queries[k])) {
-         printf("bug1\n");
-         printf("branchy = %zu\n",branchy_search(source,N,queries[k]));
-         printf("branchless = %zu\n",branchfree_search(source,N,queries[k]));
-         printf("target = %d\n",queries[k]);
-         printf("branchy target = %d\n",source[branchy_search(source,N,queries[k])]);
-         printf("branchless target = %d\n",source[branchfree_search(source,N,queries[k])]);
-         printf("bug1\n");
-         return -1;
-       }*/
-    for(k = 0; k+1 < Nq; k+=2) {
-       size_t i1, i2;
-       branchfree_search2(source,N,queries[k],queries[k+1],&i1,&i2);
-       if(branchfree_search(source,N,queries[k]) != i1) {
-         printf("bug2\n");
-         return -1;
-       }
-       if(branchfree_search(source,N,queries[k+1]) != i2) {
-         printf("bug3\n");
-         return -1;
-       }
-     }
-    
   }
   printf("beginning tests...\n");
   printf("\n");
@@ -157,7 +132,7 @@ int demo(size_t N, size_t Nq) {
       gettimeofday(&t5, 0);
 
 
- 
+
       printf("branchless time=%llu  \n",((t2.tv_sec - t1.tv_sec) * 1000ULL * 1000ULL) + t2.tv_usec-t1.tv_usec);
       printf("branchy time=%llu  \n",((t3.tv_sec - t2.tv_sec) * 1000ULL * 1000ULL) + t3.tv_usec-t2.tv_usec);
       printf("branchless time with prefetch=%llu \n",((t4.tv_sec - t3.tv_sec) * 1000ULL * 1000ULL) + t4.tv_usec-t2.tv_usec);
@@ -173,7 +148,56 @@ int demo(size_t N, size_t Nq) {
 
 }
 
+int check(size_t N, size_t Nq) {
+  int * queries = (int*)malloc(Nq*sizeof(int));
+  int * source = (int*)malloc(N*sizeof(int));
+  size_t bogus = 0;
+  size_t bogus1 = 0;
+  size_t bogus2 = 0;
+  size_t i, k, ti;
+  for(i = 0; i < N; ++i) {
+      source[i] = rand();
+  }
+  int maxval = source[N-1];
+  qsort (source, N, sizeof(int), compare);
+  for(i = 0; i < Nq; ++i) {
+      queries[i] = rand()%(maxval+1);
+  }
+    for(k = 0; k < Nq; ++k)
+       if(branchy_search(source,N,queries[k]) != branchfree_search(source,N,queries[k])) {
+         printf("bug1\n");
+         free(source);
+         free(queries);
+
+         return -1;
+       }
+    for(k = 0; k+1 < Nq; k+=2) {
+       size_t i1, i2;
+       branchfree_search2(source,N,queries[k],queries[k+1],&i1,&i2);
+       if(branchfree_search(source,N,queries[k]) != i1) {
+         printf("bug2\n");
+         free(source);
+         free(queries);
+
+         return -1;
+       }
+       if(branchfree_search(source,N,queries[k+1]) != i2) {
+         printf("bug3\n");
+         free(source);
+         free(queries);
+
+         return -1;
+       }
+     }
+  free(source);
+  free(queries);
+  return 0;
+}
+
+
+
 int main() {
+  if(check( 1024 * 1024,1024 * 1024)) return -1;
   demo(1024,1024 * 1024);
   demo(1024 * 1024,1024 * 1024);
   demo(32 * 1024 * 1024,1024 * 1024);
