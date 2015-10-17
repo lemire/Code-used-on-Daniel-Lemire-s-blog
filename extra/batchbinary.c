@@ -86,15 +86,16 @@ void print(__m128i bog) {
     printf("%d %d %d %d \n",_mm_extract_epi32(bog,0),_mm_extract_epi32(bog,1),_mm_extract_epi32(bog,2),_mm_extract_epi32(bog,3));
 
 }
-// code assumes that n is a power of 2!
+
 __m128i branchfree_search4_avx(int* source, size_t n, int target1, int target2, int target3, int target4) {
     __m128i target = _mm_setr_epi32(target1,target2,target3,target4);
     __m128i offsets = _mm_setzero_si128();
     size_t oldn = n;
     __m128i ha = _mm_set1_epi32(n>>1);
+    __m128i mmax = _mm_set1_epi32(n-1);
     while(n>1) {
         n >>= 1;
-        __m128i offsetsplushalf = _mm_add_epi32(offsets,ha);
+        __m128i offsetsplushalf = _mm_min_epi32(mmax,_mm_add_epi32(offsets,ha));
         ha = _mm_srli_epi32(ha,1);
         __m128i keys = _mm_i32gather_epi32(source,offsetsplushalf,4);
         __m128i lt = _mm_cmplt_epi32(keys,target);
