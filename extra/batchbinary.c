@@ -342,7 +342,8 @@ int check(size_t N, size_t Nq) {
 
 
 int main() {
-    for(size_t x=6;x<2048;x*=2 ) {
+    size_t x ;
+    for(x=6;x<2048;x*=2 ) {
       printf("checking input size = %zu \n ",x);
       if(check(x,1024 * 1024)) return -1;
       printf("Ok!\n ");
