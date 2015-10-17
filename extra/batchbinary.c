@@ -325,13 +325,13 @@ int check(size_t N, size_t Nq) {
         queries[i] = rand()%(maxval+1);
     }
     for(k = 0; k < Nq; ++k)
-           if(branchy_search(source,N,queries[k]) != branchfree_search(source,N,queries[k])) {
-             printf("bug1\n");
-             free(source);
-             free(queries);
+        if(branchy_search(source,N,queries[k]) != branchfree_search(source,N,queries[k])) {
+            printf("bug1\n");
+            free(source);
+            free(queries);
 
-             return -1;
-    }
+            return -1;
+        }
     for(k = 0; k+1 < Nq; k+=2) {
         size_t i1, i2;
         branchfree_search2(source,N,queries[k],queries[k+1],&i1,&i2);
@@ -364,7 +364,7 @@ int check(size_t N, size_t Nq) {
             return -1;
         }
     }
-    #endif
+#endif
 
     free(source);
     free(queries);
@@ -374,7 +374,8 @@ int check(size_t N, size_t Nq) {
 
 
 int main() {
-    for(size_t x=6;x<2048;x*=2 ) {
+    size_t x ;
+    for(x=6;x<2048;x*=2 ) {
       printf("checking input size = %zu \n ",x);
       if(check(x,1024 * 1024)) return -1;
       printf("Ok!\n ");
@@ -382,5 +383,4 @@ int main() {
     demo(1024,1024 * 1024);
     demo(1024 * 1024,1024 * 1024);
     demo(32 * 1024 * 1024,1024 * 1024);
-
 }
