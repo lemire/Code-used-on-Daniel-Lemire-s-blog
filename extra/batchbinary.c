@@ -35,6 +35,7 @@ size_t branchfree_search(int* source, size_t n, int target) {
     int * end = source + n;
     while(n>1) {
         size_t half = n >> 1;
+        // base[half] could be out of bounds
         base = ((base+half <end)&&(base[half] < target)) ? &base[half] : base;
         n -= half;
     }
@@ -49,6 +50,7 @@ void branchfree_search2(int* source, size_t n, int target1, int target2, size_t 
     int * end = source + n;
     while(n>1) {
         size_t half = n >> 1;
+        // base1[half] could be out of bounds
         base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
         base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
         n -= half;
@@ -67,6 +69,7 @@ void branchfree_search4(int* source, size_t n, int target1, int target2, int tar
     int * end = source + n;
     while(n>1) {
         size_t half = n >> 1;
+        // base1[half] could be out of bounds
         base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
         base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
         base3 = ((base3+half <end)&&(base3[half] < target3)) ? &base3[half] : base3;
@@ -122,6 +125,7 @@ void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2
         __builtin_prefetch(base1+half+(half>>1),0,0);
         __builtin_prefetch(base2+(half>>1),0,0);
         __builtin_prefetch(base2+half+(half>>1),0,0);
+        // base1[half] could be out of bounds
         base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
         base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
         n -= half;
@@ -148,7 +152,7 @@ void branchfree_search4_prefetch(int* source, size_t n, int target1, int target2
         __builtin_prefetch(base3+half+(half>>1),0,0);
         __builtin_prefetch(base4+(half>>1),0,0);
         __builtin_prefetch(base4+half+(half>>1),0,0);
-
+        // base1[half] could be out of bounds
         base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
         base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
         base3 = ((base3+half <end)&&(base3[half] < target3)) ? &base3[half] : base3;
