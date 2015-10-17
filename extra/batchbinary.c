@@ -30,10 +30,6 @@ size_t branchy_search(int* source, size_t n, int target) {
 
 
 size_t branchfree_search(int* source, size_t n, int target) {
-  if((n & (n - 1)) != 0) {
-    printf("Warning: this code is only tested for power-of-two inputs.");
-  }
-
     size_t oldn = n;
     int * base = source;
     while(n>1) {
@@ -45,10 +41,6 @@ size_t branchfree_search(int* source, size_t n, int target) {
 }
 
 void branchfree_search2(int* source, size_t n, int target1, int target2, size_t * index1, size_t * index2) {
-  if((n & (n - 1)) != 0) {
-    printf("Warning: this code is only tested for power-of-two inputs.");
-  }
-
     int * base1 = source;
     int * base2 = source;
     size_t oldn = n;
@@ -63,10 +55,6 @@ void branchfree_search2(int* source, size_t n, int target1, int target2, size_t 
 }
 
 void branchfree_search4(int* source, size_t n, int target1, int target2, int target3, int target4, size_t * index1, size_t * index2, size_t * index3, size_t * index4) {
-  if((n & (n - 1)) != 0) {
-    printf("Warning: this code is only tested for power-of-two inputs.");
-  }
-
     int * base1 = source;
     int * base2 = source;
     int * base3 = source;
@@ -94,9 +82,6 @@ void print(__m128i bog) {
 
 }
 __m128i branchfree_search4_avx(int* source, size_t n, int target1, int target2, int target3, int target4) {
-    if((n & (n - 1)) != 0) {
-      printf("Warning: this code is only tested for power-of-two inputs.");
-    }
     __m128i target = _mm_setr_epi32(target1,target2,target3,target4);
     __m128i offsets = _mm_setzero_si128();
     size_t oldn = n;
