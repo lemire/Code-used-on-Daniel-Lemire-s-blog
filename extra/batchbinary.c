@@ -105,6 +105,8 @@ __m128i branchfree_search4_avx(int* source, size_t n, int target1, int target2, 
 }
 #endif
 #endif
+
+// this code assumes that n is a power of 2
 void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2, size_t * index1, size_t * index2) {
     int * base1 = source;
     int * base2 = source;
@@ -122,6 +124,7 @@ void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2
     *index2 = ((base2 < source+n)?(*base2 < target2):0) + base2 - source;
 }
 
+// this code assumes that n is a power of 2
 void branchfree_search4_prefetch(int* source, size_t n, int target1, int target2, int target3, int target4, size_t * index1, size_t * index2, size_t * index3, size_t * index4) {
     int * base1 = source;
     int * base2 = source;
@@ -151,7 +154,7 @@ void branchfree_search4_prefetch(int* source, size_t n, int target1, int target2
     *index4 = ((base4 < source+oldn)?(*base4 < target4):0) + base4 - source;
 }
 
-
+// this code assumes that n is a power of 2
 size_t branchfree_search_prefetch(int* source, size_t n, int target) {
     int * base = source;
     while(n>1) {
