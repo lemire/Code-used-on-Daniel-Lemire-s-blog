@@ -28,7 +28,7 @@ size_t branchy_search(int* source, size_t n, int target) {
 }
 
 
-// code assumes that n is a power of 2!
+
 size_t branchfree_search(int* source, size_t n, int target) {
     size_t oldn = n;
     int * base = source;
@@ -42,7 +42,7 @@ size_t branchfree_search(int* source, size_t n, int target) {
     return ((base < source+oldn)?(*base < target):0) + base - source;
 }
 
-// code assumes that n is a power of 2!
+
 void branchfree_search2(int* source, size_t n, int target1, int target2, size_t * index1, size_t * index2) {
     int * base1 = source;
     int * base2 = source;
@@ -59,7 +59,7 @@ void branchfree_search2(int* source, size_t n, int target1, int target2, size_t 
     *index2 = ((base2 < source+oldn)?(*base2 < target2):0) + base2 - source;
 }
 
-// code assumes that n is a power of 2!
+
 void branchfree_search4(int* source, size_t n, int target1, int target2, int target3, int target4, size_t * index1, size_t * index2, size_t * index3, size_t * index4) {
     int * base1 = source;
     int * base2 = source;
@@ -81,6 +81,8 @@ void branchfree_search4(int* source, size_t n, int target1, int target2, int tar
     *index3 = ((base3 < source+oldn)?(*base3 < target3):0) + base3 - source;
     *index4 = ((base4 < source+oldn)?(*base4 < target4):0) + base4 - source;
 }
+
+
 #ifdef __AVX2__
 #define MYAVX
 #ifdef MYAVX
@@ -109,6 +111,27 @@ __m128i branchfree_search4_avx(int* source, size_t n, __m128i target) {
     __m128i  answer = _mm_add_epi32(offsets,oneswhereneeded);
     return answer;
 }
+
+__m256i branchfree_search8_avx(int* source, size_t n, __m256i target) {
+    __m256i offsets = _mm256_setzero_si256();
+    size_t oldn = n;
+    __m256i ha = _mm256_set1_epi32(n>>1);
+    __m256i mmax = _mm256_set1_epi32(n-1);
+    while(n>1) {
+        n -=  n>>1;
+        __m256i offsetsplushalf = _mm256_min_epi32(mmax,_mm256_add_epi32(offsets,ha));
+        ha = _mm256_sub_epi32(ha,_mm256_srli_epi32(ha,1));
+        __m256i keys = _mm256_i32gather_epi32(source,offsetsplushalf,4);
+        __m256i lt = _mm256_cmpgt_epi32(target,keys);
+        offsets = _mm256_blendv_epi8(offsets,offsetsplushalf,lt);
+    }
+    __m256i lastkeys = _mm256_i32gather_epi32(source,offsets,4);
+    __m256i lastlt = _mm256_cmpgt_epi32(target,lastkeys);
+    __m256i oneswhereneeded = _mm256_srli_epi32(lastlt,31);
+    __m256i  answer = _mm256_add_epi32(offsets,oneswhereneeded);
+    return answer;
+}
+
 #endif
 #endif
 
@@ -212,7 +235,7 @@ int demo(size_t N, size_t Nq) {
     printf("\n");
 
     for(ti = 0; ti < 3; ++ti) {
-        struct timeval t1, t2, t3, t4, t5, t6, t7, t8, t9;
+        struct timeval t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
 
         gettimeofday(&t6, 0);
         for(k = 0; k+1 < Nq; k+=2)
@@ -241,8 +264,15 @@ int demo(size_t N, size_t Nq) {
             __m128i q = _mm_lddqu_si128((__m128i const*)(queries +k));
             bog = _mm_add_epi32(bog,branchfree_search4_avx(source,N,q));
         }
-#endif
         gettimeofday(&t9, 0);
+
+        for(k = 0; k+7 < Nq; k+=8) {
+            __m256i q = _mm256_lddqu_si256((__m256i const*)(queries +k));
+            bog = _mm_add_epi32(bog,_mm256_castsi256_si128(branchfree_search8_avx(source,N,q)));
+        }
+        gettimeofday(&t10, 0);
+
+#endif
 
 
 
@@ -255,6 +285,8 @@ int demo(size_t N, size_t Nq) {
         printf("branchless interleaved (4) (prefetch) time=%llu  \n",t8.tv_sec  * 1000ULL * 1000ULL + t8.tv_usec - (t7.tv_sec  * 1000ULL * 1000ULL + t7.tv_usec));
 #ifdef MYAVX
         printf("branchless interleaved (4) (AVX) time=%llu  \n",t9.tv_sec  * 1000ULL * 1000ULL + t9.tv_usec - (t8.tv_sec  * 1000ULL * 1000ULL + t8.tv_usec));
+        printf("branchless interleaved (8) (AVX) time=%llu  \n",t10.tv_sec  * 1000ULL * 1000ULL + t10.tv_usec - (t9.tv_sec  * 1000ULL * 1000ULL + t9.tv_usec));
+
 #endif
 
 
