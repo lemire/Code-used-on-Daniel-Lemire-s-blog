@@ -30,6 +30,10 @@ size_t branchy_search(int* source, size_t n, int target) {
 
 
 size_t branchfree_search(int* source, size_t n, int target) {
+  if((n & (n - 1)) != 0) {
+    printf("Warning: this code is only tested for power-of-two inputs.");
+  }
+
     size_t oldn = n;
     int * base = source;
     while(n>1) {
@@ -41,6 +45,10 @@ size_t branchfree_search(int* source, size_t n, int target) {
 }
 
 void branchfree_search2(int* source, size_t n, int target1, int target2, size_t * index1, size_t * index2) {
+  if((n & (n - 1)) != 0) {
+    printf("Warning: this code is only tested for power-of-two inputs.");
+  }
+
     int * base1 = source;
     int * base2 = source;
     size_t oldn = n;
@@ -55,6 +63,9 @@ void branchfree_search2(int* source, size_t n, int target1, int target2, size_t 
 }
 
 void branchfree_search4(int* source, size_t n, int target1, int target2, int target3, int target4, size_t * index1, size_t * index2, size_t * index3, size_t * index4) {
+  if((n & (n - 1)) != 0) {
+    printf("Warning: this code is only tested for power-of-two inputs.");
+  }
 
     int * base1 = source;
     int * base2 = source;
@@ -83,42 +94,25 @@ void print(__m128i bog) {
 
 }
 __m128i branchfree_search4_avx(int* source, size_t n, int target1, int target2, int target3, int target4) {
+    if((n & (n - 1)) != 0) {
+      printf("Warning: this code is only tested for power-of-two inputs.");
+    }
     __m128i target = _mm_setr_epi32(target1,target2,target3,target4);
-    printf("target");
-print(target);
     __m128i offsets = _mm_setzero_si128();
     size_t oldn = n;
-printf("n=%d\n",n);
     __m128i ha = _mm_set1_epi32(n);
     while(n>1) {
-printf("n=%d\n",(n>>1));
         ha = _mm_srli_epi32(ha,1);
-printf("offset");
-print(offsets);
         __m128i offsetsplushalf = _mm_add_epi32(offsets,ha);
-printf("offsetsplushalf");
-print(offsetsplushalf);
         __m128i keys = _mm_i32gather_epi32(source,offsetsplushalf,4);
-printf("keys");
-print(keys);
         __m128i lt = _mm_cmplt_epi32(keys,target);
-printf("lt");
-print(lt);
-
-
         offsets = _mm_blendv_epi8(offsets,offsetsplushalf,lt);
         n -= (n >> 1);
     }
-printf("offset");
-print(offsets);
     __m128i lastkeys = _mm_i32gather_epi32(source,offsets,4);
-printf("lastkeys");
-print(lastkeys);
     __m128i lastlt = _mm_cmplt_epi32(lastkeys,target);
     __m128i oneswhereneeded = _mm_srli_epi32(lastlt,31);
     __m128i  answer = _mm_add_epi32(offsets,oneswhereneeded);
-printf("\n");
-print(_mm_i32gather_epi32(source,answer,4));
     return answer;
 }
 #endif
@@ -205,13 +199,16 @@ int demo(size_t N, size_t Nq) {
         source[i] = rand();
     }
     qsort (source, N, sizeof(int), compare);
-    k = 0;
+    k = 1;
     for(i = 1; i < N; ++i) {
-      if(source[i]!=source[k]) {
-        source[++k] = source[i];
+      if(source[i]!=source[k-1]) {
+        source[k] = source[i];
+        k++;
       }
     }
-    N = k+1;
+    N = k;
+    printf("\n\n Warning: Branchless code expects a power of two input.\n\n");
+
     int maxval = source[N-1];
     for(i = 0; i < Nq; ++i) {
         queries[i] = rand()%(maxval+1);
@@ -284,21 +281,17 @@ int check(size_t N, size_t Nq) {
     size_t bogus2 = 0;
     size_t i, k, ti;
     for(i = 0; i < N; ++i) {
-        source[i] = rand() % 1000;
+        source[i] = rand();
     }
     qsort (source, N, sizeof(int), compare);
-    k = 0;
-printf(" %d ",source[0]);
+    k = 1;
     for(i = 1; i < N; ++i) {
-      if(source[i]!=source[k]) {
-        source[++k] = source[i];
-printf(" %d ",source[i]);
-
+      if(source[i]!=source[k-1]) {
+        source[k] = source[i];
+        k++;
       }
     }
-    printf("\n");
-    N = k+1;
-
+    N = k;
     int maxval = source[N-1];
     for(i = 0; i < Nq; ++i) {
         queries[i] = rand()%(maxval+1);
@@ -337,8 +330,8 @@ printf(" %d ",source[i]);
         branchfree_search4(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],&i1,&i2,&i3,&i4);
         if((_mm_extract_epi32(bog,0)!= i1) || (_mm_extract_epi32(bog,1)!= i2) || (_mm_extract_epi32(bog,2)!= i3) || (_mm_extract_epi32(bog,3)!= i4)) {
             printf("bug3\n");
-printf("%d %d %d %d\n",i1,i2,i3,i4);
-printf("%d %d %d %d\n",_mm_extract_epi32(bog,0),_mm_extract_epi32(bog,1),_mm_extract_epi32(bog,2),_mm_extract_epi32(bog,3));
+            printf("%d %d %d %d\n",i1,i2,i3,i4);
+            printf("%d %d %d %d\n",_mm_extract_epi32(bog,0),_mm_extract_epi32(bog,1),_mm_extract_epi32(bog,2),_mm_extract_epi32(bog,3));
             return -1;
         }
     }
@@ -352,7 +345,7 @@ printf("%d %d %d %d\n",_mm_extract_epi32(bog,0),_mm_extract_epi32(bog,1),_mm_ext
 
 
 int main() {
-    if(check( 32,1024 * 1024)) return -1;
+    if(check(1024 * 1024,1024 * 1024)) return -1;
     demo(1024,1024 * 1024);
     demo(1024 * 1024,1024 * 1024);
     demo(32 * 1024 * 1024,1024 * 1024);
