@@ -86,20 +86,19 @@ void branchfree_search4(int* source, size_t n, int target1, int target2, int tar
 #ifdef MYAVX
 
 void print(__m128i bog) {
-    printf("%d %d %d %d \n",_mm_extract_epi32(bog,0),_mm_extract_epi32(bog,1),_mm_extract_epi32(bog,2),_mm_extract_epi32(bog,3));
+    printf("%u %u %u %u \n",_mm_extract_epi32(bog,0),_mm_extract_epi32(bog,1),_mm_extract_epi32(bog,2),_mm_extract_epi32(bog,3));
 
 }
 
-__m128i branchfree_search4_avx(int* source, size_t n, int target1, int target2, int target3, int target4) {
-    __m128i target = _mm_setr_epi32(target1,target2,target3,target4);
+__m128i branchfree_search4_avx(int* source, size_t n, __m128i target) {
     __m128i offsets = _mm_setzero_si128();
     size_t oldn = n;
     __m128i ha = _mm_set1_epi32(n>>1);
     __m128i mmax = _mm_set1_epi32(n-1);
     while(n>1) {
-        n >>= 1;
+        n -=  n>>1;
         __m128i offsetsplushalf = _mm_min_epi32(mmax,_mm_add_epi32(offsets,ha));
-        ha = _mm_srli_epi32(ha,1);
+        ha = _mm_sub_epi32(ha,_mm_srli_epi32(ha,1));
         __m128i keys = _mm_i32gather_epi32(source,offsetsplushalf,4);
         __m128i lt = _mm_cmplt_epi32(keys,target);
         offsets = _mm_blendv_epi8(offsets,offsetsplushalf,lt);
@@ -238,8 +237,10 @@ int demo(size_t N, size_t Nq) {
             branchfree_search4_prefetch(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],&bogus1,&bogus2,&bogus3,&bogus4);
         gettimeofday(&t8, 0);
 #ifdef MYAVX
-        for(k = 0; k+3 < Nq; k+=4)
-            bog = _mm_add_epi32(bog,branchfree_search4_avx(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3]));
+        for(k = 0; k+3 < Nq; k+=4) {
+            __m128i q = _mm_lddqu_si128((__m128i const*)(queries +k));
+            bog = _mm_add_epi32(bog,branchfree_search4_avx(source,N,q));
+        }
 #endif
         gettimeofday(&t9, 0);
 
@@ -276,10 +277,17 @@ int check(size_t N, size_t Nq) {
     size_t bogus1 = 0;
     size_t bogus2 = 0;
     size_t i, k, ti;
+    int displaytest = 0;
     for(i = 0; i < N; ++i) {
         source[i] = rand();
     }
     qsort (source, N, sizeof(int), compare);
+    if(displaytest) {
+      for(i = 0; i < N; ++i) {
+        printf(" %d ",source[i]);
+      }
+      printf("\n");
+    }
     int maxval = source[N-1];
     for(i = 0; i < Nq; ++i) {
         queries[i] = rand()%(maxval+1);
@@ -314,7 +322,8 @@ int check(size_t N, size_t Nq) {
 
     for(k = 0; k+3 < Nq; k+=4) {
         size_t i1, i2, i3, i4;
-        __m128i bog = branchfree_search4_avx(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3]);
+        __m128i q = _mm_lddqu_si128((__m128i const*)(queries +k));
+        __m128i bog = branchfree_search4_avx(source,N,q);
         branchfree_search4(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],&i1,&i2,&i3,&i4);
         if((_mm_extract_epi32(bog,0)!= i1) || (_mm_extract_epi32(bog,1)!= i2) || (_mm_extract_epi32(bog,2)!= i3) || (_mm_extract_epi32(bog,3)!= i4)) {
             printf("bug3\n");
@@ -333,7 +342,11 @@ int check(size_t N, size_t Nq) {
 
 
 int main() {
-    if(check(1024 * 1024,1024 * 1024)) return -1;
+    for(size_t x=6;x<2048;x*=2 ) {
+      printf("checking input size = %zu \n ",x);
+      if(check(x,1024 * 1024)) return -1;
+      printf("Ok!\n ");
+    }
     demo(1024,1024 * 1024);
     demo(1024 * 1024,1024 * 1024);
     demo(32 * 1024 * 1024,1024 * 1024);
