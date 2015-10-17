@@ -28,7 +28,7 @@ size_t branchy_search(int* source, size_t n, int target) {
 }
 
 
-
+// code assumes that n is a power of 2!
 size_t branchfree_search(int* source, size_t n, int target) {
     size_t oldn = n;
     int * base = source;
@@ -41,6 +41,7 @@ size_t branchfree_search(int* source, size_t n, int target) {
     return ((base < source+oldn)?(*base < target):0) + base - source;
 }
 
+// code assumes that n is a power of 2!
 void branchfree_search2(int* source, size_t n, int target1, int target2, size_t * index1, size_t * index2) {
     int * base1 = source;
     int * base2 = source;
@@ -56,6 +57,7 @@ void branchfree_search2(int* source, size_t n, int target1, int target2, size_t 
     *index2 = ((base2 < source+oldn)?(*base2 < target2):0) + base2 - source;
 }
 
+// code assumes that n is a power of 2!
 void branchfree_search4(int* source, size_t n, int target1, int target2, int target3, int target4, size_t * index1, size_t * index2, size_t * index3, size_t * index4) {
     int * base1 = source;
     int * base2 = source;
@@ -84,18 +86,19 @@ void print(__m128i bog) {
     printf("%d %d %d %d \n",_mm_extract_epi32(bog,0),_mm_extract_epi32(bog,1),_mm_extract_epi32(bog,2),_mm_extract_epi32(bog,3));
 
 }
+// code assumes that n is a power of 2!
 __m128i branchfree_search4_avx(int* source, size_t n, int target1, int target2, int target3, int target4) {
     __m128i target = _mm_setr_epi32(target1,target2,target3,target4);
     __m128i offsets = _mm_setzero_si128();
     size_t oldn = n;
-    __m128i ha = _mm_set1_epi32(n);
+    __m128i ha = _mm_set1_epi32(n>>1);
     while(n>1) {
-        ha = _mm_srli_epi32(ha,1);
         __m128i offsetsplushalf = _mm_add_epi32(offsets,ha);
         __m128i keys = _mm_i32gather_epi32(source,offsetsplushalf,4);
         __m128i lt = _mm_cmplt_epi32(keys,target);
         offsets = _mm_blendv_epi8(offsets,offsetsplushalf,lt);
         n -= (n >> 1);
+        ha = _mm_srli_epi32(ha,1);
     }
     __m128i lastkeys = _mm_i32gather_epi32(source,offsets,4);
     __m128i lastlt = _mm_cmplt_epi32(lastkeys,target);
@@ -105,6 +108,8 @@ __m128i branchfree_search4_avx(int* source, size_t n, int target1, int target2, 
 }
 #endif
 #endif
+
+// this code assumes that n is a power of 2
 void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2, size_t * index1, size_t * index2) {
     int * base1 = source;
     int * base2 = source;
@@ -124,6 +129,7 @@ void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2
     *index2 = ((base2 < source+oldn)?(*base2 < target2):0) + base2 - source;
 }
 
+// this code assumes that n is a power of 2
 void branchfree_search4_prefetch(int* source, size_t n, int target1, int target2, int target3, int target4, size_t * index1, size_t * index2, size_t * index3, size_t * index4) {
     int * base1 = source;
     int * base2 = source;
@@ -154,7 +160,7 @@ void branchfree_search4_prefetch(int* source, size_t n, int target1, int target2
     *index4 = ((base4 < source+oldn)?(*base4 < target4):0) + base4 - source;
 }
 
-
+// this code assumes that n is a power of 2
 size_t branchfree_search_prefetch(int* source, size_t n, int target) {
     int * base = source;
     int oldn = n;
@@ -192,14 +198,6 @@ int demo(size_t N, size_t Nq) {
         source[i] = rand();
     }
     qsort (source, N, sizeof(int), compare);
-    k = 1;
-    for(i = 1; i < N; ++i) {
-      if(source[i]!=source[k-1]) {
-        source[k] = source[i];
-        k++;
-      }
-    }
-    N = k;
     printf("\n\n Warning: Branchless code expects a power of two input.\n\n");
 
     int maxval = source[N-1];
@@ -277,14 +275,6 @@ int check(size_t N, size_t Nq) {
         source[i] = rand();
     }
     qsort (source, N, sizeof(int), compare);
-    k = 1;
-    for(i = 1; i < N; ++i) {
-      if(source[i]!=source[k-1]) {
-        source[k] = source[i];
-        k++;
-      }
-    }
-    N = k;
     int maxval = source[N-1];
     for(i = 0; i < Nq; ++i) {
         queries[i] = rand()%(maxval+1);
@@ -323,7 +313,7 @@ int check(size_t N, size_t Nq) {
         branchfree_search4(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],&i1,&i2,&i3,&i4);
         if((_mm_extract_epi32(bog,0)!= i1) || (_mm_extract_epi32(bog,1)!= i2) || (_mm_extract_epi32(bog,2)!= i3) || (_mm_extract_epi32(bog,3)!= i4)) {
             printf("bug3\n");
-            printf("%d %d %d %d\n",i1,i2,i3,i4);
+            printf("%zu %zu %zu %zu\n",i1,i2,i3,i4);
             printf("%d %d %d %d\n",_mm_extract_epi32(bog,0),_mm_extract_epi32(bog,1),_mm_extract_epi32(bog,2),_mm_extract_epi32(bog,3));
             return -1;
         }
