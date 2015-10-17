@@ -313,7 +313,6 @@ int demo(size_t N, size_t Nq) {
         source[i] = rand();
     }
     qsort (source, N, sizeof(int), compare);
-    printf("\n\n Warning: Branchless code expects a power of two input.\n\n");
 
     int maxval = source[N-1];
     for(i = 0; i < Nq; ++i) {
