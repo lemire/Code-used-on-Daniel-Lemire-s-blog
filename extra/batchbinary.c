@@ -82,6 +82,94 @@ void branchfree_search4(int* source, size_t n, int target1, int target2, int tar
     *index4 = ((base4 < source+oldn)?(*base4 < target4):0) + base4 - source;
 }
 
+void branchfree_search8(int* source, size_t n, int target1, int target2, int target3, int target4, int target5, int target6, int target7, int target8, size_t * index1, size_t * index2, size_t * index3, size_t * index4,size_t * index5, size_t * index6, size_t * index7, size_t * index8) {
+    int * base1 = source;
+    int * base2 = source;
+    int * base3 = source;
+    int * base4 = source;
+    int * base5 = source;
+    int * base6 = source;
+    int * base7 = source;
+    int * base8 = source;
+    size_t oldn = n;
+    int * end = source + n;
+    while(n>1) {
+        size_t half = n >> 1;
+        // base1[half] could be out of bounds
+        base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
+        base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
+        base3 = ((base3+half <end)&&(base3[half] < target3)) ? &base3[half] : base3;
+        base4 = ((base4+half <end)&&(base4[half] < target4)) ? &base4[half] : base4;
+        base5 = ((base5+half <end)&&(base5[half] < target5)) ? &base5[half] : base5;
+        base6 = ((base6+half <end)&&(base6[half] < target6)) ? &base6[half] : base6;
+        base7 = ((base7+half <end)&&(base7[half] < target7)) ? &base7[half] : base7;
+        base8 = ((base8+half <end)&&(base8[half] < target8)) ? &base8[half] : base8;
+
+        n -= half;
+    }
+    *index1 = ((base1 < source+oldn)?(*base1 < target1):0) + base1 - source;
+    *index2 = ((base2 < source+oldn)?(*base2 < target2):0) + base2 - source;
+    *index3 = ((base3 < source+oldn)?(*base3 < target3):0) + base3 - source;
+    *index4 = ((base4 < source+oldn)?(*base4 < target4):0) + base4 - source;
+    *index5 = ((base5 < source+oldn)?(*base5 < target5):0) + base5 - source;
+    *index6 = ((base6 < source+oldn)?(*base6 < target6):0) + base6 - source;
+    *index7 = ((base7 < source+oldn)?(*base7 < target7):0) + base7 - source;
+    *index8 = ((base8 < source+oldn)?(*base8 < target8):0) + base8 - source;
+
+}
+
+void branchfree_search8_prefetch(int* source, size_t n, int target1, int target2, int target3, int target4, int target5, int target6, int target7, int target8, size_t * index1, size_t * index2, size_t * index3, size_t * index4,size_t * index5, size_t * index6, size_t * index7, size_t * index8) {
+    int * base1 = source;
+    int * base2 = source;
+    int * base3 = source;
+    int * base4 = source;
+    int * base5 = source;
+    int * base6 = source;
+    int * base7 = source;
+    int * base8 = source;
+    size_t oldn = n;
+    int * end = source + n;
+    while(n>1) {
+        size_t half = n >> 1;
+        __builtin_prefetch(base1+(half>>1),0,0);
+        __builtin_prefetch(base1+half+(half>>1),0,0);
+        __builtin_prefetch(base2+(half>>1),0,0);
+        __builtin_prefetch(base2+half+(half>>1),0,0);
+        __builtin_prefetch(base3+(half>>1),0,0);
+        __builtin_prefetch(base3+half+(half>>1),0,0);
+        __builtin_prefetch(base4+(half>>1),0,0);
+        __builtin_prefetch(base4+half+(half>>1),0,0);
+        __builtin_prefetch(base5+(half>>1),0,0);
+        __builtin_prefetch(base5+half+(half>>1),0,0);
+        __builtin_prefetch(base6+(half>>1),0,0);
+        __builtin_prefetch(base6+half+(half>>1),0,0);
+        __builtin_prefetch(base7+(half>>1),0,0);
+        __builtin_prefetch(base7+half+(half>>1),0,0);
+        __builtin_prefetch(base8+(half>>1),0,0);
+        __builtin_prefetch(base8+half+(half>>1),0,0);
+
+        // base1[half] could be out of bounds
+        base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
+        base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
+        base3 = ((base3+half <end)&&(base3[half] < target3)) ? &base3[half] : base3;
+        base4 = ((base4+half <end)&&(base4[half] < target4)) ? &base4[half] : base4;
+        base5 = ((base5+half <end)&&(base5[half] < target5)) ? &base5[half] : base5;
+        base6 = ((base6+half <end)&&(base6[half] < target6)) ? &base6[half] : base6;
+        base7 = ((base7+half <end)&&(base7[half] < target7)) ? &base7[half] : base7;
+        base8 = ((base8+half <end)&&(base8[half] < target8)) ? &base8[half] : base8;
+
+        n -= half;
+    }
+    *index1 = ((base1 < source+oldn)?(*base1 < target1):0) + base1 - source;
+    *index2 = ((base2 < source+oldn)?(*base2 < target2):0) + base2 - source;
+    *index3 = ((base3 < source+oldn)?(*base3 < target3):0) + base3 - source;
+    *index4 = ((base4 < source+oldn)?(*base4 < target4):0) + base4 - source;
+    *index5 = ((base5 < source+oldn)?(*base5 < target5):0) + base5 - source;
+    *index6 = ((base6 < source+oldn)?(*base6 < target6):0) + base6 - source;
+    *index7 = ((base7 < source+oldn)?(*base7 < target7):0) + base7 - source;
+    *index8 = ((base8 < source+oldn)?(*base8 < target8):0) + base8 - source;
+
+}
 
 #ifdef __AVX2__
 #define MYAVX
@@ -235,7 +323,7 @@ int demo(size_t N, size_t Nq) {
     printf("\n");
 
     for(ti = 0; ti < 3; ++ti) {
-        struct timeval t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
+        struct timeval t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12;
 
         gettimeofday(&t6, 0);
         for(k = 0; k+1 < Nq; k+=2)
@@ -270,9 +358,17 @@ int demo(size_t N, size_t Nq) {
             __m256i q = _mm256_lddqu_si256((__m256i const*)(queries +k));
             bog = _mm_add_epi32(bog,_mm256_castsi256_si128(branchfree_search8_avx(source,N,q)));
         }
-        gettimeofday(&t10, 0);
 
 #endif
+gettimeofday(&t10, 0);
+for(k = 0; k+7 < Nq; k+=8) {
+    branchfree_search8(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],queries[k+4],queries[k+5],queries[k+6],queries[k+7],&bogus1,&bogus2,&bogus3,&bogus4,&bogus1,&bogus2,&bogus3,&bogus4);
+}
+gettimeofday(&t11, 0);
+for(k = 0; k+7 < Nq; k+=8) {
+    branchfree_search8_prefetch(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],queries[k+4],queries[k+5],queries[k+6],queries[k+7],&bogus1,&bogus2,&bogus3,&bogus4,&bogus1,&bogus2,&bogus3,&bogus4);
+}
+gettimeofday(&t12, 0);
 
 
 
@@ -286,8 +382,10 @@ int demo(size_t N, size_t Nq) {
 #ifdef MYAVX
         printf("branchless interleaved (4) (AVX) time=%llu  \n",t9.tv_sec  * 1000ULL * 1000ULL + t9.tv_usec - (t8.tv_sec  * 1000ULL * 1000ULL + t8.tv_usec));
         printf("branchless interleaved (8) (AVX) time=%llu  \n",t10.tv_sec  * 1000ULL * 1000ULL + t10.tv_usec - (t9.tv_sec  * 1000ULL * 1000ULL + t9.tv_usec));
-
 #endif
+printf("branchless interleaved (8) time=%llu  \n",t11.tv_sec  * 1000ULL * 1000ULL + t11.tv_usec - (t10.tv_sec  * 1000ULL * 1000ULL + t10.tv_usec));
+printf("branchless interleaved (8) (prefetch) time=%llu  \n",t12.tv_sec  * 1000ULL * 1000ULL + t12.tv_usec - (t11.tv_sec  * 1000ULL * 1000ULL + t11.tv_usec));
+
 
 
         printf("\n");
