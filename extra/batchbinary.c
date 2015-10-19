@@ -1,5 +1,5 @@
 /**
-gcc -O3 batchbinary.c -mavx2 -o batchbinary && ./batchbinary
+gcc -fno-inline -Wall -g -mavx2 -march=native -O3 batchbinary.c -o batchbinary
 */
 #include <stdlib.h>
 #include <sys/stat.h>
