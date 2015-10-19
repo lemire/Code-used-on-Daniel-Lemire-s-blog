@@ -36,7 +36,7 @@ size_t branchfree_search(int* source, size_t n, int target) {
     while(n>1) {
         size_t half = n >> 1;
         // base[half] could be out of bounds
-        base = ((base+half <end)&&(base[half] < target)) ? &base[half] : base;
+        base = (base[half] < target) ? &base[half] : base;
         n -= half;
     }
     return ((base < source+oldn)?(*base < target):0) + base - source;
@@ -51,8 +51,8 @@ void branchfree_search2(int* source, size_t n, int target1, int target2, size_t 
     while(n>1) {
         size_t half = n >> 1;
         // base1[half] could be out of bounds
-        base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
-        base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
+        base1 = (base1[half] < target1) ? &base1[half] : base1;
+        base2 = (base2[half] < target2) ? &base2[half] : base2;
         n -= half;
     }
     *index1 = ((base1 < source+oldn)?(*base1 < target1):0) + base1 - source;
@@ -70,10 +70,10 @@ void branchfree_search4(int* source, size_t n, int target1, int target2, int tar
     while(n>1) {
         size_t half = n >> 1;
         // base1[half] could be out of bounds
-        base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
-        base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
-        base3 = ((base3+half <end)&&(base3[half] < target3)) ? &base3[half] : base3;
-        base4 = ((base4+half <end)&&(base4[half] < target4)) ? &base4[half] : base4;
+        base1 = (base1[half] < target1) ? &base1[half] : base1;
+        base2 = (base2[half] < target2) ? &base2[half] : base2;
+        base3 = (base3[half] < target3) ? &base3[half] : base3;
+        base4 = (base4[half] < target4) ? &base4[half] : base4;
         n -= half;
     }
     *index1 = ((base1 < source+oldn)?(*base1 < target1):0) + base1 - source;
@@ -96,14 +96,14 @@ void branchfree_search8(int* source, size_t n, int target1, int target2, int tar
     while(n>1) {
         size_t half = n >> 1;
         // base1[half] could be out of bounds
-        base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
-        base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
-        base3 = ((base3+half <end)&&(base3[half] < target3)) ? &base3[half] : base3;
-        base4 = ((base4+half <end)&&(base4[half] < target4)) ? &base4[half] : base4;
-        base5 = ((base5+half <end)&&(base5[half] < target5)) ? &base5[half] : base5;
-        base6 = ((base6+half <end)&&(base6[half] < target6)) ? &base6[half] : base6;
-        base7 = ((base7+half <end)&&(base7[half] < target7)) ? &base7[half] : base7;
-        base8 = ((base8+half <end)&&(base8[half] < target8)) ? &base8[half] : base8;
+        base1 = (base1[half] < target1) ? &base1[half] : base1;
+        base2 = (base2[half] < target2) ? &base2[half] : base2;
+        base3 = (base3[half] < target3) ? &base3[half] : base3;
+        base4 = (base4[half] < target4) ? &base4[half] : base4;
+        base5 = (base5[half] < target5) ? &base5[half] : base5;
+        base6 = (base6[half] < target6) ? &base6[half] : base6;
+        base7 = (base7[half] < target7) ? &base7[half] : base7;
+        base8 = (base8[half] < target8) ? &base8[half] : base8;
 
         n -= half;
     }
@@ -149,14 +149,14 @@ void branchfree_search8_prefetch(int* source, size_t n, int target1, int target2
         __builtin_prefetch(base8+half+(half>>1),0,0);
 
         // base1[half] could be out of bounds
-        base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
-        base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
-        base3 = ((base3+half <end)&&(base3[half] < target3)) ? &base3[half] : base3;
-        base4 = ((base4+half <end)&&(base4[half] < target4)) ? &base4[half] : base4;
-        base5 = ((base5+half <end)&&(base5[half] < target5)) ? &base5[half] : base5;
-        base6 = ((base6+half <end)&&(base6[half] < target6)) ? &base6[half] : base6;
-        base7 = ((base7+half <end)&&(base7[half] < target7)) ? &base7[half] : base7;
-        base8 = ((base8+half <end)&&(base8[half] < target8)) ? &base8[half] : base8;
+        base1 = (base1[half] < target1) ? &base1[half] : base1;
+        base2 = (base2[half] < target2) ? &base2[half] : base2;
+        base3 = (base3[half] < target3) ? &base3[half] : base3;
+        base4 = (base4[half] < target4) ? &base4[half] : base4;
+        base5 = (base5[half] < target5) ? &base5[half] : base5;
+        base6 = (base6[half] < target6) ? &base6[half] : base6;
+        base7 = (base7[half] < target7) ? &base7[half] : base7;
+        base8 = (base8[half] < target8) ? &base8[half] : base8;
 
         n -= half;
     }
@@ -236,8 +236,8 @@ void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2
         __builtin_prefetch(base2+(half>>1),0,0);
         __builtin_prefetch(base2+half+(half>>1),0,0);
         // base1[half] could be out of bounds
-        base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
-        base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
+        base1 = (base1[half] < target1) ? &base1[half] : base1;
+        base2 = (base2[half] < target2) ? &base2[half] : base2;
         n -= half;
     }
     *index1 = ((base1 < source+oldn)?(*base1 < target1):0) + base1 - source;
@@ -263,10 +263,10 @@ void branchfree_search4_prefetch(int* source, size_t n, int target1, int target2
         __builtin_prefetch(base4+(half>>1),0,0);
         __builtin_prefetch(base4+half+(half>>1),0,0);
         // base1[half] could be out of bounds
-        base1 = ((base1+half <end)&&(base1[half] < target1)) ? &base1[half] : base1;
-        base2 = ((base2+half <end)&&(base2[half] < target2)) ? &base2[half] : base2;
-        base3 = ((base3+half <end)&&(base3[half] < target3)) ? &base3[half] : base3;
-        base4 = ((base4+half <end)&&(base4[half] < target4)) ? &base4[half] : base4;
+        base1 = (base1[half] < target1) ? &base1[half] : base1;
+        base2 = (base2[half] < target2) ? &base2[half] : base2;
+        base3 = (base3[half] < target3) ? &base3[half] : base3;
+        base4 = (base4[half] < target4) ? &base4[half] : base4;
         n -= half;
     }
     *index1 = ((base1 < source+oldn)?(*base1 < target1):0) + base1 - source;
@@ -284,7 +284,7 @@ size_t branchfree_search_prefetch(int* source, size_t n, int target) {
         size_t half = n >> 1;
         __builtin_prefetch(base+(half>>1),0,0);
         __builtin_prefetch(base+half+(half>>1),0,0);
-        base = ((base+half <end)&&(base[half] < target)) ? &base[half] : base;
+        base = (base[half] < target) ? &base[half] : base;
         n -= half;
     }
     return ((base < source+oldn)?(*base < target):0) + base - source;
