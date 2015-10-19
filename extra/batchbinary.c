@@ -189,10 +189,9 @@ __m128i branchfree_search4_avx(int* source, size_t n, __m128i target) {
     if(n == 0) return offsets;
 
     __m128i ha = _mm_set1_epi32(n>>1);
-    __m128i mmax = _mm_set1_epi32(n-1);
     while(n>1) {
         n -=  n>>1;
-        __m128i offsetsplushalf = _mm_min_epi32(mmax,_mm_add_epi32(offsets,ha));
+        __m128i offsetsplushalf = _mm_add_epi32(offsets,ha);
         ha = _mm_sub_epi32(ha,_mm_srli_epi32(ha,1));
         __m128i keys = _mm_i32gather_epi32(source,offsetsplushalf,4);
         __m128i lt = _mm_cmplt_epi32(keys,target);
@@ -210,10 +209,9 @@ __m256i branchfree_search8_avx(int* source, size_t n, __m256i target) {
     if(n == 0) return offsets;
 
     __m256i ha = _mm256_set1_epi32(n>>1);
-    __m256i mmax = _mm256_set1_epi32(n-1);
     while(n>1) {
         n -=  n>>1;
-        __m256i offsetsplushalf = _mm256_min_epi32(mmax,_mm256_add_epi32(offsets,ha));
+        __m256i offsetsplushalf = _mm256_add_epi32(offsets,ha);
         ha = _mm256_sub_epi32(ha,_mm256_srli_epi32(ha,1));
         __m256i keys = _mm256_i32gather_epi32(source,offsetsplushalf,4);
         __m256i lt = _mm256_cmpgt_epi32(target,keys);
@@ -234,7 +232,6 @@ void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2
     int * base1 = source;
     int * base2 = source;
     if(n == 0) return;
-    int oldn = n;
     while(n>1) {
         size_t half = n >> 1;
         __builtin_prefetch(base1+(half>>1),0,0);
@@ -408,10 +405,7 @@ printf("branchless interleaved (8) (prefetch) time=%llu  \n",t12.tv_sec  * 1000U
 int check(size_t N, size_t Nq) {
     int * queries = (int*)malloc(Nq*sizeof(int));
     int * source = (int*)malloc(N*sizeof(int));
-    size_t bogus = 0;
-    size_t bogus1 = 0;
-    size_t bogus2 = 0;
-    size_t i, k, ti;
+    size_t i, k;
     int displaytest = 0;
     for(i = 0; i < N; ++i) {
         source[i] = rand();
