@@ -32,10 +32,10 @@ size_t branchy_search(int* source, size_t n, int target) {
 size_t branchfree_search(int* source, size_t n, int target) {
     size_t oldn = n;
     int * base = source;
-    int * end = source + n;
+    
     while(n>1) {
         size_t half = n >> 1;
-        // base[half] could be out of bounds
+
         base = (base[half] < target) ? &base[half] : base;
         n -= half;
     }
@@ -47,7 +47,7 @@ void branchfree_search2(int* source, size_t n, int target1, int target2, size_t 
     int * base1 = source;
     int * base2 = source;
     size_t oldn = n;
-    int * end = source + n;
+
     while(n>1) {
         size_t half = n >> 1;
         // base1[half] could be out of bounds
@@ -66,7 +66,7 @@ void branchfree_search4(int* source, size_t n, int target1, int target2, int tar
     int * base3 = source;
     int * base4 = source;
     size_t oldn = n;
-    int * end = source + n;
+
     while(n>1) {
         size_t half = n >> 1;
         // base1[half] could be out of bounds
@@ -92,7 +92,7 @@ void branchfree_search8(int* source, size_t n, int target1, int target2, int tar
     int * base7 = source;
     int * base8 = source;
     size_t oldn = n;
-    int * end = source + n;
+
     while(n>1) {
         size_t half = n >> 1;
         // base1[half] could be out of bounds
@@ -128,7 +128,7 @@ void branchfree_search8_prefetch(int* source, size_t n, int target1, int target2
     int * base7 = source;
     int * base8 = source;
     size_t oldn = n;
-    int * end = source + n;
+
     while(n>1) {
         size_t half = n >> 1;
         __builtin_prefetch(base1+(half>>1),0,0);
@@ -227,7 +227,7 @@ __m256i branchfree_search8_avx(int* source, size_t n, __m256i target) {
 void branchfree_search2_prefetch(int* source, size_t n, int target1, int target2, size_t * index1, size_t * index2) {
     int * base1 = source;
     int * base2 = source;
-    int * end = source + n;
+
     int oldn = n;
     while(n>1) {
         size_t half = n >> 1;
@@ -250,7 +250,7 @@ void branchfree_search4_prefetch(int* source, size_t n, int target1, int target2
     int * base2 = source;
     int * base3 = source;
     int * base4 = source;
-    int * end = source + n;
+
     size_t oldn = n;
     while(n>1) {
         size_t half = n >> 1;
@@ -279,7 +279,7 @@ void branchfree_search4_prefetch(int* source, size_t n, int target1, int target2
 size_t branchfree_search_prefetch(int* source, size_t n, int target) {
     int * base = source;
     int oldn = n;
-    int * end = source + n;
+
     while(n>1) {
         size_t half = n >> 1;
         __builtin_prefetch(base+(half>>1),0,0);
