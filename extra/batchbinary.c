@@ -27,6 +27,18 @@ size_t branchy_search(int* source, size_t n, int target) {
     return hi;
 }
 
+size_t hackedbranchfree_search(int* source, size_t n, int target) {
+    if(n == 0) return 0;
+    int * base = source;
+
+    while(n>1) {
+        size_t half = n >> 1;
+        base += ((  base[half]-target ) >> 31)& half;
+        n -= half;
+    }
+    return (*base < target) + base - source;
+}
+
 
 
 size_t branchfree_search(int* source, size_t n, int target) {
@@ -325,7 +337,7 @@ int demo(size_t N, size_t Nq) {
     printf("\n");
 
     for(ti = 0; ti < 3; ++ti) {
-        struct timeval t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12;
+        struct timeval t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13;
 
         gettimeofday(&t6, 0);
         for(k = 0; k+1 < Nq; k+=2)
@@ -362,15 +374,18 @@ int demo(size_t N, size_t Nq) {
         }
 
 #endif
-gettimeofday(&t10, 0);
-for(k = 0; k+7 < Nq; k+=8) {
-    branchfree_search8(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],queries[k+4],queries[k+5],queries[k+6],queries[k+7],&bogus1,&bogus2,&bogus3,&bogus4,&bogus1,&bogus2,&bogus3,&bogus4);
-}
-gettimeofday(&t11, 0);
-for(k = 0; k+7 < Nq; k+=8) {
-    branchfree_search8_prefetch(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],queries[k+4],queries[k+5],queries[k+6],queries[k+7],&bogus1,&bogus2,&bogus3,&bogus4,&bogus1,&bogus2,&bogus3,&bogus4);
-}
-gettimeofday(&t12, 0);
+        gettimeofday(&t10, 0);
+        for(k = 0; k+7 < Nq; k+=8) {
+            branchfree_search8(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],queries[k+4],queries[k+5],queries[k+6],queries[k+7],&bogus1,&bogus2,&bogus3,&bogus4,&bogus1,&bogus2,&bogus3,&bogus4);
+        }
+        gettimeofday(&t11, 0);
+        for(k = 0; k+7 < Nq; k+=8) {
+            branchfree_search8_prefetch(source,N,queries[k],queries[k+1],queries[k+2],queries[k+3],queries[k+4],queries[k+5],queries[k+6],queries[k+7],&bogus1,&bogus2,&bogus3,&bogus4,&bogus1,&bogus2,&bogus3,&bogus4);
+        }
+        gettimeofday(&t12, 0);
+        for(k = 0; k < Nq; ++k)
+            bogus += hackedbranchfree_search(source,N,queries[k]);
+        gettimeofday(&t13, 0);
 
 
 
@@ -385,8 +400,9 @@ gettimeofday(&t12, 0);
         printf("branchless interleaved (4) (AVX) time=%llu  \n",t9.tv_sec  * 1000ULL * 1000ULL + t9.tv_usec - (t8.tv_sec  * 1000ULL * 1000ULL + t8.tv_usec));
         printf("branchless interleaved (8) (AVX) time=%llu  \n",t10.tv_sec  * 1000ULL * 1000ULL + t10.tv_usec - (t9.tv_sec  * 1000ULL * 1000ULL + t9.tv_usec));
 #endif
-printf("branchless interleaved (8) time=%llu  \n",t11.tv_sec  * 1000ULL * 1000ULL + t11.tv_usec - (t10.tv_sec  * 1000ULL * 1000ULL + t10.tv_usec));
-printf("branchless interleaved (8) (prefetch) time=%llu  \n",t12.tv_sec  * 1000ULL * 1000ULL + t12.tv_usec - (t11.tv_sec  * 1000ULL * 1000ULL + t11.tv_usec));
+        printf("branchless interleaved (8) time=%llu  \n",t11.tv_sec  * 1000ULL * 1000ULL + t11.tv_usec - (t10.tv_sec  * 1000ULL * 1000ULL + t10.tv_usec));
+        printf("branchless interleaved (8) (prefetch) time=%llu  \n",t12.tv_sec  * 1000ULL * 1000ULL + t12.tv_usec - (t11.tv_sec  * 1000ULL * 1000ULL + t11.tv_usec));
+        printf("hacked branchless time=%llu  \n",t13.tv_sec  * 1000ULL * 1000ULL + t13.tv_usec - (t12.tv_sec  * 1000ULL * 1000ULL + t12.tv_usec));
 
 
 
@@ -412,10 +428,10 @@ int check(size_t N, size_t Nq) {
     }
     qsort (source, N, sizeof(int), compare);
     if(displaytest) {
-      for(i = 0; i < N; ++i) {
-        printf(" %d ",source[i]);
-      }
-      printf("\n");
+        for(i = 0; i < N; ++i) {
+            printf(" %d ",source[i]);
+        }
+        printf("\n");
     }
     int maxval = source[N-1];
     for(i = 0; i < Nq; ++i) {
@@ -472,10 +488,10 @@ int check(size_t N, size_t Nq) {
 
 int main() {
     size_t x ;
-    for(x=6;x<2048;x*=2 ) {
-      printf("checking input size = %zu \n ",x);
-      if(check(x,1024 * 1024)) return -1;
-      printf("Ok!\n ");
+    for(x=6; x<2048; x*=2 ) {
+        printf("checking input size = %zu \n ",x);
+        if(check(x,1024 * 1024)) return -1;
+        printf("Ok!\n ");
     }
     demo(1024,1024 * 1024);
     demo(1024 * 1024,1024 * 1024);
