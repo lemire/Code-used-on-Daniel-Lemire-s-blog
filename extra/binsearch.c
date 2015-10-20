@@ -207,7 +207,7 @@ int main(int argc, char **argv) {
     for (size_t n = 0; n < COUNT(lengths); n++) {
         size_t length = lengths[n];
         size_t count = 1000*1000;
-
+        size_t i;
         uint32_t *targets = create_search_targets(count, 2*length);
         printf("%zd Targets with Array Length", count);
         fflush(NULL);
@@ -225,29 +225,31 @@ int main(int argc, char **argv) {
 #endif
 
         size_t *indexes = malloc(count * sizeof(*indexes));
-        for (size_t i = 0; i < COUNT(batches); i++) {
-            memset(indexes, 0, count * sizeof(*indexes));
+        for (i = 0; i < COUNT(batches); i++) {
             size_t batch = batches[i];
+            size_t c;
+            float cycles_per_search;
+            memset(indexes, 0, count * sizeof(*indexes));
             if (batch > count) batch = count;
             printf("  Batch %3zd: ", batch);
             fflush(NULL);
             uint64_t cycles_start, cycles_final;
             RDTSC_START(cycles_start);
-            for (size_t c = 0; c < count; c += batch) {
+            for (c = 0; c < count; c += batch) {
                 // possible smaller batch for last iteration
                 if (c > count - batch) batch = count % batch;
                 parallel_search(array, length, targets + c,
                                 indexes + c, batch);
             }
             RDTSC_FINAL(cycles_final);
-            float cycles_per_search =
+            cycles_per_search =
                 (cycles_final - cycles_start) / (float) count;
             printf("cmov?: %.2f cycles/search ", cycles_per_search);
             verify_indexes(reference_indexes, indexes, count,
                            array, targets, length);
 
             RDTSC_START(cycles_start);
-            for (size_t c = 0; c < count; c += batch) {
+            for (c = 0; c < count; c += batch) {
                 // possible smaller batch for last iteration
                 if (c > count - batch) batch = count % batch;
                 portable_parallel_search(array, length, targets + c,
