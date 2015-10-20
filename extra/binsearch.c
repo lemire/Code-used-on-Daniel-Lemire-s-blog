@@ -51,6 +51,7 @@ void parallel_search(uint32_t *array, size_t length,
 }
 
 
+
 // parallel binary search for the 'count' 'targets' in a sorted 'array'
 // matching 'indexes' are first element equal or greater than each target
 // this version does not assume cmov
@@ -70,6 +71,33 @@ void portable_parallel_search(uint32_t *array, size_t length,
     }
 
     // FUTURE: may be possible to integrate 'adjustment' into loop above?
+    uint32_t min = array[0];
+    for (size_t c = 0; c < count; c++) {
+        uint32_t target = targets[c];
+        size_t adjusted = indexes[c] + 1;
+        if (target <= min) adjusted = 0;
+        indexes[c] = adjusted;
+    }
+
+    // indexes matching-or-less-than targets ready for caller
+}
+
+void portable_parallel_search2(uint32_t *array, size_t length,
+                     uint32_t *targets, size_t *indexes, size_t count) {
+    memset(indexes, 0, count * sizeof(*indexes)); // set indexes to zero
+
+    for (size_t half = length/2; half; length -= half, half = length/2) {
+        for (size_t c = 0; c < count; c++) {
+            uint32_t target = targets[c];
+            size_t index = indexes[c];
+            size_t test = index + half;
+            int32_t diff = (int32_t) array[test] - (int32_t) target;
+            uint32_t mask = diff >> 31;  // extend sign bit (1 if diff < 0)
+            uint32_t addition = half & mask; // target > array[test] ? half : 0
+            indexes[c] = index + addition;
+        }
+    }
+
     uint32_t min = array[0];
     for (size_t c = 0; c < count; c++) {
         uint32_t target = targets[c];
@@ -229,6 +257,18 @@ int main(int argc, char **argv) {
             cycles_per_search =
                 (cycles_final - cycles_start) / (float) count;
             printf(", portable: %.2f cycles/search", cycles_per_search);
+            RDTSC_START(cycles_start);
+            for (size_t c = 0; c < count; c += batch) {
+                // possible smaller batch for last iteration
+                if (c > count - batch) batch = count % batch;
+                portable_parallel_search2(array, length, targets + c,
+                                indexes + c, batch);
+            }
+            RDTSC_FINAL(cycles_final);
+            cycles_per_search =
+                (cycles_final - cycles_start) / (float) count;
+            printf(", portable2: %.2f cycles/search", cycles_per_search);
+
             printf("\n");
 
         }
