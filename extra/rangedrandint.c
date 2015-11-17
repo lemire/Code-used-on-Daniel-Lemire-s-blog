@@ -1,5 +1,6 @@
 /***
 * This tests the generation of ranged 16-bit random integers.
+* gcc -O2 -o rangedrandint rangedrandint.c
 */
 
 #include <stdint.h>
@@ -14,18 +15,12 @@ int fogapproach(uint16_t range) {
     for(int k = 0; k < 1<<16; ++k) {
         counter[k] = 0;
     }
-// r
-    int max0 = 0;
     int threshold = (int) ((uint32_t)((1<<16)/range*range) -1);
     int failure = 0;
     for(int k = 0; k < 1<<16; ++k) {
         uint32_t r = k;
         uint16_t c =(r* range) >> 16;
         int leftover = (r* range) & 0xFFFF;
-        if(c==0) {
-            if(max0 < leftover) max0 =leftover;
-        }
-//if(leftover + range <= 1<<8)
         if(leftover <= threshold) {
             counter[c]++;
         } else {
@@ -43,7 +38,7 @@ int fogapproach(uint16_t range) {
     }
     printf("%d ** %d +++  %d -- %d +++ %d \n",-minc+maxc,minc,UINT16_MAX/range,(UINT16_MAX+range-1)/range,maxc);
     if(minc == maxc) printf("******fair\n");
-    else printf("unfair \n");
+    else printf("======unfair \n");
     return 0;
 }
 
@@ -55,8 +50,6 @@ int classicapproach(uint16_t range) {
     for(int k = 0; k < 1<<16; ++k) {
         counter[k] = 0;
     }
-// r
-    int max0 = 0;
     int threshold = (int) ((uint32_t)((1<<8)/range*range) -1);
     int failure = 0;
     for(int k = 0; k < 1<<16; ++k) {
@@ -79,7 +72,7 @@ int classicapproach(uint16_t range) {
     }
     printf("%d ** %d +++  %d -- %d +++ %d \n",-minc+maxc,minc,UINT16_MAX/range,(UINT16_MAX+range-1)/range,maxc);
     if(minc == maxc) printf("******fair\n");
-    else printf("unfair \n");
+    else printf("======unfair \n");
     return 0;
 }
 
@@ -93,6 +86,8 @@ int main() {
 
         r = classicapproach(k);
         if(r<0) return r;
+
+
 
     }
     return 0;
