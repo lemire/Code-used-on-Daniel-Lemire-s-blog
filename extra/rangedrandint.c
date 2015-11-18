@@ -16,7 +16,11 @@ int fogapproach(uint16_t range) {
         counter[k] = 0;
     }
     int threshold = (int) ((uint32_t)((1<<16)/range*range) -1);
-    if(threshold < (1<<16)-range) return -1;
+    if(threshold+1 < (1<<16)-range+ (range & (~(range-1)))){
+      printf("threshold = %d ",threshold);
+      printf("crazy = %d ",(1<<16)-range+ (range & (~(range-1))));
+      return -1;
+    }
     int failure = 0;
     int softfailure = 0;
 
