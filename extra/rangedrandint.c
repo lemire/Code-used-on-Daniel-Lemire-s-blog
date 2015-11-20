@@ -8,8 +8,8 @@
 #include <stdio.h>
 
 
-int fogapproach(uint16_t range) {
-    printf("fog range %d \n",range);
+int multapproach(uint16_t range) {
+    printf("mult range %d \n",range);
 
     int counter[1<<16];
     for(int k = 0; k < 1<<16; ++k) {
@@ -49,8 +49,8 @@ int fogapproach(uint16_t range) {
     return 0;
 }
 
-int reversefogapproach(uint16_t range) {
-    printf("reverse fog range %d \n",range);
+int reversemultapproach(uint16_t range) {
+    printf("reverse mult range %d \n",range);
 
     int counter[1<<16];
     for(int k = 0; k < 1<<16; ++k) {
@@ -88,8 +88,8 @@ int reversefogapproach(uint16_t range) {
     return 0;
 }
 
-int fasterreversefogapproach(uint16_t range) {
-    printf("faster reverse fog range %d \n",range);
+int fasterreversemultapproach(uint16_t range) {
+    printf("faster reverse mult range %d \n",range);
 
     int counter[1<<16];
     for(int k = 0; k < 1<<16; ++k) {
@@ -125,8 +125,8 @@ int fasterreversefogapproach(uint16_t range) {
 }
 
 
-int fasterthanfogapproach(uint16_t range) {
-    printf("fasterthanfog range %d \n",range);
+int fasterthanmultapproach(uint16_t range) {
+    printf("fasterthanmult range %d \n",range);
 
     int counter[1<<16];
     for(int k = 0; k < 1<<16; ++k) {
@@ -200,19 +200,56 @@ int classicapproach(uint16_t range) {
     return 0;
 }
 
+int fastapproach(uint16_t range) {
+    printf("fast range %d \n",range);
+
+    int counter[1<<16];
+    for(int k = 0; k < 1<<16; ++k) {
+        counter[k] = 0;
+    }
+    for(int k = 0; k < 1<<16; ++k) {
+      if((range & (range - 1)) == 0) {
+          counter[k & (range - 1)]++;
+          continue;
+      }
+      uint32_t multiresult = k * range;
+      uint32_t leftover = multiresult % (1<<16);
+      if(leftover < range ) {
+          uint32_t threshold = ((1<<16)-1) % range ;
+          if (leftover > threshold) {
+            counter[multiresult >> 16]++;
+          }
+      } else {
+        counter[multiresult >> 16]++;
+      }
+    }
+    int minc = UINT16_MAX+1;
+    int maxc = 0;
+    int fair = counter[0];
+    for(int k = 0; k < range; ++k) {
+        if(counter[k]<minc) minc = counter[k];
+        if(counter[k]>maxc) maxc = counter[k];
+    }
+    printf("%d ** %d +++  %d -- %d +++ %d \n",-minc+maxc,minc,UINT16_MAX/range,(UINT16_MAX+range-1)/range,maxc);
+    if(minc == maxc) printf("******fair\n");
+    else {printf("======unfair \n"); return -1;}
+    return 0;
+}
 
 
 int main() {
 
     for(int k = 1; k <60000; k++) {
-        int r = fogapproach(k);
+        int r = multapproach(k);
         if(r<0) return r;
-        r = reversefogapproach(k);
+        r =  fastapproach(k);
         if(r<0) return r;
-        r = fasterreversefogapproach(k);
+        r = reversemultapproach(k);
+        if(r<0) return r;
+        r = fasterreversemultapproach(k);
         if(r<0) return r;
 
-        r = fasterthanfogapproach(k);
+        r = fasterthanmultapproach(k);
         if(r<0) return r;
 
         r = classicapproach(k);
