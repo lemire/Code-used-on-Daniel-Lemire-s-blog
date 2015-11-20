@@ -57,6 +57,14 @@ int reversefogapproach(uint16_t range) {
         counter[k] = 0;
     }
     int threshold = (1<<16) % range;
+
+    if((range &(range-1))!=0) {
+        int fthreshold = ((1<<16)-1)%range + 1;
+        if(threshold != fthreshold) {
+          printf("bug %d %d %d ",range,threshold,fthreshold);
+          abort();
+        }
+    }
     for(int k = 0; k < 1<<16; ++k) {
         uint32_t r = k;
         uint16_t c =(r* range) >> 16;
