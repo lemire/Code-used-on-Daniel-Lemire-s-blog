@@ -40,7 +40,16 @@ int testinverse() {
             printf("bug\n");
             return -1;
         } 
+        if(0xFFFF * x * y != 0xFFFF) {
+            printf("bug\n");
+            return -1;
+        } 
+        if(0xFFFFFFFF * x * y != 0xFFFFFFFF) {
+            printf("bug\n");
+            return -1;
+        } 
     }
+    printf("code is probably ok.\n");
     return 0;
 }
 
