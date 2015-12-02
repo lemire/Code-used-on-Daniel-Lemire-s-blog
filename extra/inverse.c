@@ -19,6 +19,14 @@ numbers. IEEE Transactions on Computers, C-32(4):396–398, April 1983
 
 Of some relevance : https://github.com/ridiculousfish/libdivide
 
+See also 
+
+Division by invariant integers using multiplication
+T Granlund, PL Montgomery - ACM SIGPLAN Notices, 1994 
+
+Improved Division by Invariant Integers
+Möller, N. ; Conemtech AB, Kista, Sweden ; Granlund, T.
+
 */
 
 uint32_t inverse(uint32_t a) {
