@@ -7,7 +7,7 @@ $ g++-4.8.0 -O3 -mavx -o simdspeed simdspeed.cpp
 **/
 #include <cmath>
 #include <vector>
-
+#include <stdint.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -46,7 +46,7 @@ using namespace std;
         (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;        \
     } while(0)
 
-__attribute__((__noinline__,__target__("no-avx"),__target__("no-sse")))
+__attribute__((__noinline__,__target__("no-avx"),__target__("no-sse2")))
 float scalar(const float * a, const float *b, size_t length) {
 	float sum = 0;
 	for(size_t i = 0; i < length;i++ ) {
@@ -56,7 +56,7 @@ float scalar(const float * a, const float *b, size_t length) {
 }
 
 #ifdef __SSE3__
-__attribute__((__noinline__,__target__("no-avx")))
+__attribute__((__noinline__))
 float scalar128(const float * a, const float *b, size_t length) {
     __m128 sum = _mm_set1_ps(0);
     assert(length/4*4==length);
@@ -123,7 +123,7 @@ int main() {
     time3 = cycles_final - cycles_start;
 #endif
     cout<<"# computes scalar production "<<time3<<endl;
-    cout<<"# scalar, SSE3, AVX timings "<<time3<<endl;
-    cout<<time1<<" "<<time2<<" "<<time3<<endl;
+    cout<<"# scalar, SSE3, AVX timings (millions of cycle) "<<time3<<endl;
+    cout<<time1/1000000.0<<" "<<time2/1000000.<<" "<<time3/1000000.<<endl;
     cout<< std::setprecision(8)<<"#ignore="<<bogus1<<" "<<bogus2<<" "<<bogus3<<endl;
 }
