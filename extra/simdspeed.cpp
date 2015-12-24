@@ -22,17 +22,31 @@ $ g++-4.8.0 -O3 -mavx -o simdspeed simdspeed.cpp
 #include <immintrin.h>
 using namespace std;
 
- class WallClockTimer {
-  public:
-      struct timeval t1, t2;
-      WallClockTimer() : t1(), t2(){ gettimeofday(&t1,0); t2 = t1; }
-      void reset() {gettimeofday(&t1,0); t2 = t1;}
-      int elapsed() { return (t2.tv_sec * 1000 + t2.tv_usec / 1000) - (t1.tv_sec * 1000 + t1.tv_usec / 1000); }
-      int split() { gettimeofday(&t2,0); return elapsed(); }
-  };
+#define RDTSC_START(cycles)                                     \
+    do {                                                        \
+        register unsigned cyc_high, cyc_low;                    \
+        __asm volatile("cpuid\n\t"                              \
+                     "rdtsc\n\t"                                \
+                     "mov %%edx, %0\n\t"                        \
+                     "mov %%eax, %1\n\t"                        \
+                     : "=r" (cyc_high), "=r" (cyc_low)          \
+                     :: "%rax", "%rbx", "%rcx", "%rdx");        \
+        (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;        \
+    } while (0)
 
+#define RDTSC_FINAL(cycles)                                     \
+    do {                                                        \
+        register unsigned cyc_high, cyc_low;                    \
+        __asm volatile("rdtscp\n\t"                             \
+                     "mov %%edx, %0\n\t"                        \
+                     "mov %%eax, %1\n\t"                        \
+                     "cpuid\n\t"                                \
+                     : "=r" (cyc_high), "=r" (cyc_low)          \
+                     :: "%rax", "%rbx", "%rcx", "%rdx");        \
+        (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;        \
+    } while(0)
 
-__attribute__((__noinline__,__target__("no-avx")))
+__attribute__((__noinline__,__target__("no-avx"),__target__("no-sse")))
 float scalar(const float * a, const float *b, size_t length) {
 	float sum = 0;
 	for(size_t i = 0; i < length;i++ ) {
@@ -77,32 +91,39 @@ float scalar256(const float * a, const float *b, size_t length) {
 #endif
 
 int main() {
+    uint64_t cycles_start, cycles_final;
     int time1, time2, time3;
 	size_t N =  1024*1024;
-    int T=100;
+    int T=5;
 	vector<float> a(N,0.1);
 	vector<float> b(N,5);
-	WallClockTimer timer;
 	float bogus1 = 0;
     float bogus2 = 0;
     float bogus3 = 0;
-	timer.reset();
+	RDTSC_START(cycles_start);
 	for(int k = 0; k<T;++k)
-	bogus1 = scalar(&a[0], &b[0],N);
-	time1 = timer.split();
+	bogus1 += scalar(&a[0], &b[0],N);
+	RDTSC_FINAL(cycles_final);
+
+	time1 = cycles_final - cycles_start;
 #ifdef __SSE3__
-	timer.reset();
+	RDTSC_START(cycles_start);
     for(int k = 0; k<T;++k)
-	bogus2 = scalar128(&a[0], &b[0],N);
-    time2 = timer.split();
+	bogus2 += scalar128(&a[0], &b[0],N);
+	RDTSC_FINAL(cycles_final);
+
+    time2 = cycles_final - cycles_start;
 #endif
 #ifdef __AVX__
-	timer.reset();
+	RDTSC_START(cycles_start);
     for(int k = 0; k<T;++k)
-	bogus3 = scalar256(&a[0], &b[0],N);
-    time3 = timer.split();
+	bogus3 += scalar256(&a[0], &b[0],N);
+	RDTSC_FINAL(cycles_final);
+
+    time3 = cycles_final - cycles_start;
 #endif
+    cout<<"# computes scalar production "<<time3<<endl;
+    cout<<"# scalar, SSE3, AVX timings "<<time3<<endl;
     cout<<time1<<" "<<time2<<" "<<time3<<endl;
-    cout<< std::setprecision(3)<<time1*1.0/time1<<" "<<time1*1.0/time2<<" "<<time1*1.0/time3<<endl;
-     cout<< std::setprecision(8)<<"#ignore="<<bogus1<<" "<<bogus2<<" "<<bogus3<<endl;
+    cout<< std::setprecision(8)<<"#ignore="<<bogus1<<" "<<bogus2<<" "<<bogus3<<endl;
 }
