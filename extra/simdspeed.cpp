@@ -1,9 +1,5 @@
-// Daniel Lemire, Nov 2nd 2013
 /***
-g++ -march=native -o simdspeed simdspeed.cpp
-91 29 28
-1 3.14 3.25
-#ignore=724.07733 724.07733 724.07733
+g++ -march=native -O3 -o simdspeed simdspeed.cpp
 **/
 #include <cmath>
 #include <vector>
@@ -113,6 +109,7 @@ float scalarfma256(const float * a, const float *b, size_t length) {
 int main() {
     uint64_t cycles_start, cycles_final;
     int time1, time2, time3, time4;
+    float rate1, rate2, rate3, rate4;
     size_t N =  1024*4;
     int T=10000;
     vector<float> a(N,0.1);
@@ -128,6 +125,7 @@ int main() {
     RDTSC_FINAL(cycles_final);
 
     time1 = cycles_final - cycles_start;
+    rate1 = (float) time1 / (N * T);
 #ifdef __SSE3__
     RDTSC_START(cycles_start);
     for(int k = 0; k<T; ++k)
@@ -135,6 +133,7 @@ int main() {
     RDTSC_FINAL(cycles_final);
 
     time2 = cycles_final - cycles_start;
+    rate2 = (float) time2 / (N * T);
 #endif
 #ifdef __AVX__
     RDTSC_START(cycles_start);
@@ -143,6 +142,7 @@ int main() {
     RDTSC_FINAL(cycles_final);
 
     time3 = cycles_final - cycles_start;
+    rate3 = (float) time3 / (N * T);
 #endif
 
 #ifdef __AVX__
@@ -152,10 +152,12 @@ int main() {
     RDTSC_FINAL(cycles_final);
 
     time4 = cycles_final - cycles_start;
+    rate4 = (float) time4 / (N * T);
 #endif
 
-    cout<<"# computes scalar production "<<time3<<endl;
-    cout<<"# scalar, SSE3, AVX, FMA timings (millions of cycle) "<<time3<<endl;
+    cout<<"# computes scalar production "<<endl;
+    cout<<"# scalar, SSE3, AVX, FMA timings (millions of cycle) "<<endl;
     cout<<time1/1000000.0<<" "<<time2/1000000.<<" "<<time3/1000000.<<" "<<time4/1000000.<<endl;
+    cout<<rate1<<" "<<rate2<<" "<<rate3<<" "<<rate4<<endl;
     cout<< std::setprecision(8)<<"#ignore="<<bogus1<<" "<<bogus2<<" "<<bogus3<<" "<<bogus4<<endl;
 }
