@@ -148,7 +148,7 @@ int main() {
 #ifdef __AVX__
     RDTSC_START(cycles_start);
     for(int k = 0; k<T; ++k)
-        bogus3 += scalarfma256(&a[0], &b[0],N);
+        bogus4 += scalarfma256(&a[0], &b[0],N);
     RDTSC_FINAL(cycles_final);
 
     time4 = cycles_final - cycles_start;
