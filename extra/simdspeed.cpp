@@ -1,6 +1,6 @@
 // Daniel Lemire, Nov 2nd 2013
 /***
-$ g++-4.8.0 -O3 -mavx -o simdspeed simdspeed.cpp
+g++ -march=native -o simdspeed simdspeed.cpp
 91 29 28
 1 3.14 3.25
 #ignore=724.07733 724.07733 724.07733
@@ -97,9 +97,9 @@ float scalarfma256(const float * a, const float *b, size_t length) {
     __m256 sum =  _mm256_set1_ps (0);
     assert(length/8*8==length);
     for(size_t i = 0; i < length/8; ++i ) {
-        const __m256 veca = _mm256_loadu_ps (a+8*i);
-        const __m256 vecb = _mm256_loadu_ps (b+8*i);
-        const __m256 r1 = _mm256_fmadd_pd(veca, vecb,sum);
+        __m256 veca = _mm256_loadu_ps (a+8*i);
+        __m256 vecb = _mm256_loadu_ps (b+8*i);
+        sum = _mm256_fmadd_ps(veca, vecb,sum);
     }
     __m256 r2 = _mm256_hadd_ps(sum,sum);
     __m256 r3 = _mm256_hadd_ps(r2, r2);
