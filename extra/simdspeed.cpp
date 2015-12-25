@@ -90,9 +90,29 @@ float scalar256(const float * a, const float *b, size_t length) {
 }
 #endif
 
+
+#ifdef  __AVX__
+__attribute__((__noinline__))
+float scalarfma256(const float * a, const float *b, size_t length) {
+    __m256 sum =  _mm256_set1_ps (0);
+    assert(length/8*8==length);
+    for(size_t i = 0; i < length/8; ++i ) {
+        const __m256 veca = _mm256_loadu_ps (a+8*i);
+        const __m256 vecb = _mm256_loadu_ps (b+8*i);
+        const __m256 r1 = _mm256_fmadd_pd(veca, vecb,sum);
+    }
+    __m256 r2 = _mm256_hadd_ps(sum,sum);
+    __m256 r3 = _mm256_hadd_ps(r2, r2);
+    __m256 r4 = _mm256_hadd_ps(r3, r3);
+    return sqrt( _mm_cvtss_f32 ( _mm256_extractf128_ps (r4,0)) );
+}
+#endif
+
+
+
 int main() {
     uint64_t cycles_start, cycles_final;
-    int time1, time2, time3;
+    int time1, time2, time3, time4;
     size_t N =  1024*4;
     int T=10000;
     vector<float> a(N,0.1);
@@ -100,6 +120,8 @@ int main() {
     float bogus1 = 0;
     float bogus2 = 0;
     float bogus3 = 0;
+    float bogus4 = 0;
+
     RDTSC_START(cycles_start);
     for(int k = 0; k<T; ++k)
         bogus1 += scalar(&a[0], &b[0],N);
@@ -122,8 +144,18 @@ int main() {
 
     time3 = cycles_final - cycles_start;
 #endif
+
+#ifdef __AVX__
+    RDTSC_START(cycles_start);
+    for(int k = 0; k<T; ++k)
+        bogus3 += scalarfma256(&a[0], &b[0],N);
+    RDTSC_FINAL(cycles_final);
+
+    time4 = cycles_final - cycles_start;
+#endif
+
     cout<<"# computes scalar production "<<time3<<endl;
-    cout<<"# scalar, SSE3, AVX timings (millions of cycle) "<<time3<<endl;
-    cout<<time1/1000000.0<<" "<<time2/1000000.<<" "<<time3/1000000.<<endl;
-    cout<< std::setprecision(8)<<"#ignore="<<bogus1<<" "<<bogus2<<" "<<bogus3<<endl;
+    cout<<"# scalar, SSE3, AVX, FMA timings (millions of cycle) "<<time3<<endl;
+    cout<<time1/1000000.0<<" "<<time2/1000000.<<" "<<time3/1000000.<<" "<<time4/1000000.<<endl;
+    cout<< std::setprecision(8)<<"#ignore="<<bogus1<<" "<<bogus2<<" "<<bogus3<<" "<<bogus4<<endl;
 }
