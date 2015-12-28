@@ -172,6 +172,15 @@ void *aligned_malloc(int align , size_t size ) {
     return amem;
 }
 
+// we try to make sure that the alignment is no better than what is requested
+void *offsetted_aligned_malloc(int align , size_t size ) {
+    void *mem = malloc( size + 2 * align + sizeof(void*) );
+    char *amem = ((char*)mem) + sizeof(void*);
+    amem += 2 * align - ((uintptr_t)amem & (align - 1));
+    ((void**)amem)[-1] = mem;
+    return amem;
+}
+
 void aligned_free( void *mem ) {
     free( ((void**)mem)[-1] );
 }
@@ -181,8 +190,20 @@ void demo(int align) {
     printf("Testing with align=%d...\n", align);
      size_t size = SIZE;
 
-    float *array1 = aligned_malloc(align, SIZE * sizeof(float));
-    float *array2 = aligned_malloc(align, SIZE * sizeof(float));
+    float *array1 = offsetted_aligned_malloc(align, SIZE * sizeof(float) + align);
+    float *array2 = offsetted_aligned_malloc(align, SIZE * sizeof(float) + align);
+    if(((uintptr_t)array1 & (align - 1)) != 0) {
+        printf("insufficient align 1\n");
+    }
+    if(((uintptr_t)array2 & (align - 1)) != 0) {
+        printf("insufficient align 2\n");
+    }
+    if(((uintptr_t)array1 & (2*align - 1)) != 0) {
+        printf("Too much alignment 1\n");
+    }
+    if(((uintptr_t)array2 & (2*align - 1)) != 0) {
+        printf("Too much alignment 2\n");
+    }
     for (size_t i = 0; i < size; i++) {
         array1[i] = 1.0;
         array2[i] = 2.0;
@@ -198,5 +219,6 @@ void demo(int align) {
 
 int main(int argc, char **argv) {
   demo(1);
+  demo(sizeof(xmm_t));
   demo(sizeof(ymm_t));
 }
