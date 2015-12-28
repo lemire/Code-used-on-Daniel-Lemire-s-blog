@@ -165,7 +165,7 @@ float fma_ymm(float *array1, float *array2, size_t size) {
 
 // modified from http://stackoverflow.com/questions/196329/osx-lacks-memalign
 void *aligned_malloc(int align , size_t size ) {
-    void *mem = malloc( size + (align-1) + sizeof(void*) );
+    void *mem = malloc( size + align + sizeof(void*) );
     char *amem = ((char*)mem) + sizeof(void*);
     amem += align - ((uintptr_t)amem & (align - 1));
     ((void**)amem)[-1] = mem;
@@ -176,12 +176,13 @@ void aligned_free( void *mem ) {
     free( ((void**)mem)[-1] );
 }
 
-int main(int argc, char **argv) {
+void demo(int align) {
     printf("Testing with SIZE=%d...\n", SIZE);
-    size_t size = SIZE;
+    printf("Testing with align=%d...\n", align);
+     size_t size = SIZE;
 
-    float *array1 = aligned_malloc(sizeof(ymm_t), SIZE * sizeof(float));
-    float *array2 = aligned_malloc(sizeof(ymm_t), SIZE * sizeof(float));
+    float *array1 = aligned_malloc(align, SIZE * sizeof(float));
+    float *array2 = aligned_malloc(align, SIZE * sizeof(float));
     for (size_t i = 0; i < size; i++) {
         array1[i] = 1.0;
         array2[i] = 2.0;
@@ -193,4 +194,9 @@ int main(int argc, char **argv) {
     BEST_TIME(fma_ymm(array1, array2, size), answer);
     aligned_free(array1);
     aligned_free(array2);
+}
+
+int main(int argc, char **argv) {
+  demo(1);
+  demo(sizeof(ymm_t));
 }
