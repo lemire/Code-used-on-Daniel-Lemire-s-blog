@@ -220,6 +220,7 @@ void demo(int align) {
 
 int main(int argc, char **argv) {
   demo(1);
+  demo(8);
   demo(sizeof(xmm_t));
   demo(sizeof(ymm_t));
 }
