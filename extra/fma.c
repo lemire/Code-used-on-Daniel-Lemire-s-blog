@@ -176,7 +176,8 @@ void *aligned_malloc(int align , size_t size ) {
 void *offsetted_aligned_malloc(int align , size_t size ) {
     void *mem = malloc( size + 2 * align + sizeof(void*) );
     char *amem = ((char*)mem) + sizeof(void*);
-    amem += 2 * align - ((uintptr_t)amem & (align - 1));
+    amem += align - ((uintptr_t)amem & (align - 1));
+    if(((uintptr_t)amem & (2*align - 1)) == 0) amem += align; // could be branchless
     ((void**)amem)[-1] = mem;
     return amem;
 }
@@ -198,10 +199,10 @@ void demo(int align) {
     if(((uintptr_t)array2 & (align - 1)) != 0) {
         printf("insufficient align 2\n");
     }
-    if(((uintptr_t)array1 & (2*align - 1)) != 0) {
+    if(((uintptr_t)array1 & (2*align - 1)) == 0) {
         printf("Too much alignment 1\n");
     }
-    if(((uintptr_t)array2 & (2*align - 1)) != 0) {
+    if(((uintptr_t)array2 & (2*align - 1)) == 0) {
         printf("Too much alignment 2\n");
     }
     for (size_t i = 0; i < size; i++) {
