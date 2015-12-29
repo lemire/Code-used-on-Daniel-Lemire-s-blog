@@ -364,5 +364,4 @@ int main(int argc, char **argv) {
   demo(8);
   demo(sizeof(xmm_t));
   demo(sizeof(ymm_t));
-  demo(2*sizeof(ymm_t));
 }
