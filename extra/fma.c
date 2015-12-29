@@ -172,6 +172,62 @@ float fma_ymm(float *array1, float *array2, size_t size) {
     return total;
 }
 
+float fma_ymm2(float *array1, float *array2, size_t size) {
+
+    ymm_t sum1 = {0, 0};
+    ymm_t sum2 = {0, 0};
+    ymm_t sum3 = {0, 0};
+    ymm_t sum4 = {0, 0};
+    ymm_t sum5 = {0, 0};
+    ymm_t sum6 = {0, 0};
+    ymm_t sum7 = {0, 0};
+    ymm_t sum8 = {0, 0};
+
+
+    if (size % 64 != 0) return NAN;
+    float *end2 = array2 + size;
+    while (array2 < end2) {
+        ymm_t mult1, mult2, mult3, mult4, mult5, mult6, mult7, mult8;
+        VEC_LOAD_OFFSET_BASE(mult1, 0, array1);
+        VEC_LOAD_OFFSET_BASE(mult2, 32, array1);
+        VEC_LOAD_OFFSET_BASE(mult3, 64, array1);
+        VEC_LOAD_OFFSET_BASE(mult4, 96, array1);
+        VEC_LOAD_OFFSET_BASE(mult5, 128, array1);
+        VEC_LOAD_OFFSET_BASE(mult6, 160, array1);
+        VEC_LOAD_OFFSET_BASE(mult7, 192, array1);
+        VEC_LOAD_OFFSET_BASE(mult8, 224, array1);
+
+
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum1, mult1, 0, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum2, mult2, 32, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum3, mult3, 64, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum4, mult4, 96, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum5, mult5, 128, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum6, mult6, 160, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum7, mult7, 192, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum8, mult8, 224, array2);
+
+
+        array1 += 64;
+        array2 += 64;
+    }
+
+    sum1 = _mm256_add_ps(sum1, sum2);
+    sum3 = _mm256_add_ps(sum3, sum4);
+    sum5 = _mm256_add_ps(sum5, sum6);
+    sum7 = _mm256_add_ps(sum7, sum8);
+    sum1 = _mm256_add_ps(sum1, sum3);
+    sum5 = _mm256_add_ps(sum5, sum7);
+    sum1 = _mm256_add_ps(sum1, sum5);
+    ymm_t r2 = _mm256_hadd_ps(sum1, sum1);
+    ymm_t r3 = _mm256_hadd_ps(r2, r2);
+    ymm_t r4 = _mm256_hadd_ps(r3, r3);
+    float total = _mm_cvtss_f32(_mm256_extractf128_ps(r4,0));
+
+    return total;
+}
+
+
 
 float fma_xmm_cl(float *array1, float *array2, size_t size) {
 
@@ -295,6 +351,7 @@ void demo(int align) {
     BEST_TIME(fma_scalar(array1, array2, size), answer);
     BEST_TIME(fma_xmm(array1, array2, size), answer);
     BEST_TIME(fma_ymm(array1, array2, size), answer);
+    BEST_TIME(fma_ymm2(array1, array2, size), answer);
     BEST_TIME(fma_xmm_cl(array1, array2, size), answer);
     BEST_TIME(fma_ymm_cl(array1, array2, size), answer);
 
@@ -307,4 +364,5 @@ int main(int argc, char **argv) {
   demo(8);
   demo(sizeof(xmm_t));
   demo(sizeof(ymm_t));
+  demo(2*sizeof(ymm_t));
 }
