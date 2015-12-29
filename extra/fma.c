@@ -352,17 +352,15 @@ void demo(int align) {
     BEST_TIME(fma_xmm(array1, array2, size), answer);
     BEST_TIME(fma_ymm(array1, array2, size), answer);
     BEST_TIME(fma_ymm2(array1, array2, size), answer);
-    BEST_TIME(fma_xmm_cl(array1, array2, size), answer);
-    BEST_TIME(fma_ymm_cl(array1, array2, size), answer);
+    //BEST_TIME(fma_xmm_cl(array1, array2, size), answer);
+    //BEST_TIME(fma_ymm_cl(array1, array2, size), answer);
 
     aligned_free(array1);
     aligned_free(array2);
 }
 
 int main(int argc, char **argv) {
-  demo(1);
   demo(8);
   demo(sizeof(xmm_t));
   demo(sizeof(ymm_t));
-  demo(2*sizeof(ymm_t));
 }
