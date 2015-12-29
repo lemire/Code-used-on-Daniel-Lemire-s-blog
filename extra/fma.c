@@ -72,6 +72,15 @@
                     "r" (base)    /* read only memory location */       \
                     )
 
+#define VEC_LOAD_OFFSET_BASE_CL(load, offset, base)                        \
+    __asm volatile ("vlddqu %c1(%2), %0":                              \
+                    "=x" (load):  /* xmm or ymm destination register */ \
+                    "i" (offset), /* constant array offset in bytes */  \
+                    "r" (base)    /* read only memory location */       \
+                    )
+                    
+
+
 #define VEC_FMA_SUM_MULT_OFFSET_BASE(sum, mult, offset, base)           \
    __asm volatile ("vfmadd231ps %c2(%3), %1, %0":                       \
                    "+x" (sum):   /* sum = sum + (mult * [mem]) */       \
@@ -163,6 +172,78 @@ float fma_ymm(float *array1, float *array2, size_t size) {
     return total;
 }
 
+
+float fma_xmm_cl(float *array1, float *array2, size_t size) {
+
+    xmm_t sum1 = {0};
+    xmm_t sum2 = {0};
+    xmm_t sum3 = {0};
+    xmm_t sum4 = {0};
+
+    if (size % 16 != 0) return NAN;
+    float *end2 = array2 + size;
+    while (array2 < end2) {
+        xmm_t mult1, mult2, mult3, mult4;
+        VEC_LOAD_OFFSET_BASE_CL(mult1, 0, array1);
+        VEC_LOAD_OFFSET_BASE_CL(mult2, 16, array1);
+        VEC_LOAD_OFFSET_BASE_CL(mult3, 32, array1);
+        VEC_LOAD_OFFSET_BASE_CL(mult4, 48, array1);
+
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum1, mult1, 0, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum2, mult2, 16, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum3, mult3, 32, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum4, mult4, 48, array2);
+
+        array1 += 16;
+        array2 += 16;
+    }
+
+    sum1 = _mm_add_ps(sum1, sum2);
+    sum3 = _mm_add_ps(sum3, sum4);
+    sum1 = _mm_add_ps(sum1, sum3);
+    xmm_t r2 = _mm_hadd_ps(sum1, sum1);
+    xmm_t r3 = _mm_hadd_ps(r2, r2);
+    float total = _mm_cvtss_f32(r3);
+
+    return total;
+}
+
+float fma_ymm_cl(float *array1, float *array2, size_t size) {
+
+    ymm_t sum1 = {0, 0};
+    ymm_t sum2 = {0, 0};
+    ymm_t sum3 = {0, 0};
+    ymm_t sum4 = {0, 0};
+
+    if (size % 32 != 0) return NAN;
+    float *end2 = array2 + size;
+    while (array2 < end2) {
+        ymm_t mult1, mult2, mult3, mult4;
+        VEC_LOAD_OFFSET_BASE_CL(mult1, 0, array1);
+        VEC_LOAD_OFFSET_BASE_CL(mult2, 32, array1);
+        VEC_LOAD_OFFSET_BASE_CL(mult3, 64, array1);
+        VEC_LOAD_OFFSET_BASE_CL(mult4, 96, array1);
+
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum1, mult1, 0, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum2, mult2, 32, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum3, mult3, 64, array2);
+        VEC_FMA_SUM_MULT_OFFSET_BASE(sum4, mult4, 96, array2);
+
+        array1 += 32;
+        array2 += 32;
+    }
+
+    sum1 = _mm256_add_ps(sum1, sum2);
+    sum3 = _mm256_add_ps(sum3, sum4);
+    sum1 = _mm256_add_ps(sum1, sum3);
+    ymm_t r2 = _mm256_hadd_ps(sum1, sum1);
+    ymm_t r3 = _mm256_hadd_ps(r2, r2);
+    ymm_t r4 = _mm256_hadd_ps(r3, r3);
+    float total = _mm_cvtss_f32(_mm256_extractf128_ps(r4,0));
+
+    return total;
+}
+
 // modified from http://stackoverflow.com/questions/196329/osx-lacks-memalign
 void *aligned_malloc(int align , size_t size ) {
     void *mem = malloc( size + align + sizeof(void*) );
@@ -213,6 +294,9 @@ void demo(int align) {
     BEST_TIME(fma_scalar(array1, array2, size), answer);
     BEST_TIME(fma_xmm(array1, array2, size), answer);
     BEST_TIME(fma_ymm(array1, array2, size), answer);
+    BEST_TIME(fma_xmm_cl(array1, array2, size), answer);
+    BEST_TIME(fma_ymm_cl(array1, array2, size), answer);
+
     aligned_free(array1);
     aligned_free(array2);
 }
