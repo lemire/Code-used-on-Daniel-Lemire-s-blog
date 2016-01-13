@@ -13,7 +13,7 @@
 #include <immintrin.h>
 
 
-#define IACA
+//#define IACA
 #ifdef IACA
 #include </opt/intel/iaca/include/iacaMarks.h>
 #else
@@ -32,9 +32,14 @@ void bitwiseor(uint64_t * input1, uint64_t * input2, uint64_t * output, size_t l
 
 int card(uint64_t * input, size_t length) {
     int card = 0;
-    for(int k = 0; k < length; ++k) {
-        card += _mm_popcnt_u64(input[k]);
-    }
+    for(int k = 0; k < length; k+=4) {
+        IACA_START;
+         card += _mm_popcnt_u64(input[k]);
+         card += _mm_popcnt_u64(input[k+1]);
+         card += _mm_popcnt_u64(input[k+2]);
+         card += _mm_popcnt_u64(input[k+3]);
+           IACA_END;
+     }
     return card;
 } 
 
