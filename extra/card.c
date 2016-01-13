@@ -2,8 +2,8 @@
 // icc -std=c99 -march=corei7 -O2 -o card card.c
 // For IACA:
 //$ gcc -std=c99 -march=corei7 -DIACA -O2 -o card card.c
-//$ /opt/intel/iaca/bin/iaca -mark 2 -64 card 
-//$ /opt/intel/iaca/bin/iaca -mark 1 -64 card 
+//$ /opt/intel/iaca/bin/iaca -mark 2 -64 card
+//$ /opt/intel/iaca/bin/iaca -mark 1 -64 card
 
 
 #include <stdlib.h>
@@ -27,7 +27,7 @@ void bitwiseor(uint64_t * input1, uint64_t * input2, uint64_t * output, size_t l
         output[k] = input1[k] | input2[k];
         IACA_END;
     }
-} 
+}
 
 
 int card(uint64_t * input, size_t length) {
@@ -41,7 +41,7 @@ int card(uint64_t * input, size_t length) {
            IACA_END;
      }
     return card;
-} 
+}
 
 
 int bitwiseorcard(uint64_t * input1, uint64_t * input2, uint64_t * output, size_t length) {
@@ -53,12 +53,12 @@ int bitwiseorcard(uint64_t * input1, uint64_t * input2, uint64_t * output, size_
         IACA_END;
     }
     return card;
-} 
+}
 
 
 
 int main() {
-    const int N = 1024*1024;
+    const int N = 4096;
     uint64_t * input1 = (uint64_t *) malloc(N*sizeof(input1));
     uint64_t * input2 = (uint64_t *) malloc(N*sizeof(input1));
     uint64_t * output = (uint64_t *) malloc(N*sizeof(input1));
@@ -67,8 +67,8 @@ int main() {
       input2[k] = k * k * k + 3;
     }
     uint64_t bogus = 0;
-    int repeat = 200;
-    for(int k = 0; k<10;++k) {
+    int repeat = 2000;
+    for(int k = 0; k<15;++k) {
       const clock_t S1 = clock();
       for(int z = 0; z < repeat; ++z) {
         bitwiseor(input1,input2,output,N);
@@ -77,14 +77,20 @@ int main() {
       }
       const clock_t S2 = clock();
       for(int z = 0; z < repeat; ++z) {
-        bogus += bitwiseorcard(input1,input2,output,N); 
+        bogus += bitwiseorcard(input1,input2,output,N);
         input1[10] = z;
       }
-      const clock_t S3 = clock();    
-      if(k>3) printf("%lu %lu %llu \n", (S2-S1), (S3-S2), bogus);
+      const clock_t S3 = clock();
+      for(int z = 0; z < repeat; ++z) {
+        bogus += card(output,N);
+        input1[10] = z;
+      }
+      const clock_t S4 = clock();
+
+      if(k>3) printf("%lu %lu  %lu  %llu \n", (S2-S1), (S3-S2), (S4-S3), bogus);
     }
 
     free(input1);
-    free(input2);    
+    free(input2);
     free(output);
 }
