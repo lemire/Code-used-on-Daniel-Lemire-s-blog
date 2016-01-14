@@ -63,7 +63,7 @@ int AVXcard(uint64_t * input, size_t length) {
         ymm2 = _mm256_shuffle_epi8(shuf,ymm2);
         ymm1 = _mm256_add_epi8(ymm1,ymm2);// each byte contains weight of input byte (values are in [0,8))
         ymm1 = _mm256_sad_epu8(zero,ymm1);// produces 4 64-bit counters (having values in [0,32))
-        total= _mm256_add_epi32(ymm1,total); // add the 4 64-bit counters to previous counter
+        total= _mm256_add_epi64(total,ymm1); // add the 4 64-bit counters to previous counter
         IACA_END;
     }
     return _mm256_extract_epi64(total,0)+_mm256_extract_epi64(total,1)+_mm256_extract_epi64(total,2)+_mm256_extract_epi64(total,3);
