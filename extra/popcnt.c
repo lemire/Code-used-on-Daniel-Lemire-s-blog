@@ -2,7 +2,7 @@
 
 // NOTE: Works with gcc, but broken with ICC and Clang.  Neither accepts
 // the inline assembly 'q' modifier: http://stackoverflow.com/questions/34459803
-// Should be possible to work around this by passing extra variables, though. 
+// Should be possible to work around this by passing extra variables, though.
 
 #include <x86intrin.h>
 #include <stdint.h>
@@ -40,9 +40,9 @@
         (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;                \
     } while (0)
 
-static __attribute__ ((noinline)) 
+static __attribute__ ((noinline))
 uint64_t rdtsc_overhead_func(uint64_t dummy) {
-  return dummy;
+    return dummy;
 }
 
 uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
@@ -62,7 +62,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
     global_rdtsc_overhead = min_diff;				      \
     printf("rdtsc_overhead set to %ld\n", global_rdtsc_overhead);     \
   } while (0)							      \
-    
+ 
 
 /*
  * Prints the best number of operations per cycle where
@@ -99,7 +99,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
   } while (0)
 
 
-#define BITSET_BITS (1 << 16) 
+#define BITSET_BITS (1 << 16)
 #define BITSET_BYTES (BITSET_BITS / 8)
 
 typedef __m256i ymm_t;
@@ -461,7 +461,7 @@ uint64_t bitset_count_popcnt(uint8_t *bitset) {
     uint64_t total_count = 0;
     uint8_t *end = bitset + BITSET_BYTES;
     int64_t neg = -(BITSET_BYTES);
-    
+
     ASM_SUM_POPCNT(total_count, count1, count2, count3, count4, neg, end);
 
     return total_count;
@@ -470,7 +470,7 @@ uint64_t bitset_count_popcnt(uint8_t *bitset) {
 uint64_t intrinsics_count(uint8_t *bitset) {
     // these are precomputed hamming weights (weight(0), weight(1)...)
     const __m256i shuf = _mm256_setr_epi8(0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
-       0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
+                                          0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
     const __m256i  mask = _mm256_set1_epi8(0x0f); // low 4 bits of each byte
     __m256i total = _mm256_setzero_si256();
     __m256i zero = _mm256_setzero_si256();
@@ -481,9 +481,65 @@ uint64_t intrinsics_count(uint8_t *bitset) {
         ymm2 = _mm256_and_si256(ymm2,mask); // contains odd 4 bits
         ymm1 = _mm256_shuffle_epi8(shuf,ymm1);// use table look-up to sum the 4 bits
         ymm2 = _mm256_shuffle_epi8(shuf,ymm2);
-        ymm1 = _mm256_add_epi8(ymm1,ymm2);// each byte contains weight of input byte (values are in [0,8))
-        ymm1 = _mm256_sad_epu8(zero,ymm1);// produces 4 64-bit counters (having values in [0,32))
+        ymm1 = _mm256_add_epi8(ymm1,ymm2);// each byte contains weight of input byte (values are in [0,8])
+        ymm1 = _mm256_sad_epu8(zero,ymm1);// produces 4 64-bit counters (having values in [0,32])
         total= _mm256_add_epi64(total,ymm1); // add the 4 64-bit counters to previous counter
+    }
+    return _mm256_extract_epi64(total,0)+_mm256_extract_epi64(total,1)+_mm256_extract_epi64(total,2)+_mm256_extract_epi64(total,3);
+}
+
+uint64_t intrinsics_count4(uint8_t *bitset) {
+    // these are precomputed hamming weights (weight(0), weight(1)...)
+    const __m256i shuf = _mm256_setr_epi8(0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
+                                          0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
+    const __m256i  mask = _mm256_set1_epi8(0x0f); // low 4 bits of each byte
+    __m256i total = _mm256_setzero_si256();
+    __m256i zero = _mm256_setzero_si256();
+    const int inner = 4;
+    for(unsigned  k = 0; k < BITSET_BYTES/(sizeof(__m256i)*inner); k++) {
+        __m256i innertotal = _mm256_setzero_si256();
+        {
+            __m256i ymm1 = _mm256_lddqu_si256((const __m256i *)bitset + k*inner + 0);
+            __m256i ymm2 = _mm256_srli_epi32(ymm1,4); // shift right, shiftingin zeroes
+            ymm1 = _mm256_and_si256(ymm1,mask); // contains even 4 bits
+            ymm2 = _mm256_and_si256(ymm2,mask); // contains odd 4 bits
+            ymm1 = _mm256_shuffle_epi8(shuf,ymm1);// use table look-up to sum the 4 bits
+            ymm2 = _mm256_shuffle_epi8(shuf,ymm2);
+            innertotal = _mm256_add_epi8(innertotal,ymm1);// inner total values in each byte are bounded by 8 * inner
+            innertotal = _mm256_add_epi8(innertotal,ymm2);// inner total values in each byte are bounded by 8 * inner
+        }
+        {
+            __m256i ymm1 = _mm256_lddqu_si256((const __m256i *)bitset + k*inner + 1);
+            __m256i ymm2 = _mm256_srli_epi32(ymm1,4); // shift right, shiftingin zeroes
+            ymm1 = _mm256_and_si256(ymm1,mask); // contains even 4 bits
+            ymm2 = _mm256_and_si256(ymm2,mask); // contains odd 4 bits
+            ymm1 = _mm256_shuffle_epi8(shuf,ymm1);// use table look-up to sum the 4 bits
+            ymm2 = _mm256_shuffle_epi8(shuf,ymm2);
+            innertotal = _mm256_add_epi8(innertotal,ymm1);// inner total values in each byte are bounded by 8 * inner
+            innertotal = _mm256_add_epi8(innertotal,ymm2);// inner total values in each byte are bounded by 8 * inner
+        }
+        {
+            __m256i ymm1 = _mm256_lddqu_si256((const __m256i *)bitset + k*inner + 2);
+            __m256i ymm2 = _mm256_srli_epi32(ymm1,4); // shift right, shiftingin zeroes
+            ymm1 = _mm256_and_si256(ymm1,mask); // contains even 4 bits
+            ymm2 = _mm256_and_si256(ymm2,mask); // contains odd 4 bits
+            ymm1 = _mm256_shuffle_epi8(shuf,ymm1);// use table look-up to sum the 4 bits
+            ymm2 = _mm256_shuffle_epi8(shuf,ymm2);
+            innertotal = _mm256_add_epi8(innertotal,ymm1);// inner total values in each byte are bounded by 8 * inner
+            innertotal = _mm256_add_epi8(innertotal,ymm2);// inner total values in each byte are bounded by 8 * inner
+        }
+        {
+            __m256i ymm1 = _mm256_lddqu_si256((const __m256i *)bitset + k*inner + 3);
+            __m256i ymm2 = _mm256_srli_epi32(ymm1,4); // shift right, shiftingin zeroes
+            ymm1 = _mm256_and_si256(ymm1,mask); // contains even 4 bits
+            ymm2 = _mm256_and_si256(ymm2,mask); // contains odd 4 bits
+            ymm1 = _mm256_shuffle_epi8(shuf,ymm1);// use table look-up to sum the 4 bits
+            ymm2 = _mm256_shuffle_epi8(shuf,ymm2);
+            innertotal = _mm256_add_epi8(innertotal,ymm1);// inner total values in each byte are bounded by 8 * inner
+            innertotal = _mm256_add_epi8(innertotal,ymm2);// inner total values in each byte are bounded by 8 * inner
+        }
+        innertotal = _mm256_sad_epu8(zero,innertotal);// produces 4 64-bit counters (having values in [0,8 * inner * 4])
+        total= _mm256_add_epi64(total,innertotal); // add the 4 64-bit counters to previous counter
     }
     return _mm256_extract_epi64(total,0)+_mm256_extract_epi64(total,1)+_mm256_extract_epi64(total,2)+_mm256_extract_epi64(total,3);
 }
@@ -498,7 +554,7 @@ uint64_t bitset_count_avx2_32(uint8_t *bitset) {
                                         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
     const ymm_t mask = _mm256_set1_epi8(0x0f); // low 4 bits of each byte
 
-    ASM_POPCNT_AVX2_32(bytes, ymm1, ymm2, total, zero, 
+    ASM_POPCNT_AVX2_32(bytes, ymm1, ymm2, total, zero,
                        popcnt, neg, bitset, mask, shuf);
 
     return popcnt;
@@ -513,8 +569,8 @@ uint64_t bitset_count_avx2_64(uint8_t *bitset) {
                                         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
     const ymm_t mask = _mm256_set1_epi8(0x0f); // low 4 bits of each byte
 
-    ASM_POPCNT_AVX2_64(bytes, ymm1, ymm2, ymm3, ymm4, total, 
-                        zero, popcnt, neg, bitset, mask, shuf);
+    ASM_POPCNT_AVX2_64(bytes, ymm1, ymm2, ymm3, ymm4, total,
+                       zero, popcnt, neg, bitset, mask, shuf);
 
     return popcnt;
 }
@@ -528,7 +584,7 @@ uint64_t bitset_count_avx2_128(uint8_t *bitset) {
                                         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
     const ymm_t mask = _mm256_set1_epi8(0x0f); // low 4 bits of each byte
 
-    ASM_POPCNT_AVX2_128(bytes, ymm1, ymm2, ymm3, ymm4, total, 
+    ASM_POPCNT_AVX2_128(bytes, ymm1, ymm2, ymm3, ymm4, total,
                         zero, popcnt, neg, bitset, mask, shuf);
 
     return popcnt;
@@ -543,7 +599,7 @@ uint64_t bitset_count_avx2_512(uint8_t *bitset) {
                                         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
     const ymm_t mask = _mm256_set1_epi8(0x0f); // low 4 bits of each byte
 
-    ASM_POPCNT_AVX2_512(bytes, ymm1, ymm2, ymm3, ymm4, total, 
+    ASM_POPCNT_AVX2_512(bytes, ymm1, ymm2, ymm3, ymm4, total,
                         zero, popcnt, neg, bitset, mask, shuf);
 
     return popcnt;
@@ -565,6 +621,7 @@ int main(/* int argc, char **argv */) {
     uint64_t count = bitset_count_popcnt(bitset);
 
     RDTSC_BEST(intrinsics_count(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
+    RDTSC_BEST(intrinsics_count4(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
     RDTSC_BEST(bitset_count_popcnt(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
     RDTSC_BEST(bitset_count_avx2_32(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
     RDTSC_BEST(bitset_count_avx2_64(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
