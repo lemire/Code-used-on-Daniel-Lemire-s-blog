@@ -1,8 +1,9 @@
-// gcc -std=c99 -O3 -o bs understandingbinsearch.c -Wall -Wextra
+// gcc -std=c99 -O3 -o bs understandingbinsearch.c -Wall -Wextra -lm
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <math.h>
 
 typedef uint16_t value_t;
 
@@ -60,8 +61,30 @@ void array_cache_prefetch(value_t* B, int32_t length) {
 	}
 }
 
+// tries to put the array in cache
+void array_cache_partialprefetch(value_t* B, int32_t length) {
+        array_cache_flush(B,length);
+	int32_t low = 0;
+	int32_t high = length - 1;
+        __builtin_prefetch(B+((low+high) >> 1));	
+}
+
+// could be faster, but we just want it to be correct
+int32_t ilog2(size_t lenarray)  {
+	int32_t low = 0;
+	int32_t high = (int32_t) lenarray - 1;
+        int32_t counter = 0;
+	while( low <= high) {
+		int32_t middleIndex = (low+high) >> 1;
+		high = middleIndex - 1;
+                ++counter;
+	}
+	return counter;
+}
+
+
 // good old bin. search
-int32_t binary_search(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
+int32_t __attribute__ ((noinline)) binary_search(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
 	int32_t low = 0;
 	int32_t high = lenarray - 1;
 	while( low <= high) {
@@ -77,6 +100,67 @@ int32_t binary_search(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
 	}
 	return -(low + 1);
 }
+int32_t __attribute__ ((noinline)) binary_search16(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
+	int32_t low = 0;
+	int32_t high = lenarray - 1;
+	while( low + 16 <= high) {
+		int32_t middleIndex = (low+high) >> 1;
+		int32_t middleValue = array[middleIndex];
+		if (middleValue < ikey) {
+			low = middleIndex + 1;
+		} else if (middleValue > ikey) {
+			high = middleIndex - 1;
+		} else {
+			return middleIndex;
+		}
+	}
+	return -(low + 1);
+}
+
+int32_t __attribute__ ((noinline)) branchless_binary_search(uint16_t* source, int32_t n, uint16_t target) {
+	uint16_t * base = source;
+    if(n == 0) return -1;
+    if(target > source[n-1]) return - n - 1;// without this we have a buffer overrun
+    while(n>1) {
+    	int32_t half = n >> 1;
+        base = (base[half] < target) ? &base[half] : base;
+        n -= half;
+    }
+    base += *base < target;
+    return *base == target ? base - source : source - base -1;
+}
+
+int32_t __attribute__ ((noinline)) branchless_binary_search_wp(uint16_t* source, int32_t n, uint16_t target) {
+	uint16_t * base = source;
+    if(n == 0) return -1;
+    if(target > source[n-1]) return - n - 1;// without this we have a buffer overrun
+    while(n>1) {
+    	int32_t half = n >> 1;
+        __builtin_prefetch(base+(half>>1),0,0);
+        __builtin_prefetch(base+half+(half>>1),0,0);
+        base = (base[half] < target) ? &base[half] : base;
+        n -= half;
+    }
+    base += *base < target;
+    return *base == target ? base - source : source - base -1;
+}
+
+
+int32_t  __attribute__ ((noinline)) does_nothing(uint16_t * array, int32_t length, uint16_t ikey )  {
+        (void) array;
+        (void) length;
+	return ikey;
+}
+
+int32_t  __attribute__ ((noinline)) return_middle_value(uint16_t * array, int32_t length, uint16_t ikey )  {
+       	(void) ikey;
+        int32_t low = 0;
+	int32_t high = length - 1;
+	int32_t middleIndex = (low+high) >> 1;
+	int32_t middleValue = array[middleIndex];
+	return middleValue;
+}
+
 
 #define RDTSC_START(cycles)                                                   \
     do {                                                                      \
@@ -109,9 +193,8 @@ int32_t binary_search(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
  * first parameter "base" and various parameters from "testvalues" (there
  * are nbrtestvalues), calling pre on base between tests
  */
-#define BEST_TIME_PRE_ARRAY(base, length, test, pre,  repeat, testvalues, nbrtestvalues)        \
+#define BEST_TIME_PRE_ARRAY(base, length, test, pre,  repeat, testvalues, nbrtestvalues, cycle_per_op)        \
     do {                                                                                \
-        printf("%s %s: ", #test, #pre);                                                 \
         fflush(NULL);                                                                   \
         uint64_t cycles_start, cycles_final, cycles_diff;                               \
         uint64_t min_diff = (uint64_t)-1;                                               \
@@ -129,12 +212,8 @@ int32_t binary_search(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
           sum += cycles_diff;                                                           \
         }                                                                               \
         uint64_t S = nbrtestvalues;                                                     \
-        float cycle_per_op = sum / (double)S;                                           \
-        printf(" %.2f cycles per operation", cycle_per_op);                             \
-        printf("\n");                                                                   \
-        fflush(NULL);                                                                   \
+        cycle_per_op = sum / (double)S;                                           \
     } while (0)
-
 
 
 
@@ -142,11 +221,22 @@ void demo() {
   int repeat = 500;
   size_t nbrtestvalues = 1000;
   value_t * testvalues = create_random_array(nbrtestvalues);
-  for(size_t N = 32; N < 4096; N*=2) {
-    printf("\n N=%d\n",(int)N);
+  printf("# N, prefetched seek, fresh seek  (in cycles) then same values normalized by tree height\n");
+  for(size_t N = 1; N < 4096; N*=2) {
     value_t * source = create_sorted_array(N);
-    BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_flush,  repeat, testvalues, nbrtestvalues);
-    BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_prefetch,  repeat, testvalues, nbrtestvalues);
+    float l2 = (float)ilog2(N);
+    float cycle_per_op_empty, cycle_per_op_prefetch, cycle_per_op_partialprefetch, cycle_per_op_flush, 
+       cycle_per_op_middle_value,cycle_per_op_branchless,cycle_per_op_branchless_wp;
+    BEST_TIME_PRE_ARRAY(source, N, does_nothing, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_empty);
+    BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_flush);
+    BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_prefetch,  repeat, testvalues, nbrtestvalues, cycle_per_op_prefetch);
+    BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_partialprefetch,  repeat, testvalues, nbrtestvalues, cycle_per_op_partialprefetch);
+    BEST_TIME_PRE_ARRAY(source, N, binary_search16, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_middle_value);
+    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_branchless);
+    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
+      printf("N=%d ilog2=%d  branchy prefetched=%.2f branchy=%.2f branchy partial pre-%.2f branchy stop on 16=%.2f branchless=%.2f branchlesswp=%.2f --  %.2f %2f \n", (int)N,ilog2(N),cycle_per_op_prefetch-cycle_per_op_empty,cycle_per_op_flush-cycle_per_op_empty,cycle_per_op_partialprefetch-cycle_per_op_empty,cycle_per_op_middle_value-cycle_per_op_empty,
+        cycle_per_op_branchless,cycle_per_op_branchless_wp,
+        (cycle_per_op_prefetch-cycle_per_op_empty)/l2,(cycle_per_op_flush-cycle_per_op_empty)/l2);    
     free(source);
   }
   free(testvalues);
