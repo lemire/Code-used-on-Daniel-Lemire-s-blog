@@ -1,4 +1,4 @@
-// gcc -O3 -o bs understandingbinsearch.c -Wall -Wextra
+// gcc -std=c99 -O3 -o bs understandingbinsearch.c -Wall -Wextra
 
 #include <stdlib.h>
 #include <stdio.h>
