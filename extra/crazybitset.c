@@ -37,7 +37,7 @@
         (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;                \
     } while (0)
 
-__attribute__ ((noinline)) 
+__attribute__ ((noinline))
 uint64_t rdtsc_overhead_func(uint64_t dummy) {
     return dummy;
 }
@@ -59,7 +59,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
         global_rdtsc_overhead = min_diff;                               \
         printf("rdtsc_overhead set to %ld\n", global_rdtsc_overhead);   \
     } while (0)                                                         \
-    
+
 #define RDTSC_LOOP(test, answer, repeat, num_vecs)                      \
     do {                                                                \
         if (global_rdtsc_overhead == UINT64_MAX) {                      \
@@ -93,15 +93,15 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
         } while (0)
 
 // Likwid (https://github.com/RRZE-HPC/likwid) allows access to CPU performance counters.
-// Likwid can be difficult to install, but allows measurement of distinct sections of code. 
-// I've symlinked 'likwid-perfctr' to 'likwid' on the machines I've installed it on.  
+// Likwid can be difficult to install, but allows measurement of distinct sections of code.
+// I've symlinked 'likwid-perfctr' to 'likwid' on the machines I've installed it on.
 // gcc -fno-inline -march=native -std=c99 -Wall -O3 -g bitset.c -DLIKWID -llikwid bitset_likwid
-// Skylake: 
+// Skylake:
 // likwid -m -g MEM_INST_RETIRED_ALL_STORES:PMC0,UOPS_DISPATCHED_PORT_PORT_7:PMC1,UOPS_DISPATCHED_PORT_PORT_2:PMC2,UOPS_DISPATCHED_PORT_PORT_3:PMC3 -C 2 ./bitset_likwid
 // likwid -m -g UOPS_DISPATCHED_PORT_PORT_0:PMC0,UOPS_DISPATCHED_PORT_PORT_1:PMC1,UOPS_DISPATCHED_PORT_PORT_5:PMC2,UOPS_DISPATCHED_PORT_PORT_6:PMC3 -C 2 ./bitset_likwid
 // likwid -m -g IDQ_MITE_UOPS:PMC0,IDQ_DSB_UOPS:PMC1,LSD_UOPS:PMC2,IDQ_MS_UOPS:PMC3 -C 2 ./bitset
 // likwid -m -g UOPS_EXECUTED_CYCLES_GE_1_UOPS_EXEC:PMC0,UOPS_EXECUTED_CYCLES_GE_2_UOPS_EXEC:PMC1,UOPS_EXECUTED_CYCLES_GE_3_UOPS_EXEC:PMC2,UOPS_EXECUTED_CYCLES_GE_4_UOPS_EXEC:PMC3 -C 2 ./bitset_likwid
-// Haswell: 
+// Haswell:
 // likwid -m -g MEM_UOP_RETIRED_STORES:PMC0,UOPS_EXECUTED_PORT_PORT_7:PMC1,UOPS_EXECUTED_PORT_PORT_2:PMC2,UOPS_EXECUTED_PORT_PORT_3:PMC3 -C 2 ./bitset_likwid
 
 #ifdef LIKWID
@@ -141,20 +141,20 @@ static const char *likwid_safe_name(const char *name, char *buffer) {
 // Compile with "-DIACA -o iaca.o" to use Intel's port analyzer
 // iaca  -mark 0 -64 -arch HSW -analysis THROUGHPUT iaca.o
 // Note that the exact start of the measured section is often off
-// by a few instructions.  This can be adjusted by editing the 
-// assembly and putting the marker in the desired location.  
+// by a few instructions.  This can be adjusted by editing the
+// assembly and putting the marker in the desired location.
 // Also note that as of Jan 2016, IACA
-// only has emulation through Haswell.  One important Skylake 
+// only has emulation through Haswell.  One important Skylake
 // difference for this code is that SBB is down from 2 to 1 cycle
 // and has only one microop on P0|6.  Also note that IACA is not
-// aware of all factors that will affect actual performance.  
+// aware of all factors that will affect actual performance.
 #include </opt/intel/iaca/include/iacaMarks.h>
 #else
 #define IACA_START
 #define IACA_END
 #endif
 
-#define BITSET_BITS (1 << 16) 
+#define BITSET_BITS (1 << 16)
 #define BITSET_BYTES (BITSET_BITS / 8)
 
 typedef __m256i ymm_t;
@@ -214,7 +214,7 @@ typedef __m128i xmm_t;
                     )
 
 
-uint64_t bitset_set_bit(uint64_t *array, uint64_t pos, 
+uint64_t bitset_set_bit(uint64_t *array, uint64_t pos,
                         uint64_t card) {
     uint64_t shift = 6;
     uint64_t offset;
@@ -225,8 +225,20 @@ uint64_t bitset_set_bit(uint64_t *array, uint64_t pos,
     return card;
 }
 
+uint64_t bitset_set_list_intrinsic(void *bitset, uint64_t card,
+                         uint16_t *list, uint64_t length) {
+    uint64_t offset, load, pos;
+    uint16_t *end = list + length;
+    while(list != end) {
+      pos =  *(uint16_t *)  list;
+      offset = pos >> 6;
+      load = (uint64_t *) bitset[offset];
+      card += _bittestandset64(&load, pos);
+      list ++;
+    }
+}
 
-uint64_t bitset_set_list(void *bitset, uint64_t card, 
+uint64_t bitset_set_list(void *bitset, uint64_t card,
                          uint16_t *list, uint64_t length) {
     uint64_t offset, load, pos;
     uint64_t shift = 3;
@@ -243,12 +255,12 @@ uint64_t bitset_set_list(void *bitset, uint64_t card,
                    "sbb $-1, %[card]\n"
                    "add $2, %[list]\n"
                    "cmp %[list], %[end]\n"
-                   "jnz 1b" :                                    
+                   "jnz 1b" :
                    [card] "+&r" (card),
                    [list] "+&r" (list),
                    [load] "=&r" (load),
                    [pos] "=&r" (pos),
-                   [offset] "=&r" (offset) :     
+                   [offset] "=&r" (offset) :
                    [end] "r" (end),
                    [bitset] "r" (bitset),
                    [shift] "r" (shift));
@@ -263,12 +275,12 @@ uint64_t bitset_set_list(void *bitset, uint64_t card,
                    "mov %b[load], (%[bitset],%[offset],1)\n"
                    "sbb $-1, %[card]\n"
                    "inc %[neg]\n"
-                   "jnz 1b" :                                    
+                   "jnz 1b" :
                    [card] "+&r" (card),
                    [neg] "+&r" (neg),
                    [load] "=&r" (load),
                    [pos] "=&r" (pos),
-                   [offset] "=&r" (offset) :     
+                   [offset] "=&r" (offset) :
                    [end] "r" (end),
                    [bitset] "r" (bitset),
                    [shift] "r" (shift));
@@ -277,15 +289,15 @@ uint64_t bitset_set_list(void *bitset, uint64_t card,
     return card;
 }
 
-// presumption here is that moving 8-bit pieces  will have less 
+// presumption here is that moving 8-bit pieces  will have less
 // chance of causing 'interference' between writes and future reads
-uint64_t bitset_clear_list(void *bitset, uint64_t card, 
+uint64_t bitset_clear_list(void *bitset, uint64_t card,
                            uint16_t *list, uint64_t length) {
     uint64_t offset, load, pos;
     uint64_t shift = 3;
     uint16_t *end = list + length;
 
-    
+
     IACA_START;
     __asm volatile("1:\n"
                    "movzwq (%[list]), %[pos]\n"
@@ -296,12 +308,12 @@ uint64_t bitset_clear_list(void *bitset, uint64_t card,
                    "sbb $0, %[card]\n"
                    "add $2, %[list]\n"
                    "cmp %[list], %[end]\n"
-                   "jnz 1b" :                                    
+                   "jnz 1b" :
                    [card] "+&r" (card),
                    [list] "+&r" (list),
                    [load] "=&r" (load),
                    [pos] "=&r" (pos),
-                   [offset] "=&r" (offset) :     
+                   [offset] "=&r" (offset) :
                    [end] "r" (end),
                    [bitset] "r" (bitset),
                    [shift] "r" (shift));
@@ -310,7 +322,7 @@ uint64_t bitset_clear_list(void *bitset, uint64_t card,
 }
 
 // actual function will presumably set bitset->card directly
-uint64_t bitset_clear_bit(uint64_t *array, uint64_t pos, 
+uint64_t bitset_clear_bit(uint64_t *array, uint64_t pos,
                           uint64_t card) {
     uint64_t shift = 6;
     uint64_t offset;
@@ -322,174 +334,174 @@ uint64_t bitset_clear_bit(uint64_t *array, uint64_t pos,
 }
 
 uint64_t bitset_or_nocard(void *in1, void *in2, void *out) {
-    char *end1 = (char *)in1 + BITSET_BYTES;                    
-    char *end2 = (char *)in2 + BITSET_BYTES;                    
-    int64_t neg = -BITSET_BYTES;                                                
+    char *end1 = (char *)in1 + BITSET_BYTES;
+    char *end2 = (char *)in2 + BITSET_BYTES;
+    int64_t neg = -BITSET_BYTES;
 
     IACA_START;
     do {
-        __m256i A1, A2;                                             
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 0, end1, neg, 1);     
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 0, end2, neg, 1);     
-        ASM_OR_VEC(A1, A2);                                     
-        ASM_STORE_VEC_OFFSET_BASE(A1, 0, out);                          
+        __m256i A1, A2;
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 0, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 0, end2, neg, 1);
+        ASM_OR_VEC(A1, A2);
+        ASM_STORE_VEC_OFFSET_BASE(A1, 0, out);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 32, end1, neg, 1);    
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 32, end2, neg, 1);    
-        ASM_OR_VEC(A1, A2);                                     
-        ASM_STORE_VEC_OFFSET_BASE(A1, 32, out);                         
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 32, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 32, end2, neg, 1);
+        ASM_OR_VEC(A1, A2);
+        ASM_STORE_VEC_OFFSET_BASE(A1, 32, out);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 64, end1, neg, 1);    
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 64, end2, neg, 1);    
-        ASM_OR_VEC(A1, A2);                                     
-        ASM_STORE_VEC_OFFSET_BASE(A1, 64, out);                         
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 64, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 64, end2, neg, 1);
+        ASM_OR_VEC(A1, A2);
+        ASM_STORE_VEC_OFFSET_BASE(A1, 64, out);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 96, end1, neg, 1);    
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 96, end2, neg, 1);    
-        ASM_OR_VEC(A1, A2);                                     
-        ASM_STORE_VEC_OFFSET_BASE(A1, 96, out);                         
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 96, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 96, end2, neg, 1);
+        ASM_OR_VEC(A1, A2);
+        ASM_STORE_VEC_OFFSET_BASE(A1, 96, out);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 128, end1, neg, 1);   
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 128, end2, neg, 1);   
-        ASM_OR_VEC(A1, A2);                                     
-        ASM_STORE_VEC_OFFSET_BASE(A1, 128, out);                        
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 128, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 128, end2, neg, 1);
+        ASM_OR_VEC(A1, A2);
+        ASM_STORE_VEC_OFFSET_BASE(A1, 128, out);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 160, end1, neg, 1);   
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 160, end2, neg, 1);   
-        ASM_OR_VEC(A1, A2);                                     
-        ASM_STORE_VEC_OFFSET_BASE(A1, 160, out);                        
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 160, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 160, end2, neg, 1);
+        ASM_OR_VEC(A1, A2);
+        ASM_STORE_VEC_OFFSET_BASE(A1, 160, out);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 192, end1, neg, 1);   
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 192, end2, neg, 1);   
-        ASM_OR_VEC(A1, A2);                                     
-        ASM_STORE_VEC_OFFSET_BASE(A1, 192, out);                        
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 192, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 192, end2, neg, 1);
+        ASM_OR_VEC(A1, A2);
+        ASM_STORE_VEC_OFFSET_BASE(A1, 192, out);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 224, end1, neg, 1);   
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 224, end2, neg, 1);   
-        ASM_OR_VEC(A1, A2);                                     
-        ASM_STORE_VEC_OFFSET_BASE(A1, 224, out);                        
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 224, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 224, end2, neg, 1);
+        ASM_OR_VEC(A1, A2);
+        ASM_STORE_VEC_OFFSET_BASE(A1, 224, out);
 
-        ASM_ADD_CONST(out, 256);                                        
-    } while (neg += 256);                                               
+        ASM_ADD_CONST(out, 256);
+    } while (neg += 256);
 
     IACA_END;
     return -1;
 }
 
 uint64_t bitset_or_card(void *in1, void *in2, void *out) {
-    char *end1 = (char *)in1 + BITSET_BYTES;                    
-    char *end2 = (char *)in2 + BITSET_BYTES;                    
-    const ymm_t mask = _mm256_set1_epi8(0x0f);                       
-    const ymm_t zero = _mm256_setzero_si256();                              
-    const ymm_t shuf = 
-        _mm256_setr_epi8(0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 
-                         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4); 
-    ymm_t total = _mm256_setzero_si256();                             
-    int64_t neg = -BITSET_BYTES;                                                
+    char *end1 = (char *)in1 + BITSET_BYTES;
+    char *end2 = (char *)in2 + BITSET_BYTES;
+    const ymm_t mask = _mm256_set1_epi8(0x0f);
+    const ymm_t zero = _mm256_setzero_si256();
+    const ymm_t shuf =
+        _mm256_setr_epi8(0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
+                         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
+    ymm_t total = _mm256_setzero_si256();
+    int64_t neg = -BITSET_BYTES;
 
     IACA_START;
-    do {                                                                
-        ymm_t A1, A2, B1, B2;                                         
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 0, end1, neg, 1);     
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 0, end2, neg, 1);     
-        B1 = _mm256_or_si256(A2, A1);                                     
-        ASM_STORE_VEC_OFFSET_BASE(B1, 0, out);                          
-        B2 = _mm256_srli_epi32(B1, 4);                                  
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        ymm_t subtotal = _mm256_shuffle_epi8(shuf, B1);             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal,B2);                    
+    do {
+        ymm_t A1, A2, B1, B2;
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 0, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 0, end2, neg, 1);
+        B1 = _mm256_or_si256(A2, A1);
+        ASM_STORE_VEC_OFFSET_BASE(B1, 0, out);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        ymm_t subtotal = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal,B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 32, end1, neg, 1);    
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 32, end2, neg, 1);    
-        B1 = _mm256_or_si256(A2, A1);                                     
-        ASM_STORE_VEC_OFFSET_BASE(B1, 32, out);                         
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 32, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 32, end2, neg, 1);
+        B1 = _mm256_or_si256(A2, A1);
+        ASM_STORE_VEC_OFFSET_BASE(B1, 32, out);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 64, end1, neg, 1);    
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 64, end2, neg, 1);    
-        B1 = _mm256_or_si256(A2, A1);                                     
-        ASM_STORE_VEC_OFFSET_BASE(B1, 64, out);                         
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 64, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 64, end2, neg, 1);
+        B1 = _mm256_or_si256(A2, A1);
+        ASM_STORE_VEC_OFFSET_BASE(B1, 64, out);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 96, end1, neg, 1);    
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 96, end2, neg, 1);    
-        B1 = _mm256_or_si256(A2, A1);                                     
-        ASM_STORE_VEC_OFFSET_BASE(B1, 96, out);                         
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 96, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 96, end2, neg, 1);
+        B1 = _mm256_or_si256(A2, A1);
+        ASM_STORE_VEC_OFFSET_BASE(B1, 96, out);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 128, end1, neg, 1);   
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 128, end2, neg, 1);   
-        B1 = _mm256_or_si256(A2, A1);                                     
-        ASM_STORE_VEC_OFFSET_BASE(B1, 128, out);                        
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 128, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 128, end2, neg, 1);
+        B1 = _mm256_or_si256(A2, A1);
+        ASM_STORE_VEC_OFFSET_BASE(B1, 128, out);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 160, end1, neg, 1);   
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 160, end2, neg, 1);   
-        B1 = _mm256_or_si256(A2, A1);                                     
-        ASM_STORE_VEC_OFFSET_BASE(B1, 160, out);                        
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1,mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 160, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 160, end2, neg, 1);
+        B1 = _mm256_or_si256(A2, A1);
+        ASM_STORE_VEC_OFFSET_BASE(B1, 160, out);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1,mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 192, end1, neg, 1);   
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 192, end2, neg, 1);   
-        B1 = _mm256_or_si256(A2, A1);                                     
-        ASM_STORE_VEC_OFFSET_BASE(B1, 192, out);                        
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 192, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 192, end2, neg, 1);
+        B1 = _mm256_or_si256(A2, A1);
+        ASM_STORE_VEC_OFFSET_BASE(B1, 192, out);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 224, end1, neg, 1);   
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 224, end2, neg, 1);   
-        B1 = _mm256_or_si256(A2, A1);                                     
-        ASM_STORE_VEC_OFFSET_BASE(B1, 224, out);                        
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 224, end1, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A2, 224, end2, neg, 1);
+        B1 = _mm256_or_si256(A2, A1);
+        ASM_STORE_VEC_OFFSET_BASE(B1, 224, out);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        subtotal = _mm256_sad_epu8(zero, subtotal);                  
-        total = _mm256_add_epi64(total, subtotal);                     
-        ASM_ADD_CONST(out, 256);                                        
-    } while (neg += 256);                                               
- 
+        subtotal = _mm256_sad_epu8(zero, subtotal);
+        total = _mm256_add_epi64(total, subtotal);
+        ASM_ADD_CONST(out, 256);
+    } while (neg += 256);
+
     xmm_t tmp1 = _mm256_extracti128_si256(total, 1);
     xmm_t sum = _mm_add_epi64(tmp1, XMM_INT(total));
     __m128 tmp2 = _mm_movehl_ps(XMM_FLOAT(zero), XMM_FLOAT(sum));
@@ -501,163 +513,163 @@ uint64_t bitset_or_card(void *in1, void *in2, void *out) {
 }
 
 uint64_t bitset_card_only(void *in) {
-    char *end = (char *)in + BITSET_BYTES;                    
-    const ymm_t mask = _mm256_set1_epi8(0x0f);                       
-    const ymm_t zero = _mm256_setzero_si256();                              
-    const ymm_t shuf = 
-        _mm256_setr_epi8(0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 
-                         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4); 
-    ymm_t total = _mm256_setzero_si256();                             
-    int64_t neg = -BITSET_BYTES;                                                
+    char *end = (char *)in + BITSET_BYTES;
+    const ymm_t mask = _mm256_set1_epi8(0x0f);
+    const ymm_t zero = _mm256_setzero_si256();
+    const ymm_t shuf =
+        _mm256_setr_epi8(0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
+                         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
+    ymm_t total = _mm256_setzero_si256();
+    int64_t neg = -BITSET_BYTES;
 
     IACA_START;
-    do {                                                                
+    do {
 #if 0   // no improvement over simpler version below
-        ymm_t A1, A2, B1, B2;                                         
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 0, end, neg, 1);     
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 32, end, neg, 1);    
-        A2 = _mm256_srli_epi32(A1, 4);                                  
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        A1 = _mm256_and_si256(A1, mask);                                 
-        A2 = _mm256_and_si256(A2, mask);                                
-        ymm_t subtotal = _mm256_shuffle_epi8(shuf, A1);             
-        A2 = _mm256_shuffle_epi8(shuf, A2);                             
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal,A2);                    
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ymm_t A1, A2, B1, B2;
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 0, end, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 32, end, neg, 1);
+        A2 = _mm256_srli_epi32(A1, 4);
+        B2 = _mm256_srli_epi32(B1, 4);
+        A1 = _mm256_and_si256(A1, mask);
+        A2 = _mm256_and_si256(A2, mask);
+        ymm_t subtotal = _mm256_shuffle_epi8(shuf, A1);
+        A2 = _mm256_shuffle_epi8(shuf, A2);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal,A2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 64, end, neg, 1);    
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 96, end, neg, 1);    
-        A2 = _mm256_srli_epi32(A1, 4);                                   
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        A1 = _mm256_and_si256(A1, mask);                                 
-        A2 = _mm256_and_si256(A2, mask);                                
-        A1 = _mm256_shuffle_epi8(shuf, A1);                             
-        A2 = _mm256_shuffle_epi8(shuf, A2);                             
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, A1);                   
-        subtotal = _mm256_add_epi8(subtotal, A2);                   
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 64, end, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 96, end, neg, 1);
+        A2 = _mm256_srli_epi32(A1, 4);
+        B2 = _mm256_srli_epi32(B1, 4);
+        A1 = _mm256_and_si256(A1, mask);
+        A2 = _mm256_and_si256(A2, mask);
+        A1 = _mm256_shuffle_epi8(shuf, A1);
+        A2 = _mm256_shuffle_epi8(shuf, A2);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, A1);
+        subtotal = _mm256_add_epi8(subtotal, A2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 128, end, neg, 1);   
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 160, end, neg, 1);   
-        A2 = _mm256_srli_epi32(A1, 4);                                   
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        A1 = _mm256_and_si256(A1, mask);                                 
-        A2 = _mm256_and_si256(A2, mask);                                
-        A1 = _mm256_shuffle_epi8(shuf, A1);                             
-        A2 = _mm256_shuffle_epi8(shuf, A2);                             
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, A1);                   
-        subtotal = _mm256_add_epi8(subtotal, A2);                   
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 128, end, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 160, end, neg, 1);
+        A2 = _mm256_srli_epi32(A1, 4);
+        B2 = _mm256_srli_epi32(B1, 4);
+        A1 = _mm256_and_si256(A1, mask);
+        A2 = _mm256_and_si256(A2, mask);
+        A1 = _mm256_shuffle_epi8(shuf, A1);
+        A2 = _mm256_shuffle_epi8(shuf, A2);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, A1);
+        subtotal = _mm256_add_epi8(subtotal, A2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 192, end, neg, 1);   
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 224, end, neg, 1);   
-        A2 = _mm256_srli_epi32(A1, 4);                                   
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        A1 = _mm256_and_si256(A1, mask);                                 
-        A2 = _mm256_and_si256(A2, mask);                                
-        A1 = _mm256_shuffle_epi8(shuf, A1);                             
-        A2 = _mm256_shuffle_epi8(shuf, A2);                             
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, A1);                   
-        subtotal = _mm256_add_epi8(subtotal, A2);                   
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 192, end, neg, 1);
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 224, end, neg, 1);
+        A2 = _mm256_srli_epi32(A1, 4);
+        B2 = _mm256_srli_epi32(B1, 4);
+        A1 = _mm256_and_si256(A1, mask);
+        A2 = _mm256_and_si256(A2, mask);
+        A1 = _mm256_shuffle_epi8(shuf, A1);
+        A2 = _mm256_shuffle_epi8(shuf, A2);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, A1);
+        subtotal = _mm256_add_epi8(subtotal, A2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 #else
-        ymm_t B1, B2;                                         
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 0, end, neg, 1);     
-        B2 = _mm256_srli_epi32(B1, 4);                                  
-        B1 = _mm256_and_si256(B1,mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        ymm_t subtotal = _mm256_shuffle_epi8(shuf, B1);             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal,B2);                    
+        ymm_t B1, B2;
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 0, end, neg, 1);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1,mask);
+        B2 = _mm256_and_si256(B2, mask);
+        ymm_t subtotal = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal,B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 32, end, neg, 1);    
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 32, end, neg, 1);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 64, end, neg, 1);    
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 64, end, neg, 1);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 96, end, neg, 1);    
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 96, end, neg, 1);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 128, end, neg, 1);   
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 128, end, neg, 1);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 160, end, neg, 1);   
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 160, end, neg, 1);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 192, end, neg, 1);   
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 192, end, neg, 1);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 224, end, neg, 1);   
-        B2 = _mm256_srli_epi32(B1, 4);                                   
-        B1 = _mm256_and_si256(B1, mask);                                 
-        B2 = _mm256_and_si256(B2, mask);                                
-        B1 = _mm256_shuffle_epi8(shuf, B1);                             
-        B2 = _mm256_shuffle_epi8(shuf, B2);                             
-        subtotal = _mm256_add_epi8(subtotal, B1);                   
-        subtotal = _mm256_add_epi8(subtotal, B2);                   
+        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 224, end, neg, 1);
+        B2 = _mm256_srli_epi32(B1, 4);
+        B1 = _mm256_and_si256(B1, mask);
+        B2 = _mm256_and_si256(B2, mask);
+        B1 = _mm256_shuffle_epi8(shuf, B1);
+        B2 = _mm256_shuffle_epi8(shuf, B2);
+        subtotal = _mm256_add_epi8(subtotal, B1);
+        subtotal = _mm256_add_epi8(subtotal, B2);
 #endif
 
-        subtotal = _mm256_sad_epu8(zero, subtotal);                  
-        total = _mm256_add_epi64(total, subtotal);                     
-    } while (neg += 256);                                               
- 
+        subtotal = _mm256_sad_epu8(zero, subtotal);
+        total = _mm256_add_epi64(total, subtotal);
+    } while (neg += 256);
+
     xmm_t tmp1 = _mm256_extracti128_si256(total, 1);
     xmm_t sum = _mm_add_epi64(tmp1, XMM_INT(total));
     __m128 tmp2 = _mm_movehl_ps(XMM_FLOAT(zero), XMM_FLOAT(sum));
