@@ -218,10 +218,9 @@ void demo() {
   for(size_t N = 1; N < 4096; N*=2) {
     value_t * source = create_sorted_array(N);
     float cycle_per_op_empty, cycle_per_op_flush, 
-       cycle_per_op_middle_value,cycle_per_op_branchless,cycle_per_op_branchless_wp;
+       cycle_per_op_branchless,cycle_per_op_branchless_wp;
     BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_empty);
     BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_flush);
-    BEST_TIME_PRE_ARRAY(source, N, binary_search16,             array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_middle_value);
     BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_branchless);
     BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
       printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f  branchless = %.2f branchless+prefetching = %.2f  \n", 
