@@ -65,7 +65,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
         if (global_rdtsc_overhead == UINT64_MAX) {                      \
             RDTSC_SET_OVERHEAD(rdtsc_overhead_func(1), repeat);         \
         }                                                               \
-        printf("%36s: ", #test);                                        \
+        printf("%45s: ", #test);                                        \
         fflush(NULL);							\
         uint64_t cycles_start, cycles_final, cycles_diff;               \
         int wrong_answer = 0;						\
@@ -113,7 +113,7 @@ static const char *likwid_safe_name(const char *name, char *buffer) {
     return buffer;
 }
 #define LIKWID_LOOP(test, answer, repeat, num_vecs) do {                \
-        printf("%36s: ", #test);                                        \
+        printf("%45s: ", #test);                                        \
         fflush(NULL);							\
         int wrong_answer = 0;						\
         uint64_t result;                                                \
@@ -303,16 +303,15 @@ uint64_t bitset_set_list(void *bitset, uint64_t card,
 
 uint64_t bitset_clear_list_regular(void *bitset, uint64_t card,
                          uint16_t *list, uint64_t length) {
-    uint64_t offset, load, newload, pos, index;
+    uint64_t offset, load, pos, index;
     uint16_t *end = list + length;
     while(list != end) {
       pos =  *(uint16_t *)  list;
       offset = pos >> 6;
       index = pos % 64;
       load = ((uint64_t *) bitset)[offset];
-      newload = load & (UINT64_C(1) << index);
-      card += (load ^ newload)>> index;
-      ((uint64_t *) bitset)[offset] = newload;
+      card -= load >> index;
+      ((uint64_t *) bitset)[offset] = load & ~(UINT64_C(1) << index);
       list ++;
     }
     return card;
