@@ -1,4 +1,4 @@
-// gcc -fno-inline -march=native -std=c99 -Wall -O3 -g  bitset.c -o bitset
+// gcc -fno-inline -march=native -std=c99 -Wall -O3 -g  crazybitset.c -o crazybitset
 // clang also wants -mavx2 (whereas icc complains about it)
 // -fno-inline is optional, but makes 'perf record -F10000 bitset'
 // give clearer functions in 'perf report'.
