@@ -232,7 +232,7 @@ uint64_t bitset_set_list_intrinsic(void *bitset, uint64_t card,
     while(list != end) {
       pos =  *(uint16_t *)  list;
       offset = pos >> 6;
-      load = (uint64_t *) bitset[offset];
+      load = ((uint64_t *) bitset)[offset];
       card += _bittestandset64(&load, pos);
       list ++;
     }
@@ -717,6 +717,7 @@ int main(/* int argc, char **argv */) {
     memset(out, 0x00, BITSET_BYTES);
     card = bitset_set_list(out, 0, list, 256);
     if (card != 256) printf("Error: expected %ld, got %ld\n", 256L, card);
+    TIMING_LOOP(bitset_set_list_intrinsic(out, 256, list, 256), 256, REPEAT, 256);
     TIMING_LOOP(bitset_set_list(out, 256, list, 256), 256, REPEAT, 256);
     card = bitset_clear_list(out, 256, list, 256);
     if (card != 0) printf("Error: expected %ld, got %ld\n", 0L, card);
