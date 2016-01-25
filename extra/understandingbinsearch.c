@@ -61,14 +61,6 @@ void array_cache_prefetch(value_t* B, int32_t length) {
 	}
 }
 
-// tries to put the array in cache
-void array_cache_partialprefetch(value_t* B, int32_t length) {
-        array_cache_flush(B,length);
-	int32_t low = 0;
-	int32_t high = length - 1;
-        __builtin_prefetch(B+((low+high) >> 1));	
-}
-
 // could be faster, but we just want it to be correct
 int32_t ilog2(size_t lenarray)  {
 	int32_t low = 0;
@@ -201,10 +193,11 @@ int32_t  __attribute__ ((noinline)) return_middle_value(uint16_t * array, int32_
         int sum = 0;                                                                    \
         for (size_t j = 0; j < nbrtestvalues; j++) {                                    \
          for (int i = 0; i < repeat; i++) {                                             \
-            pre(base,length);                                                                  \
+            pre(base,length);                                                           \
+            pre(base,length);                                                           \
             __asm volatile("" ::: /* pretend to clobber */ "memory");                   \
             RDTSC_START(cycles_start);                                                  \
-            test(base,length,testvalues[j]);                                                   \
+            test(base,length,testvalues[j]);                                            \
             RDTSC_FINAL(cycles_final);                                                  \
             cycles_diff = (cycles_final - cycles_start);                                \
             if (cycles_diff < min_diff) min_diff = cycles_diff;                         \
@@ -212,7 +205,7 @@ int32_t  __attribute__ ((noinline)) return_middle_value(uint16_t * array, int32_
           sum += cycles_diff;                                                           \
         }                                                                               \
         uint64_t S = nbrtestvalues;                                                     \
-        cycle_per_op = sum / (double)S;                                           \
+        cycle_per_op = sum / (double)S;                                                 \
     } while (0)
 
 
@@ -224,19 +217,16 @@ void demo() {
   printf("# N, prefetched seek, fresh seek  (in cycles) then same values normalized by tree height\n");
   for(size_t N = 1; N < 4096; N*=2) {
     value_t * source = create_sorted_array(N);
-    float l2 = (float)ilog2(N);
-    float cycle_per_op_empty, cycle_per_op_prefetch, cycle_per_op_partialprefetch, cycle_per_op_flush, 
+    float cycle_per_op_empty, cycle_per_op_flush, 
        cycle_per_op_middle_value,cycle_per_op_branchless,cycle_per_op_branchless_wp;
-    BEST_TIME_PRE_ARRAY(source, N, does_nothing, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_empty);
-    BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_flush);
-    BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_prefetch,  repeat, testvalues, nbrtestvalues, cycle_per_op_prefetch);
-    BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_partialprefetch,  repeat, testvalues, nbrtestvalues, cycle_per_op_partialprefetch);
-    BEST_TIME_PRE_ARRAY(source, N, binary_search16, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_middle_value);
-    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_branchless);
+    BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_empty);
+    BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_flush);
+    BEST_TIME_PRE_ARRAY(source, N, binary_search16,             array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_middle_value);
+    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_branchless);
     BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
-      printf("N=%d ilog2=%d  branchy prefetched=%.2f branchy=%.2f branchy partial pre-%.2f branchy stop on 16=%.2f branchless=%.2f branchlesswp=%.2f --  %.2f %2f \n", (int)N,ilog2(N),cycle_per_op_prefetch-cycle_per_op_empty,cycle_per_op_flush-cycle_per_op_empty,cycle_per_op_partialprefetch-cycle_per_op_empty,cycle_per_op_middle_value-cycle_per_op_empty,
-        cycle_per_op_branchless,cycle_per_op_branchless_wp,
-        (cycle_per_op_prefetch-cycle_per_op_empty)/l2,(cycle_per_op_flush-cycle_per_op_empty)/l2);    
+      printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f  branchless = %.2f branchless+prefetching = %.2f  \n", 
+      (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,
+        cycle_per_op_branchless,cycle_per_op_branchless_wp);    
     free(source);
   }
   free(testvalues);
