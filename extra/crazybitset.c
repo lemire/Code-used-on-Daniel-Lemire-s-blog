@@ -87,7 +87,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
         printf(" (%ld cycs / %ld vecs)", min_diff, (uint64_t) num_vecs); \
         if (wrong_answer) printf(" ERROR: expected %ld, got %ld",       \
                                  (uint64_t)answer, (uint64_t)result);   \
-        else printf(" %8ld OK", (uint64_t)result);                      \
+        else printf(" %10ld OK", (uint64_t)result);                      \
         printf("\n");							\
         fflush(NULL);							\
         } while (0)
@@ -128,7 +128,7 @@ static const char *likwid_safe_name(const char *name, char *buffer) {
         likwid_markerStopRegion(safe_name);                             \
         if (wrong_answer) printf(" ERROR: expected %ld, got %ld",       \
                                  (uint64_t)answer, (uint64_t)result);   \
-        else printf(" %8ld OK", (uint64_t)result);                      \
+        else printf(" %10ld OK", (uint64_t)result);                      \
         printf("\n");							\
         fflush(NULL);							\
     } while (0)
@@ -814,8 +814,8 @@ uint64_t check_bytes(uint8_t *bytes, uint8_t expected, uint64_t length) {
 
 #define REPEAT 100000
 
-int main(/* int argc, char **argv */) {
-
+int demo(int align) {
+    printf("Align = %d \n",align);
 #ifdef LIKWID
     likwid_markerInit();
     likwid_markerThreadInit();
@@ -826,7 +826,7 @@ int main(/* int argc, char **argv */) {
         list[i] = i * 256;
     }
 
-    uint8_t *out = aligned_malloc(4096, BITSET_BYTES);
+    uint8_t *out = aligned_malloc(align, BITSET_BYTES);
     memset(out, 0x00, BITSET_BYTES);
     uint64_t card;
     memset(out, 0x00, BITSET_BYTES);
@@ -845,8 +845,8 @@ int main(/* int argc, char **argv */) {
     TIMING_LOOP(bitset_card_only_regular(out), card, REPEAT, 256);
     TIMING_LOOP(bitset_card_only(out), card, REPEAT, 256);
 
-    uint8_t *in1 = aligned_malloc(4096, BITSET_BYTES);
-    uint8_t *in2 = aligned_malloc(4096, BITSET_BYTES);
+    uint8_t *in1 = aligned_malloc(align, BITSET_BYTES);
+    uint8_t *in2 = aligned_malloc(align, BITSET_BYTES);
     memset(in1, 0x71, BITSET_BYTES);
     memset(in2, 0x17, BITSET_BYTES);
 
@@ -863,6 +863,12 @@ int main(/* int argc, char **argv */) {
 #ifdef LIKWID
     likwid_markerClose();
 #endif
+    return 0;
+}
 
+int main(/* int argc, char **argv */) {
+    demo(16);
+    demo(32);
+    demo(4096);
     return 0;
 }
