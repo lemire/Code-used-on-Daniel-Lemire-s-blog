@@ -225,17 +225,29 @@ uint64_t bitset_set_bit(uint64_t *array, uint64_t pos,
     return card;
 }
 
-uint64_t bitset_set_list_intrinsic(void *bitset, uint64_t card,
+unsigned char _bittestandset64(uint64_t *Base, uint64_t Offset)
+{
+  int old = 0;
+  __asm__ __volatile__("btsq %2,%1\n\tsbbl %0,%0 "
+    :"=r" (old),"=m" ((*(volatile long long *) Base))
+    :"Ir" (Offset));
+  return (old != 0);
+}
+uint64_t bitset_set_list_regular(void *bitset, uint64_t card,
                          uint16_t *list, uint64_t length) {
-    uint64_t offset, load, pos;
+    uint64_t offset, load, newload, pos, index;
     uint16_t *end = list + length;
     while(list != end) {
       pos =  *(uint16_t *)  list;
       offset = pos >> 6;
+      index = pos % 64;
       load = ((uint64_t *) bitset)[offset];
-      card += _bittestandset64(&load, pos);
+      newload = load | (UINT64_C(1) << index);
+      card += (load ^ newload)>> index;
+      ((uint64_t *) bitset)[offset] = newload; 
       list ++;
     }
+    return card;
 }
 
 uint64_t bitset_set_list(void *bitset, uint64_t card,
@@ -288,6 +300,25 @@ uint64_t bitset_set_list(void *bitset, uint64_t card,
     IACA_END;
     return card;
 }
+
+uint64_t bitset_clear_list_regular(void *bitset, uint64_t card,
+                         uint16_t *list, uint64_t length) {
+    uint64_t offset, load, newload, pos, index;
+    uint16_t *end = list + length;
+    while(list != end) {
+      pos =  *(uint16_t *)  list;
+      offset = pos >> 6;
+      index = pos % 64;
+      load = ((uint64_t *) bitset)[offset];
+      newload = load & (UINT64_C(1) << index);
+      card += (load ^ newload)>> index;
+      ((uint64_t *) bitset)[offset] = newload; 
+      list ++;
+    }
+    return card;
+}
+
+
 
 // presumption here is that moving 8-bit pieces  will have less
 // chance of causing 'interference' between writes and future reads
@@ -524,75 +555,6 @@ uint64_t bitset_card_only(void *in) {
 
     IACA_START;
     do {
-#if 0   // no improvement over simpler version below
-        ymm_t A1, A2, B1, B2;
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 0, end, neg, 1);
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 32, end, neg, 1);
-        A2 = _mm256_srli_epi32(A1, 4);
-        B2 = _mm256_srli_epi32(B1, 4);
-        A1 = _mm256_and_si256(A1, mask);
-        A2 = _mm256_and_si256(A2, mask);
-        ymm_t subtotal = _mm256_shuffle_epi8(shuf, A1);
-        A2 = _mm256_shuffle_epi8(shuf, A2);
-        B1 = _mm256_and_si256(B1, mask);
-        B2 = _mm256_and_si256(B2, mask);
-        B1 = _mm256_shuffle_epi8(shuf, B1);
-        B2 = _mm256_shuffle_epi8(shuf, B2);
-        subtotal = _mm256_add_epi8(subtotal,A2);
-        subtotal = _mm256_add_epi8(subtotal, B1);
-        subtotal = _mm256_add_epi8(subtotal, B2);
-
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 64, end, neg, 1);
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 96, end, neg, 1);
-        A2 = _mm256_srli_epi32(A1, 4);
-        B2 = _mm256_srli_epi32(B1, 4);
-        A1 = _mm256_and_si256(A1, mask);
-        A2 = _mm256_and_si256(A2, mask);
-        A1 = _mm256_shuffle_epi8(shuf, A1);
-        A2 = _mm256_shuffle_epi8(shuf, A2);
-        B1 = _mm256_and_si256(B1, mask);
-        B2 = _mm256_and_si256(B2, mask);
-        B1 = _mm256_shuffle_epi8(shuf, B1);
-        B2 = _mm256_shuffle_epi8(shuf, B2);
-        subtotal = _mm256_add_epi8(subtotal, A1);
-        subtotal = _mm256_add_epi8(subtotal, A2);
-        subtotal = _mm256_add_epi8(subtotal, B1);
-        subtotal = _mm256_add_epi8(subtotal, B2);
-
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 128, end, neg, 1);
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 160, end, neg, 1);
-        A2 = _mm256_srli_epi32(A1, 4);
-        B2 = _mm256_srli_epi32(B1, 4);
-        A1 = _mm256_and_si256(A1, mask);
-        A2 = _mm256_and_si256(A2, mask);
-        A1 = _mm256_shuffle_epi8(shuf, A1);
-        A2 = _mm256_shuffle_epi8(shuf, A2);
-        B1 = _mm256_and_si256(B1, mask);
-        B2 = _mm256_and_si256(B2, mask);
-        B1 = _mm256_shuffle_epi8(shuf, B1);
-        B2 = _mm256_shuffle_epi8(shuf, B2);
-        subtotal = _mm256_add_epi8(subtotal, A1);
-        subtotal = _mm256_add_epi8(subtotal, A2);
-        subtotal = _mm256_add_epi8(subtotal, B1);
-        subtotal = _mm256_add_epi8(subtotal, B2);
-
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(A1, 192, end, neg, 1);
-        ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 224, end, neg, 1);
-        A2 = _mm256_srli_epi32(A1, 4);
-        B2 = _mm256_srli_epi32(B1, 4);
-        A1 = _mm256_and_si256(A1, mask);
-        A2 = _mm256_and_si256(A2, mask);
-        A1 = _mm256_shuffle_epi8(shuf, A1);
-        A2 = _mm256_shuffle_epi8(shuf, A2);
-        B1 = _mm256_and_si256(B1, mask);
-        B2 = _mm256_and_si256(B2, mask);
-        B1 = _mm256_shuffle_epi8(shuf, B1);
-        B2 = _mm256_shuffle_epi8(shuf, B2);
-        subtotal = _mm256_add_epi8(subtotal, A1);
-        subtotal = _mm256_add_epi8(subtotal, A2);
-        subtotal = _mm256_add_epi8(subtotal, B1);
-        subtotal = _mm256_add_epi8(subtotal, B2);
-#else
         ymm_t B1, B2;
         ASM_LOAD_VEC_OFFSET_BASE_INDEX_SCALE(B1, 0, end, neg, 1);
         B2 = _mm256_srli_epi32(B1, 4);
@@ -664,8 +626,6 @@ uint64_t bitset_card_only(void *in) {
         B2 = _mm256_shuffle_epi8(shuf, B2);
         subtotal = _mm256_add_epi8(subtotal, B1);
         subtotal = _mm256_add_epi8(subtotal, B2);
-#endif
-
         subtotal = _mm256_sad_epu8(zero, subtotal);
         total = _mm256_add_epi64(total, subtotal);
     } while (neg += 256);
@@ -712,16 +672,16 @@ int main(/* int argc, char **argv */) {
 
     uint8_t *out = aligned_malloc(4096, BITSET_BYTES);
     memset(out, 0x00, BITSET_BYTES);
-
     uint64_t card;
     memset(out, 0x00, BITSET_BYTES);
     card = bitset_set_list(out, 0, list, 256);
     if (card != 256) printf("Error: expected %ld, got %ld\n", 256L, card);
-    TIMING_LOOP(bitset_set_list_intrinsic(out, 256, list, 256), 256, REPEAT, 256);
+    TIMING_LOOP(bitset_set_list_regular(out, 256, list, 256), 256, REPEAT, 256);
     TIMING_LOOP(bitset_set_list(out, 256, list, 256), 256, REPEAT, 256);
     card = bitset_clear_list(out, 256, list, 256);
     if (card != 0) printf("Error: expected %ld, got %ld\n", 0L, card);
     check_bytes(out, 0x00, BITSET_BYTES);
+    TIMING_LOOP(bitset_clear_list_regular(out, 0, list, 256), 0, REPEAT, 256);
     TIMING_LOOP(bitset_clear_list(out, 0, list, 256), 0, REPEAT, 256);
 
     card = 6 * BITSET_BYTES;
