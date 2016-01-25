@@ -303,14 +303,14 @@ uint64_t bitset_set_list(void *bitset, uint64_t card,
 
 uint64_t bitset_clear_list_regular(void *bitset, uint64_t card,
                          uint16_t *list, uint64_t length) {
-    uint64_t offset, load, pos, index;
+    uint64_t offset, load, newload, pos, index;
     uint16_t *end = list + length;
     while(list != end) {
       pos =  *(uint16_t *)  list;
       offset = pos >> 6;
       index = pos % 64;
       load = ((uint64_t *) bitset)[offset];
-      newload = load | (UINT64_C(1) << index);
+      newload = load & ~(UINT64_C(1) << index);
       card -= (load ^ newload)>> index;
       ((uint64_t *) bitset)[offset] = newload;
       list ++;
@@ -868,7 +868,6 @@ int demo(int align) {
 }
 
 int main(/* int argc, char **argv */) {
-    demo(16);
     demo(32);
     demo(4096);
     return 0;
