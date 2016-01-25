@@ -310,8 +310,9 @@ uint64_t bitset_clear_list_regular(void *bitset, uint64_t card,
       offset = pos >> 6;
       index = pos % 64;
       load = ((uint64_t *) bitset)[offset];
-      card -= load >> index;
-      ((uint64_t *) bitset)[offset] = load & ~(UINT64_C(1) << index);
+      newload = load | (UINT64_C(1) << index);
+      card -= (load ^ newload)>> index;
+      ((uint64_t *) bitset)[offset] = newload;
       list ++;
     }
     return card;
