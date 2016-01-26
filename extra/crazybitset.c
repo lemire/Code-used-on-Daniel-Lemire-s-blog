@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <assert.h>
 #define RDTSC_START(cycles)  do {                                       \
         uint32_t cyc_high, cyc_low;                                     \
         __asm volatile("cpuid\n"                                        \
@@ -867,7 +867,53 @@ int demo(int align) {
     return 0;
 }
 
+// stolen from so
+void printBits(size_t const size, void const * const ptr)
+{
+    unsigned char *b = (unsigned char*) ptr;
+    unsigned char byte;
+    int i, j;
+
+    for (i=size-1;i>=0;i--)
+    {
+        for (j=7;j>=0;j--)
+        {
+            byte = b[i] & (1<<j);
+            byte >>= j;
+            printf("%u", byte);
+        }
+    }
+    puts("");
+}
+
+int test() {
+  for(uint16_t x = 0; x < 64;++x) {
+    uint64_t base = 0;
+    int card;
+    // first we test with "regular"
+    card = bitset_set_list_regular((uint8_t* )&base, 0,(uint16_t *) &x, 1);
+    assert(card == 1); // card is ok.
+    assert((base >> x) == 1);
+    printf("Setting the %d th bit with the regular version:",x);
+    printBits(sizeof(base),(void const * const) &base);
+     // next we test with Nate's optimized version
+    base = 0;
+    card = bitset_set_list((uint8_t* )&base, 0,(uint16_t *) &x, 1);
+    assert(card == 1); // card is ok.
+    printf("Setting the %d th bit with Nate's version:",x);
+    printBits(sizeof(base),(void const * const) &base);
+    if((base >> x) != 1) {
+       printf("starting with 8 zero bytes, I tried to set bit %d to 1. I got back ",x);
+       printBits(sizeof(base),(void const * const) &base);
+       printf("\n");
+       return -1;
+    }
+  }
+  return 0;
+}
+
 int main(/* int argc, char **argv */) {
+    if(test()!=0) return -1;
     demo(32);
     demo(4096);
     return 0;
