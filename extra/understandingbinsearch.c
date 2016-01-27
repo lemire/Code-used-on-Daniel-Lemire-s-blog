@@ -129,9 +129,15 @@ int32_t __attribute__ ((noinline)) linear(uint16_t * array, int32_t lenarray, ui
 }
 
 int32_t __attribute__ ((noinline)) mixed(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
-    if(lenarray <= 128) return linear (array,lenarray,ikey);
+    if(lenarray < 128) return linear (array,lenarray,ikey);
     return binary_search(array,lenarray,ikey);
 }
+
+int32_t __attribute__ ((noinline)) mixedhybrid(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
+    if(lenarray < 128) return linear (array,lenarray,ikey);
+    return binary_search32(array,lenarray,ikey);
+}
+
 
 
 int32_t __attribute__ ((noinline)) branchless_binary_search(uint16_t* source, int32_t n, uint16_t target) {
@@ -239,16 +245,17 @@ void demo() {
     printf("# N, prefetched seek, fresh seek  (in cycles) then same values normalized by tree height\n");
     for(size_t N = 1; N < 4096; N*=2) {
             value_t * source = create_sorted_array(N);
-            float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,
+            float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,cycle_per_op_mixedhybrid,
                   cycle_per_op_branchless,cycle_per_op_branchless_wp;
             BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty);
             BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush);
             BEST_TIME_PRE_ARRAY(source, N, binary_search32,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush32);
             BEST_TIME_PRE_ARRAY(source, N, mixed,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixed);
+            BEST_TIME_PRE_ARRAY(source, N, mixedhybrid,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixedhybrid);
             BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless);
             BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
-            printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f branchless = %.2f branchless+prefetching = %.2f  \n",
-                   (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,
+            printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f  \n",
+                   (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
                    cycle_per_op_branchless,cycle_per_op_branchless_wp);
             free(source);
     }
