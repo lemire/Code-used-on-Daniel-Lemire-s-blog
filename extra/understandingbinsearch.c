@@ -1,4 +1,4 @@
-// gcc -std=c99 -O3 -o bs understandingbinsearch.c -Wall -Wextra -lm
+// gcc -std=c99 -O3 -o understandingbinsearch understandingbinsearch.c -Wall -Wextra -lm
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -185,14 +185,13 @@ int32_t  __attribute__ ((noinline)) return_middle_value(uint16_t * array, int32_
  * first parameter "base" and various parameters from "testvalues" (there
  * are nbrtestvalues), calling pre on base between tests
  */
-#define BEST_TIME_PRE_ARRAY(base, length, test, pre,  repeat, testvalues, nbrtestvalues, cycle_per_op)        \
+#define BEST_TIME_PRE_ARRAY(base, length, test, pre,   testvalues, nbrtestvalues, cycle_per_op)        \
     do {                                                                                \
         fflush(NULL);                                                                   \
         uint64_t cycles_start, cycles_final, cycles_diff;                               \
         uint64_t min_diff = (uint64_t)-1;                                               \
         int sum = 0;                                                                    \
         for (size_t j = 0; j < nbrtestvalues; j++) {                                    \
-         for (int i = 0; i < repeat; i++) {                                             \
             pre(base,length);                                                           \
             pre(base,length);                                                           \
             __asm volatile("" ::: /* pretend to clobber */ "memory");                   \
@@ -201,7 +200,6 @@ int32_t  __attribute__ ((noinline)) return_middle_value(uint16_t * array, int32_
             RDTSC_FINAL(cycles_final);                                                  \
             cycles_diff = (cycles_final - cycles_start);                                \
             if (cycles_diff < min_diff) min_diff = cycles_diff;                         \
-          }                                                                             \
           sum += cycles_diff;                                                           \
         }                                                                               \
         uint64_t S = nbrtestvalues;                                                     \
@@ -219,10 +217,10 @@ void demo() {
     value_t * source = create_sorted_array(N);
     float cycle_per_op_empty, cycle_per_op_flush, 
        cycle_per_op_branchless,cycle_per_op_branchless_wp;
-    BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_empty);
-    BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_flush);
-    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_branchless);
-    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,  repeat, testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
+    BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty);
+    BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush);
+    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless);
+    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
       printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f  branchless = %.2f branchless+prefetching = %.2f  \n", 
       (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,
         cycle_per_op_branchless,cycle_per_op_branchless_wp);    
