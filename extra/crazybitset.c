@@ -57,7 +57,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             if (cycles_diff < min_diff) min_diff = cycles_diff;         \
         }                                                               \
         global_rdtsc_overhead = min_diff;                               \
-        printf("rdtsc_overhead set to %ld\n", global_rdtsc_overhead);   \
+        printf("rdtsc_overhead set to %ld\n", (long)global_rdtsc_overhead);   \
     } while (0)                                                         \
 
 #define RDTSC_LOOP(test, answer, repeat, num_vecs)                      \
@@ -84,10 +84,10 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
         else min_diff = min_diff - global_rdtsc_overhead;               \
         float cycles_per_vec = min_diff / (double)(num_vecs);           \
         printf(" %.2f cycles per vector", cycles_per_vec);              \
-        printf(" (%ld cycs / %ld vecs)", min_diff, (uint64_t) num_vecs); \
+        printf(" (%ld cycs / %ld vecs)", (long) min_diff, (long) num_vecs); \
         if (wrong_answer) printf(" ERROR: expected %ld, got %ld",       \
-                                 (uint64_t)answer, (uint64_t)result);   \
-        else printf(" %10ld OK", (uint64_t)result);                      \
+                                 (long)answer, (long)result);   \
+        else printf(" %10ld OK", (long)result);                      \
         printf("\n");							\
         fflush(NULL);							\
         } while (0)
@@ -250,20 +250,20 @@ uint64_t bitset_set_list_regular(void *bitset, uint64_t card,
     return card;
 }
 
+
+// FUTURE: working with 16-bit words rather than 64-bit may have less
+// chance of causing 'interference' between writes and future reads
 uint64_t bitset_set_list(void *bitset, uint64_t card,
                          uint16_t *list, uint64_t length) {
     uint64_t offset, load, pos;
-    uint64_t shift = 3;
+    uint64_t shift = 6;
     uint16_t *end = list + length;
-
-    IACA_START;
-#if 1
     __asm volatile("1:\n"
                    "movzwq (%[list]), %[pos]\n"
                    "shrx %[shift], %[pos], %[offset]\n"
-                   "movzbq (%[bitset],%[offset],1), %[load]\n"
+                   "mov (%[bitset],%[offset],8), %[load]\n"
                    "bts %[pos], %[load]\n"
-                   "mov %b[load], (%[bitset],%[offset],1)\n"
+                   "mov %[load], (%[bitset],%[offset],8)\n"
                    "sbb $-1, %[card]\n"
                    "add $2, %[list]\n"
                    "cmp %[list], %[end]\n"
@@ -276,28 +276,6 @@ uint64_t bitset_set_list(void *bitset, uint64_t card,
                    [end] "r" (end),
                    [bitset] "r" (bitset),
                    [shift] "r" (shift));
-#else
-    /* seems like this should be slightly faster, but it's not */
-    int64_t neg = -length;
-    __asm volatile("1:\n"
-                   "movzwq (%[end],%[neg],2), %[pos]\n"
-                   "shrx %[shift], %[pos], %[offset]\n"
-                   "movzbq (%[bitset],%[offset],1), %[load]\n"
-                   "bts %[pos], %[load]\n"
-                   "mov %b[load], (%[bitset],%[offset],1)\n"
-                   "sbb $-1, %[card]\n"
-                   "inc %[neg]\n"
-                   "jnz 1b" :
-                   [card] "+&r" (card),
-                   [neg] "+&r" (neg),
-                   [load] "=&r" (load),
-                   [pos] "=&r" (pos),
-                   [offset] "=&r" (offset) :
-                   [end] "r" (end),
-                   [bitset] "r" (bitset),
-                   [shift] "r" (shift));
-#endif
-    IACA_END;
     return card;
 }
 
@@ -320,22 +298,17 @@ uint64_t bitset_clear_list_regular(void *bitset, uint64_t card,
 
 
 
-// presumption here is that moving 8-bit pieces  will have less
-// chance of causing 'interference' between writes and future reads
 uint64_t bitset_clear_list(void *bitset, uint64_t card,
                            uint16_t *list, uint64_t length) {
     uint64_t offset, load, pos;
-    uint64_t shift = 3;
+    uint64_t shift = 6;
     uint16_t *end = list + length;
-
-
-    IACA_START;
     __asm volatile("1:\n"
                    "movzwq (%[list]), %[pos]\n"
                    "shrx %[shift], %[pos], %[offset]\n"
-                   "movzbq (%[bitset],%[offset],1), %[load]\n"
+                   "mov (%[bitset],%[offset],8), %[load]\n"
                    "btr %[pos], %[load]\n"
-                   "mov %b[load], (%[bitset],%[offset],1)\n"
+                   "mov %[load], (%[bitset],%[offset],8)\n"
                    "sbb $0, %[card]\n"
                    "add $2, %[list]\n"
                    "cmp %[list], %[end]\n"
@@ -347,8 +320,8 @@ uint64_t bitset_clear_list(void *bitset, uint64_t card,
                    [offset] "=&r" (offset) :
                    [end] "r" (end),
                    [bitset] "r" (bitset),
-                   [shift] "r" (shift));
-    IACA_END;
+                   [shift] "r" (shift) :
+                   /* clobbers */ "memory");
     return card;
 }
 
@@ -679,7 +652,7 @@ int bitset_container_or_nocard( uint8_t *array_1,
                               uint8_t *array_2,
                               uint8_t *out) {
     const int innerloop = 8;
-    
+
     for (size_t i = 0; i < BITSET_CONTAINER_SIZE_IN_WORDS / 4; i+=innerloop) {
         __m256i A1, A2, AO;
         A1 = _mm256_lddqu_si256((__m256i *)(array_1));
@@ -727,72 +700,72 @@ int bitset_container_or_nocard( uint8_t *array_1,
         array_2 += 256;
     }
     return -1 ;
-}                                                                  
-/* next, a version that updates cardinality*/                           
-int bitset_container_or_card( uint8_t *array_1,          
-                               uint8_t *array_2,          
-                              uint8_t *out) {                
-    const __m256i shuf =                                                
-        _mm256_setr_epi8(0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 
-                         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4); 
-    const __m256i  mask = _mm256_set1_epi8(0x0f);                       
-    __m256i total = _mm256_setzero_si256();                             
-    __m256i zero = _mm256_setzero_si256();                              
-    for (size_t idx = 0; idx < 256; idx += 4) {                         
-        __m256i A1, A2, ymm1, ymm2;                                     
-       __m256i innertotal = _mm256_setzero_si256();                    
-        A1 = _mm256_lddqu_si256((__m256i *)array_1 + idx + 0);          
-        A2 = _mm256_lddqu_si256((__m256i *)array_2 + idx + 0);          
-        ymm1 = _mm256_or_si256(A2, A1);                                   
-        _mm256_storeu_si256((__m256i *)out + idx + 0, ymm1);            
-        ymm2 = _mm256_srli_epi32(ymm1,4);                               
-        ymm1 = _mm256_and_si256(ymm1,mask);                             
-        ymm2 = _mm256_and_si256(ymm2,mask);                             
-        ymm1 = _mm256_shuffle_epi8(shuf,ymm1);                          
-        ymm2 = _mm256_shuffle_epi8(shuf,ymm2);                          
-        innertotal = _mm256_add_epi8(innertotal,ymm1);                  
-        innertotal = _mm256_add_epi8(innertotal,ymm2);                  
-        A1 = _mm256_lddqu_si256((__m256i *)array_1 + idx + 1);          
-        A2 = _mm256_lddqu_si256((__m256i *)array_2 + idx + 1);          
-        ymm1 = _mm256_or_si256(A2, A1);                                   
-        _mm256_storeu_si256((__m256i *)out + idx + 1, ymm1);            
-        ymm2 = _mm256_srli_epi32(ymm1,4);                               
-        ymm1 = _mm256_and_si256(ymm1,mask);                             
-        ymm2 = _mm256_and_si256(ymm2,mask);                             
-        ymm1 = _mm256_shuffle_epi8(shuf,ymm1);                          
-        ymm2 = _mm256_shuffle_epi8(shuf,ymm2);                          
-        innertotal = _mm256_add_epi8(innertotal,ymm1);                  
-        innertotal = _mm256_add_epi8(innertotal,ymm2);                  
-        A1 = _mm256_lddqu_si256((__m256i *)array_1 + idx + 2);          
-        A2 = _mm256_lddqu_si256((__m256i *)array_2 + idx + 2);          
-        ymm1 = _mm256_or_si256(A2, A1);                                   
-        _mm256_storeu_si256((__m256i *)out + idx + 2, ymm1);            
-        ymm2 = _mm256_srli_epi32(ymm1,4);                               
-        ymm1 = _mm256_and_si256(ymm1,mask);                             
-        ymm2 = _mm256_and_si256(ymm2,mask);                             
-        ymm1 = _mm256_shuffle_epi8(shuf,ymm1);                          
-        ymm2 = _mm256_shuffle_epi8(shuf,ymm2);                          
-        innertotal = _mm256_add_epi8(innertotal,ymm1);                  
-        innertotal = _mm256_add_epi8(innertotal,ymm2);                  
-        A1 = _mm256_lddqu_si256((__m256i *)array_1 + idx + 3);          
-        A2 = _mm256_lddqu_si256((__m256i *)array_2 + idx + 3);          
-        ymm1 = _mm256_or_si256(A2, A1);                                   
-        _mm256_storeu_si256((__m256i *)out + idx + 3, ymm1);            
-        ymm2 = _mm256_srli_epi32(ymm1,4);                               
-        ymm1 = _mm256_and_si256(ymm1,mask);                             
-        ymm2 = _mm256_and_si256(ymm2,mask);                             
-        ymm1 = _mm256_shuffle_epi8(shuf,ymm1);                          
-        ymm2 = _mm256_shuffle_epi8(shuf,ymm2);                          
-        innertotal = _mm256_add_epi8(innertotal,ymm1);                  
-        innertotal = _mm256_add_epi8(innertotal,ymm2);                  
-        innertotal = _mm256_sad_epu8(zero,innertotal);                  
-        total= _mm256_add_epi64(total,innertotal);                      
-    }                                                                   
-    int cardinality = _mm256_extract_epi64(total,0) +                  
-        _mm256_extract_epi64(total,1) +                                 
-        _mm256_extract_epi64(total,2) +                                 
-        _mm256_extract_epi64(total,3);                                  
-    return cardinality;                                            
+}
+/* next, a version that updates cardinality*/
+int bitset_container_or_card( uint8_t *array_1,
+                               uint8_t *array_2,
+                              uint8_t *out) {
+    const __m256i shuf =
+        _mm256_setr_epi8(0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
+                         0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4);
+    const __m256i  mask = _mm256_set1_epi8(0x0f);
+    __m256i total = _mm256_setzero_si256();
+    __m256i zero = _mm256_setzero_si256();
+    for (size_t idx = 0; idx < 256; idx += 4) {
+        __m256i A1, A2, ymm1, ymm2;
+       __m256i innertotal = _mm256_setzero_si256();
+        A1 = _mm256_lddqu_si256((__m256i *)array_1 + idx + 0);
+        A2 = _mm256_lddqu_si256((__m256i *)array_2 + idx + 0);
+        ymm1 = _mm256_or_si256(A2, A1);
+        _mm256_storeu_si256((__m256i *)out + idx + 0, ymm1);
+        ymm2 = _mm256_srli_epi32(ymm1,4);
+        ymm1 = _mm256_and_si256(ymm1,mask);
+        ymm2 = _mm256_and_si256(ymm2,mask);
+        ymm1 = _mm256_shuffle_epi8(shuf,ymm1);
+        ymm2 = _mm256_shuffle_epi8(shuf,ymm2);
+        innertotal = _mm256_add_epi8(innertotal,ymm1);
+        innertotal = _mm256_add_epi8(innertotal,ymm2);
+        A1 = _mm256_lddqu_si256((__m256i *)array_1 + idx + 1);
+        A2 = _mm256_lddqu_si256((__m256i *)array_2 + idx + 1);
+        ymm1 = _mm256_or_si256(A2, A1);
+        _mm256_storeu_si256((__m256i *)out + idx + 1, ymm1);
+        ymm2 = _mm256_srli_epi32(ymm1,4);
+        ymm1 = _mm256_and_si256(ymm1,mask);
+        ymm2 = _mm256_and_si256(ymm2,mask);
+        ymm1 = _mm256_shuffle_epi8(shuf,ymm1);
+        ymm2 = _mm256_shuffle_epi8(shuf,ymm2);
+        innertotal = _mm256_add_epi8(innertotal,ymm1);
+        innertotal = _mm256_add_epi8(innertotal,ymm2);
+        A1 = _mm256_lddqu_si256((__m256i *)array_1 + idx + 2);
+        A2 = _mm256_lddqu_si256((__m256i *)array_2 + idx + 2);
+        ymm1 = _mm256_or_si256(A2, A1);
+        _mm256_storeu_si256((__m256i *)out + idx + 2, ymm1);
+        ymm2 = _mm256_srli_epi32(ymm1,4);
+        ymm1 = _mm256_and_si256(ymm1,mask);
+        ymm2 = _mm256_and_si256(ymm2,mask);
+        ymm1 = _mm256_shuffle_epi8(shuf,ymm1);
+        ymm2 = _mm256_shuffle_epi8(shuf,ymm2);
+        innertotal = _mm256_add_epi8(innertotal,ymm1);
+        innertotal = _mm256_add_epi8(innertotal,ymm2);
+        A1 = _mm256_lddqu_si256((__m256i *)array_1 + idx + 3);
+        A2 = _mm256_lddqu_si256((__m256i *)array_2 + idx + 3);
+        ymm1 = _mm256_or_si256(A2, A1);
+        _mm256_storeu_si256((__m256i *)out + idx + 3, ymm1);
+        ymm2 = _mm256_srli_epi32(ymm1,4);
+        ymm1 = _mm256_and_si256(ymm1,mask);
+        ymm2 = _mm256_and_si256(ymm2,mask);
+        ymm1 = _mm256_shuffle_epi8(shuf,ymm1);
+        ymm2 = _mm256_shuffle_epi8(shuf,ymm2);
+        innertotal = _mm256_add_epi8(innertotal,ymm1);
+        innertotal = _mm256_add_epi8(innertotal,ymm2);
+        innertotal = _mm256_sad_epu8(zero,innertotal);
+        total= _mm256_add_epi64(total,innertotal);
+    }
+    int cardinality = _mm256_extract_epi64(total,0) +
+        _mm256_extract_epi64(total,1) +
+        _mm256_extract_epi64(total,2) +
+        _mm256_extract_epi64(total,3);
+    return cardinality;
 }
 
 
@@ -832,11 +805,11 @@ int demo(int align) {
     uint64_t card;
     memset(out, 0x00, BITSET_BYTES);
     card = bitset_set_list(out, 0, list, 256);
-    if (card != 256) printf("Error: expected %ld, got %ld\n", 256L, card);
+    if (card != 256) printf("Error: expected %ld, got %ld\n", 256L, (long) card);
     TIMING_LOOP(bitset_set_list_regular(out, 256, list, 256), 256, REPEAT, 256);
     TIMING_LOOP(bitset_set_list(out, 256, list, 256), 256, REPEAT, 256);
     card = bitset_clear_list(out, 256, list, 256);
-    if (card != 0) printf("Error: expected %ld, got %ld\n", 0L, card);
+    if (card != 0) printf("Error: expected %ld, got %ld\n", 0L, (long) card);
     check_bytes(out, 0x00, BITSET_BYTES);
     TIMING_LOOP(bitset_clear_list_regular(out, 0, list, 256), 0, REPEAT, 256);
     TIMING_LOOP(bitset_clear_list(out, 0, list, 256), 0, REPEAT, 256);
@@ -894,14 +867,10 @@ int test() {
     card = bitset_set_list_regular((uint8_t* )&base, 0,(uint16_t *) &x, 1);
     assert(card == 1); // card is ok.
     assert((base >> x) == 1);
-    printf("Setting the %d th bit with the regular version:",x);
-    printBits(sizeof(base),(void const * const) &base);
      // next we test with Nate's optimized version
     base = 0;
     card = bitset_set_list((uint8_t* )&base, 0,(uint16_t *) &x, 1);
     assert(card == 1); // card is ok.
-    printf("Setting the %d th bit with Nate's version:",x);
-    printBits(sizeof(base),(void const * const) &base);
     if((base >> x) != 1) {
        printf("starting with 8 zero bytes, I tried to set bit %d to 1. I got back ",x);
        printBits(sizeof(base),(void const * const) &base);
