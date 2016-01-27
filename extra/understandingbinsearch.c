@@ -241,9 +241,13 @@ int32_t  __attribute__ ((noinline)) return_middle_value(uint16_t * array, int32_
 
 void demo() {
     size_t nbrtestvalues = 10000;
+    char buffer[4096];
+    size_t b = 0;
     value_t * testvalues = create_random_array(nbrtestvalues);
     printf("# N, prefetched seek, fresh seek  (in cycles) then same values normalized by tree height\n");
-    for(size_t N = 1; N < 4096; N*=2) {
+    float empty = 0, flush = 0, flush32 = 0, mixedt = 0, mixedhybridt =0 ,
+                  branchless = 0, branchless_wp = 0;
+     for(size_t N = 32; N < 4096*4; N*=2) {
             value_t * source = create_sorted_array(N);
             float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,cycle_per_op_mixedhybrid,
                   cycle_per_op_branchless,cycle_per_op_branchless_wp;
@@ -257,8 +261,19 @@ void demo() {
             printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f  \n",
                    (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
                    cycle_per_op_branchless,cycle_per_op_branchless_wp);
+            if(empty>0) b += sprintf(buffer+b," from N=%10d to N=%10d deltas func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f  \n",
+                      (int)(N/2),(int)N,cycle_per_op_empty-empty,cycle_per_op_flush-flush,cycle_per_op_flush32-flush32,cycle_per_op_mixed-mixedt, cycle_per_op_mixedhybrid-mixedhybridt,
+                      cycle_per_op_branchless-branchless,cycle_per_op_branchless_wp-branchless_wp);
+            empty =  cycle_per_op_empty;
+            flush =  cycle_per_op_flush;
+            flush32 = cycle_per_op_flush32;
+            mixedt = cycle_per_op_mixed;
+            mixedhybridt = cycle_per_op_mixedhybrid;
+            branchless = cycle_per_op_branchless;
+            branchless_wp = cycle_per_op_branchless_wp;
             free(source);
     }
+    printf("%s\n",buffer);
     free(testvalues);
 }
 int main() {
