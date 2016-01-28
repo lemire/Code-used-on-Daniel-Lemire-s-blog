@@ -324,7 +324,6 @@ int32_t  __attribute__ ((noinline)) simd_linear_search32(uint16_t * array, int32
             cycles_diff = (cycles_final - cycles_start);                                \
             if (cycles_diff < min_diff) min_diff = cycles_diff;                         \
             sum += cycles_diff;                                                           \
-            if(re > (int32_t) length) {printf("error");break;}                          \
         }                                                                               \
         uint64_t S = nbrtestvalues;                                                     \
         cycle_per_op = sum / (double)S;                                                 \
