@@ -1,9 +1,10 @@
-// gcc-mavx2 -mbmi -std=c99 -O3 -o understandingbinsearch understandingbinsearch.c -Wall -Wextra -lm
+// gcc -mavx2 -mbmi -std=c99 -O3 -o understandingbinsearch understandingbinsearch.c -Wall -Wextra -lm
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <math.h>
+#include <assert.h>
 #include <x86intrin.h>
 
 typedef uint16_t value_t;
@@ -123,10 +124,10 @@ int32_t __attribute__ ((noinline)) linear(uint16_t * array, int32_t lenarray, ui
         uint16_t val = array[low];
         if(val >= ikey) {
             if(val == ikey) return low;
-            break;
+            else return -(low + 1);
         }
     }
-    return -(low + 1);
+    return -(lenarray + 1);
 }
 
 int32_t __attribute__ ((noinline)) mixed(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
@@ -183,16 +184,6 @@ int32_t  __attribute__ ((noinline)) return_middle_value(uint16_t * array, int32_
     int32_t middleIndex = (low+high) >> 1;
     int32_t middleValue = array[middleIndex];
     return middleValue;
-}
-int32_t  __attribute__ ((noinline)) linear_search(uint16_t * array, int32_t length, uint16_t ikey )  {
-  for(int32_t k = 0; k  < length; k ++) {
-    uint16_t val = array[k];
-    if(val >= ikey) {
-      if(val == ikey) return k;
-      else return - k - 1;
-    }
-  }
-  return - length - 1;
 }
 
 int32_t  __attribute__ ((noinline)) simd_linear_search(uint16_t * array, int32_t length, uint16_t ikey )  {
@@ -273,16 +264,37 @@ int32_t  __attribute__ ((noinline)) simd_linear_search(uint16_t * array, int32_t
             pre(base,length);                                                           \
             __asm volatile("" ::: /* pretend to clobber */ "memory");                   \
             RDTSC_START(cycles_start);                                                  \
-            test(base,length,testvalues[j]);                                            \
+            int32_t re = test(base,length,testvalues[j]);                                            \
             RDTSC_FINAL(cycles_final);                                                  \
             cycles_diff = (cycles_final - cycles_start);                                \
             if (cycles_diff < min_diff) min_diff = cycles_diff;                         \
-          sum += cycles_diff;                                                           \
+            sum += cycles_diff;                                                           \
+            if(re > (int32_t) length) {printf("error");break;}                          \
         }                                                                               \
         uint64_t S = nbrtestvalues;                                                     \
         cycle_per_op = sum / (double)S;                                                 \
     } while (0)
 
+#define ASSERT_PRE_ARRAY(base, length, test,   testvalues, nbrtestvalues)        \
+    do {                                                                                \
+        printf ("testing %s :  ", #test);\
+        int error = 0; \
+        for (size_t j = 0; j < nbrtestvalues; j++) {                                    \
+            int32_t re = test(base,length,testvalues[j]);                                            \
+            if(re >= 0) {error=1; break;}                               \
+            else {                                                                      \
+               int32_t ip = -re +1;                                                    \
+               if(ip == (int32_t) length) {error=2; break;}                   \
+               else {error=3;break;   }                                  \
+            }                                                                             \
+        }                                                                               \
+        if(error == 0) printf("OK"); else printf("error %d",error); \
+        printf("\n");\
+     } while (0)
+
+
+
+        
 
 
 void demo() {
@@ -297,14 +309,15 @@ void demo() {
             value_t * source = create_sorted_array(N);
             float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,cycle_per_op_mixedhybrid,
                   cycle_per_op_branchless,cycle_per_op_branchless_wp, cycle_per_op_linear, cycle_per_op_simdlinear;
-            BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty);
+ASSERT_PRE_ARRAY(source,N,binary_search,testvalues,nbrtestvalues);        
+    BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty);
             BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush);
             BEST_TIME_PRE_ARRAY(source, N, binary_search32,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush32);
             BEST_TIME_PRE_ARRAY(source, N, mixed,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixed);
             BEST_TIME_PRE_ARRAY(source, N, mixedhybrid,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixedhybrid);
             BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless);
             BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
-            BEST_TIME_PRE_ARRAY(source, N, linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear);
+            BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear);
             BEST_TIME_PRE_ARRAY(source, N, simd_linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear);
             printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f simdlinear = %2.f \n",
                    (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
