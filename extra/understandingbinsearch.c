@@ -117,6 +117,35 @@ int32_t __attribute__ ((noinline)) binary_search32(uint16_t * array, int32_t len
     }
     return -(low + 1);
 }
+int32_t __attribute__ ((noinline)) binary_search256_32(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
+    int32_t low = 0;
+    int32_t high = lenarray - 1;
+    while( low + 256 <= high) {
+        int32_t middleIndex = (low+high) >> 1;
+        int32_t middleValue = array[middleIndex];
+        if (middleValue < ikey) {
+            low = middleIndex + 1;
+        } else if (middleValue > ikey) {
+            high = middleIndex - 1;
+        } else {
+            return middleIndex;
+        }
+    }
+    for(; low + 15 <= high; low += 16) {
+        uint16_t val = array[low + 15];
+        if(val >= ikey) {
+          break;
+        }
+    }
+    for(; low<= high; ++low) {
+        uint16_t val = array[low];
+        if(val >= ikey) {
+            if(val == ikey) return low;
+            break;
+        }
+    }
+    return -(low + 1);
+}
 
 int32_t __attribute__ ((noinline)) linear(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
     int32_t low = 0;
@@ -468,7 +497,8 @@ void demo() {
         ASSERT_PRE_ARRAY(source,N,linear16,testvalues,nbrtestvalues);
         ASSERT_PRE_ARRAY(source,N,linear128_16,testvalues,nbrtestvalues);
 
-        float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,cycle_per_op_mixedhybrid,
+        float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_flush256_32,
+               cycle_per_op_mixed,cycle_per_op_mixedhybrid,
               cycle_per_op_branchless,cycle_per_op_branchless_wp, cycle_per_op_linear,
               cycle_per_op_linear16, cycle_per_op_linear128_16, cycle_per_op_linear256_16, cycle_per_op_linear256_32,
               cycle_per_op_simdlinear, cycle_per_op_simdlinear32;
@@ -476,6 +506,7 @@ void demo() {
         BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty, bogus);
         BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush, bogus);
         BEST_TIME_PRE_ARRAY(source, N, binary_search32,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush32, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, binary_search256_32,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush256_32, bogus);
         BEST_TIME_PRE_ARRAY(source, N, mixed,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixed, bogus);
         BEST_TIME_PRE_ARRAY(source, N, mixedhybrid,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixedhybrid, bogus);
         BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless, bogus);
@@ -489,8 +520,8 @@ void demo() {
         BEST_TIME_PRE_ARRAY(source, N, simd_linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear, bogus);
         BEST_TIME_PRE_ARRAY(source, N, simd_linear_search32, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear32, bogus);
 
-        printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f linear16 = %2.f linear128_16 = %2.f linear256_16 = %2.f linear256_32 = %2.f simdlinear = %2.f simdlinear32 = %2.f \n",
-               (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
+        printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f branchy256_16=%.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f linear16 = %2.f linear128_16 = %2.f linear256_16 = %2.f linear256_32 = %2.f simdlinear = %2.f simdlinear32 = %2.f \n",
+               (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_flush256_32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
                cycle_per_op_branchless,cycle_per_op_branchless_wp,cycle_per_op_linear,cycle_per_op_linear16,
                cycle_per_op_linear128_16,cycle_per_op_linear256_16,cycle_per_op_linear256_32,
                cycle_per_op_simdlinear,cycle_per_op_simdlinear32);
