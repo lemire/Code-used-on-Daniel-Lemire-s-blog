@@ -527,7 +527,7 @@ void demo() {
     value_t * testvalues = create_random_array(nbrtestvalues);
     printf("# N, prefetched seek, fresh seek  (in cycles) then same values normalized by tree height\n");
     int32_t bogus = 0;
-    for(double Nd = 32; Nd <= 4096; Nd*=sqrt(2)) {
+    for(double Nd = 32; Nd <= 4100; Nd*=sqrt(2)) {
         size_t N = round(Nd);
         value_t * source = create_sorted_array(N);
         ASSERT_PRE_ARRAY(source,N,linear,testvalues,nbrtestvalues);
