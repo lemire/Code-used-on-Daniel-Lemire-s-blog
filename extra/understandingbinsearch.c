@@ -308,7 +308,7 @@ int32_t  __attribute__ ((noinline)) simd_linear_search32(uint16_t * array, int32
  * first parameter "base" and various parameters from "testvalues" (there
  * are nbrtestvalues), calling pre on base between tests
  */
-#define BEST_TIME_PRE_ARRAY(base, length, test, pre,   testvalues, nbrtestvalues, cycle_per_op)        \
+#define BEST_TIME_PRE_ARRAY(base, length, test, pre,   testvalues, nbrtestvalues, cycle_per_op, bogus)        \
     do {                                                                                \
         fflush(NULL);                                                                   \
         uint64_t cycles_start, cycles_final, cycles_diff;                               \
@@ -319,7 +319,7 @@ int32_t  __attribute__ ((noinline)) simd_linear_search32(uint16_t * array, int32
             pre(base,length);                                                           \
             __asm volatile("" ::: /* pretend to clobber */ "memory");                   \
             RDTSC_START(cycles_start);                                                  \
-            int32_t re = test(base,length,testvalues[j]);                                            \
+            bogus += test(base,length,testvalues[j]);                                            \
             RDTSC_FINAL(cycles_final);                                                  \
             cycles_diff = (cycles_final - cycles_start);                                \
             if (cycles_diff < min_diff) min_diff = cycles_diff;                         \
@@ -369,6 +369,7 @@ void demo() {
     size_t nbrtestvalues = 10000;
     value_t * testvalues = create_random_array(nbrtestvalues);
     printf("# N, prefetched seek, fresh seek  (in cycles) then same values normalized by tree height\n");
+    int32_t bogus = 0;
     for(size_t N = 32; N < 4096*4; N*=2) {
         value_t * source = create_sorted_array(N);
         ASSERT_PRE_ARRAY(source,N,linear,testvalues,nbrtestvalues);
@@ -382,22 +383,23 @@ void demo() {
         float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,cycle_per_op_mixedhybrid,
               cycle_per_op_branchless,cycle_per_op_branchless_wp, cycle_per_op_linear, cycle_per_op_simdlinear, cycle_per_op_simdlinear32;
 
-        BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty);
-        BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush);
-        BEST_TIME_PRE_ARRAY(source, N, binary_search32,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush32);
-        BEST_TIME_PRE_ARRAY(source, N, mixed,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixed);
-        BEST_TIME_PRE_ARRAY(source, N, mixedhybrid,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixedhybrid);
-        BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless);
-        BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
-        BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear);
-        BEST_TIME_PRE_ARRAY(source, N, simd_linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear);
-        BEST_TIME_PRE_ARRAY(source, N, simd_linear_search32, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear32);
+        BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, binary_search32,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush32, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, mixed,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixed, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, mixedhybrid,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixedhybrid, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless_wp, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, simd_linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, simd_linear_search32, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear32, bogus);
 
         printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f simdlinear = %2.f simdlinear32 = %2.f \n",
                (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
                cycle_per_op_branchless,cycle_per_op_branchless_wp,cycle_per_op_linear,cycle_per_op_simdlinear,cycle_per_op_simdlinear32);
         free(source);
     }
+    printf("bogus = %d \n",bogus);
     free(testvalues);
 }
 int main() {
