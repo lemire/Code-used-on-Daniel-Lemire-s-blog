@@ -84,12 +84,12 @@ int32_t __attribute__ ((noinline)) binary_search(uint16_t * array, int32_t lenar
 
 int32_t __attribute__ ((noinline)) linear256_16(uint16_t * array, int32_t length, uint16_t ikey )  {
     int32_t k = 0;
-    for(; k + 255 <= length; k += 256) {
+    for(; k + 255 < length; k += 256) {
         if(array[k + 255] >= ikey) {
             break;
         }
     }
-    for(; k + 15 <= length; k += 16) {
+    for(; k + 15 < length; k += 16) {
         if(array[k + 15] >= ikey) {
             break;
         }

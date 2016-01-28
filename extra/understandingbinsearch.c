@@ -161,12 +161,12 @@ int32_t __attribute__ ((noinline)) linear(uint16_t * array, int32_t lenarray, ui
 
 int32_t __attribute__ ((noinline)) linear128_16(uint16_t * array, int32_t length, uint16_t ikey )  {
     int32_t k = 0;
-    for(; k + 127 <= length; k += 128) {
+    for(; k + 127 < length; k += 128) {
         if(array[k + 127] >= ikey) {
             break;
         }
     }
-    for(; k + 15 <= length; k += 16) {
+    for(; k + 15 < length; k += 16) {
         if(array[k + 15] >= ikey) {
             break;
         }
@@ -183,12 +183,12 @@ int32_t __attribute__ ((noinline)) linear128_16(uint16_t * array, int32_t length
 
 int32_t __attribute__ ((noinline)) linear256_16(uint16_t * array, int32_t length, uint16_t ikey )  {
     int32_t k = 0;
-    for(; k + 255 <= length; k += 256) {
+    for(; k + 255 < length; k += 256) {
         if(array[k + 255] >= ikey) {
             break;
         }
     }
-    for(; k + 15 <= length; k += 16) {
+    for(; k + 15 < length; k += 16) {
         if(array[k + 15] >= ikey) {
             break;
         }
@@ -206,12 +206,12 @@ int32_t __attribute__ ((noinline)) linear256_16(uint16_t * array, int32_t length
 
 int32_t __attribute__ ((noinline)) simdlinear256_16(uint16_t * array, int32_t length, uint16_t ikey )  {
     int32_t k = 0;
-    for(; k + 255 <= length; k += 256) {
+    for(; k + 255 < length; k += 256) {
         if(array[k + 255] >= ikey) {
             break;
         }
     }
-    for(; k + 15 <= length; k += 16) {
+    for(; k + 15 < length; k += 16) {
         if(array[k + 15] >= ikey) {
             break;
         }
@@ -247,12 +247,12 @@ int32_t __attribute__ ((noinline)) simdlinear256_16(uint16_t * array, int32_t le
 
 int32_t __attribute__ ((noinline)) linear256_32(uint16_t * array, int32_t length, uint16_t ikey )  {
     int32_t k = 0;
-    for(; k + 255 <= length; k += 256) {
+    for(; k + 255 < length; k += 256) {
         if(array[k + 255] >= ikey) {
             break;
         }
     }
-    for(; k + 31 <= length; k += 32) {
+    for(; k + 31 < length; k += 32) {
         if(array[k + 31] >= ikey) {
             break;
         }
