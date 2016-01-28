@@ -187,40 +187,95 @@ int32_t  __attribute__ ((noinline)) return_middle_value(uint16_t * array, int32_
 }
 
 int32_t  __attribute__ ((noinline)) simd_linear_search(uint16_t * array, int32_t length, uint16_t ikey )  {
-  uint16_t offset = 1<<15;
-  __m256i target = _mm256_set1_epi16(ikey + offset);
-  __m256i conv = _mm256_set1_epi16(offset);
+    uint16_t offset = 1<<15;
+    __m256i target = _mm256_set1_epi16(ikey + offset);
+    __m256i conv = _mm256_set1_epi16(offset);
 
-  const int32_t delta = sizeof(__m256i) / sizeof(uint16_t);// = 16
-  const int32_t deltaminusone = sizeof(__m256i) / sizeof(uint16_t)  - 1;
-  int32_t k = 0;
-  for(; k + delta <= length; k += delta) {
-    if(array[k + deltaminusone] >= ikey) {// when we found a block of 16 values, we examine it in one go
-      __m256i data = _mm256_lddqu_si256((const __m256i *) (array + k));
-      data = _mm256_add_epi16(data,conv);
-      __m256i m = _mm256_cmpeq_epi16(data,target);
-      int32_t bits = _mm256_movemask_epi8(m);
-      //todo: check that this is correct
-      if(bits != 0) {
-        int32_t bit_pos = __builtin_ffs(bits) / 2;
-        return k + bit_pos;
-      } else {
-        m = _mm256_cmpgt_epi16(data,target);
-        bits = _mm256_movemask_epi8(m);
-        int32_t bit_pos = _tzcnt_u32(bits)  / 2;
-        return - k - bit_pos - 1;
-      }
+    const int32_t delta = sizeof(__m256i) / sizeof(uint16_t);// = 16
+    const int32_t deltaminusone = delta  - 1;
+    int32_t k = 0;
+    for(; k + delta <= length; k += delta) {
+        if(array[k + deltaminusone] >= ikey) {// when we found a block of 16 values, we examine it in one go
+            __m256i data = _mm256_lddqu_si256((const __m256i *) (array + k));
+            data = _mm256_add_epi16(data,conv);
+            __m256i m = _mm256_cmpeq_epi16(data,target);
+            int32_t bits = _mm256_movemask_epi8(m);
+            //todo: check that this is correct
+            if(bits != 0) {
+                int32_t bit_pos = __builtin_ffs(bits) / 2;
+                return k + bit_pos;
+            } else {
+                m = _mm256_cmpgt_epi16(data,target);
+                bits = _mm256_movemask_epi8(m);
+                int32_t bit_pos = _tzcnt_u32(bits)  / 2;
+                return - k - bit_pos - 1;
+            }
+        }
     }
-  }
-  for(; k  < length; k ++) {
-    uint16_t val = array[k];
-    if(val >= ikey) {
-      if(val == ikey) return k;
-      else return - k - 1;
+    for(; k  < length; k ++) {
+        uint16_t val = array[k];
+        if(val >= ikey) {
+            if(val == ikey) return k;
+            else return - k - 1;
+        }
     }
-  }
-  return - length - 1;
+    return - length - 1;
 }
+
+int32_t  __attribute__ ((noinline)) simd_linear_search32(uint16_t * array, int32_t length, uint16_t ikey )  {
+    uint16_t offset = 1<<15;
+    __m256i target = _mm256_set1_epi16(ikey + offset);
+    __m256i conv = _mm256_set1_epi16(offset);
+
+    const int32_t delta = 2 * sizeof(__m256i) / sizeof(uint16_t);// = 32
+    const int32_t deltaminusone = delta  - 1;
+    int32_t k = 0;
+    for(; k + delta <= length; k += delta) {
+        if(array[k + deltaminusone] >= ikey) {// when we found a block of 16 values, we examine it in one go
+
+            __m256i data, m;
+            int32_t bits;
+            if(array[k + delta/2 - 1] >= ikey) {
+            data = _mm256_lddqu_si256((const __m256i *) (array + k));
+            data = _mm256_add_epi16(data,conv);
+            m = _mm256_cmpeq_epi16(data,target);
+            bits = _mm256_movemask_epi8(m);
+            if(bits != 0) {
+                int32_t bit_pos = __builtin_ffs(bits) / 2;
+                return k + bit_pos;
+            } else {
+                m = _mm256_cmpgt_epi16(data,target);
+                bits = _mm256_movemask_epi8(m);
+                int32_t bit_pos = _tzcnt_u32(bits)  / 2;
+                return - k - bit_pos - 1;
+            }
+          } else {
+            data = _mm256_lddqu_si256((const __m256i *) (array + k + delta/2));
+            data = _mm256_add_epi16(data,conv);
+            m = _mm256_cmpeq_epi16(data,target);
+            bits = _mm256_movemask_epi8(m);
+            if(bits != 0) {
+                int32_t bit_pos = __builtin_ffs(bits) / 2;
+                return k + delta/2 + bit_pos;
+            } else {
+                m = _mm256_cmpgt_epi16(data,target);
+                bits = _mm256_movemask_epi8(m);
+                int32_t bit_pos = _tzcnt_u32(bits)  / 2;
+                return - k - delta/2 - bit_pos - 1;
+            }
+            }
+        }
+    }
+    for(; k  < length; k ++) {
+        uint16_t val = array[k];
+        if(val >= ikey) {
+            if(val == ikey) return k;
+            else return - k - 1;
+        }
+    }
+    return - length - 1;
+}
+
 
 #define RDTSC_START(cycles)                                                   \
     do {                                                                      \
@@ -275,67 +330,75 @@ int32_t  __attribute__ ((noinline)) simd_linear_search(uint16_t * array, int32_t
         cycle_per_op = sum / (double)S;                                                 \
     } while (0)
 
-#define ASSERT_PRE_ARRAY(base, length, test,   testvalues, nbrtestvalues)        \
+#define ASSERT_PRE_ARRAY(base, length, test,   testvalues, nbrtestvalues)               \
     do {                                                                                \
-        printf ("testing %s :  ", #test);\
-        int error = 0; \
+        int error = 0;                                                                  \
         for (size_t j = 0; j < nbrtestvalues; j++) {                                    \
-            int32_t re = test(base,length,testvalues[j]);                                            \
-            if(re >= 0) {error=1; break;}                               \
-            else {                                                                      \
-               int32_t ip = -re +1;                                                    \
-               if(ip == (int32_t) length) {error=2; break;}                   \
-               else {error=3;break;   }                                  \
-            }                                                                             \
+            int32_t re = test(base,length,testvalues[j]);                               \
+            if(re >= 0) {                                                               \
+              if(base[re] != testvalues[j]) {                                           \
+                error=1; break;                                                         \
+              }                                                                         \
+            } else {                                                                    \
+               int32_t ip = -re - 1;                                                    \
+               if(ip < (int32_t) length) {                                              \
+                 if(base[ip] <= testvalues[j]) {                                        \
+                   printf(" Index returned is %d which points at %d for target %d. ",ip,base[ip],testvalues[j]);\
+                   error = 3;                                                           \
+                   break;                                                               \
+                 }                                                                      \
+               }                                                                        \
+               if( ip > 0 ){                                                            \
+                 if(base[ip - 1] >= testvalues[j]) {                                    \
+                   printf(" Index returned is %d which points at %d for target %d. ",ip,base[ip],testvalues[j]);\
+                  printf(" Previous index is %d which points at %d for target %d. ",ip-1,base[ip-1],testvalues[j]);\
+                   error = 4;                                                           \
+                   break;                                                               \
+                 }                                                                      \
+               }                                                                        \
+            }                                                                           \
         }                                                                               \
-        if(error == 0) printf("OK"); else printf("error %d",error); \
-        printf("\n");\
+        if(error != 0) printf("[%s error: %d]\n",#test,error);                     \
      } while (0)
 
 
 
-        
+
 
 
 void demo() {
     size_t nbrtestvalues = 10000;
-    char buffer[4096];
-    size_t b = 0;
     value_t * testvalues = create_random_array(nbrtestvalues);
     printf("# N, prefetched seek, fresh seek  (in cycles) then same values normalized by tree height\n");
-    float empty = 0, flush = 0, flush32 = 0, mixedt = 0, mixedhybridt =0 ,
-                  branchless = 0, branchless_wp = 0;
-     for(size_t N = 32; N < 4096*4; N*=2) {
-            value_t * source = create_sorted_array(N);
-            float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,cycle_per_op_mixedhybrid,
-                  cycle_per_op_branchless,cycle_per_op_branchless_wp, cycle_per_op_linear, cycle_per_op_simdlinear;
-ASSERT_PRE_ARRAY(source,N,binary_search,testvalues,nbrtestvalues);        
-    BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty);
-            BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush);
-            BEST_TIME_PRE_ARRAY(source, N, binary_search32,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush32);
-            BEST_TIME_PRE_ARRAY(source, N, mixed,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixed);
-            BEST_TIME_PRE_ARRAY(source, N, mixedhybrid,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixedhybrid);
-            BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless);
-            BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
-            BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear);
-            BEST_TIME_PRE_ARRAY(source, N, simd_linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear);
-            printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f simdlinear = %2.f \n",
-                   (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
-                   cycle_per_op_branchless,cycle_per_op_branchless_wp,cycle_per_op_linear,cycle_per_op_simdlinear);
-            if(empty>0) b += sprintf(buffer+b," from N=%10d to N=%10d deltas func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f  \n",
-                      (int)(N/2),(int)N,cycle_per_op_empty-empty,cycle_per_op_flush-flush,cycle_per_op_flush32-flush32,cycle_per_op_mixed-mixedt, cycle_per_op_mixedhybrid-mixedhybridt,
-                      cycle_per_op_branchless-branchless,cycle_per_op_branchless_wp-branchless_wp);
+    for(size_t N = 32; N < 4096*4; N*=2) {
+        value_t * source = create_sorted_array(N);
+        ASSERT_PRE_ARRAY(source,N,linear,testvalues,nbrtestvalues);
+        ASSERT_PRE_ARRAY(source,N,binary_search,testvalues,nbrtestvalues);
+        ASSERT_PRE_ARRAY(source,N,mixed,testvalues,nbrtestvalues);
+        ASSERT_PRE_ARRAY(source,N,mixedhybrid,testvalues,nbrtestvalues);
+        ASSERT_PRE_ARRAY(source,N,branchless_binary_search,testvalues,nbrtestvalues);
+        ASSERT_PRE_ARRAY(source,N,simd_linear_search,testvalues,nbrtestvalues);
+        ASSERT_PRE_ARRAY(source,N,simd_linear_search32,testvalues,nbrtestvalues);
 
-            empty =  cycle_per_op_empty;
-            flush =  cycle_per_op_flush;
-            flush32 = cycle_per_op_flush32;
-            mixedt = cycle_per_op_mixed;
-            mixedhybridt = cycle_per_op_mixedhybrid;
-            branchless = cycle_per_op_branchless;
-            branchless_wp = cycle_per_op_branchless_wp;
-            free(source);
+        float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,cycle_per_op_mixedhybrid,
+              cycle_per_op_branchless,cycle_per_op_branchless_wp, cycle_per_op_linear, cycle_per_op_simdlinear, cycle_per_op_simdlinear32;
+
+        BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty);
+        BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush);
+        BEST_TIME_PRE_ARRAY(source, N, binary_search32,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush32);
+        BEST_TIME_PRE_ARRAY(source, N, mixed,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixed);
+        BEST_TIME_PRE_ARRAY(source, N, mixedhybrid,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixedhybrid);
+        BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless);
+        BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
+        BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear);
+        BEST_TIME_PRE_ARRAY(source, N, simd_linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear);
+        BEST_TIME_PRE_ARRAY(source, N, simd_linear_search32, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear32);
+
+        printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f simdlinear = %2.f simdlinear32 = %2.f \n",
+               (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
+               cycle_per_op_branchless,cycle_per_op_branchless_wp,cycle_per_op_linear,cycle_per_op_simdlinear,cycle_per_op_simdlinear32);
+        free(source);
     }
-    printf("%s\n",buffer);
     free(testvalues);
 }
 int main() {
