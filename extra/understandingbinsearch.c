@@ -130,6 +130,48 @@ int32_t __attribute__ ((noinline)) linear(uint16_t * array, int32_t lenarray, ui
     return -(lenarray + 1);
 }
 
+int32_t __attribute__ ((noinline)) linear128_16(uint16_t * array, int32_t length, uint16_t ikey )  {
+  int32_t k = 0;
+  for(; k + 127 <= length; k += 128) {
+      if(array[k + 127] >= ikey) {
+        break;
+      }
+  }
+  for(; k + 15 <= length; k += 16) {
+      if(array[k + 15] >= ikey) {
+        break;
+      }
+  }
+  for(; k  < length; k ++) {
+      uint16_t val = array[k];
+      if(val >= ikey) {
+          if(val == ikey) return k;
+          else return - k - 1;
+      }
+  }
+  return - length - 1;
+}
+
+
+int32_t __attribute__ ((noinline)) linear16(uint16_t * array, int32_t length, uint16_t ikey )  {
+  int32_t k = 0;
+  const int32_t delta = 16;
+  const int32_t deltaminusone = delta - 1;
+  for(; k + delta <= length; k += delta) {
+      if(array[k + deltaminusone] >= ikey) {
+        break;
+      }
+  }
+  for(; k  < length; k ++) {
+      uint16_t val = array[k];
+      if(val >= ikey) {
+          if(val == ikey) return k;
+          else return - k - 1;
+      }
+  }
+  return - length - 1;
+}
+
 int32_t __attribute__ ((noinline)) mixed(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
     if(lenarray < 128) return linear (array,lenarray,ikey);
     return binary_search(array,lenarray,ikey);
@@ -379,9 +421,11 @@ void demo() {
         ASSERT_PRE_ARRAY(source,N,branchless_binary_search,testvalues,nbrtestvalues);
         ASSERT_PRE_ARRAY(source,N,simd_linear_search,testvalues,nbrtestvalues);
         ASSERT_PRE_ARRAY(source,N,simd_linear_search32,testvalues,nbrtestvalues);
+        ASSERT_PRE_ARRAY(source,N,linear16,testvalues,nbrtestvalues);
+        ASSERT_PRE_ARRAY(source,N,linear128_16,testvalues,nbrtestvalues);
 
         float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,cycle_per_op_mixedhybrid,
-              cycle_per_op_branchless,cycle_per_op_branchless_wp, cycle_per_op_linear, cycle_per_op_simdlinear, cycle_per_op_simdlinear32;
+              cycle_per_op_branchless,cycle_per_op_branchless_wp, cycle_per_op_linear, cycle_per_op_linear16,cycle_per_op_linear128_16, cycle_per_op_simdlinear, cycle_per_op_simdlinear32;
 
         BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty, bogus);
         BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush, bogus);
@@ -391,12 +435,15 @@ void demo() {
         BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless, bogus);
         BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless_wp, bogus);
         BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, linear16, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear16, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, linear128_16, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear128_16, bogus);
+
         BEST_TIME_PRE_ARRAY(source, N, simd_linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear, bogus);
         BEST_TIME_PRE_ARRAY(source, N, simd_linear_search32, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear32, bogus);
 
-        printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f simdlinear = %2.f simdlinear32 = %2.f \n",
+        printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f linear16 = %2.f linear128_16 = %2.f simdlinear = %2.f simdlinear32 = %2.f \n",
                (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
-               cycle_per_op_branchless,cycle_per_op_branchless_wp,cycle_per_op_linear,cycle_per_op_simdlinear,cycle_per_op_simdlinear32);
+               cycle_per_op_branchless,cycle_per_op_branchless_wp,cycle_per_op_linear,cycle_per_op_linear16,cycle_per_op_linear128_16,cycle_per_op_simdlinear,cycle_per_op_simdlinear32);
         free(source);
     }
     printf("bogus = %d \n",bogus);
