@@ -203,6 +203,48 @@ int32_t __attribute__ ((noinline)) linear256_16(uint16_t * array, int32_t length
   return - length - 1;
 }
 
+
+int32_t __attribute__ ((noinline)) simdlinear256_16(uint16_t * array, int32_t length, uint16_t ikey )  {
+  int32_t k = 0;
+  for(; k + 255 <= length; k += 256) {
+      if(array[k + 255] >= ikey) {
+        break;
+      }
+  }
+  for(; k + 15 <= length; k += 16) {
+      if(array[k + 15] >= ikey) {
+        break;
+      }
+  }
+  if(k + 15 < length) {
+    const uint16_t offset = 1<<15;
+    __m256i target = _mm256_set1_epi16(ikey + offset);
+    __m256i conv = _mm256_set1_epi16(offset);
+    __m256i data = _mm256_lddqu_si256((const __m256i *) (array + k));
+    data = _mm256_add_epi16(data,conv);
+    __m256i m = _mm256_cmpeq_epi16(data,target);
+    int32_t bits = _mm256_movemask_epi8(m);
+    if(bits != 0) {
+          int32_t bit_pos = __builtin_ffs(bits) / 2;
+          return k + bit_pos;
+    } else {
+          m = _mm256_cmpgt_epi16(data,target);
+          bits = _mm256_movemask_epi8(m);
+          int32_t bit_pos = _tzcnt_u32(bits)  / 2;
+          return - k - bit_pos - 1;
+    }
+  } // else
+  for(; k  < length; k ++) {
+      uint16_t val = array[k];
+      if(val >= ikey) {
+          if(val == ikey) return k;
+          else return - k - 1;
+      }
+  }
+  return - length - 1;
+}
+
+
 int32_t __attribute__ ((noinline)) linear256_32(uint16_t * array, int32_t length, uint16_t ikey )  {
   int32_t k = 0;
   for(; k + 255 <= length; k += 256) {
@@ -500,7 +542,8 @@ void demo() {
         float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_flush256_32,
                cycle_per_op_mixed,cycle_per_op_mixedhybrid,
               cycle_per_op_branchless,cycle_per_op_branchless_wp, cycle_per_op_linear,
-              cycle_per_op_linear16, cycle_per_op_linear128_16, cycle_per_op_linear256_16, cycle_per_op_linear256_32,
+              cycle_per_op_linear16, cycle_per_op_linear128_16, cycle_per_op_linear256_16, cycle_per_op_simdlinear256_16,
+              cycle_per_op_linear256_32,
               cycle_per_op_simdlinear, cycle_per_op_simdlinear32;
 
         BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty, bogus);
@@ -515,15 +558,17 @@ void demo() {
         BEST_TIME_PRE_ARRAY(source, N, linear16, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear16, bogus);
         BEST_TIME_PRE_ARRAY(source, N, linear128_16, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear128_16, bogus);
         BEST_TIME_PRE_ARRAY(source, N, linear256_16, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear256_16, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, simdlinear256_16, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear256_16, bogus);
+
         BEST_TIME_PRE_ARRAY(source, N, linear256_32, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear256_32, bogus);
 
         BEST_TIME_PRE_ARRAY(source, N, simd_linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear, bogus);
         BEST_TIME_PRE_ARRAY(source, N, simd_linear_search32, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear32, bogus);
 
-        printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f branchy256_16=%.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f linear16 = %2.f linear128_16 = %2.f linear256_16 = %2.f linear256_32 = %2.f simdlinear = %2.f simdlinear32 = %2.f \n",
+        printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f branchy256_16=%.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f linear16 = %2.f linear128_16 = %2.f linear256_16 = %2.f simdlinear256_16 = %2.f  linear256_32 = %2.f simdlinear = %2.f simdlinear32 = %2.f \n",
                (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_flush256_32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
                cycle_per_op_branchless,cycle_per_op_branchless_wp,cycle_per_op_linear,cycle_per_op_linear16,
-               cycle_per_op_linear128_16,cycle_per_op_linear256_16,cycle_per_op_linear256_32,
+               cycle_per_op_linear128_16,cycle_per_op_linear256_16,cycle_per_op_simdlinear256_16,cycle_per_op_linear256_32,
                cycle_per_op_simdlinear,cycle_per_op_simdlinear32);
         free(source);
     }
