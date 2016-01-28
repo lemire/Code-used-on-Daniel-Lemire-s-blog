@@ -1,9 +1,10 @@
-// gcc -std=c99 -O3 -o understandingbinsearch understandingbinsearch.c -Wall -Wextra -lm
+// gcc-mavx2 -mbmi -std=c99 -O3 -o understandingbinsearch understandingbinsearch.c -Wall -Wextra -lm
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <math.h>
+#include <x86intrin.h>
 
 typedef uint16_t value_t;
 
@@ -183,7 +184,52 @@ int32_t  __attribute__ ((noinline)) return_middle_value(uint16_t * array, int32_
     int32_t middleValue = array[middleIndex];
     return middleValue;
 }
+int32_t  __attribute__ ((noinline)) linear_search(uint16_t * array, int32_t length, uint16_t ikey )  {
+  for(int32_t k = 0; k  < length; k ++) {
+    uint16_t val = array[k];
+    if(val >= ikey) {
+      if(val == ikey) return k;
+      else return - k - 1;
+    }
+  }
+  return - length - 1;
+}
 
+int32_t  __attribute__ ((noinline)) simd_linear_search(uint16_t * array, int32_t length, uint16_t ikey )  {
+  uint16_t offset = 1<<15;
+  __m256i target = _mm256_set1_epi16(ikey + offset);
+  __m256i conv = _mm256_set1_epi16(offset);
+
+  const int32_t delta = sizeof(__m256i) / sizeof(uint16_t);// = 16
+  const int32_t deltaminusone = sizeof(__m256i) / sizeof(uint16_t)  - 1;
+  int32_t k = 0;
+  for(; k + delta <= length; k += delta) {
+    if(array[k + deltaminusone] >= ikey) {// when we found a block of 16 values, we examine it in one go
+      __m256i data = _mm256_lddqu_si256((const __m256i *) (array + k));
+      data = _mm256_add_epi16(data,conv);
+      __m256i m = _mm256_cmpeq_epi16(data,target);
+      int32_t bits = _mm256_movemask_epi8(m);
+      //todo: check that this is correct
+      if(bits != 0) {
+        int32_t bit_pos = __builtin_ffs(bits) / 2;
+        return k + bit_pos;
+      } else {
+        m = _mm256_cmpgt_epi16(data,target);
+        bits = _mm256_movemask_epi8(m);
+        int32_t bit_pos = _tzcnt_u32(bits)  / 2;
+        return - k - bit_pos - 1;
+      }
+    }
+  }
+  for(; k  < length; k ++) {
+    uint16_t val = array[k];
+    if(val >= ikey) {
+      if(val == ikey) return k;
+      else return - k - 1;
+    }
+  }
+  return - length - 1;
+}
 
 #define RDTSC_START(cycles)                                                   \
     do {                                                                      \
@@ -250,7 +296,7 @@ void demo() {
      for(size_t N = 32; N < 4096*4; N*=2) {
             value_t * source = create_sorted_array(N);
             float cycle_per_op_empty, cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed,cycle_per_op_mixedhybrid,
-                  cycle_per_op_branchless,cycle_per_op_branchless_wp;
+                  cycle_per_op_branchless,cycle_per_op_branchless_wp, cycle_per_op_linear, cycle_per_op_simdlinear;
             BEST_TIME_PRE_ARRAY(source, N, does_nothing,                array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_empty);
             BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush);
             BEST_TIME_PRE_ARRAY(source, N, binary_search32,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_flush32);
@@ -258,12 +304,15 @@ void demo() {
             BEST_TIME_PRE_ARRAY(source, N, mixedhybrid,               array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_mixedhybrid);
             BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search,    array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless);
             BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_branchless_wp);
-            printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f  \n",
+            BEST_TIME_PRE_ARRAY(source, N, linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_linear);
+            BEST_TIME_PRE_ARRAY(source, N, simd_linear_search, array_cache_flush,   testvalues, nbrtestvalues, cycle_per_op_simdlinear);
+            printf("N=%10d ilog2=%5d func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f linear = %2.f simdlinear = %2.f \n",
                    (int)N,ilog2(N),cycle_per_op_empty,cycle_per_op_flush,cycle_per_op_flush32,cycle_per_op_mixed, cycle_per_op_mixedhybrid,
-                   cycle_per_op_branchless,cycle_per_op_branchless_wp);
+                   cycle_per_op_branchless,cycle_per_op_branchless_wp,cycle_per_op_linear,cycle_per_op_simdlinear);
             if(empty>0) b += sprintf(buffer+b," from N=%10d to N=%10d deltas func. call = %.2f,  branchy = %.2f hybrid= %.2f mixed= %.2f mixedhybrid= %.2f branchless = %.2f branchless+prefetching = %.2f  \n",
                       (int)(N/2),(int)N,cycle_per_op_empty-empty,cycle_per_op_flush-flush,cycle_per_op_flush32-flush32,cycle_per_op_mixed-mixedt, cycle_per_op_mixedhybrid-mixedhybridt,
                       cycle_per_op_branchless-branchless,cycle_per_op_branchless_wp-branchless_wp);
+
             empty =  cycle_per_op_empty;
             flush =  cycle_per_op_flush;
             flush32 = cycle_per_op_flush32;
