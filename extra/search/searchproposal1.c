@@ -230,7 +230,8 @@ void demo() {
     size_t nbrtestvalues = 10000;
     value_t * testvalues = create_random_array(nbrtestvalues);
     int32_t bogus = 0;
-    printf("Objective: fast search in 16-bit arrays of up to 4096 integers.\n\n");
+    printf("# Objective: fast search in 16-bit arrays of up to 4096 integers.\n");
+    printf("# output is formatted for processing with gnuplot.\n");
     for(double Nd = 32; Nd <= 4100; Nd*=sqrt(sqrt(2))) {
         size_t N = round(Nd);
         value_t * source = create_sorted_array(N);
@@ -253,10 +254,11 @@ void demo() {
 
         BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_prefetch,   testvalues, nbrtestvalues, cpo_256_16_branchless_wp, bogus);
         BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cpo_branchless_wp, bogus);
-        printf("N=%10d (flushed cache)  branchy = %.2f  linear256_16 = %2.f  branchless = %.2f branchless+prefetching = %.2f\n",
+        printf("# N=%10d (flushed cache)  branchy = %.2f  linear256_16 = %2.f  branchless = %.2f branchless+prefetching = %.2f\n",
                (int)N,cpo_bs,cpo_linear256_16,cpo_branchless,cpo_branchless_wp);
-        printf("N=%10d (in-cache)  branchy = %.2f  linear256_16 = %.2f  branchless=%.2f branchless+prefetching=%.2f \n",
+        printf("# N=%10d (in-cache)  branchy = %.2f  linear256_16 = %.2f  branchless=%.2f branchless+prefetching=%.2f \n",
                (int)N,cpo_bs_pre,cpo_256_16_pre, cpo_256_16_branchless,cpo_256_16_branchless_wp);
+        printf("%10d %.2f %.2f %.2f %.2f           %.2f %.2f %.2f %.2f",(int)N,cpo_bs,cpo_linear256_16,cpo_branchless,cpo_branchless_wp, cpo_bs_pre,cpo_256_16_pre, cpo_256_16_branchless,cpo_256_16_branchless_wp);
         free(source);
         printf("\n");
     }
