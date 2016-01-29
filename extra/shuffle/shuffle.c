@@ -128,6 +128,12 @@ void  shuffle_pcg_divisionless(value_t *storage, uint32_t size) {
     }
 }
 
+void populateRandom_pcgunbounded(uint32_t * answer, uint32_t size) {
+  for (uint32_t  i=size; i>1; i--) {
+      answer[size-i] =   pcg32_random();
+  }
+}
+
 void populateRandom_pcg(uint32_t * answer, uint32_t size) {
   for (uint32_t  i=size; i>1; i--) {
       answer[size-i] =   pcg32_random_bounded(i);
@@ -288,6 +294,7 @@ void demo(int size) {
     memcpy(pristinecopy,testvalues,sizeof(value_t) * size);
     uint32_t * prec = precomputeRandom(size);
     printf("\nFirst, we just generate the random numbers: \n");
+    BEST_TIME(populateRandom_pcgunbounded(prec,size),, repeat, size);
     BEST_TIME(populateRandom_pcg(prec,size),, repeat, size);
     BEST_TIME(populateRandom_java(prec,size),, repeat, size);
     BEST_TIME(populateRandom_divisionless(prec,size),, repeat, size);
