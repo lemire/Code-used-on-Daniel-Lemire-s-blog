@@ -128,16 +128,35 @@ void  shuffle_pcg_divisionless(value_t *storage, uint32_t size) {
     }
 }
 
-
-uint32_t * precomputeRandom(uint32_t size) {
-    uint32_t * answer = (uint32_t*) malloc(size * sizeof(uint32_t));
+void populateRandom_pcg(uint32_t * answer, uint32_t size) {
     uint32_t * randi = answer;
     for (uint32_t  i=size; i>1; i--) {
         *randi =   pcg32_random_bounded(i);
         randi++;
     }
+}
+void populateRandom_java(uint32_t * answer, uint32_t size) {
+    uint32_t * randi = answer;
+    for (uint32_t  i=size; i>1; i--) {
+        *randi =   java_random_bounded(i);
+        randi++;
+    }
+}
+void populateRandom_divisionless(uint32_t * answer, uint32_t size) {
+    uint32_t * randi = answer;
+    for (uint32_t  i=size; i>1; i--) {
+        *randi =   pcg32_random_bounded_divisionless(i);
+        randi++;
+    }
+}
+
+uint32_t * precomputeRandom(uint32_t size) {
+    uint32_t * answer = (uint32_t*) malloc(size * sizeof(uint32_t));
+    populateRandom_divisionless(answer,size);
     return answer;
 }
+
+
 // good old Fisher-Yates shuffle, shuffling an array of integers, using pre-populated random numbers
 void  shuffle_pre(value_t *storage, uint32_t size, uint32_t * randomsource) {
     uint32_t i;
@@ -274,6 +293,10 @@ void demo(int size) {
     value_t * pristinecopy = malloc(size * sizeof(value_t));
     memcpy(pristinecopy,testvalues,sizeof(value_t) * size);
     uint32_t * prec = precomputeRandom(size);
+    BEST_TIME(populateRandom_pcg(prec,size),, repeat, size);
+    BEST_TIME(populateRandom_java(prec,size),, repeat, size);
+    BEST_TIME(populateRandom_divisionless(prec,size),, repeat, size);
+
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
