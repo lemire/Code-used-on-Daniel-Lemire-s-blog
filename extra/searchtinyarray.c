@@ -202,11 +202,12 @@ void demo() {
     size_t N = sizeof(__m256i)/sizeof(uint32_t);
     value_t * source = create_random_array(N);
     float cposearch, cpousearch, cposimdsearch;
-
+    BEST_TIME_PRE_ARRAY(source, N, search, array_cache_prefetch,   testvalues, nbrtestvalues, cposearch, bogus);
+ 
 
     BEST_TIME_PRE_ARRAY(source, N, unrolled_search, array_cache_prefetch,   testvalues, nbrtestvalues, cpousearch, bogus);
     BEST_TIME_PRE_ARRAY(source, N, simd_search, array_cache_prefetch,   testvalues, nbrtestvalues, cposimdsearch, bogus);
-    printf("times (clock per value) scalar =  %2.f   AVX2  = %.2f \n",cpousearch,cposimdsearch);
+    printf("times (clock per value) scalar = %2.f unrolled scalar =  %2.f   AVX2  = %.2f \n",cposearch, cpousearch,cposimdsearch);
     free(source);
     printf("\n");
     printf("bogus = %d \n",bogus);
