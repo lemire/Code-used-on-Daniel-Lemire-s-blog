@@ -49,24 +49,12 @@ static inline uint32_t pcg32_random_r(pcg32_random_t* rng) {
     return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
 }
 
-//used by pcg64_random_r
-static inline void pcg_setseq_128_step_r(struct pcg_state_setseq_128* rng) {
-    rng->state = rng->state * PCG_DEFAULT_MULTIPLIER_128 + rng->inc;
-}
-
-// used by pcg_output_xsl_rr_128_64
-static inline uint64_t pcg_rotr_64(uint64_t value, unsigned int rot) {
-    return (value >> rot) | (value << ((- rot) & 63));
-}
-
-// used by pcg64_random_r
-static inline uint64_t pcg_output_xsl_rr_128_64(pcg128_t state) {
-    return pcg_rotr_64(((uint64_t)(state >> 64u)) ^ (uint64_t)state,
-                       state >> 122u);
-}
 static inline uint64_t pcg64_random_r(struct pcg_state_setseq_128* rng) {
-    pcg_setseq_128_step_r(rng);
-    return pcg_output_xsl_rr_128_64(rng->state);
+    // the 32-bit version uses the old state to generate the next value
+    rng->state = rng->state * PCG_DEFAULT_MULTIPLIER_128 + rng->inc;
+    uint64_t xorshifted = ((uint64_t)(rng->state >> 64u)) ^ (uint64_t)rng->state;
+    unsigned int rot = rng->state >> 122u;
+    return (xorshifted >> rot) | (xorshifted << ((- rot) & 63));
 }
 
 static inline uint32_t pcg32_random() {
@@ -537,6 +525,9 @@ void demo(int size) {
      BEST_TIME(shuffle_pcg_divisionless_fancy(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_broken_modulo(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+    BEST_TIME(shuffle_pre(testvalues,size,prec), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     free(testvalues);
     free(pristinecopy);
     free(prec);
