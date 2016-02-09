@@ -10,16 +10,36 @@
 
 typedef uint32_t value_t;
 
+/**
+BEGIN PCG code
+*/
+
 struct pcg_state_setseq_64 {    // Internals are *Private*.
     uint64_t state;             // RNG state.  All values are possible.
     uint64_t inc;               // Controls which RNG sequence (stream) is
     // selected. Must *always* be odd.
 };
 typedef struct pcg_state_setseq_64 pcg32_random_t;
-
+typedef __uint128_t pcg128_t;
+struct pcg_state_setseq_128 {
+    pcg128_t state;
+    pcg128_t inc;
+};
+typedef struct pcg_state_setseq_128 pcg64_random_t;
 
 static pcg32_random_t pcg32_global = { 0x853c49e6748fea9bULL, 0xda3e39cb94b95bdbULL };
 
+#define PCG_128BIT_CONSTANT(high,low) \
+        ((((pcg128_t)high) << 64) + low)
+
+#define PCG_DEFAULT_MULTIPLIER_128 \
+        PCG_128BIT_CONSTANT(2549297995355413924ULL,4865540595714422341ULL)
+
+#define PCG64_INITIALIZER                                       \
+    { PCG_128BIT_CONSTANT(0x979c9a98d8462005ULL, 0x7d3e9cb6cfe0549bULL),       \
+      PCG_128BIT_CONSTANT(0x0000000000000001ULL, 0xda3e39cb94b95bdbULL) }
+
+static pcg64_random_t pcg64_global = PCG64_INITIALIZER;
 
 static inline uint32_t pcg32_random_r(pcg32_random_t* rng) {
     uint64_t oldstate = rng->state;
@@ -29,10 +49,37 @@ static inline uint32_t pcg32_random_r(pcg32_random_t* rng) {
     return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
 }
 
+//used by pcg64_random_r
+static inline void pcg_setseq_128_step_r(struct pcg_state_setseq_128* rng) {
+    rng->state = rng->state * PCG_DEFAULT_MULTIPLIER_128 + rng->inc;
+}
+
+// used by pcg_output_xsl_rr_128_64
+static inline uint64_t pcg_rotr_64(uint64_t value, unsigned int rot) {
+    return (value >> rot) | (value << ((- rot) & 63));
+}
+
+// used by pcg64_random_r
+static inline uint64_t pcg_output_xsl_rr_128_64(pcg128_t state) {
+    return pcg_rotr_64(((uint64_t)(state >> 64u)) ^ (uint64_t)state,
+                       state >> 122u);
+}
+static inline uint64_t pcg64_random_r(struct pcg_state_setseq_128* rng) {
+    pcg_setseq_128_step_r(rng);
+    return pcg_output_xsl_rr_128_64(rng->state);
+}
+
 static inline uint32_t pcg32_random() {
     return pcg32_random_r(&pcg32_global);
 }
 
+static inline uint64_t pcg64_random() {
+    return pcg64_random_r(&pcg64_global);
+}
+
+/**
+END PCG code
+*/
 
 /**
 
@@ -110,6 +157,41 @@ static inline uint32_t pcg32_random_bounded_divisionless(uint32_t range) {
     return multiresult >> 32; // [0, range)
 }
 
+// this simplified version contains just one major branch/loop. For powers of two or large range, it is suboptimal.
+static inline void pcg32_random_bounded_divisionless_two_by_two(uint32_t range1, uint32_t range2, uint32_t *output1, uint32_t *output2) {
+    uint64_t random64bit, random32bit, multiresult;
+    uint32_t leftover;
+    uint32_t threshold;
+    random64bit =  pcg32_random();
+    // first part
+    random32bit = random64bit & 0xFFFFFFFF;
+    multiresult = random32bit * range1;
+    leftover = (uint32_t) multiresult;
+    if(leftover < range1 ) {
+        threshold = -range1 % range1 ;
+        while (leftover < threshold) {
+            random32bit =  pcg32_random();
+            multiresult = random32bit * range1;
+            leftover = (uint32_t) multiresult;
+        }
+    }
+    * output1 = multiresult >> 32; // [0, range1)
+    // second part
+    random32bit = random64bit >> 32;
+    multiresult = random32bit * range2;
+    leftover = (uint32_t) multiresult;
+    if(leftover < range2 ) {
+        threshold = -range2 % range2 ;
+        while (leftover < threshold) {
+            random32bit =  pcg32_random();
+            multiresult = random32bit * range2;
+            leftover = (uint32_t) multiresult;
+        }
+    }
+    * output2 = multiresult >> 32; // [0, range2)
+
+}
+
 // good old Fisher-Yates shuffle, shuffling an array of integers, uses the default pgc with a modulo (not fair!)
 void  shuffle_broken_modulo(value_t *storage, uint32_t size) {
     uint32_t i;
@@ -164,12 +246,39 @@ void  shuffle_pcg_divisionless(value_t *storage, uint32_t size) {
     uint32_t i;
     for (i=size; i>1; i--) {
         uint32_t nextpos = pcg32_random_bounded_divisionless(i);
-        int tmp = storage[i-1];// likely in cache
-        int val = storage[nextpos]; // could be costly
+        value_t tmp = storage[i-1];// likely in cache
+        value_t val = storage[nextpos]; // could be costly
         storage[i - 1] = val;
         storage[nextpos] = tmp; // you might have to read this store later
     }
 }
+// good old Fisher-Yates shuffle, shuffling an array of integers, without division
+void  shuffle_pcg_divisionless_two_by_two(value_t *storage, uint32_t size) {
+    uint32_t i;
+    uint32_t nextpos1, nextpos2;
+    value_t tmp, val;
+    for (i=size; i>2; i--) {
+        pcg32_random_bounded_divisionless(i,i-1, &nextpos1, &nextpos2);
+        tmp = storage[i-1];// likely in cache
+        val = storage[nextpos1]; // could be costly
+        storage[i - 1] = val;
+        storage[nextpos1] = tmp; // you might have to read this store later
+        //
+        tmp = storage[i-2];// likely in cache
+        val = storage[nextpos2]; // could be costly
+        storage[i - 2] = val;
+        storage[nextpos2] = tmp; // you might have to read this store later
+    }
+    if(i>1) {// could be optimized
+      uint32_t nextpos = pcg32_random_bounded_divisionless(i);
+      value_t tmp = storage[i-1];// likely in cache
+      value_t val = storage[nextpos]; // could be costly
+      storage[i - 1] = val;
+      storage[nextpos] = tmp; // you might have to read this store later
+    }
+}
+
+pcg32_random_bounded_divisionless_two_by_two
 void populateRandom_randunbounded(uint32_t * answer, uint32_t size) {
   for (uint32_t  i=size; i>1; i--) {
       answer[size-i] =   rand();
