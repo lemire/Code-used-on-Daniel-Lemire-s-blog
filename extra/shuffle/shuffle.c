@@ -69,6 +69,24 @@ static inline uint64_t pcg64_random() {
 END PCG code
 */
 
+/*
+SIMD PCG
+*/
+
+
+uint64_t xorshift128plus_s[2]={1,3};
+
+uint64_t xorshift128plus(void) {
+	uint64_t s1 = xorshift128plus_s[0];
+	const uint64_t s0 = xorshift128plus_s[1];
+	xorshift128plus_s[0] = s0;
+	s1 ^= s1 << 23; // a
+	xorshift128plus_s[1] = s1 ^ s0 ^ (s1 >> 18) ^ (s0 >> 5); // b, c
+	return xorshift128plus_s[1] + s0;
+}
+
+
+
 /**
 
 Next we present the bounded RNG
