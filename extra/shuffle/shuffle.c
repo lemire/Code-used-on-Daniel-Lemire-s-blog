@@ -110,6 +110,18 @@ static inline uint32_t pcg32_random_bounded_divisionless(uint32_t range) {
     return multiresult >> 32; // [0, range)
 }
 
+// good old Fisher-Yates shuffle, shuffling an array of integers, uses the default pgc with a modulo (not fair!)
+void  shuffle_broken_modulo(value_t *storage, uint32_t size) {
+    uint32_t i;
+    for (i=size; i>1; i--) {
+        uint32_t nextpos = pcg32_random() % (i+1);
+        int tmp = storage[i-1];// likely in cache
+        int val = storage[nextpos]; // could be costly
+        storage[i - 1] = val;
+        storage[nextpos] = tmp; // you might have to read this store later
+    }
+}
+
 
 
 // good old Fisher-Yates shuffle, shuffling an array of integers, uses the default pgc ranged rng
@@ -339,10 +351,10 @@ void demo(int size) {
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg_divisionless(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
-    BEST_TIME(shuffle_pre(testvalues,size,prec), array_cache_prefetch(testvalues,size), repeat, size);
+    BEST_TIME(shuffle_broken_modulo(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     free(testvalues);
-    free(prec);
     free(pristinecopy);
+    free(prec);
     printf("\n");
 }
 
