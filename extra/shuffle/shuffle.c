@@ -162,7 +162,7 @@ static inline void pcg32_random_bounded_divisionless_two_by_two(uint32_t range1,
     uint64_t random64bit, random32bit, multiresult;
     uint32_t leftover;
     uint32_t threshold;
-    random64bit =  pcg32_random();
+    random64bit =  pcg64_random();
     // first part
     random32bit = random64bit & 0xFFFFFFFF;
     multiresult = random32bit * range1;
@@ -189,7 +189,34 @@ static inline void pcg32_random_bounded_divisionless_two_by_two(uint32_t range1,
         }
     }
     * output2 = multiresult >> 32; // [0, range2)
+}
 
+#ifdef USE_EXPECT
+#define COMPILER_EXPECT_FALSE(x) __builtin_expect((x), 0)
+#define COMPILER_EXPECT_TRUE(x) __builtin_expect((x), 1)
+#else
+#define COMPILER_EXPECT_FALSE(x) (x)
+#define COMPILER_EXPECT_TRUE(x) (x)
+#endif
+
+// this simplified version contains just one major branch/loop. For
+//powers of two or large range, it is suboptimal.
+static inline uint32_t pcg32_random_bounded_divisionless_expect(uint32_t range) {
+    uint64_t random32bit, multiresult;
+    uint32_t leftover;
+    uint32_t threshold;
+    random32bit =  pcg32_random();
+    multiresult = random32bit * range;
+    leftover = (uint32_t) multiresult;
+    if(COMPILER_EXPECT_FALSE(leftover < range)) {
+        threshold = -range % range ;
+        while (COMPILER_EXPECT_FALSE(leftover < threshold)) {
+            random32bit =  pcg32_random();
+            multiresult = random32bit * range;
+            leftover = (uint32_t) multiresult;
+        }
+    }
+    return multiresult >> 32; // [0, range)
 }
 
 // good old Fisher-Yates shuffle, shuffling an array of integers, uses the default pgc with a modulo (not fair!)
@@ -257,8 +284,8 @@ void  shuffle_pcg_divisionless_two_by_two(value_t *storage, uint32_t size) {
     uint32_t i;
     uint32_t nextpos1, nextpos2;
     value_t tmp, val;
-    for (i=size; i>2; i--) {
-        pcg32_random_bounded_divisionless(i,i-1, &nextpos1, &nextpos2);
+    for (i=size; i>2; i-=2) {
+        pcg32_random_bounded_divisionless_two_by_two(i,i-1, &nextpos1, &nextpos2);
         tmp = storage[i-1];// likely in cache
         val = storage[nextpos1]; // could be costly
         storage[i - 1] = val;
@@ -278,7 +305,17 @@ void  shuffle_pcg_divisionless_two_by_two(value_t *storage, uint32_t size) {
     }
 }
 
-pcg32_random_bounded_divisionless_two_by_two
+void  shuffle_pcg_divisionless_expect(value_t *storage, uint32_t size) {
+    uint32_t i;
+    for (i=size; i>1; i--) {
+        uint32_t nextpos = pcg32_random_bounded_divisionless_expect(i);
+        int tmp = storage[i-1];// likely in cache
+        int val = storage[nextpos]; // could be costly
+        storage[i - 1] = val;
+        storage[nextpos] = tmp; // you might have to read this store later
+    }
+}
+
 void populateRandom_randunbounded(uint32_t * answer, uint32_t size) {
   for (uint32_t  i=size; i>1; i--) {
       answer[size-i] =   rand();
@@ -296,6 +333,20 @@ void populateRandom_pcgunbounded(uint32_t * answer, uint32_t size) {
       answer[size-i] =   pcg32_random();
   }
 }
+
+void populateRandom_pcg64unbounded(uint32_t * answer, uint32_t size) {
+  uint32_t  i=size;
+  while (i>2) {
+      uint64_t r = pcg64_random();
+      // next bit could be faster, compiler might get smart
+      answer[size-i] =   r&0xFFFFFFFF;
+      answer[size-i+1] =   r>>32;
+      i-=2;
+  }
+  if(i > 1)
+      answer[size-i] =   pcg32_random();
+}
+
 
 void populateRandom_pcg(uint32_t * answer, uint32_t size) {
   for (uint32_t  i=size; i>1; i--) {
@@ -466,6 +517,7 @@ void demo(int size) {
     BEST_TIME(populateRandom_randunbounded(prec,size),, repeat, size);
     BEST_TIME(populateRandom_randmod(prec,size),, repeat, size);
     BEST_TIME(populateRandom_pcgunbounded(prec,size),, repeat, size);
+    BEST_TIME(populateRandom_pcg64unbounded(prec,size),, repeat, size);
     BEST_TIME(populateRandom_pcg(prec,size),, repeat, size);
     BEST_TIME(populateRandom_java(prec,size),, repeat, size);
     BEST_TIME(populateRandom_divisionless(prec,size),, repeat, size);
@@ -478,9 +530,13 @@ void demo(int size) {
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg_divisionless(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
-    BEST_TIME(shuffle_pcg_divisionless_fancy(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    BEST_TIME(shuffle_pcg_divisionless_two_by_two(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
-     BEST_TIME(shuffle_broken_modulo(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    BEST_TIME(shuffle_pcg_divisionless_expect(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+     BEST_TIME(shuffle_pcg_divisionless_fancy(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+    BEST_TIME(shuffle_broken_modulo(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     free(testvalues);
     free(pristinecopy);
     free(prec);
