@@ -76,6 +76,7 @@ SIMD PCG
 
 uint64_t xorshift128plus_s[2]={1,3};
 
+//http://xorshift.di.unimi.it/xorshift128plus.c
 uint64_t xorshift128plus(void) {
 	uint64_t s1 = xorshift128plus_s[0];
 	const uint64_t s0 = xorshift128plus_s[1];
@@ -162,6 +163,24 @@ static inline uint32_t pcg32_random_bounded_divisionless(uint32_t range) {
     }
     return multiresult >> 32; // [0, range)
 }
+static inline uint32_t xorshift128plus_random_bounded_divisionless(uint32_t range) {
+    uint64_t random32bit, multiresult;
+    uint32_t leftover;
+    uint32_t threshold;
+    random32bit = (uint32_t) xorshift128plus();
+    multiresult = random32bit * range;
+    leftover = (uint32_t) multiresult;
+    if(leftover < range ) {
+        threshold = -range % range ;
+        while (leftover < threshold) {
+            random32bit =  (uint32_t) xorshift128plus();
+            multiresult = random32bit * range;
+            leftover = (uint32_t) multiresult;
+        }
+    }
+    return multiresult >> 32; // [0, range)
+}
+
 
 // this simplified version contains just one major branch/loop. For powers of two or large range, it is suboptimal.
 static inline void pcg32_random_bounded_divisionless_two_by_two(uint32_t range1, uint32_t range2, uint32_t *output1, uint32_t *output2) {
@@ -190,6 +209,39 @@ static inline void pcg32_random_bounded_divisionless_two_by_two(uint32_t range1,
         threshold = -range2 % range2 ;
         while (leftover < threshold) {
             random32bit =  pcg32_random();
+            multiresult = random32bit * range2;
+            leftover = (uint32_t) multiresult;
+        }
+    }
+    * output2 = multiresult >> 32; // [0, range2)
+}
+
+static inline void xorshift128plus_random_bounded_divisionless_two_by_two(uint32_t range1, uint32_t range2, uint32_t *output1, uint32_t *output2) {
+    uint64_t random64bit, random32bit, multiresult;
+    uint32_t leftover;
+    uint32_t threshold;
+    random64bit =  xorshift128plus();
+    // first part
+    random32bit = random64bit & 0xFFFFFFFF;
+    multiresult = random32bit * range1;
+    leftover = (uint32_t) multiresult;
+    if(leftover < range1 ) {
+        threshold = -range1 % range1 ;
+        while (leftover < threshold) {
+            random32bit =  (uint32_t) xorshift128plus();
+            multiresult = random32bit * range1;
+            leftover = (uint32_t) multiresult;
+        }
+    }
+    * output1 = multiresult >> 32; // [0, range1)
+    // second part
+    random32bit = random64bit >> 32;
+    multiresult = random32bit * range2;
+    leftover = (uint32_t) multiresult;
+    if(leftover < range2 ) {
+        threshold = -range2 % range2 ;
+        while (leftover < threshold) {
+            random32bit =  (uint32_t) xorshift128plus();
             multiresult = random32bit * range2;
             leftover = (uint32_t) multiresult;
         }
@@ -310,6 +362,31 @@ void  shuffle_pcg_divisionless_two_by_two(value_t *storage, uint32_t size) {
       storage[nextpos] = tmp; // you might have to read this store later
     }
 }
+void  shuffle_xorshift128plus_divisionless_two_by_two(value_t *storage, uint32_t size) {
+    uint32_t i;
+    uint32_t nextpos1, nextpos2;
+    value_t tmp, val;
+    for (i=size; i>2; i-=2) {
+        xorshift128plus_random_bounded_divisionless_two_by_two(i,i-1, &nextpos1, &nextpos2);
+        tmp = storage[i-1];// likely in cache
+        val = storage[nextpos1]; // could be costly
+        storage[i - 1] = val;
+        storage[nextpos1] = tmp; // you might have to read this store later
+        //
+        tmp = storage[i-2];// likely in cache
+        val = storage[nextpos2]; // could be costly
+        storage[i - 2] = val;
+        storage[nextpos2] = tmp; // you might have to read this store later
+    }
+    if(i>1) {// could be optimized
+      uint32_t nextpos = xorshift128plus_random_bounded_divisionless(i);
+      value_t tmp = storage[i-1];// likely in cache
+      value_t val = storage[nextpos]; // could be costly
+      storage[i - 1] = val;
+      storage[nextpos] = tmp; // you might have to read this store later
+    }
+}
+
 
 void  shuffle_pcg_divisionless_expect(value_t *storage, uint32_t size) {
     uint32_t i;
@@ -350,6 +427,16 @@ void populateRandom_pcg64unbounded(uint32_t * answer, uint32_t size) {
       answer[size-i] =   pcg32_random();
 }
 
+
+void populateRandom_xorshift128plusunbounded(uint32_t * answer, uint32_t size) {
+  uint32_t  i=size;
+  while (i>2) {
+      * (uint64_t * )(answer + size - i) = xorshift128plus();
+      i-=2;
+  }
+  if(i > 1)
+      answer[size-i] =   (uint32_t) xorshift128plus();
+}
 
 void populateRandom_pcg(uint32_t * answer, uint32_t size) {
   for (uint32_t  i=size; i>1; i--) {
@@ -521,6 +608,7 @@ void demo(int size) {
     BEST_TIME(populateRandom_randmod(prec,size),, repeat, size);
     BEST_TIME(populateRandom_pcgunbounded(prec,size),, repeat, size);
     BEST_TIME(populateRandom_pcg64unbounded(prec,size),, repeat, size);
+    BEST_TIME(populateRandom_xorshift128plusunbounded(prec,size),, repeat, size);
     BEST_TIME(populateRandom_pcg(prec,size),, repeat, size);
     BEST_TIME(populateRandom_java(prec,size),, repeat, size);
     BEST_TIME(populateRandom_divisionless(prec,size),, repeat, size);
@@ -534,6 +622,8 @@ void demo(int size) {
     BEST_TIME(shuffle_pcg_divisionless(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg_divisionless_two_by_two(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+    BEST_TIME(shuffle_xorshift128plus_divisionless_two_by_two(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg_divisionless_expect(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
