@@ -64,7 +64,7 @@ static inline uint32_t java_random_bounded(uint32_t bound)
 
 }
 // division-less bounded random number, uses 64-bit multiplication and shifts
-static inline uint32_t pcg32_random_bounded_divisionless(uint32_t range) {
+static inline uint32_t pcg32_random_bounded_divisionless_fancy(uint32_t range) {
     uint64_t random32bit, multiresult;
     uint32_t leftover;
     uint32_t threshold;
@@ -90,6 +90,26 @@ static inline uint32_t pcg32_random_bounded_divisionless(uint32_t range) {
     }
     return multiresult >> 32; // [0, range)
 }
+
+// this simplified version contains just one major branch/loop. For powers of two or large range, it is suboptimal.
+static inline uint32_t pcg32_random_bounded_divisionless(uint32_t range) {
+    uint64_t random32bit, multiresult;
+    uint32_t leftover;
+    uint32_t threshold;
+    random32bit =  pcg32_random();
+    multiresult = random32bit * range;
+    leftover = (uint32_t) multiresult;
+    if(leftover < range ) {
+        threshold = -range % range ;
+        while (leftover < threshold) {
+            random32bit =  pcg32_random();
+            multiresult = random32bit * range;
+            leftover = (uint32_t) multiresult;
+        }
+    }
+    return multiresult >> 32; // [0, range)
+}
+
 
 
 // good old Fisher-Yates shuffle, shuffling an array of integers, uses the default pgc ranged rng
