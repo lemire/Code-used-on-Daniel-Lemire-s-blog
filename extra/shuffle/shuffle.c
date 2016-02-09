@@ -343,10 +343,7 @@ void populateRandom_pcgunbounded(uint32_t * answer, uint32_t size) {
 void populateRandom_pcg64unbounded(uint32_t * answer, uint32_t size) {
   uint32_t  i=size;
   while (i>2) {
-      uint64_t r = pcg64_random();
-      // next bit could be faster, compiler might get smart
-      answer[size-i] =   r&0xFFFFFFFF;
-      answer[size-i+1] =   r>>32;
+      * (uint64_t * )(answer + size - i) = pcg64_random();
       i-=2;
   }
   if(i > 1)
