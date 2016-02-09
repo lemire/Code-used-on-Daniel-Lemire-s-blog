@@ -147,6 +147,17 @@ void  shuffle_pcg_java(value_t *storage, uint32_t size) {
         storage[nextpos] = tmp; // you might have to read this store later
     }
 }
+// good old Fisher-Yates shuffle, shuffling an array of integers, without division
+void  shuffle_pcg_divisionless_fancy(value_t *storage, uint32_t size) {
+    uint32_t i;
+    for (i=size; i>1; i--) {
+        uint32_t nextpos = pcg32_random_bounded_divisionless_fancy(i);
+        int tmp = storage[i-1];// likely in cache
+        int val = storage[nextpos]; // could be costly
+        storage[i - 1] = val;
+        storage[nextpos] = tmp; // you might have to read this store later
+    }
+}
 
 // good old Fisher-Yates shuffle, shuffling an array of integers, without division
 void  shuffle_pcg_divisionless(value_t *storage, uint32_t size) {
@@ -192,6 +203,12 @@ void populateRandom_divisionless(uint32_t * answer, uint32_t size) {
       answer[size-i] =   pcg32_random_bounded_divisionless(i);
   }
 }
+void populateRandom_divisionless_fancy(uint32_t * answer, uint32_t size) {
+  for (uint32_t  i=size; i>1; i--) {
+      answer[size-i] =   pcg32_random_bounded_divisionless_fancy(i);
+  }
+}
+
 
 uint32_t * precomputeRandom(uint32_t size) {
     uint32_t * answer = (uint32_t*) malloc(size * sizeof(uint32_t));
@@ -343,7 +360,8 @@ void demo(int size) {
     BEST_TIME(populateRandom_pcg(prec,size),, repeat, size);
     BEST_TIME(populateRandom_java(prec,size),, repeat, size);
     BEST_TIME(populateRandom_divisionless(prec,size),, repeat, size);
-    printf("\nNext we do the actual shuffle: \n");
+    BEST_TIME(populateRandom_divisionless_fancy(prec,size),, repeat, size);
+     printf("\nNext we do the actual shuffle: \n");
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
@@ -351,7 +369,9 @@ void demo(int size) {
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg_divisionless(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
-    BEST_TIME(shuffle_broken_modulo(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    BEST_TIME(shuffle_pcg_divisionless_fancy(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+     BEST_TIME(shuffle_broken_modulo(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     free(testvalues);
     free(pristinecopy);
     free(prec);
