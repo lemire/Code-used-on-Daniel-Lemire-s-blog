@@ -110,6 +110,35 @@ static inline uint32_t pcg32_random_bounded_divisionless(uint32_t range) {
     return multiresult >> 32; // [0, range)
 }
 
+
+#ifdef USE_EXPECT
+#define COMPILER_EXPECT_FALSE(x) __builtin_expect((x), 0)
+#define COMPILER_EXPECT_TRUE(x) __builtin_expect((x), 1)
+#else
+#define COMPILER_EXPECT_FALSE(x) (x)
+#define COMPILER_EXPECT_TRUE(x) (x)
+#endif
+
+// this simplified version contains just one major branch/loop. For
+//powers of two or large range, it is suboptimal.
+static inline uint32_t pcg32_random_bounded_divisionless_expect(uint32_t range) {
+    uint64_t random32bit, multiresult;
+    uint32_t leftover;
+    uint32_t threshold;
+    random32bit =  pcg32_random();
+    multiresult = random32bit * range;
+    leftover = (uint32_t) multiresult;
+    if(COMPILER_EXPECT_FALSE(leftover < range)) {
+        threshold = -range % range ;
+        while (COMPILER_EXPECT_FALSE(leftover < threshold)) {
+            random32bit =  pcg32_random();
+            multiresult = random32bit * range;
+            leftover = (uint32_t) multiresult;
+        }
+    }
+    return multiresult >> 32; // [0, range)
+}
+
 // good old Fisher-Yates shuffle, shuffling an array of integers, uses the default pgc with a modulo (not fair!)
 void  shuffle_broken_modulo(value_t *storage, uint32_t size) {
     uint32_t i;
@@ -170,6 +199,18 @@ void  shuffle_pcg_divisionless(value_t *storage, uint32_t size) {
         storage[nextpos] = tmp; // you might have to read this store later
     }
 }
+// good old Fisher-Yates shuffle, shuffling an array of integers, without division
+void  shuffle_pcg_divisionless_expect(value_t *storage, uint32_t size) {
+    uint32_t i;
+    for (i=size; i>1; i--) {
+        uint32_t nextpos = pcg32_random_bounded_divisionless_expect(i);
+        int tmp = storage[i-1];// likely in cache
+        int val = storage[nextpos]; // could be costly
+        storage[i - 1] = val;
+        storage[nextpos] = tmp; // you might have to read this store later
+    }
+}
+
 void populateRandom_randunbounded(uint32_t * answer, uint32_t size) {
   for (uint32_t  i=size; i>1; i--) {
       answer[size-i] =   rand();
@@ -369,9 +410,11 @@ void demo(int size) {
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg_divisionless(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
-    BEST_TIME(shuffle_pcg_divisionless_fancy(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    BEST_TIME(shuffle_pcg_divisionless_expect(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
-     BEST_TIME(shuffle_broken_modulo(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+     BEST_TIME(shuffle_pcg_divisionless_fancy(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+    BEST_TIME(shuffle_broken_modulo(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     free(testvalues);
     free(pristinecopy);
     free(prec);
