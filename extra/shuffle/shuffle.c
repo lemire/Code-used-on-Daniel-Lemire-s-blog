@@ -57,10 +57,12 @@ static inline uint64_t pcg64_random_r(struct pcg_state_setseq_128* rng) {
     return (xorshifted >> rot) | (xorshifted << ((- rot) & 63));
 }
 
+__attribute__((always_inline))
 static inline uint32_t pcg32_random() {
     return pcg32_random_r(&pcg32_global);
 }
 
+__attribute__((always_inline))
 static inline uint64_t pcg64_random() {
     return pcg64_random_r(&pcg64_global);
 }
@@ -76,7 +78,7 @@ Vigna's
 uint64_t xorshift128plus_s[2]= {1,3};
 
 //http://xorshift.di.unimi.it/xorshift128plus.c
-uint64_t xorshift128plus(void) {
+static inline uint64_t xorshift128plus(void) {
     uint64_t s1 = xorshift128plus_s[0];
     const uint64_t s0 = xorshift128plus_s[1];
     xorshift128plus_s[0] = s0;
@@ -183,36 +185,37 @@ static inline uint32_t xorshift128plus_random_bounded_divisionless(uint32_t rang
 
 // this simplified version contains just one major branch/loop. For powers of two or large range, it is suboptimal.
 static inline void pcg32_random_bounded_divisionless_two_by_two(uint32_t range1, uint32_t range2, uint32_t *output1, uint32_t *output2) {
-    uint64_t random64bit, random32bit, multiresult;
-    uint32_t leftover;
-    uint32_t threshold;
+    uint64_t random64bit, random32bit, multiresult1, multiresult2;
+    uint32_t leftover1, leftover2;
+    uint32_t threshold1, threshold2;
     random64bit =  pcg64_random();
     // first part
     random32bit = random64bit & 0xFFFFFFFF;
-    multiresult = random32bit * range1;
-    leftover = (uint32_t) multiresult;
-    if(leftover < range1 ) {
-        threshold = -range1 % range1 ;
-        while (leftover < threshold) {
-            random32bit =  pcg32_random();
-            multiresult = random32bit * range1;
-            leftover = (uint32_t) multiresult;
-        }
-    }
-    * output1 = multiresult >> 32; // [0, range1)
-    // second part
+    multiresult1 = random32bit * range1;
+    leftover1 = (uint32_t) multiresult1;
     random32bit = random64bit >> 32;
-    multiresult = random32bit * range2;
-    leftover = (uint32_t) multiresult;
-    if(leftover < range2 ) {
-        threshold = -range2 % range2 ;
-        while (leftover < threshold) {
-            random32bit =  pcg32_random();
-            multiresult = random32bit * range2;
-            leftover = (uint32_t) multiresult;
+    multiresult2 = random32bit * range2;
+    leftover2 = (uint32_t) multiresult2;
+    if((leftover1 < range1 )||(leftover2 < range2)) {
+        if(leftover1 < range1 ) {
+            threshold1 = -range1 % range1 ;
+            while (leftover1 < threshold1) {
+                random32bit =  pcg32_random();
+                multiresult1 = random32bit * range1;
+                leftover1 = (uint32_t) multiresult1;
+            }
+        }
+        if(leftover2 < range2 ) {
+            threshold2 = -range2 % range2 ;
+            while (leftover2 < threshold2) {
+                random32bit =  pcg32_random();
+                multiresult2 = random32bit * range2;
+                leftover2 = (uint32_t) multiresult2;
+            }
         }
     }
-    * output2 = multiresult >> 32; // [0, range2)
+    * output1 = multiresult1 >> 32; // [0, range1)
+    * output2 = multiresult2 >> 32; // [0, range2)
 }
 
 static inline void xorshift128plus_random_bounded_divisionless_two_by_two(uint32_t range1, uint32_t range2, uint32_t *output1, uint32_t *output2) {
