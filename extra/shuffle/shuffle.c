@@ -41,7 +41,6 @@ static pcg32_random_t pcg32_global = { 0x853c49e6748fea9bULL, 0xda3e39cb94b95bdb
 
 static pcg64_random_t pcg64_global = PCG64_INITIALIZER;
 
-__attribute__((always_inline))
 static inline uint32_t pcg32_random_r(pcg32_random_t* rng) {
     uint64_t oldstate = rng->state;
     rng->state = oldstate * 6364136223846793005ULL + rng->inc;
@@ -50,7 +49,6 @@ static inline uint32_t pcg32_random_r(pcg32_random_t* rng) {
     return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
 }
 
-__attribute__((always_inline))
 static inline uint64_t pcg64_random_r(struct pcg_state_setseq_128* rng) {
     // the 32-bit version uses the old state to generate the next value
     rng->state = rng->state * PCG_DEFAULT_MULTIPLIER_128 + rng->inc;
@@ -81,7 +79,6 @@ SIMD PCG
 uint64_t xorshift128plus_s[2]= {1,3};
 
 //http://xorshift.di.unimi.it/xorshift128plus.c
-__attribute__((always_inline))
 static inline uint64_t xorshift128plus(void) {
     uint64_t s1 = xorshift128plus_s[0];
     const uint64_t s0 = xorshift128plus_s[1];
@@ -188,7 +185,6 @@ static inline uint32_t xorshift128plus_random_bounded_divisionless(uint32_t rang
 
 
 // this simplified version contains just one major branch/loop. For powers of two or large range, it is suboptimal.
-__attribute__((always_inline))
 static inline void pcg32_random_bounded_divisionless_two_by_two(uint32_t range1, uint32_t range2, uint32_t *output1, uint32_t *output2) {
     uint64_t random64bit, random32bit, multiresult1, multiresult2;
     uint32_t leftover1, leftover2;
@@ -223,7 +219,6 @@ static inline void pcg32_random_bounded_divisionless_two_by_two(uint32_t range1,
     * output2 = multiresult2 >> 32; // [0, range2)
 }
 
-__attribute__((always_inline))
 static inline void xorshift128plus_random_bounded_divisionless_two_by_two(uint32_t range1, uint32_t range2, uint32_t *output1, uint32_t *output2) {
     uint64_t random64bit, random32bit, multiresult1, multiresult2;
     uint32_t leftover1, leftover2;
