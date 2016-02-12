@@ -1,4 +1,4 @@
-// gcc -march=native -std=c99 -O3 -o shuffle shuffle.c -Wall -Wextra
+// clang -march=native -std=c99 -O3 -o shuffle shuffle.c -Wall -Wextra
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -165,6 +165,13 @@ static inline uint32_t pcg32_random_bounded_divisionless(uint32_t range) {
     }
     return multiresult >> 32; // [0, range)
 }
+// this simplified version contains just one major branch/loop. For powers of two or large range, it is suboptimal.
+static inline uint32_t pcg32_random_bounded_divisionless_broken(uint32_t range) {
+    uint64_t random32bit, multiresult;
+    random32bit =  pcg32_random();
+    multiresult = random32bit * range;
+    return multiresult >> 32; // [0, range)
+}
 static inline uint32_t xorshift128plus_random_bounded_divisionless(uint32_t range) {
     uint64_t random32bit, multiresult;
     uint32_t leftover;
@@ -294,6 +301,17 @@ void  shuffle_broken_modulo(value_t *storage, uint32_t size) {
     }
 }
 
+void  shuffle_broken_modulo_rand(value_t *storage, uint32_t size) {
+    uint32_t i;
+    for (i=size; i>1; i--) {
+        uint32_t nextpos = rand() % (i+1);
+        int tmp = storage[i-1];// likely in cache
+        int val = storage[nextpos]; // could be costly
+        storage[i - 1] = val;
+        storage[nextpos] = tmp; // you might have to read this store later
+    }
+}
+
 
 
 // good old Fisher-Yates shuffle, shuffling an array of integers, uses the default pgc ranged rng
@@ -336,6 +354,17 @@ void  shuffle_pcg_divisionless(value_t *storage, uint32_t size) {
     uint32_t i;
     for (i=size; i>1; i--) {
         uint32_t nextpos = pcg32_random_bounded_divisionless(i);
+        value_t tmp = storage[i-1];// likely in cache
+        value_t val = storage[nextpos]; // could be costly
+        storage[i - 1] = val;
+        storage[nextpos] = tmp; // you might have to read this store later
+    }
+}
+// good old Fisher-Yates shuffle, shuffling an array of integers, without division
+void  shuffle_pcg_divisionless_broken(value_t *storage, uint32_t size) {
+    uint32_t i;
+    for (i=size; i>1; i--) {
+        uint32_t nextpos = pcg32_random_bounded_divisionless_broken(i);
         value_t tmp = storage[i-1];// likely in cache
         value_t val = storage[nextpos]; // could be costly
         storage[i - 1] = val;
@@ -564,7 +593,7 @@ void array_cache_prefetch(value_t* B, int32_t length) {
         do {                                                              \
             printf("%s: ", #test);                                        \
             fflush(NULL);                                                 \
-            uint64_t cycles_start, cycles_final, cycles_diff;             \
+           for(int k = 0; k < 3; ++k){ uint64_t cycles_start, cycles_final, cycles_diff;             \
             uint64_t min_diff = (uint64_t)-1;                             \
             for (int i = 0; i < repeat; i++) {                            \
                 pre;                                                       \
@@ -577,7 +606,7 @@ void array_cache_prefetch(value_t* B, int32_t length) {
             }                                                             \
             uint64_t S = size;                                            \
             float cycle_per_op = (min_diff) / (double)S;                  \
-            printf(" %.2f cycles per operation", cycle_per_op);           \
+            printf(" %.2f cycles per operation ", cycle_per_op);}           \
             printf("\n");                                                 \
             fflush(NULL);                                                 \
  } while (0)
@@ -634,10 +663,12 @@ void demo(int size) {
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg_divisionless_fancy(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
-    BEST_TIME(shuffle_broken_modulo(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    BEST_TIME(shuffle_pcg_divisionless_broken(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pre(testvalues,size,prec), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+    BEST_TIME(shuffle_broken_modulo_rand(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    BEST_TIME(shuffle_broken_modulo(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     free(testvalues);
     free(pristinecopy);
     free(prec);
