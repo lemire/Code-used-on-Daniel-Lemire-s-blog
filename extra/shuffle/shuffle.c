@@ -72,9 +72,8 @@ END PCG code
 */
 
 /*
-SIMD PCG
+Vigna's
 */
-
 
 uint64_t xorshift128plus_s[2]= {1,3};
 
