@@ -197,6 +197,7 @@ void avx_xorshift128plus_init(uint64_t key1, uint64_t key2) {
 }
 
 __m256i avx_xorshift128plus(void) {
+    // we follow as closely as possible Vigna's code at http://xorshift.di.unimi.it/xorshift128plus.c
     __m256i s1 = avx_xorshift128plus_s0;
     const __m256i s0 = avx_xorshift128plus_s1;
     avx_xorshift128plus_s0 = avx_xorshift128plus_s1;
