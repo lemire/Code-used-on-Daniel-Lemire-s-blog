@@ -20,7 +20,9 @@ static inline uint32_t xorshift128(void) {
     uint32_t t = xorshift128_x;
     t ^= t << 11;
     t ^= t >> 8;
-    xorshift128_x = xorshift128_y; xorshift128_y = xorshift128_z; xorshift128_z = xorshift128_w;
+    xorshift128_x = xorshift128_y;
+    xorshift128_y = xorshift128_z;
+    xorshift128_z = xorshift128_w;
     xorshift128_w ^= xorshift128_w >> 19;
     xorshift128_w ^= t;
     return xorshift128_w;
@@ -31,10 +33,10 @@ static inline uint32_t xorshift128(void) {
 uint64_t xorshift64star_x=1; /* The state must be seeded with a nonzero value. */
 
 uint64_t xorshift64star(void) {
-	xorshift64star_x ^= xorshift64star_x >> 12; // a
-	xorshift64star_x ^= xorshift64star_x << 25; // b
-	xorshift64star_x ^= xorshift64star_x >> 27; // c
-	return xorshift64star_x * UINT64_C(2685821657736338717);
+    xorshift64star_x ^= xorshift64star_x >> 12; // a
+    xorshift64star_x ^= xorshift64star_x << 25; // b
+    xorshift64star_x ^= xorshift64star_x >> 27; // c
+    return xorshift64star_x * UINT64_C(2685821657736338717);
 }
 
 
@@ -123,20 +125,20 @@ uint64_t xorshift128plus(void) {
 
 
 void xorshift128plus_jump() {
-	static const uint64_t JUMP[] = { 0x8a5cd789635d2dff, 0x121fd2155c472f96 };
-	uint64_t s0 = 0;
-	uint64_t s1 = 0;
-	for(unsigned int i = 0; i < sizeof (JUMP) / sizeof (*JUMP); i++)
-		for(int b = 0; b < 64; b++) {
-			if (JUMP[i] & 1ULL << b) {
-				s0 ^= xorshift128plus_s[0];
-				s1 ^= xorshift128plus_s[1];
-			}
-			xorshift128plus();
-		}
+    static const uint64_t JUMP[] = { 0x8a5cd789635d2dff, 0x121fd2155c472f96 };
+    uint64_t s0 = 0;
+    uint64_t s1 = 0;
+    for(unsigned int i = 0; i < sizeof (JUMP) / sizeof (*JUMP); i++)
+        for(int b = 0; b < 64; b++) {
+            if (JUMP[i] & 1ULL << b) {
+                s0 ^= xorshift128plus_s[0];
+                s1 ^= xorshift128plus_s[1];
+            }
+            xorshift128plus();
+        }
 
-	xorshift128plus_s[0] = s0;
-	xorshift128plus_s[1] = s1;
+    xorshift128plus_s[0] = s0;
+    xorshift128plus_s[1] = s1;
 }
 
 /**
@@ -161,19 +163,19 @@ void xorshift128plus_onkeys(uint64_t * ps0, uint64_t * ps1) {
 // used to initiate keys
 // todo: streamline
 void xorshift128plus_jump_onkeys( uint64_t  in1,  uint64_t  in2, uint64_t * output1, uint64_t * output2) {
-	static const uint64_t JUMP[] = { 0x8a5cd789635d2dff, 0x121fd2155c472f96 };
-	uint64_t s0 = 0;
-	uint64_t s1 = 0;
-	for(unsigned int i = 0; i < sizeof (JUMP) / sizeof (*JUMP); i++)
-		for(int b = 0; b < 64; b++) {
-			if (JUMP[i] & 1ULL << b) {
-				s0 ^= in1;
-				s1 ^= in2;
-			}
-      xorshift128plus_onkeys(&in1,&in2);
-		}
-	output1[0] = s0;
-	output2[0] = s1;
+    static const uint64_t JUMP[] = { 0x8a5cd789635d2dff, 0x121fd2155c472f96 };
+    uint64_t s0 = 0;
+    uint64_t s1 = 0;
+    for(unsigned int i = 0; i < sizeof (JUMP) / sizeof (*JUMP); i++)
+        for(int b = 0; b < 64; b++) {
+            if (JUMP[i] & 1ULL << b) {
+                s0 ^= in1;
+                s1 ^= in2;
+            }
+            xorshift128plus_onkeys(&in1,&in2);
+        }
+    output1[0] = s0;
+    output2[0] = s1;
 }
 
 
@@ -183,17 +185,17 @@ __m256i avx_xorshift128plus_s1;
 
 // call this once with non-zero values
 void avx_xorshift128plus_init(uint64_t key1, uint64_t key2) {
-  // this function could be streamlined quite a bit
-  uint64_t S0[4];
-  uint64_t S1[4];
-  if((key1 == 0) || (key2 == 0)) printf("using zero keys?\n");
-  S0[0] = key1;
-  S1[0] = key2;
-  xorshift128plus_jump_onkeys(*S0, *S1, S0+1, S1+1);
-  xorshift128plus_jump_onkeys(*(S0+1), *(S1+1), S0+2, S1+2);
-  xorshift128plus_jump_onkeys(*(S0+2), *(S1+2), S0+3, S1+3);
-  avx_xorshift128plus_s0 = _mm256_loadu_si256((const __m256i*)S0);
-  avx_xorshift128plus_s1 = _mm256_loadu_si256((const __m256i*)S1);
+    // this function could be streamlined quite a bit
+    uint64_t S0[4];
+    uint64_t S1[4];
+    if((key1 == 0) || (key2 == 0)) printf("using zero keys?\n");
+    S0[0] = key1;
+    S1[0] = key2;
+    xorshift128plus_jump_onkeys(*S0, *S1, S0+1, S1+1);
+    xorshift128plus_jump_onkeys(*(S0+1), *(S1+1), S0+2, S1+2);
+    xorshift128plus_jump_onkeys(*(S0+2), *(S1+2), S0+3, S1+3);
+    avx_xorshift128plus_s0 = _mm256_loadu_si256((const __m256i*)S0);
+    avx_xorshift128plus_s1 = _mm256_loadu_si256((const __m256i*)S1);
 }
 
 __m256i avx_xorshift128plus(void) {
@@ -212,6 +214,52 @@ __m256i avx_xorshift128plus(void) {
 /**
 end of vectorized version
 **/
+
+/**
+
+Fog's MWC
+
+*/
+
+uint32_t fogmwc_iw;
+uint32_t fogmwc_buffer1[16];
+__m256i fogmwc_next() {
+// Factors for multiply-with-carry
+    static const uint32_t factors[16] = {
+        4294963023, 0, 3947008974, 0, 4162943475, 0, 2654432763, 0,
+        3874257210, 0, 2936881968, 0, 4294957665, 0, 2811536238, 0
+    };
+    __m256i x, f;
+    __m256i y;
+    x = _mm256_loadu_si256((const __m256i * )(fogmwc_buffer1 + fogmwc_iw));
+    f = _mm256_loadu_si256((const __m256i * )(factors + fogmwc_iw));
+    y = _mm256_mul_epu32(x, f);
+    y = _mm256_add_epi64(y,_mm256_srli_epi64(y,32));//shift could be replaced by shuffle? Fog uses shift
+    _mm256_storeu_si256((__m256i * )(fogmwc_buffer1 + fogmwc_iw),y);
+    y = _mm256_xor_si256(y, _mm256_slli_epi64(y,30));
+    y = _mm256_xor_si256(y, _mm256_srli_epi64(y,35));
+    y = _mm256_xor_si256(y, _mm256_slli_epi64(y,13));
+    fogmwc_iw = (fogmwc_iw + 8) & 15;
+    return y;
+}
+
+
+void formwc_init(int seed) {
+    unsigned int i;
+    uint32_t tmp = seed;
+    fogmwc_iw = 0;
+    for (i = 0; i < 16; i++) {
+        tmp = fogmwc_buffer1[i] = 1566083941u * (tmp ^ (tmp >> 27)) + i;
+    }
+    for (i = 0; i < 4 * 64 / sizeof(__m256i); i++)  fogmwc_next();
+}
+
+
+/**
+
+End of Fog's MWC
+
+*/
 
 
 void populateRandom_rand(uint32_t * answer, uint32_t size) {
@@ -237,9 +285,9 @@ void populateRandom_pcg64(uint32_t * answer, uint32_t size) {
         answer[size-i] =   pcg32_random();
 }
 void populateRandom_xorshift128(uint32_t * answer, uint32_t size) {
-  for (uint32_t  i=size; i!=0; i--) {
-      answer[size-i] =   xorshift128();
-  }
+    for (uint32_t  i=size; i!=0; i--) {
+        answer[size-i] =   xorshift128();
+    }
 }
 
 void populateRandom_xorshift128plus(uint32_t * answer, uint32_t size) {
@@ -257,15 +305,30 @@ void populateRandom_avx_xorshift128plus(uint32_t * answer, uint32_t size) {
     uint32_t  i=0;
     const uint32_t block = sizeof(__m256i)/sizeof(uint32_t);//8
     while (i+block<=size) {
-      _mm256_storeu_si256((__m256i * )(answer + i),avx_xorshift128plus());
-      i += block;
+        _mm256_storeu_si256((__m256i * )(answer + i),avx_xorshift128plus());
+        i += block;
     }
     if(i != size) {
-    	uint32_t buffer[sizeof(__m256i)/sizeof(uint32_t)];
-    	_mm256_storeu_si256((__m256i * )buffer,avx_xorshift128plus());
-    	memcpy(answer + i,buffer,sizeof(uint32_t) * (size - i));
+        uint32_t buffer[sizeof(__m256i)/sizeof(uint32_t)];
+        _mm256_storeu_si256((__m256i * )buffer,avx_xorshift128plus());
+        memcpy(answer + i,buffer,sizeof(uint32_t) * (size - i));
     }
 }
+
+void populateRandom_fogmwc(uint32_t * answer, uint32_t size) {
+    uint32_t  i=0;
+    const uint32_t block = sizeof(__m256i)/sizeof(uint32_t);//8
+    while (i+block<=size) {
+        _mm256_storeu_si256((__m256i * )(answer + i),fogmwc_next());
+        i += block;
+    }
+    if(i != size) {
+        uint32_t buffer[sizeof(__m256i)/sizeof(uint32_t)];
+        _mm256_storeu_si256((__m256i * )buffer,fogmwc_next());
+        memcpy(answer + i,buffer,sizeof(uint32_t) * (size - i));
+    }
+}
+
 
 void populateRandom_xorshift64star(uint32_t * answer, uint32_t size) {
     uint32_t  i=size;
@@ -340,6 +403,8 @@ void demo(int size) {
     printf("We store values to an array of size = %lu kB.\n",size*sizeof(value_t)/(1024));
     int repeat = 500;
     uint32_t * prec = malloc(size * sizeof(value_t));
+    avx_xorshift128plus_init(1,2);
+    formwc_init(1);
     printf("\nWe just generate the random numbers: \n");
     BEST_TIME(populateRandom_rand(prec,size),, repeat, size);
     BEST_TIME(populateRandom_pcg32(prec,size),, repeat, size);
@@ -348,9 +413,7 @@ void demo(int size) {
     BEST_TIME(populateRandom_xorshift128plus(prec,size),, repeat, size);
     BEST_TIME(populateRandom_xorshift64star(prec,size),, repeat, size);
     BEST_TIME(populateRandom_avx_xorshift128plus(prec,size),, repeat, size);
-
-
-
+    BEST_TIME(populateRandom_fogmwc(prec,size),, repeat, size);
 
     free(prec);
     printf("\n");
