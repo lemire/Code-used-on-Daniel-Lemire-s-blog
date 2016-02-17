@@ -253,15 +253,17 @@ void populateRandom_xorshift128plus(uint32_t * answer, uint32_t size) {
 
 
 void populateRandom_avx_xorshift128plus(uint32_t * answer, uint32_t size) {
-    uint32_t  i=size;
+    uint32_t  i=0;
     const uint32_t block = sizeof(__m256i)/sizeof(uint32_t);//8
-    while (i>block) {
-      _mm256_storeu_si256((__m256i * )(answer + size - i),avx_xorshift128plus());
-      i -= block;
+    while (i+block<=size) {
+      _mm256_storeu_si256((__m256i * )(answer + i),avx_xorshift128plus());
+      i += block;
     }
-    uint32_t buffer[sizeof(__m256i)/sizeof(uint32_t)];
-    _mm256_storeu_si256((__m256i * )buffer,avx_xorshift128plus());
-    memcpy(answer + size - i,buffer,sizeof(uint32_t) * (size - i));
+    if(i != size) {
+    	uint32_t buffer[sizeof(__m256i)/sizeof(uint32_t)];
+    	_mm256_storeu_si256((__m256i * )buffer,avx_xorshift128plus());
+    	memcpy(answer + i,buffer,sizeof(uint32_t) * (size - i));
+    }
 }
 
 void populateRandom_xorshift64star(uint32_t * answer, uint32_t size) {
