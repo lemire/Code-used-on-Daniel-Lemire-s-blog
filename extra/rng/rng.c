@@ -1,4 +1,4 @@
-// gcc -march=native -std=c99 -O3 -o rng rng.c -Wall -Wextra
+// gcc -mavx2 -march=native -std=c99 -O3 -o rng rng.c -Wall -Wextra
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -27,6 +27,7 @@ static inline uint32_t xorshift128(void) {
 }
 
 
+
 uint64_t xorshift64star_x=1; /* The state must be seeded with a nonzero value. */
 
 uint64_t xorshift64star(void) {
@@ -35,6 +36,8 @@ uint64_t xorshift64star(void) {
 	xorshift64star_x ^= xorshift64star_x >> 27; // c
 	return xorshift64star_x * UINT64_C(2685821657736338717);
 }
+
+
 
 /**
 BEGIN PCG code
@@ -98,9 +101,15 @@ END PCG code
 /*
 Vigna's
 */
-
+/**
+XOR shift 128
+**/
 
 uint64_t xorshift128plus_s[2]= {1,3};
+
+
+
+
 
 //http://xorshift.di.unimi.it/xorshift128plus.c
 uint64_t xorshift128plus(void) {
@@ -113,6 +122,95 @@ uint64_t xorshift128plus(void) {
 }
 
 
+void xorshift128plus_jump() {
+	static const uint64_t JUMP[] = { 0x8a5cd789635d2dff, 0x121fd2155c472f96 };
+	uint64_t s0 = 0;
+	uint64_t s1 = 0;
+	for(unsigned int i = 0; i < sizeof (JUMP) / sizeof (*JUMP); i++)
+		for(int b = 0; b < 64; b++) {
+			if (JUMP[i] & 1ULL << b) {
+				s0 ^= xorshift128plus_s[0];
+				s1 ^= xorshift128plus_s[1];
+			}
+			xorshift128plus();
+		}
+
+	xorshift128plus_s[0] = s0;
+	xorshift128plus_s[1] = s1;
+}
+
+/**
+End of Vigna's
+**/
+
+/**
+Vectorized version of Vigna's xorshift128plus
+**/
+
+// used to initiate keys
+// todo: streamline
+//http://xorshift.di.unimi.it/xorshift128plus.c
+void xorshift128plus_onkeys(uint64_t * ps0, uint64_t * ps1) {
+    uint64_t s1 = *ps0;
+    const uint64_t s0 = *ps1;
+    *ps0 = s0;
+    s1 ^= s1 << 23; // a
+    *ps1 = s1 ^ s0 ^ (s1 >> 18) ^ (s0 >> 5); // b, c
+}
+
+// used to initiate keys
+// todo: streamline
+void xorshift128plus_jump_onkeys( uint64_t  in1,  uint64_t  in2, uint64_t * output1, uint64_t * output2) {
+	static const uint64_t JUMP[] = { 0x8a5cd789635d2dff, 0x121fd2155c472f96 };
+	uint64_t s0 = 0;
+	uint64_t s1 = 0;
+	for(unsigned int i = 0; i < sizeof (JUMP) / sizeof (*JUMP); i++)
+		for(int b = 0; b < 64; b++) {
+			if (JUMP[i] & 1ULL << b) {
+				s0 ^= in1;
+				s1 ^= in2;
+			}
+      xorshift128plus_onkeys(&in1,&in2);
+		}
+	output1[0] = s0;
+	output2[0] = s1;
+}
+
+
+
+__m256i avx_xorshift128plus_s0;
+__m256i avx_xorshift128plus_s1;
+
+// call this once with non-zero values
+void avx_xorshift128plus_init(uint64_t key1, uint64_t key2) {
+  // this function could be streamlined quite a bit
+  uint64_t S0[4];
+  uint64_t S1[4];
+  if((key1 == 0) || (key2 == 0)) printf("using zero keys?\n");
+  S0[0] = key1;
+  S1[0] = key2;
+  xorshift128plus_jump_onkeys(*S0, *S1, S0+1, S1+1);
+  xorshift128plus_jump_onkeys(*(S0+1), *(S1+1), S0+2, S1+2);
+  xorshift128plus_jump_onkeys(*(S0+2), *(S1+2), S0+3, S1+3);
+  avx_xorshift128plus_s0 = _mm256_loadu_si256((const __m256i*)S0);
+  avx_xorshift128plus_s1 = _mm256_loadu_si256((const __m256i*)S1);
+}
+
+__m256i avx_xorshift128plus(void) {
+    __m256i s1 = avx_xorshift128plus_s0;
+    const __m256i s0 = avx_xorshift128plus_s1;
+    avx_xorshift128plus_s0 = avx_xorshift128plus_s1;
+    s1 = _mm256_xor_si256(avx_xorshift128plus_s1,_mm256_slli_epi64(avx_xorshift128plus_s1,23));
+    //s1 ^= s1 << 23; // a
+    avx_xorshift128plus_s1 = _mm256_xor_si256(_mm256_xor_si256(_mm256_xor_si256(s1,s0),_mm256_srli_epi64(s1,18)),_mm256_srli_epi64(s0,5));
+    //xorshift128plus_s[1] = s1 ^ s0 ^ (s1 >> 18) ^ (s0 >> 5); // b, c
+    return _mm256_add_epi64(avx_xorshift128plus_s1 ,s0);
+}
+
+
+/**
+end of vectorized version
+**/
 
 
 void populateRandom_rand(uint32_t * answer, uint32_t size) {
@@ -151,6 +249,19 @@ void populateRandom_xorshift128plus(uint32_t * answer, uint32_t size) {
     }
     if(i!=0)
         answer[size-i] =   (uint32_t) xorshift128plus();
+}
+
+
+void populateRandom_avx_xorshift128plus(uint32_t * answer, uint32_t size) {
+    uint32_t  i=size;
+    const uint32_t block = sizeof(__m256i)/sizeof(uint32_t);//8
+    while (i>block) {
+      _mm256_storeu_si256((__m256i * )(answer + size - i),avx_xorshift128plus());
+      i -= block;
+    }
+    uint32_t buffer[sizeof(__m256i)/sizeof(uint32_t)];
+    _mm256_storeu_si256((__m256i * )buffer,avx_xorshift128plus());
+    memcpy(answer + size - i,buffer,sizeof(uint32_t) * (size - i));
 }
 
 void populateRandom_xorshift64star(uint32_t * answer, uint32_t size) {
@@ -233,6 +344,9 @@ void demo(int size) {
     BEST_TIME(populateRandom_xorshift128(prec,size),, repeat, size);
     BEST_TIME(populateRandom_xorshift128plus(prec,size),, repeat, size);
     BEST_TIME(populateRandom_xorshift64star(prec,size),, repeat, size);
+    BEST_TIME(populateRandom_avx_xorshift128plus(prec,size),, repeat, size);
+
+
 
 
     free(prec);
