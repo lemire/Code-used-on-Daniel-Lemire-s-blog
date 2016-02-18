@@ -94,7 +94,7 @@ Vectorized version of Vigna's xorshift128plus
 // used to initiate keys
 // todo: streamline
 //http://xorshift.di.unimi.it/xorshift128plus.c
-void xorshift128plus_onkeys(uint64_t * ps0, uint64_t * ps1) {
+static void xorshift128plus_onkeys(uint64_t * ps0, uint64_t * ps1) {
     uint64_t s1 = *ps0;
     const uint64_t s0 = *ps1;
     *ps0 = s0;
@@ -104,7 +104,7 @@ void xorshift128plus_onkeys(uint64_t * ps0, uint64_t * ps1) {
 
 // used to initiate keys
 // todo: streamline
-void xorshift128plus_jump_onkeys( uint64_t  in1,  uint64_t  in2, uint64_t * output1, uint64_t * output2) {
+static void xorshift128plus_jump_onkeys( uint64_t  in1,  uint64_t  in2, uint64_t * output1, uint64_t * output2) {
     static const uint64_t JUMP[] = { 0x8a5cd789635d2dff, 0x121fd2155c472f96 };
     uint64_t s0 = 0;
     uint64_t s1 = 0;
@@ -122,11 +122,11 @@ void xorshift128plus_jump_onkeys( uint64_t  in1,  uint64_t  in2, uint64_t * outp
 
 
 
-__m256i avx_xorshift128plus_s0;
-__m256i avx_xorshift128plus_s1;
+static __m256i avx_xorshift128plus_s0;
+static __m256i avx_xorshift128plus_s1;
 
 // call this once with non-zero values
-void avx_xorshift128plus_init(uint64_t key1, uint64_t key2) {
+static void avx_xorshift128plus_init(uint64_t key1, uint64_t key2) {
     // this function could be streamlined quite a bit
     uint64_t S0[4];
     uint64_t S1[4];
@@ -140,7 +140,7 @@ void avx_xorshift128plus_init(uint64_t key1, uint64_t key2) {
     avx_xorshift128plus_s1 = _mm256_loadu_si256((const __m256i*)S1);
 }
 
-__m256i avx_xorshift128plus(void) {
+static inline __m256i avx_xorshift128plus(void) {
     // we follow as closely as possible Vigna's code at http://xorshift.di.unimi.it/xorshift128plus.c
     __m256i s1 = avx_xorshift128plus_s0;
     const __m256i s0 = avx_xorshift128plus_s1;
@@ -154,7 +154,7 @@ __m256i avx_xorshift128plus(void) {
 
 // outputs 8 32-bit integers in the ranges given by interval
 // generate slight bias
-__m256i avx_range(__m256i base, __m256i interval) {
+static inline __m256i avx_range(__m256i base, __m256i interval) {
   // four values
   __m256i  evenparts = _mm256_srli_epi64(_mm256_mul_epu32(base,interval),32);
   // four other values
@@ -588,11 +588,11 @@ void  shuffle_avx(value_t *storage, uint32_t size) {
     uint32_t i;
     uint32_t  randomsource[8];
     __m256i interval = _mm256_setr_epi32(size,size-1,size-2,size-3,size-4,size-5,size-6,size-7);
+    __m256i R = avx_range( avx_xorshift128plus(), interval);
+    _mm256_storeu_si256((__m256i *)randomsource, R);
     __m256i vec8 = _mm256_set1_epi32(8);
     for (i=size; i>1; ) {
-      __m256i R = avx_range( avx_xorshift128plus(), interval);
-      _mm256_storeu_si256((__m256i *)randomsource, R);
-      for(int j = 0; j < 8; ++j) {
+     for(int j = 0; j < 8; ++j) {
           uint32_t nextpos = randomsource[j];
           int tmp = storage[i-1];// likely in cache
           int val = storage[nextpos]; // could be costly
@@ -601,7 +601,9 @@ void  shuffle_avx(value_t *storage, uint32_t size) {
           i--;
         }
         interval = _mm256_sub_epi32(interval,vec8);
-    }
+        __m256i R = avx_range( avx_xorshift128plus(), interval);
+        _mm256_storeu_si256((__m256i *)randomsource, R);
+     }
 }
 
 
@@ -782,6 +784,7 @@ void demo(int size) {
 }
 
 int main() {
+    avx_xorshift128plus_init(1,2);
     demo(10000);
     return 0;
 }
