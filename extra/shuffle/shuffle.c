@@ -1,4 +1,4 @@
-// clang -march=native -std=c99 -O3 -o shuffle shuffle.c -Wall -Wextra
+// clang -mavx2 -march=native -std=c99 -O3 -o shuffle shuffle.c -Wall -Wextra
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -87,6 +87,85 @@ static inline uint64_t xorshift128plus(void) {
     return xorshift128plus_s[1] + s0;
 }
 
+/**
+Vectorized version of Vigna's xorshift128plus
+**/
+
+// used to initiate keys
+// todo: streamline
+//http://xorshift.di.unimi.it/xorshift128plus.c
+void xorshift128plus_onkeys(uint64_t * ps0, uint64_t * ps1) {
+    uint64_t s1 = *ps0;
+    const uint64_t s0 = *ps1;
+    *ps0 = s0;
+    s1 ^= s1 << 23; // a
+    *ps1 = s1 ^ s0 ^ (s1 >> 18) ^ (s0 >> 5); // b, c
+}
+
+// used to initiate keys
+// todo: streamline
+void xorshift128plus_jump_onkeys( uint64_t  in1,  uint64_t  in2, uint64_t * output1, uint64_t * output2) {
+    static const uint64_t JUMP[] = { 0x8a5cd789635d2dff, 0x121fd2155c472f96 };
+    uint64_t s0 = 0;
+    uint64_t s1 = 0;
+    for(unsigned int i = 0; i < sizeof (JUMP) / sizeof (*JUMP); i++)
+        for(int b = 0; b < 64; b++) {
+            if (JUMP[i] & 1ULL << b) {
+                s0 ^= in1;
+                s1 ^= in2;
+            }
+            xorshift128plus_onkeys(&in1,&in2);
+        }
+    output1[0] = s0;
+    output2[0] = s1;
+}
+
+
+
+__m256i avx_xorshift128plus_s0;
+__m256i avx_xorshift128plus_s1;
+
+// call this once with non-zero values
+void avx_xorshift128plus_init(uint64_t key1, uint64_t key2) {
+    // this function could be streamlined quite a bit
+    uint64_t S0[4];
+    uint64_t S1[4];
+    if((key1 == 0) || (key2 == 0)) printf("using zero keys?\n");
+    S0[0] = key1;
+    S1[0] = key2;
+    xorshift128plus_jump_onkeys(*S0, *S1, S0+1, S1+1);
+    xorshift128plus_jump_onkeys(*(S0+1), *(S1+1), S0+2, S1+2);
+    xorshift128plus_jump_onkeys(*(S0+2), *(S1+2), S0+3, S1+3);
+    avx_xorshift128plus_s0 = _mm256_loadu_si256((const __m256i*)S0);
+    avx_xorshift128plus_s1 = _mm256_loadu_si256((const __m256i*)S1);
+}
+
+__m256i avx_xorshift128plus(void) {
+    // we follow as closely as possible Vigna's code at http://xorshift.di.unimi.it/xorshift128plus.c
+    __m256i s1 = avx_xorshift128plus_s0;
+    const __m256i s0 = avx_xorshift128plus_s1;
+    avx_xorshift128plus_s0 = avx_xorshift128plus_s1;
+    s1 = _mm256_xor_si256(avx_xorshift128plus_s1,_mm256_slli_epi64(avx_xorshift128plus_s1,23));
+    //s1 ^= s1 << 23; // a
+    avx_xorshift128plus_s1 = _mm256_xor_si256(_mm256_xor_si256(_mm256_xor_si256(s1,s0),_mm256_srli_epi64(s1,18)),_mm256_srli_epi64(s0,5));
+    //xorshift128plus_s[1] = s1 ^ s0 ^ (s1 >> 18) ^ (s0 >> 5); // b, c
+    return _mm256_add_epi64(avx_xorshift128plus_s1 ,s0);
+}
+
+// outputs 8 32-bit integers in the ranges given by interval
+// generate slight bias
+__m256i avx_range(__m256i base, __m256i interval) {
+  // four values
+  __m256i  evenparts = _mm256_srli_epi64(_mm256_mul_epu32(base,interval),32);
+  // four other values
+  __m256i  oddparts = _mm256_mul_epu32(_mm256_srli_epi64(base,32),interval);// shift could be replaced by shuffle
+  // need to blend the eight values
+  return _mm256_blend_epi32(evenparts,oddparts,0b10101010);
+}
+
+/**
+end of vectorized version
+**/
 
 
 /**
@@ -500,6 +579,32 @@ uint32_t * precomputeRandom(uint32_t size) {
 }
 
 
+
+// outputs 8 32-bit integers in the ranges given by interval
+// generate slight bias
+
+// good old Fisher-Yates shuffle, shuffling an array of integers, using pre-populated random numbers
+void  shuffle_avx(value_t *storage, uint32_t size) {
+    uint32_t i;
+    uint32_t  randomsource[8];
+    __m256i interval = _mm256_setr_epi32(size,size-1,size-2,size-3,size-4,size-5,size-6,size-7);
+    __m256i vec8 = _mm256_set1_epi32(8);
+    for (i=size; i>1; ) {
+      __m256i R = avx_range( avx_xorshift128plus(), interval);
+      _mm256_storeu_si256((__m256i *)randomsource, R);
+      for(int j = 0; j < 8; ++j) {
+          uint32_t nextpos = randomsource[j];
+          int tmp = storage[i-1];// likely in cache
+          int val = storage[nextpos]; // could be costly
+          storage[i - 1] = val;
+          storage[nextpos] = tmp; // you might have to read this store later
+          i--;
+        }
+        interval = _mm256_sub_epi32(interval,vec8);
+    }
+}
+
+
 // good old Fisher-Yates shuffle, shuffling an array of integers, using pre-populated random numbers
 void  shuffle_pre(value_t *storage, uint32_t size, uint32_t * randomsource) {
     uint32_t i;
@@ -649,6 +754,8 @@ void demo(int size) {
     printf("\nNext we do the actual shuffle: \n");
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+    BEST_TIME(shuffle_avx(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
     BEST_TIME(shuffle_pcg_java(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
