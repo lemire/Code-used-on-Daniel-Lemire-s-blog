@@ -149,6 +149,30 @@ End of Vigna's
 Vectorized version of Vigna's xorshift128plus
 **/
 
+/*
+
+If I have seed x, and then with every random number generated 
+the seed becomes x = f(x). So two applications give you x= f(f(x)).
+
+Let f(f(x)) := f^(2) (x).  That is, I define the "power" of f to be 
+a repeated application of f. E.g., f^(1) = f.
+
+Vigna provides us with a function to compute f^(2^64).
+
+Given an initial seed s, I can initialize my vector as
+
+s,  f^(2^64)(s), f^(2 * 2^64)(s), f^(3 * 2^64)(s),...
+
+Then on the next iteration I will have...
+
+f(s),  f^(2^64+1)(s), f^(2 * 2^64+1)(s), f^(3 * 2^64+1)(s),...
+  
+and so forth.
+
+This gives me a period of 2^64. I could increase this further by 2^64 is 
+a huge number that should be fine for all applications.
+*/
+
 // used to initiate keys
 // todo: streamline
 //http://xorshift.di.unimi.it/xorshift128plus.c
