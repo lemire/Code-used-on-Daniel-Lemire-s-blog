@@ -601,7 +601,7 @@ void  shuffle_avx(value_t *storage, uint32_t size) {
           i--;
         }
         interval = _mm256_sub_epi32(interval,vec8);
-        __m256i R = avx_range( avx_xorshift128plus(), interval);
+        R = avx_range( avx_xorshift128plus(), interval);
         _mm256_storeu_si256((__m256i *)randomsource, R);
      }
 }
