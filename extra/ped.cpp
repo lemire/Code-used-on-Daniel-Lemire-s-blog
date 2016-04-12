@@ -1,4 +1,4 @@
-//g++ -std=c++11 -mbmi2 -msse4.1   -O2 -o ped ped.cpp
+//g++ -std=c++11 -mavx2 -mbmi2 -msse4.1   -O2 -o ped ped.cpp
 #include <x86intrin.h>
 #include <bmi2intrin.h>
 #include <smmintrin.h>
@@ -72,6 +72,28 @@ void bmidecode2(__int64_t w, uint32_t * output) {
     IACA_END;
 }
 
+
+// we can pack 32 integers using 2 bits each in a 64-bit word
+void bmidecode2avx(__int64_t w, uint32_t * output) {
+    IACA_START;// says that the the throughput is 8 cycles or 1/4 of a cycle per integer
+
+    __int64_t y[2];// hope for 128 alignment
+    __m256i x;
+    y[0] = _pdep_u64(w, 0x0303030303030303); // decode 64/8=8 integers
+    y[1] = _pdep_u64(w >> 16, 0x0303030303030303); // decode 64/8=8 integers
+
+    x =  _mm256_cvtepu8_epi32(_mm_load_si128(((const __m128i *) & y)));
+    _mm256_storeu_si256((__m256i *) output, x);
+
+    y[0] = _pdep_u64(w >> 32, 0x0303030303030303); // decode 64/8=8 integers
+    y[1] = _pdep_u64(w >> 48, 0x0303030303030303); // decode 64/8=8 integers
+
+    x =  _mm256_cvtepu8_epi32(_mm_load_si128(((const __m128i *) & y)));
+    _mm256_storeu_si256((__m256i *) output + 1, x);
+
+    IACA_END;
+}
+
 // we can pack 32 integers using 2 bits each in a 64-bit word
 void bmidecode2alt(__int64_t w, uint32_t * output) {
     IACA_START;// says that the the throughput is 8 cycles or 1/4 of a cycle per integer
@@ -80,7 +102,7 @@ void bmidecode2alt(__int64_t w, uint32_t * output) {
     __m128i x, z;
     y[0] = _pdep_u64(w, 0x0303030303030303); // decode 64/8=8 integers
     y[1] = _pdep_u64(w >> 16, 0x0303030303030303); // decode 64/8=8 integers
-    
+
     x =  _mm_load_si128((const __m128i *) & y );
     z = _mm_cvtepu8_epi32(x );
     _mm_storeu_si128((__m128i*) output, z);
@@ -148,7 +170,7 @@ void scalardecodeunrolled2(__int64_t w, uint32_t * output) {
 
 // we can pack 32 integers using 2 bits each in a 64-bit word
 uint64_t  scalarencode2(uint32_t * output) {
-    uint64_t w = 0;    
+    uint64_t w = 0;
     for(int k = 0; k < 32; ++k)
       w |= ((uint64_t) output[k] << (k*2));
     return w;
@@ -169,13 +191,13 @@ int main() {
     }
     uint32_t * outdata = (uint32_t *) malloc(N * sizeof(uint32_t));
     time.reset();
-    for(int T = 0; T < REPEAT; ++T) 
+    for(int T = 0; T < REPEAT; ++T)
     for(int k = 0; k < N; k += 32) {
         scalardecode2(codeddata[k/32],outdata+k);
     }
     cout<<"scalar speed "<<N*REPEAT/(1000.0*time.split())<<endl;
 
-    
+
     for(int k = 0; k < N; ++k) {
         if(data[k] != outdata[k]) {
             cout << " bug  " <<endl;
@@ -183,13 +205,13 @@ int main() {
         }
     }
     time.reset();
-    for(int T = 0; T < REPEAT; ++T) 
+    for(int T = 0; T < REPEAT; ++T)
     for(int k = 0; k < N; k += 32) {
         scalardecodeunrolled2(codeddata[k/32],outdata+k);
     }
     cout<<"unrolled scalar speed "<<N*REPEAT/(1000.0*time.split())<<endl;
 
-    
+
     for(int k = 0; k < N; ++k) {
         if(data[k] != outdata[k]) {
             cout << " bug  " <<endl;
@@ -198,7 +220,7 @@ int main() {
     }
     time.reset();
 
-    for(int T = 0; T < REPEAT; ++T) 
+    for(int T = 0; T < REPEAT; ++T)
     for(int k = 0; k < N; k += 32) {
         bmidecode2(codeddata[k/32],outdata+k);
     }
@@ -210,9 +232,23 @@ int main() {
             return -1;
         }
     }
-    
 
-    for(int T = 0; T < REPEAT; ++T) 
+    time.reset();
+
+    for(int T = 0; T < REPEAT; ++T)
+    for(int k = 0; k < N; k += 32) {
+        bmidecode2avx(codeddata[k/32],outdata+k);
+    }
+    cout<<"bmi2avx speed "<<N*REPEAT/(1000.0*time.split())<<endl;
+
+    for(int k = 0; k < N; ++k) {
+        if(data[k] != outdata[k]) {
+            cout << " bug  " <<endl;
+            return -1;
+        }
+    }
+
+    for(int T = 0; T < REPEAT; ++T)
     for(int k = 0; k < N; k += 32) {
         bmidecode2alt(codeddata[k/32],outdata+k);
     }
@@ -224,7 +260,7 @@ int main() {
             return -1;
         }
     }
-    
+
 
     return 0;
 }
