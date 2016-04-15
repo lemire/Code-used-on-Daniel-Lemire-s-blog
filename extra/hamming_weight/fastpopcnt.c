@@ -1,3 +1,5 @@
+// gcc -O3  -march=native -o fastpopcnt fastpopcnt.c
+// see also https://github.com/WojciechMula/sse-popcount
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -116,11 +118,15 @@ int table_bitset16_weight(const uint16_t * input, size_t length) {
 // compute the Hamming weight of an array of 64-bit words using unrolled popcnt instructions
 int unrolled_popcnt_bitset64_weight(const uint64_t * input, size_t length) {
     int card = 0;
-    for(size_t k = 0; k < length; k+=4) {
+    size_t k = 0;
+    for(; k < length; k+=4) {
         card += _mm_popcnt_u64(input[k]);
         card += _mm_popcnt_u64(input[k+1]);
         card += _mm_popcnt_u64(input[k+2]);
         card += _mm_popcnt_u64(input[k+3]);
+    }
+    for(; k < length; k++) {
+        card += _mm_popcnt_u64(input[k]);
     }
     return card;
 }
@@ -166,10 +172,13 @@ int avx2_bitset64_weight(const uint64_t * array, size_t length) {
                     total,
                     innertotal);  // add the 4 64-bit counters to previous counter
     }
-    int leftoverwords =  length % (inner * sizeof(__m256i) / sizeof(uint64_t));
-    int leftover = popcnt_bitset64_weight(array + length - leftoverwords , leftoverwords);
-    return leftover + _mm256_extract_epi64(total, 0) + _mm256_extract_epi64(total, 1) +
+    int answer = _mm256_extract_epi64(total, 0) + _mm256_extract_epi64(total, 1) +
            _mm256_extract_epi64(total, 2) + _mm256_extract_epi64(total, 3);
+    const int leftoverwords =  length % (inner * sizeof(__m256i) / sizeof(uint64_t));
+    for(size_t k = length - leftoverwords; k < length; k++) {
+        answer += _mm_popcnt_u64(array[k]);
+    }
+    return answer;
 }
 
 
@@ -254,7 +263,6 @@ int main() {
     demo(32);
     demo(64);
     demo(128);
-
-    demo(5000);
+    demo(1024);
     return 0;
 }
