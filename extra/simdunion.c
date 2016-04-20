@@ -50,7 +50,7 @@ static uint32_t sse_unite(uint32_t * __restrict__ array1, uint32_t length1 ,
     assert(length2 % 4 == 0); // because I am lazy
     assert(length1 != 0); // because I am lazy
     assert(length2 != 0); // because I am lazy
-
+    assert(length1 == length2); // really lazy
     uint32_t len1 = length1 / 4;
     uint32_t len2 = length2 / 4;
     uint32_t pos1 = 0;
@@ -65,9 +65,11 @@ static uint32_t sse_unite(uint32_t * __restrict__ array1, uint32_t length1 ,
     sse_merge(&vA,&vB,&vMin,&vOld);
     _mm_storeu_si128((__m128i* )output + outpos,vMin);
     outpos++;
-    while(true) {
+    while(pos1 < len1) {
         vA = _mm_lddqu_si128((const __m128i* )array1 + pos1);
+        pos1++;
         vB = _mm_lddqu_si128((const __m128i* )array2 + pos2);
+        pos2++;
         sse_merge(&vA,&vB,&vMin,&vMax);
         _mm_storeu_si128((__m128i* )output + outpos,vMin);
         outpos++;
