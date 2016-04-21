@@ -69,8 +69,6 @@ static void print32(__m128i x) {
 static void sse_merge(__m128i *vA, __m128i *vB, // input 1 & 2
                       __m128i *vMin, __m128i *vMax) { // output
     __m128i vTmp;
-//vA = 0 1 6 7 (hypothetical)
-//vB = 2 3 4 5 (hypothetical)
 
     vTmp = _mm_min_epu32(*vA, *vB);
 // vTmp = 0 1 4 5
@@ -95,11 +93,6 @@ static void sse_merge(__m128i *vA, __m128i *vB, // input 1 & 2
     *vMax = _mm_max_epu32(vTmp, *vMax);
 // vMax = 4 5 6 7
     *vMin = _mm_alignr_epi8(*vMin, *vMin, 4);
-// result: 0 1 2 3
-//print32(*vMin);
-    assert(is_sorted(*vMin));
-    assert(is_sorted(*vMax));
-    assert((uint32_t)_mm_extract_epi32(*vMin,3)<=(uint32_t)_mm_extract_epi32(*vMax,0));
 
 }
 
