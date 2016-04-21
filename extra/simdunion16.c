@@ -756,13 +756,12 @@ void unittesting(uint32_t len1, uint32_t len2) {
 }
 
 
-void benchmark(uint32_t size) {
-    printf("== benchmark size = %d \n", size);
-    assert(size % 8 == 0);
-    uint16_t * array1= malloc(size * sizeof(uint16_t));
-    uint32_t len1 = size;
-    uint16_t * array2= malloc(size * sizeof(uint16_t));
-    uint32_t len2 = size;
+void benchmark(uint32_t len1, uint32_t len2) {
+    printf("== benchmark sizes = %d %d \n", len1, len2);
+    assert(len1 % 8 == 0);
+    assert(len2 % 8 == 0);
+    uint16_t * array1= malloc(len1 * sizeof(uint16_t));
+    uint16_t * array2= malloc(len2 * sizeof(uint16_t));
     uint16_t last;
     last = 0;
     for(int k = 0; k < len1; ++k) {
@@ -836,8 +835,9 @@ int main() {
             unittesting(2*k, k);
         }
     }
-    benchmark(512);
-    benchmark(1024);
-    benchmark(2048);
+    benchmark(512,512);
+    benchmark(1024,512);
+    benchmark(512,1024);
+    benchmark(2048,512);
 
 }
