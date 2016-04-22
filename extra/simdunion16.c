@@ -528,7 +528,7 @@ static uint32_t sse_unite(uint16_t * __restrict__ array1, uint32_t length1 ,
 
 
 // standard scalar algorithm
-uint32_t union_uint32(const uint16_t *set_1, uint32_t size_1, const uint16_t *set_2,
+uint32_t union_uint16(const uint16_t *set_1, uint32_t size_1, const uint16_t *set_2,
                       uint32_t size_2, uint16_t *buffer) {
     uint32_t pos = 0, idx_1 = 0, idx_2 = 0;
 
@@ -582,17 +582,12 @@ static int uint16_compare (const void * a, const void * b) {
 // a one-pass SSE union algorithm
 static uint32_t sse_unite_opti(uint16_t * __restrict__ array1, uint32_t length1 ,
                                uint16_t *  __restrict__ array2, uint32_t length2, uint16_t *  __restrict__  output) {
+    if ((length1 < 8) || (length2 < 8)) {
+       return union_uint16(array1, length1, array2, length2,output);
+    }
     __m128i vA, vB, V, vecMin,vecMax;
     __m128i laststore;
     uint16_t * initoutput = output;
-    if (0 == length1) {
-        memcpy(output, array1, length1 * sizeof(uint16_t));
-        return length1;
-    }
-    if (0 == length2) {
-        memcpy(output, array2, length2 * sizeof(uint16_t));
-        return length2;
-    }
     uint32_t len1 = length1 / 8;
     uint32_t len2 = length2 / 8;
     uint32_t pos1 = 0;
@@ -648,14 +643,14 @@ static uint32_t sse_unite_opti(uint16_t * __restrict__ array1, uint32_t length1 
 
 
         leftoversize= unique(buffer, leftoversize);
-        len += union_uint32(buffer,leftoversize, array2 + 8 * pos2,
+        len += union_uint16(buffer,leftoversize, array2 + 8 * pos2,
                             length2 - 8 * pos2, output);
     } else {
         memcpy(buffer + leftoversize, array2 + 8 * pos2, (length2 - 8 * len2) * sizeof(uint16_t));
         leftoversize += length2 - 8 * len2;
         qsort (buffer, leftoversize, sizeof(uint16_t), uint16_compare);
         leftoversize= unique(buffer, leftoversize);
-        len += union_uint32(buffer,leftoversize, array1 + 8 * pos1,
+        len += union_uint16(buffer,leftoversize, array1 + 8 * pos1,
                             length1 - 8 * pos1, output);
     }
     return len;
@@ -672,6 +667,61 @@ static uint32_t sse_unite_opti(uint16_t * __restrict__ array1, uint32_t length1 
 ******/
 
 
+
+
+void generic_unittesting(uint32_t len1, uint32_t len2) {
+    uint16_t * array1= malloc(len1 * sizeof(uint16_t));
+    uint16_t * array2= malloc(len2 * sizeof(uint16_t));
+    uint16_t last;
+    last = 0;
+    for(int k = 0; k < len1; ++k) {
+        last = last + (rand()&0x0F) + 1;
+        array1[k] =last;
+    }
+    if(!array_is_strictly_sorted(array1,len1)) return;
+    last = 0;
+    for(int k = 0; k < len2; ++k) {
+        last = last + (rand()&0x0F) + 1;
+        array2[k] = last;
+    }
+    if(!array_is_strictly_sorted(array2,len2)) return;
+
+    assert(array_is_strictly_sorted(array1,len1));
+    assert(array_is_strictly_sorted(array2,len2));
+
+    uint16_t * output = malloc((len1 + len2) * sizeof(uint16_t));
+    uint16_t * outputopti = malloc((len1 + len2) * sizeof(uint16_t));
+    uint32_t lenopti = sse_unite_opti(array1, len1,array2, len2,outputopti);
+    for(int k = 0 ; k < lenopti; ++k) {
+        if(k>0) {
+            if(outputopti[k]<=outputopti[k-1]) {
+                printf("bug opti SSE at k =%d out of %d:  %u %u",k,lenopti,outputopti[k-1],outputopti[k]);
+                abort();
+            }
+        }
+    }
+
+
+    uint16_t * output2 = malloc((len1 + len2) * sizeof(uint16_t));
+
+    uint32_t lenslow =  union_uint16(array1, len1,array2, len2,output2);
+    if(lenopti != lenslow) {
+        printf("bad opti length = %d %d \n", lenopti,lenslow);
+        array_print(outputopti,lenopti);
+        array_print(output2,lenslow);
+        abort();
+    }
+    for(int k = 0 ; k < lenopti; ++k) {
+        if(outputopti[k]!=output2[k]) {
+            printf("bug opti SSE at k =%d out of %d:  %u %u",k,lenopti,outputopti[k],output2[k]);
+            abort();
+        }
+    }
+    free(output2);
+    free(outputopti);
+    free(array1);
+    free(array2);
+}
 
 
 void unittesting(uint32_t len1, uint32_t len2) {
@@ -728,7 +778,7 @@ void unittesting(uint32_t len1, uint32_t len2) {
 
     uint16_t * output2 = malloc((len1 + len2) * sizeof(uint16_t));
 
-    uint32_t lenslow =  union_uint32(array1, len1,array2, len2,output2);
+    uint32_t lenslow =  union_uint16(array1, len1,array2, len2,output2);
     if(len != lenslow) {
         printf("bad length = %d %d \n", len,lenslow);
         array_print(output,len);
@@ -815,7 +865,7 @@ void benchmark(uint32_t len1, uint32_t len2) {
            cycles_final - cycles_start);
 
     RDTSC_START(cycles_start);
-    uint32_t lenslow =  union_uint32(array1, len1,array2, len2,output4);
+    uint32_t lenslow =  union_uint16(array1, len1,array2, len2,output4);
     RDTSC_FINAL(cycles_final);
     printf("scalar took %" PRIu64 " cycles\n",
            cycles_final - cycles_start);
@@ -849,6 +899,15 @@ int main() {
             unittesting(2*k, k);
         }
     }
+    for(int k = 0; k <512; k++) {
+        for(int l = 0; l<=k; l++) {
+            generic_unittesting(k, l);
+            generic_unittesting(l,k);
+
+        }
+    }
+
+
     benchmark(512,512);
     benchmark(1024,512);
     benchmark(512,1024);
