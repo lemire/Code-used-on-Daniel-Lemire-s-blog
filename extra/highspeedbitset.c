@@ -57,7 +57,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
         printf("rdtsc_overhead set to %ld\n", (long)global_rdtsc_overhead);   \
     } while (0)                                                         \
 
-#define RDTSC_LOOP(test,repeat, num_vecs)                      \
+#define RDTSC_LOOP(test,reset,repeat, num_vecs)                      \
     do {                                                                \
         if (global_rdtsc_overhead == UINT64_MAX) {                      \
             RDTSC_SET_OVERHEAD(rdtsc_overhead_func(1), repeat);         \
@@ -73,6 +73,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             RDTSC_STOP(cycles_final);                                   \
             cycles_diff = (cycles_final - cycles_start);                \
             if (cycles_diff < min_diff) min_diff = cycles_diff;         \
+            reset;                                                     \
         }                                                               \
         if (min_diff <= global_rdtsc_overhead) min_diff = 0;		\
         else min_diff = min_diff - global_rdtsc_overhead;               \
@@ -83,7 +84,20 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
         fflush(NULL);							\
         } while (0)
 
-
+void bitset_set_list_regular(void *bitset, 
+                         uint16_t *list, uint64_t length) {
+    uint64_t offset, load, newload, pos, index;
+    uint16_t *end = list + length;
+    while(list != end) {
+      pos =  *(uint16_t *)  list;
+      offset = pos >> 6;
+      index = pos % 64;
+      load = ((uint64_t *) bitset)[offset];
+      newload = load | (UINT64_C(1) << index);
+      ((uint64_t *) bitset)[offset] = newload;
+      list ++;
+    }
+}
 void bitset_set_list(void *bitset, const uint16_t *list, uint64_t length) {
     uint64_t offset, load, pos;
     uint64_t shift = 6;
@@ -104,28 +118,6 @@ void bitset_set_list(void *bitset, const uint16_t *list, uint64_t length) {
         : [end] "r"(end), [bitset] "r"(bitset), [shift] "r"(shift));
 }
 
-void bitset_set_list_condwrite(void *bitset, const uint16_t *list, uint64_t length) {
-    uint64_t offset, load, pos;
-    uint64_t shift = 6;
-    const uint16_t *end = list + length;
-    // bts is not available as an intrinsic in GCC
-    __asm volatile(
-        "1:\n"
-        "movzwq (%[list]), %[pos]\n"
-        "shrx %[shift], %[pos], %[offset]\n"
-        "mov (%[bitset],%[offset],8), %[load]\n"
-        "bts %[pos], %[load]\n"
-        "jc 2f\n"
-        "mov %[load], (%[bitset],%[offset],8)\n"
-        "2:\n"
-        "add $2, %[list]\n"
-        "cmp %[list], %[end]\n"
-        "jnz 1b"
-        : [list] "+&r"(list), [load] "=&r"(load), [pos] "=&r"(pos),
-          [offset] "=&r"(offset)
-        : [end] "r"(end), [bitset] "r"(bitset), [shift] "r"(shift));
-}
-
 void check(void *bitset, const uint16_t *list, uint64_t length) {
   const char * c = (const char *)bitset;
   for(uint32_t i = 0; i < length; ++i) {
@@ -135,6 +127,13 @@ void check(void *bitset, const uint16_t *list, uint64_t length) {
     assert((c[byte] & (1<<bit)) ==(1<<bit));
   }
 }
+
+void reset(uint16_t * list, int length) {
+    for (int i = 0; i < length; i++) {
+        list[i] = rand();
+    }
+ }
+
 void demo() {
     const int length = 256*100;
     const int mult = 6;
@@ -149,18 +148,19 @@ void demo() {
     memset(out, 0x00, bitsetbytes);
     const int repeat = 1000;
         printf("%d \n",*(int *)out);
-
-    RDTSC_LOOP(bitset_set_list(out, list, length),  repeat, 256);
+    RDTSC_LOOP(bitset_set_list_regular(out, list, length),reset(list,length),  repeat, length);
     check(out, list, length);
     printf("%d \n",*(int *)out);
     memset(out, 0x00, bitsetbytes);
             printf("%d \n",*(int *)out);
+    for (int i = 0; i < length; i++) {
+        list[i] = i * mult;
+    }
+ 
 
-    RDTSC_LOOP(bitset_set_list_condwrite(out, list, length), repeat, 256);
-        printf("%d \n",*(int *)out);
-
+    RDTSC_LOOP(bitset_set_list(out, list, length), reset(list,length), repeat, length);
     check(out, list, length);
-    memset(out, 0x00, bitsetbytes);
+    printf("%d \n",*(int *)out);
     free(out);
 }
 
