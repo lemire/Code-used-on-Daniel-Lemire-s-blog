@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
+#include <x86intrin.h>
 
 
 #define RDTSC_START(cycles)                                                   \
@@ -209,10 +210,89 @@ uint32_t run_container_union_twopass(const rle16_t *src_1, uint32_t length1,
     return n_runs;
 }
 
+static void sse_merge(__m128i *vInput1, __m128i *vInput2, // input 1 & 2
+                      __m128i *vecMin, __m128i *vecMax) { // output
+    __m128i vecTmp;
+    vecTmp = _mm_min_epu32(*vInput1, *vInput2);
+    *vecMax = _mm_max_epu32(*vInput1, *vInput2);
+    vecTmp = _mm_alignr_epi8(vecTmp, vecTmp, 4);
+    *vecMin = _mm_min_epu32(vecTmp, *vecMax);
+    *vecMax = _mm_max_epu32(vecTmp, *vecMax);
+    vecTmp = _mm_alignr_epi8(*vecMin, *vecMin, 4);
+    *vecMin = _mm_min_epu32(vecTmp, *vecMax);
+    *vecMax = _mm_max_epu32(vecTmp, *vecMax);
+    vecTmp = _mm_alignr_epi8(*vecMin, *vecMin, 4);
+    *vecMin = _mm_min_epu32(vecTmp, *vecMax);
+    *vecMax = _mm_max_epu32(vecTmp, *vecMax);
+    *vecMin = _mm_alignr_epi8(*vecMin, *vecMin, 4);
+}
+
+
+uint32_t sse_run_container_union_twopass(const rle16_t *src_1, uint32_t length1,
+                                     const rle16_t *src_2, uint32_t length2, rle16_t *dst) {
+    uint32_t n_runs = 0;
+    int32_t rlepos = 0;
+    int32_t xrlepos = 0;
+    if((length1 == 0) || (length2 == 0)) {
+        memcpy(dst, src_1, length1 * sizeof(rle16_t));
+        memcpy(dst, src_2 , length2 * sizeof(rle16_t));
+        return length1 + length2;
+    }
+    /**
+    we proceed in two passes, first merge, then reduce
+    */
+    /**
+    * first we merge
+    */
+    if((length1 > 4) && (length2 > 4)) {
+      const __m128i flipmask = _mm_setr_epi8(2,3,0,1  ,6,7,4,5, 10,11,8,9,  14,15,12,13);
+          __m128i vA, vB, V, vecMin,vecMax;
+          // we start the machine
+          vA = _mm_shuffle_epi8(_mm_lddqu_si128((const __m128i* )(src_1 + rlepos)),flipmask);
+          rlepos += 4;
+          vB =  _mm_shuffle_epi8(_mm_lddqu_si128((const __m128i* )(src_2 + xrlepos)),flipmask);
+          xrlepos += 4;
+          sse_merge(&vA, &vB,&vecMin,&vecMax);
+
+    }
+    while(true) {
+        if (src_1[rlepos].value <= src_2[xrlepos].value) {
+            dst[n_runs++] = src_1[rlepos++];
+            if(rlepos == length1)  {
+                memcpy(dst + n_runs, src_2 + xrlepos, (length2-xrlepos)*sizeof(rle16_t));
+                break;
+            }
+        } else {
+            dst[n_runs++] = src_2[xrlepos++];
+            if(xrlepos == length2) {
+                memcpy(dst + n_runs, src_1 + rlepos, (length1-rlepos)*sizeof(rle16_t));
+                break;
+            }
+        }
+    }
+    /**
+    then we
+    reduce
+    */
+    uint32_t max_runs = length1 + length2;
+    n_runs = 1;
+    rle16_t current = dst[0];
+    for(uint32_t i = 1; i < max_runs; ++i) {
+        rle16_t  trle = dst[i];
+        if(trle.value > current.value + current.length + 1) {
+            current = trle;
+            dst[n_runs++] = trle;
+        } else if (trle.value + trle.length > current.value + current.length) {
+            current.length = trle.value + trle.length - current.value;
+            dst[n_runs] = current;
+        }
+    }
+    return n_runs;
+}
 
 int main() {
     uint32_t length1 = 1024;
-    uint32_t length2 = 128;
+    uint32_t length2 = 3;
     rle16_t *run1 = malloc(length1 * sizeof(rle16_t));
     rle16_t *run2 = malloc(length2 * sizeof(rle16_t));
     for(int k = 0; k < length1; k ++) {
