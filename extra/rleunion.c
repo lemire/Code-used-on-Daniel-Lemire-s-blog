@@ -95,12 +95,13 @@ static inline void run_container_append(rle16_t *run, rle16_t vl,
         run[*n_runs] = vl;
         *n_runs = *n_runs + 1;
         *previousrl = vl;
-    }
-    uint32_t newend = vl.value + vl.length + UINT32_C(1);
-    if (newend > previousend) {  // we merge
+    } else {
+      uint32_t newend = vl.value + vl.length + UINT32_C(1);
+      if (newend > previousend) {  // we merge
         previousrl->length = newend - 1 - previousrl->value;
         run[*n_runs - 1] = *previousrl;
-    }
+      }
+  }
 }
 
 /**
