@@ -115,7 +115,7 @@ void bitset_set_list(void *bitset, const uint16_t *list, uint64_t length) {
         "jnz 1b"
         : [list] "+&r"(list), [load] "=&r"(load), [pos] "=&r"(pos),
           [offset] "=&r"(offset)
-        : [end] "r"(end), [bitset] "r"(bitset), [shift] "r"(shift));
+        : [end] "r"(end), [bitset] "r"(bitset), [shift] "i"(shift));
 }
 
 void check(void *bitset, const uint16_t *list, uint64_t length) {
