@@ -90,8 +90,8 @@ void demo(uint32_t N) {
   for(uint32_t i = 0 ; i < nmbr; ++i) accesses[i] = rand(); // some rand. number
   uint32_t expected1 = modsum(z,N,accesses,nmbr);
   uint32_t expected2 = fastsum(z,N,accesses,nmbr);
-  BEST_TIME(modsum(z,N,accesses,nmbr), expected1, 1000, N);
-  BEST_TIME(fastsum(z,N,accesses,nmbr), expected2, 1000, N);
+  BEST_TIME(modsum(z,N,accesses,nmbr), expected1, 1000, nmbr);
+  BEST_TIME(fastsum(z,N,accesses,nmbr), expected2, 1000, nmbr);
   free(z);
   free(accesses);
 }
