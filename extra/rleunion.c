@@ -122,7 +122,66 @@ void print(const rle16_t *src, uint32_t length) {
     printf("\n");
 }
 
+static int32_t locatePrecedingIndex(const rle16_t *array, int32_t lenarray,
+                                       uint16_t ikey) {
+    int32_t low = 0;
+    int32_t high = lenarray - 1;
+    while (low <= high) {
+        int32_t middleIndex = (low + high) >> 1;
+        uint16_t middleValue = array[middleIndex].value;
+        if (middleValue < ikey) {
+            low = middleIndex + 1;
+        } else if (middleValue > ikey) {
+            high = middleIndex - 1;
+        } else {
+            return middleIndex - 1;
+        }
+    }
+    return low - 1;
+}
+
+
 uint32_t run_container_union(const rle16_t *src_1, uint32_t length1,
+                             const rle16_t *src_2, uint32_t length2, rle16_t *dst) {
+    uint32_t n_runs = 0;
+    int32_t rlepos = 0;
+    int32_t xrlepos = 0;
+
+    rle16_t previousrle;
+    if (src_1[rlepos].value <= src_2[xrlepos].value) {
+        previousrle = run_container_append_first(dst, src_1[rlepos],&n_runs);
+        rlepos++;
+    } else {
+        previousrle = run_container_append_first(dst, src_2[xrlepos],&n_runs);
+        xrlepos++;
+    }
+printf("length1=%d length2=%d\n",length1,length2);
+    while ((xrlepos < length2) && (rlepos < length1)) {
+        rle16_t newrl;
+        if (src_1[rlepos].value <= src_2[xrlepos].value) {
+          printf("left\n");
+            newrl = src_1[rlepos];
+            rlepos++;
+        } else {
+          printf("right\n");
+            newrl = src_2[xrlepos];
+            xrlepos++;
+        }
+        run_container_append(dst, newrl, &previousrle,&n_runs);
+    }
+    printf("tail\n");
+    while (xrlepos < length2) {
+        run_container_append(dst, src_2[xrlepos], &previousrle,&n_runs);
+        xrlepos++;
+    }
+    while (rlepos < length1) {
+        run_container_append(dst, src_1[rlepos], &previousrle,&n_runs);
+        rlepos++;
+    }
+    return n_runs;
+}
+
+uint32_t run_container_union_asym(const rle16_t *src_1, uint32_t length1,
                              const rle16_t *src_2, uint32_t length2, rle16_t *dst) {
     uint32_t n_runs = 0;
     int32_t rlepos = 0;
@@ -138,6 +197,15 @@ uint32_t run_container_union(const rle16_t *src_1, uint32_t length1,
     }
 
     while ((xrlepos < length2) && (rlepos < length1)) {
+        int32_t newrlepos = locatePrecedingIndex(src_1 + rlepos, length1 - rlepos,
+                                               src_2[xrlepos].value) + rlepos;
+        //
+        if(newrlepos > rlepos) {
+          printf("skipping %d \n",newrlepos-rlepos);
+          memcpy(dst+n_runs,src_1 + rlepos,newrlepos-rlepos);
+          rlepos = newrlepos;
+          previousrle = src_1[newrlepos];
+        }
         rle16_t newrl;
         if (src_1[rlepos].value <= src_2[xrlepos].value) {
             newrl = src_1[rlepos];
@@ -306,12 +374,16 @@ int main() {
     }
     rle16_t *dst = malloc((length1 + length2) * sizeof(rle16_t));
     uint32_t answer = run_container_union(run1,length1,run2,length2,dst);
+  ///  uint32_t answerasym = run_container_union_asym(run1,length1,run2,length2,dst);
+
     uint32_t answer2 = run_container_union_twopass(run1,length1,run2,length2,dst);
     printf("%d %d \n",answer,answer2);
     assert(answer == answer2);
     uint32_t repeat = 5000;
     uint32_t size = length1 + length2;
     BEST_TIME(run_container_union(run1,length1,run2,length2,dst), answer, repeat, size);
+    //BEST_TIME(run_container_union_asym(run1,length1,run2,length2,dst), answer, repeat, size);
+
     BEST_TIME(run_container_union_twopass(run1,length1,run2,length2,dst), answer, repeat, size);
 
     free(run1);

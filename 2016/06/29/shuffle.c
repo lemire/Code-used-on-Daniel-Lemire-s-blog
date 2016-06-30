@@ -31,6 +31,19 @@ static inline uint32_t java_random_bounded(uint32_t bound)
     return candidate;
 }
 
+// as per the Go implementation
+static inline uint32_t go_random_bounded(uint32_t bound) {
+  uint32_t bits;
+  if((bound & (bound - 1)) == 0) {
+      return pcg32_random() & (bound - 1);
+  }
+  uint32_t t = 0xFFFFFFFF % bound;
+  do {
+    bits = pcg32_random();
+  } while(bits <= t);
+  return bits % bound;
+}
+
 // map random value to [0,range) with slight bias
 static inline uint32_t pcg32_random_bounded_divisionless_with_slight_bias(uint32_t range) {
     uint64_t random32bit, multiresult;
@@ -187,6 +200,20 @@ void  shuffle_pcg_java(uint32_t *storage, uint32_t size) {
     }
 }
 
+
+
+// good old Fisher-Yates shuffle, shuffling an array of integers, uses go-like ranged rng
+void  shuffle_pcg_go(uint32_t *storage, uint32_t size) {
+    uint32_t i;
+    for (i=size; i>1; i--) {
+        uint32_t nextpos = go_random_bounded(i);
+        int tmp = storage[i-1];// likely in cache
+        int val = storage[nextpos]; // could be costly
+        storage[i - 1] = val;
+        storage[nextpos] = tmp; // you might have to read this store later
+    }
+}
+
 // good old Fisher-Yates shuffle, shuffling an array of integers, without division
 void  shuffle_pcg_divisionless_with_slight_bias(uint32_t *storage, uint32_t size) {
     uint32_t i;
@@ -235,6 +262,9 @@ void demo(int size) {
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
 
     BEST_TIME(shuffle_pcg(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+
+    BEST_TIME(shuffle_pcg_go(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
 
     BEST_TIME(shuffle_pcg_java(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
