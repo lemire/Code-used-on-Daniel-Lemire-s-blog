@@ -33,7 +33,7 @@ def magicgu(nmax,d):
 for i in range(1,12):
     f = precomp_factorial[i-1]
     m,p = magicgu((1<<32),f)
-    print (f,m,p,log(m,2))
+    print (f,hex(m),p,log(m,2))
     m,p = magicgu((1<<31),f)
-    print (f,m,p,log(m,2))
+    print (f,hex(m),p,log(m,2))
     print()
