@@ -120,12 +120,13 @@ int main() {
      //printf("M = 0x%08x a = %d s = %d\n", mag.M, mag.a, mag.s);
 
    }
+  fact = 1;
   for(uint32_t x = 2; x <= 12; ++x) {
         fact *= x;
         check(fact);
 
         mag = magicu(fact);
-        printf("{0x%08x, %d, %d},", mag.M, mag.a, mag.s);
+        printf("{0x%08x, %s, %d},", mag.M, mag.a?"true":"false", mag.s);
         mag = magicu2(fact);
         //printf("M = 0x%08x a = %d s = %d\n", mag.M, mag.a, mag.s);
 
