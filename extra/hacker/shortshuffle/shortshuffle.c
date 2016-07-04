@@ -235,6 +235,266 @@ void  shuffle_pcg_divisionless_short(uint32_t *storage, uint32_t size) {
 }
 
 
+static inline uint32_t multiplyAndShift(uint32_t val, uint32_t MagicNumberMultipliers, int MagicNumberShifts) {
+    uint32_t highbits = (uint32_t)(((uint64_t) val * MagicNumberMultipliers) >> 32);
+    uint32_t answer =  highbits >> MagicNumberShifts;
+    return answer;
+}
+
+// optimized for short arrays, does not use division
+void  shuffle_pcg_divisionless_duff_short(uint32_t *storage, uint32_t size) {
+    uint32_t i = size;
+   for (; i>12; i--) {
+        uint32_t nextpos = pcg32_random_bounded_divisionless(i);
+        uint32_t tmp = storage[i-1];
+        uint32_t val = storage[nextpos];
+        storage[i - 1] = val;
+        storage[nextpos] = tmp;
+    }
+    if (i < 1) return; // nothing to do
+    // at this point i <= 12, i >=2
+    uint32_t key = pcg32_random_bounded_divisionless(precomputedFactorial[i - 2]);
+    uint32_t divresult;
+    uint32_t tmp, val;
+    switch (i) {
+      case 12:
+      // we divide by 11!
+        divresult = multiplyAndShift(key, 0x035cc8ad ,19);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 39916800;       // value in [0,(i-1)!)
+      case 11:
+        // we divide by 10!
+        divresult = multiplyAndShift(key, 0x24fc9f6f,19);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 3628800;       // value in [0,(i-1)!)
+      case 10:
+        // we divide by 9!
+        divresult = multiplyAndShift(key, 0xb8ef1d2b,  18);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 362880;       // value in [0,(i-1)!)
+      case 9:
+        // we divide by 8!
+        divresult = multiplyAndShift(key, 0xd00d00d1,15);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 40320;       // value in [0,(i-1)!)
+      case 8:
+        // we divide by 7!
+        divresult = multiplyAndShift(key, 0xd00d00d1, 12);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 5040;       // value in [0,(i-1)!)
+      case 7:
+        // we divide by 6!
+        divresult = multiplyAndShift(key, 0xb60b60b7,  9);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 720;       // value in [0,(i-1)!)
+      case 6:
+        // we divide by 5!
+        divresult = multiplyAndShift(key, 0x88888889,6);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 120;       // value in [0,(i-1)!)
+      case 5:
+        // we divide by 4!
+        divresult = multiplyAndShift(key, 0xaaaaaaab,4);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 24;       // value in [0,(i-1)!)
+      case 4:
+        // we divide by 3!
+        divresult = multiplyAndShift(key, 0xaaaaaaab,  2);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 6;       // value in [0,(i-1)!)
+
+      case 3:
+        // we divide by 2!
+        divresult = key >> 1;
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key = key & 1;
+      case 2:
+        tmp = storage[i-1];
+        val = storage[key];
+        storage[i - 1] = val;
+        storage[key] = tmp;
+        i--;
+      // no division needed
+      case 1:;
+      // nothing to do
+      default:;
+      // nothing
+    }
+}
+
+
+// optimized for short arrays, does not use division
+void  shuffle_pcg_divisionless_duffcompiler_short(uint32_t *storage, uint32_t size) {
+    uint32_t i = size;
+   for (; i>12; i--) {
+        uint32_t nextpos = pcg32_random_bounded_divisionless(i);
+        uint32_t tmp = storage[i-1];
+        uint32_t val = storage[nextpos];
+        storage[i - 1] = val;
+        storage[nextpos] = tmp;
+    }
+    if (i < 1) return; // nothing to do
+    // at this point i <= 12, i >=2
+    uint32_t key = pcg32_random_bounded_divisionless(precomputedFactorial[i - 2]);
+    uint32_t divresult;
+    uint32_t tmp, val;
+    switch (i) {
+      case 12:
+      // we divide by 11!
+        divresult = key / 39916800;
+        key = key % 39916800;
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+      case 11:
+        // we divide by 10!
+        divresult = key / 39916800;
+        key = key % 39916800;
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+      case 10:
+        // we divide by 9!
+        divresult = key / 362880;
+        key = key % 362880;
+        divresult = multiplyAndShift(key, 0xb8ef1d2b,  18);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 362880;       // value in [0,(i-1)!)
+      case 9:
+        // we divide by 8!
+        divresult = key / 40320;
+        key = key % 40320;
+        divresult = multiplyAndShift(key, 0xd00d00d1,15);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 40320;       // value in [0,(i-1)!)
+      case 8:
+        // we divide by 7!
+        divresult = key / 5040;
+        key = key % 5040;
+        divresult = multiplyAndShift(key, 0xd00d00d1, 12);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+        key -= divresult * 5040;       // value in [0,(i-1)!)
+      case 7:
+        // we divide by 6!
+        divresult = key / 720;
+        key = key % 720;
+        divresult = multiplyAndShift(key, 0xb60b60b7,  9);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+      case 6:
+        // we divide by 5!
+        divresult = key / 120;
+        key = key % 120;
+        divresult = multiplyAndShift(key, 0x88888889,6);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+      case 5:
+        // we divide by 4!
+        divresult = key / 24;
+        key = key % 24;
+        divresult = multiplyAndShift(key, 0xaaaaaaab,4);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+      case 4:
+        // we divide by 3!
+        divresult = key / 6;
+        key = key % 6;
+        divresult = multiplyAndShift(key, 0xaaaaaaab,  2);
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+
+      case 3:
+        // we divide by 2!
+        divresult = key / 2;
+        key = key % 2;
+        divresult = key >> 1;
+        tmp = storage[i-1];
+        val = storage[divresult];
+        storage[i - 1] = val;
+        storage[divresult] = tmp;
+        i--;
+      case 2:
+        tmp = storage[i-1];
+        val = storage[key];
+        storage[i - 1] = val;
+        storage[key] = tmp;
+        i--;
+      // no division needed
+      case 1:;
+      // nothing to do
+      default:;
+      // nothing
+    }
+}
+
 
 void demo(int size) {
     printf("Shuffling arrays of size %d \n",size);
@@ -254,6 +514,12 @@ void demo(int size) {
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
 
     BEST_TIME(shuffle_pcg_divisionless_short(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+
+    BEST_TIME(shuffle_pcg_divisionless_duff_short(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
+    if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
+
+    BEST_TIME(shuffle_pcg_divisionless_duffcompiler_short(testvalues,size), array_cache_prefetch(testvalues,size), repeat, size);
     if(sortAndCompare(testvalues, pristinecopy, size)!=0) return;
 
     free(testvalues);
