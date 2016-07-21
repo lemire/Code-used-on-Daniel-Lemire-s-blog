@@ -37,18 +37,19 @@ uint32_t phphash(const char *str, size_t len) {
 
 uint32_t phphash_withmulti(const char *str, size_t len) {
 	uint32_t hash = UINT32_C(5381);
-	for (; len > 1; len -= 2) {
-		hash = 33 * 33 * hash + 33 * *str++;
-		hash += *str++;
+  size_t i = 0;
+	for (; i + 3 < len; i += 4) {
+		hash = 33 * 33 * 33 * 33 * hash
+     + 33 * 33 * 33 * str[i]
+     + 33 * 33 * str[i + 1]
+     + 33 * str[i + 2]
+     + str[i + 3];
 	}
-	for (; len > 0; len --) {
-		hash = 33 * hash + *str++;
+	for (; i < len; i++) {
+		hash = 33 * hash + str[i];
 	}
-
 	return hash;
 }
-
-
 
 #define RDTSC_START(cycles)                                                   \
     do {                                                                      \
