@@ -529,5 +529,7 @@ void demo(int size) {
 
 int main() {
     demo(10);
+    demo(100);
+    demo(1000);
     return 0;
 }

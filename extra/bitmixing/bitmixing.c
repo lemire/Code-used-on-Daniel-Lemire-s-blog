@@ -35,13 +35,13 @@ uint32_t identity(uint32_t h) {
     return h;
 }
 
-uint64_t CLMS_CONSTANT =  UINT64_C(9787182197298948716) ; //9786759984796133996);
+uint64_t CLMS_CONSTANT =  UINT64_C(9725821133278607468);//9787182197298948716) ; //9786759984796133996);
 
 uint32_t clmultiplyshift_mixer(uint32_t h) {
     return _mm_cvtsi128_si64(_mm_srli_si128(_mm_clmulepi64_si128(_mm_cvtsi64_si128(CLMS_CONSTANT),_mm_cvtsi64_si128(h),0x00),4));
 }
 
-uint64_t MS_CONSTANT = UINT64_C(16914929135595462722);//12303806032761757698);
+uint64_t MS_CONSTANT = UINT64_C(15185512759463952534);//16914929135595462722);//12303806032761757698);
 
 uint32_t multiplyshift_mixer(uint32_t h) {
     return (MS_CONSTANT * h ) >> 32;
