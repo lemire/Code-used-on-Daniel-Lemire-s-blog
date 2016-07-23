@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void bitset_set_range(uint64_t *bitmap, uint32_t start, uint32_t end) {
+ __attribute__ ((noinline))
+static void bitset_set_range_noinline(uint64_t *bitmap, uint32_t start, uint32_t end) {
     if (start == end) return;
     uint32_t firstword = start / 64;
     uint32_t endword = (end - 1) / 64;
@@ -20,7 +21,40 @@ void bitset_set_range(uint64_t *bitmap, uint32_t start, uint32_t end) {
     for (uint32_t i = firstword + 1; i < endword; i++) bitmap[i] = ~UINT64_C(0);
     bitmap[endword] |= (~UINT64_C(0)) >> ((-end) % 64);
 }
-void bitset_set_range_bug(uint64_t *bitmap, uint32_t start, uint32_t end) {
+
+ __attribute__((always_inline)) 
+static inline void bitset_set_range(uint64_t *bitmap, uint32_t start, uint32_t end) {
+    if (start == end) return;
+    uint32_t firstword = start / 64;
+    uint32_t endword = (end - 1) / 64;
+    if (firstword == endword) {
+        bitmap[firstword] |= ((~UINT64_C(0)) << (start % 64)) &
+                             ((~UINT64_C(0)) >> ((-end) % 64));
+        return;
+    }
+    bitmap[firstword] |= (~UINT64_C(0)) << (start % 64);
+    for (uint32_t i = firstword + 1; i < endword; i++) bitmap[i] = ~UINT64_C(0);
+    bitmap[endword] |= (~UINT64_C(0)) >> ((-end) % 64);
+}
+
+
+ __attribute__((always_inline)) 
+static inline void bitset_set_range_inclusive(uint64_t *bitmap, uint16_t start, uint16_t end) {
+    if (start == end) return;
+    uint32_t firstword = start / 64;
+    uint32_t endword = end  / 64;
+    if (firstword == endword) {
+        bitmap[firstword] |= ((~UINT64_C(0)) << (start % 64)) &
+                             ((~UINT64_C(0)) >> ((-end) % 64));
+        return;
+    }
+    bitmap[firstword] |= (~UINT64_C(0)) << (start % 64);
+    for (uint32_t i = firstword + 1; i < endword; i++) bitmap[i] = ~UINT64_C(0);
+    bitmap[endword] |= (~UINT64_C(0)) >> ((-end) % 64);
+}
+
+ __attribute__((always_inline)) 
+static inline void bitset_set_range_bug(uint64_t *bitmap, uint32_t start, uint32_t end) {
     if (start == end) return;
     uint32_t firstword = start / 64;
     uint32_t endword = (end - 1) / 64;
@@ -60,6 +94,28 @@ void run_bitset_container_union(uint64_t *src_1,
                          rle.value + rle.length + UINT32_C(1));
     }
 }
+
+void run_bitset_container_union_inclusive(uint64_t *src_1,
+                                const rle16_t *src_2,
+                                size_t n_runs) {
+    for (int32_t rlepos = 0; rlepos < n_runs; ++rlepos) {
+        rle16_t rle = src_2[rlepos];
+        bitset_set_range_inclusive(src_1, rle.value,
+                         rle.value + rle.length);
+    }
+}
+
+
+void run_bitset_container_union_noinline(uint64_t *src_1,
+                                const rle16_t *src_2,
+                                size_t n_runs) {
+    for (int32_t rlepos = 0; rlepos < n_runs; ++rlepos) {
+        rle16_t rle = src_2[rlepos];
+        bitset_set_range_noinline(src_1, rle.value,
+                         rle.value + rle.length + UINT32_C(1));
+    }
+}
+
 
 
 void run_bitset_container_union_bug(uint64_t *src_1,
@@ -139,6 +195,8 @@ void demo() {
   }
   int repeat = 5000;
   BEST_TIME(run_bitset_container_union(bitmap,runs,n_runs),repeat,n_runs);
+  BEST_TIME(run_bitset_container_union_inclusive(bitmap,runs,n_runs),repeat,n_runs);
+  BEST_TIME(run_bitset_container_union_noinline(bitmap,runs,n_runs),repeat,n_runs);
   BEST_TIME(run_bitset_container_union_bug(bitmap,runs,n_runs),repeat,n_runs);
 
   free(bitmap);
