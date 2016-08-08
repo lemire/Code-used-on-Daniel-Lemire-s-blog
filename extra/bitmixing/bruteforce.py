@@ -1,4 +1,5 @@
 # no 4->4 bit mixing function has perfect avalanche and invertibility
+# the functions go from {0,1,2,3} to {0,1,2,3}
 
 def isinvertible(arr):
     return len(set(arr))== len(arr)
