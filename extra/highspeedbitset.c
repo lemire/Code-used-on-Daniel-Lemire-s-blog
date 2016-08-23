@@ -84,7 +84,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
         fflush(NULL);							\
         } while (0)
 
-void bitset_set_list_regular(void *bitset, 
+void bitset_set_list_regular(void *bitset,
                          uint16_t *list, uint64_t length) {
     uint64_t offset, load, newload, pos, index;
     uint16_t *end = list + length;
@@ -98,10 +98,282 @@ void bitset_set_list_regular(void *bitset,
       list ++;
     }
 }
+void bitset_set_list_regular_unroll4(void *bitset,
+                         uint16_t *list, uint64_t length) {
+    uint64_t offset, load, newload, pos, index;
+    uint16_t *end = list + length;
+    for(;list + 3 < end; list += 4) {
+      pos =  list[0];
+      offset = pos >> 6;
+      index = pos % 64;
+      load = ((uint64_t *) bitset)[offset];
+      newload = load | (UINT64_C(1) << index);
+      ((uint64_t *) bitset)[offset] = newload;
+      pos =  list[1];
+      offset = pos >> 6;
+      index = pos % 64;
+      load = ((uint64_t *) bitset)[offset];
+      newload = load | (UINT64_C(1) << index);
+      ((uint64_t *) bitset)[offset] = newload;
+      pos =  list[2];
+      offset = pos >> 6;
+      index = pos % 64;
+      load = ((uint64_t *) bitset)[offset];
+      newload = load | (UINT64_C(1) << index);
+      ((uint64_t *) bitset)[offset] = newload;
+      pos =  list[3];
+      offset = pos >> 6;
+      index = pos % 64;
+      load = ((uint64_t *) bitset)[offset];
+      newload = load | (UINT64_C(1) << index);
+      ((uint64_t *) bitset)[offset] = newload;
+    }
+    while(list != end) {
+      pos =  *(uint16_t *)  list;
+      offset = pos >> 6;
+      index = pos % 64;
+      load = ((uint64_t *) bitset)[offset];
+      newload = load | (UINT64_C(1) << index);
+      ((uint64_t *) bitset)[offset] = newload;
+      list ++;
+    }
+}
+
+
+
+void bitset_set_list_regularasm_roll4(void *bitset,
+                         uint16_t *list, uint64_t length) {
+    uint64_t  pos;
+    uint16_t *end = list + length;
+
+    uint64_t shift = 6;
+    uint64_t offset;
+    uint64_t load;
+    for(;list + 3 < end; list += 4) {
+      pos =  list[0];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos =  list[1];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos =  list[2];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos =  list[3];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+    }
+
+    while(list != end) {
+      pos =  list[0];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      list ++;
+    }
+}
+
+void bitset_set_list_regularasm_roll4s(void *bitset,
+                         uint16_t *list, uint64_t length) {
+    uint64_t  pos;
+    uint16_t *end = list + length;
+
+    uint64_t shift = 6;
+    uint64_t offset;
+    uint64_t load;
+    for(;list + 3 < end; list += 4) {
+      uint64_t fourpos = *(uint64_t*)list;
+      pos =  fourpos & 0xFFFF;
+      fourpos >>= 16;
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos  =  fourpos & 0xFFFF;
+      fourpos >>= 16;
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos  =  fourpos & 0xFFFF;
+      fourpos >>= 16;
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos  =  fourpos;
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+    }
+
+    while(list != end) {
+      pos =  list[0];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      list ++;
+    }
+}
+
+void bitset_set_list_regularasm_roll8(void *bitset,
+                         uint16_t *list, uint64_t length) {
+    uint64_t  pos;
+    uint16_t *end = list + length;
+
+    uint64_t shift = 6;
+    uint64_t offset;
+    uint64_t load;
+    for(;list + 7 < end; list += 8) {
+      pos =  list[0];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos =  list[1];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos =  list[2];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos =  list[3];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos =  list[4];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos =  list[5];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos =  list[6];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      pos =  list[7];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+
+    }
+
+    while(list != end) {
+      pos =  list[0];
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      list ++;
+    }
+}
+
+
+void bitset_set_list_regularasm(void *bitset,
+                         uint16_t *list, uint64_t length) {
+    uint64_t  pos;
+    uint16_t *end = list + length;
+
+    uint64_t shift = 6;
+    uint64_t offset;
+    uint64_t load;
+
+    while(list != end) {
+      pos =  *(uint16_t *)  list;
+    __asm volatile(
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "mov %[load], (%[bitset],%[offset],8)"
+        : [load] "=&r"(load), [offset] "=&r"(offset)
+        : [bitset] "r"(bitset), [shift] "r"(shift), [pos] "r"(pos));
+      list ++;
+    }
+}
+
 void bitset_set_list(void *bitset, const uint16_t *list, uint64_t length) {
     uint64_t offset, load, pos;
     uint64_t shift = 6;
     const uint16_t *end = list + length;
+    if (!length) return;
     // bts is not available as an intrinsic in GCC
     __asm volatile(
         "1:\n"
@@ -115,7 +387,7 @@ void bitset_set_list(void *bitset, const uint16_t *list, uint64_t length) {
         "jnz 1b"
         : [list] "+&r"(list), [load] "=&r"(load), [pos] "=&r"(pos),
           [offset] "=&r"(offset)
-        : [end] "r"(end), [bitset] "r"(bitset), [shift] "i"(shift));
+        : [end] "r"(end), [bitset] "r"(bitset), [shift] "r"(shift));
 }
 
 void check(void *bitset, const uint16_t *list, uint64_t length) {
@@ -136,7 +408,7 @@ void reset(uint16_t * list, int length) {
 
 void demo() {
     const int length = 256*100;
-    const int mult = 6;
+    const int mult = 3;
 
     uint16_t list[length];
     for (int i = 0; i < length; i++) {
@@ -149,6 +421,7 @@ void demo() {
     const int repeat = 1000;
         printf("%d \n",*(int *)out);
     RDTSC_LOOP(bitset_set_list_regular(out, list, length),reset(list,length),  repeat, length);
+
     check(out, list, length);
     printf("%d \n",*(int *)out);
     memset(out, 0x00, bitsetbytes);
@@ -156,7 +429,45 @@ void demo() {
     for (int i = 0; i < length; i++) {
         list[i] = i * mult;
     }
- 
+    RDTSC_LOOP(bitset_set_list_regularasm(out, list, length),reset(list,length),  repeat, length);
+
+    check(out, list, length);
+    printf("%d \n",*(int *)out);
+    memset(out, 0x00, bitsetbytes);
+            printf("%d \n",*(int *)out);
+    for (int i = 0; i < length; i++) {
+        list[i] = i * mult;
+    }
+    RDTSC_LOOP(bitset_set_list_regularasm_roll4(out, list, length),reset(list,length),  repeat, length);
+
+
+
+    check(out, list, length);
+    printf("%d \n",*(int *)out);
+    memset(out, 0x00, bitsetbytes);
+            printf("%d \n",*(int *)out);
+    for (int i = 0; i < length; i++) {
+        list[i] = i * mult;
+    }
+    RDTSC_LOOP(bitset_set_list_regularasm_roll8(out, list, length),reset(list,length),  repeat, length);
+
+    check(out, list, length);
+    printf("%d \n",*(int *)out);
+    memset(out, 0x00, bitsetbytes);
+            printf("%d \n",*(int *)out);
+    for (int i = 0; i < length; i++) {
+        list[i] = i * mult;
+    }
+
+    RDTSC_LOOP(bitset_set_list_regular_unroll4(out, list, length),reset(list,length),  repeat, length);
+
+    check(out, list, length);
+    printf("%d \n",*(int *)out);
+    memset(out, 0x00, bitsetbytes);
+            printf("%d \n",*(int *)out);
+    for (int i = 0; i < length; i++) {
+        list[i] = i * mult;
+    }
 
     RDTSC_LOOP(bitset_set_list(out, list, length), reset(list,length), repeat, length);
     check(out, list, length);
