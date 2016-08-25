@@ -1,11 +1,19 @@
 // gcc -fno-inline -march=native -std=c99 -Wall -O3 -g  highspeedbitset.c -o highspeedcrazybitset
-
 #include <x86intrin.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+
+unsigned char _bittestandset64(uint64_t *Base, uint64_t Offset)
+{
+  int old = 0;
+  __asm__ __volatile__("btsq %2,%1\n\tsbbl %0,%0 "
+    :"=r" (old),"=m" ((*(volatile long long *) Base))
+    :"Ir" (Offset));
+  return (old != 0);
+}
 #define RDTSC_START(cycles)  do {                                       \
         uint32_t cyc_high, cyc_low;                                     \
         __asm volatile("cpuid\n"                                        \
@@ -98,6 +106,18 @@ void bitset_set_list_regular(void *bitset,
       list ++;
     }
 }
+
+void bitset_set_list_intrin(void *bitset,
+                         uint16_t *list, uint64_t length) {
+    uint64_t offset, load, newload, pos, index;
+    uint16_t *end = list + length;
+    while(list != end) {
+      pos =  *(uint16_t *)  list;
+      _bittestandset64(bitset + (pos >> 6),pos);
+      list ++;
+    }
+}
+
 void bitset_set_list_regular_unroll4(void *bitset,
                          uint16_t *list, uint64_t length) {
     uint64_t offset, load, newload, pos, index;
@@ -460,6 +480,15 @@ void demo() {
     }
 
     RDTSC_LOOP(bitset_set_list_regular_unroll4(out, list, length),reset(list,length),  repeat, length);
+
+    check(out, list, length);
+    printf("%d \n",*(int *)out);
+    memset(out, 0x00, bitsetbytes);
+            printf("%d \n",*(int *)out);
+    for (int i = 0; i < length; i++) {
+        list[i] = i * mult;
+    }
+    RDTSC_LOOP(bitset_set_list_intrin(out, list, length),reset(list,length),  repeat, length);
 
     check(out, list, length);
     printf("%d \n",*(int *)out);
