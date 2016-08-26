@@ -1,4 +1,5 @@
 // gcc -O3 -o linearinverse linearinverse.c -Wall -Wextra -march=native
+#include <assert.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -6,14 +7,15 @@
 #include <memory.h>
 #include <stdlib.h>
 
-const int w = 4;
+
+enum {w = 5};
 const uint64_t MAX = UINT64_C(1) << w;
 const uint64_t MAX2 = UINT64_C(1) << (2 * w);
-const uint64_t mask = MAX - 1;
+const uint64_t mask = ( UINT64_C(1) << w)  - 1;
 
 
 uint64_t hash(uint64_t a, uint64_t b, uint64_t x) {
-    return ((a * x + b) >> w) & mask;
+    return ((a * x + b) >> w) & mask;// could be >> (w+1)
 }
 
 void clearbitset(uint64_t * bitsetbuffer) {
@@ -22,6 +24,7 @@ void clearbitset(uint64_t * bitsetbuffer) {
 
 // return true if bit is changed
 bool setbit(uint64_t * bitsetbuffer, uint64_t i) {
+    assert(i < MAX);
     uint64_t bitmask = (UINT64_C(1) << (i & 63 ));
     if((bitsetbuffer[i / 64] & bitmask) != 0) return false;
     bitsetbuffer[i / 64] |= bitmask;
@@ -40,35 +43,15 @@ bool is_invertible(uint64_t a, uint64_t b, uint64_t * bitsetbuffer) {
     clearbitset(bitsetbuffer);
     for (uint64_t i = 0; i < MAX; ++i) {
         uint64_t h = hash(a,b,i);
+        assert(h < MAX); 
         if(!setbit(bitsetbuffer,h)) return false;
     }
     return true;
 }
 
 
-void check_universal() {
-    uint64_t * bitsetbuffer = malloc(MAX/8);
-    for(uint64_t v1 = 0; v1 < MAX ; v1++) {
-        for(uint64_t v2 = v1 + 1; v2 < MAX ; v2++) {
-            size_t total = 0;
-            size_t collisions = 0;
-            for(uint64_t a = 0; a < MAX2 ; a++) {
-                for(uint64_t b = 0; b < MAX2 ; b++) {
-                    if(is_invertible(a,b,bitsetbuffer)) {
-                        total++;
-                        if(hash(a,b,v1) == hash(a,b,v2)) ++ collisions;
-                    }
-                }
-            }
-            printf("%f ",collisions *1.0 / total);
-            fflush(stdout);
-
-        }
-        printf("\n");
-    }
-}
 uint64_t * enumeratems(size_t * total) {
-    uint64_t * bitsetbuffer = malloc(MAX/8);
+    uint64_t * bitsetbuffer = malloc(MAX/8 + 8);
 
     size_t count = 0;
     for(uint64_t a = 0; a < MAX2 ; a++) {
@@ -78,6 +61,7 @@ uint64_t * enumeratems(size_t * total) {
     *total = count;
 
     uint64_t * answer = malloc( sizeof(uint64_t) * count);
+    answer[*total - 1] = 0;
     count = 0;
     for(uint64_t a = 0; a < MAX2 ; a++) {
         uint64_t b = 0;
@@ -87,9 +71,22 @@ uint64_t * enumeratems(size_t * total) {
         }
     }
     free(bitsetbuffer);
+    return answer;
 }
 
-void check_indms() {
+uint64_t * oddenumeratems(size_t * total) {
+   *total = MAX / 2;
+
+    uint64_t * answer = malloc( sizeof(uint64_t) * MAX/2);
+    size_t count = 0;
+    for(uint64_t a = 0; a < MAX / 2 ; a++) {
+        answer [ count ++ ] = ( 2 * a + 1 ) << w;
+   }
+   return answer;
+}
+
+
+void check_indms(bool odd) {
     printf("check_indms...\n");
 
     double maxprob = 0;
@@ -97,8 +94,8 @@ void check_indms() {
     uint64_t bady1 = 0, bady2 = 0;
     size_t cases;
     printf("precomputing cases...\n");
-    uint64_t * buffer = enumeratems(&cases);
-    printf("precomputing cases...ok\n");
+    uint64_t * buffer = odd ? oddenumeratems(&cases) : enumeratems(&cases);
+    printf("precomputing cases...ok %zu \n", cases);
     for(uint64_t v1 = 0; v1 < MAX ; v1++) {
         for(uint64_t v2 = v1 + 1; v2 < MAX ; v2++) {
             for(uint64_t y1 = 0; y1 < MAX ; y1++) {
@@ -106,6 +103,7 @@ void check_indms() {
                     size_t total = 0;
                     size_t collisions = 0;
                     for(; total < cases; ++total) {
+                                 assert(total < cases);
                         uint64_t a = buffer[total];
                         uint64_t b = 0;
                         if((hash(a,b,v1) == y1) && (hash(a,b,v2) == y2)) ++ collisions;
@@ -140,7 +138,7 @@ void check_indms() {
 }
 
 uint64_t * enumerate(size_t * total) {
-    uint64_t * bitsetbuffer = malloc(MAX/8);
+    uint64_t * bitsetbuffer = malloc(MAX/8 + 8);
 
     size_t count = 0;
     for(uint64_t a = 0; a < MAX2 ; a++) {
@@ -162,12 +160,12 @@ uint64_t * enumerate(size_t * total) {
         }
     }
     free(bitsetbuffer);
+    return answer;
 }
 
 void check_ind() {
     printf("check_ind...\n");
 
-    uint64_t * bitsetbuffer = malloc(MAX/8);
     double maxprob = 0;
     uint64_t badv1 = 0, badv2 = 0;
     uint64_t bady1 = 0, bady2 = 0;
@@ -175,7 +173,7 @@ void check_ind() {
     printf("precomputing cases...\n");
 
     uint64_t * buffer = enumerate(&cases);
-    printf("precomputing cases... ok\n");
+    printf("precomputing cases... ok %zu \n", cases);
 
     for(uint64_t v1 = 0; v1 < MAX ; v1++) {
         for(uint64_t v2 = v1 + 1; v2 < MAX ; v2++) {
@@ -218,11 +216,12 @@ void check_ind() {
 }
 
 int main() {
-    check_universal();
-    check_indms();
-    check_ind();
+    //check_universal();
+    check_indms(false);
+    check_indms(true);
+     check_ind();
 
-    uint64_t * bitsetbuffer = malloc(MAX/8);
+    uint64_t * bitsetbuffer = malloc(MAX/8+8);
     size_t counter = 0;
     printf("%zu \n",(size_t)MAX);
     for(uint64_t a = 0; a < MAX2 ; a++) {
