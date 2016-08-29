@@ -107,6 +107,67 @@ void bitset_set_list_regular(void *bitset,
     }
 }
 
+
+
+void bitset_set_list_avx(void *bitset,
+                         uint16_t *list, uint64_t length) {
+    uint64_t offset, load, newload, pos, index;
+    uint16_t *end = list + length;
+    __m256i sillymask = _mm256_set1_epi16(63);
+    __m256i justone = _mm256_set1_epi64x(1);
+    __m256i justzero = _mm256_setzero_si256();
+    uint16_t indexes16[16];
+    uint64_t shiftsarray[16];
+    uint64_t * bitset64 = (uint64_t*)bitset;
+    while(list + 16 <= end) {
+      __m256i vlist = _mm256_loadu_si256((const __m256i *) list);
+      __m256i indexes = _mm256_srli_epi16 (vlist, 6);
+      _mm256_store_si256((__m256i *) indexes16,indexes);
+      __m256i shifts = _mm256_and_si256 (vlist, sillymask);
+      __m256i u1 = _mm256_unpacklo_epi16(shifts,justzero);
+      __m256i u2 = _mm256_unpackhi_epi16(shifts,justzero);
+      __m256i shifts1 = _mm256_unpacklo_epi32(u1,justzero);
+      __m256i shifts2 = _mm256_unpackhi_epi32(u1,justzero);
+      __m256i shifts3 = _mm256_unpacklo_epi32(u2,justzero);
+      __m256i shifts4 = _mm256_unpackhi_epi32(u2,justzero);
+      _mm256_sllv_epi64(justone,shifts1);
+      _mm256_sllv_epi64(justone,shifts2);
+      _mm256_sllv_epi64(justone,shifts3);
+      _mm256_sllv_epi64(justone,shifts4);
+      _mm256_store_si256((__m256i *) shiftsarray,shifts1);
+      _mm256_store_si256((__m256i *) shiftsarray + 1,shifts2);
+      _mm256_store_si256((__m256i *) shiftsarray + 2,shifts3);
+      _mm256_store_si256((__m256i *) shiftsarray + 3,shifts4);
+      bitset64[indexes16[0]] |= shiftsarray[0];
+      bitset64[indexes16[1]] |= shiftsarray[1];
+      bitset64[indexes16[2]] |= shiftsarray[2];
+      bitset64[indexes16[3]] |= shiftsarray[3];
+      bitset64[indexes16[4]] |= shiftsarray[4];
+      bitset64[indexes16[5]] |= shiftsarray[5];
+      bitset64[indexes16[6]] |= shiftsarray[6];
+      bitset64[indexes16[7]] |= shiftsarray[7];
+      bitset64[indexes16[8]] |= shiftsarray[8];
+      bitset64[indexes16[9]] |= shiftsarray[9];
+      bitset64[indexes16[10]] |= shiftsarray[10];
+      bitset64[indexes16[11]] |= shiftsarray[11];
+      bitset64[indexes16[12]] |= shiftsarray[12];
+      bitset64[indexes16[13]] |= shiftsarray[13];
+      bitset64[indexes16[14]] |= shiftsarray[14];
+      bitset64[indexes16[15]] |= shiftsarray[15];
+      list += 16;
+    }
+    while(list != end) {
+      pos =  *(uint16_t *)  list;
+      offset = pos >> 6;
+      index = pos % 64;
+      load = ((uint64_t *) bitset)[offset];
+      newload = load | (UINT64_C(1) << index);
+      ((uint64_t *) bitset)[offset] = newload;
+      list ++;
+    }
+}
+
+
 void bitset_set_list_intrin(void *bitset,
                          uint16_t *list, uint64_t length) {
     uint64_t offset, load, newload, pos, index;
@@ -467,6 +528,15 @@ void demo() {
     RDTSC_LOOP(bitset_set_list_regular(out, list, length),reset(list,length),  repeat, length);
 
     check(out, list, length);
+    printf("%d \n",*(int *)out);
+    memset(out, 0x00, bitsetbytes);
+            printf("%d \n",*(int *)out);
+    for (int i = 0; i < length; i++) {
+        list[i] = i * mult;
+    }
+    RDTSC_LOOP(bitset_set_list_avx(out, list, length),reset(list,length),  repeat, length);
+
+    //check(out, list, length);
     printf("%d \n",*(int *)out);
     memset(out, 0x00, bitsetbytes);
             printf("%d \n",*(int *)out);
