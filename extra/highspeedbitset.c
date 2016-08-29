@@ -410,6 +410,30 @@ void bitset_set_list(void *bitset, const uint16_t *list, uint64_t length) {
         : [end] "r"(end), [bitset] "r"(bitset), [shift] "r"(shift));
 }
 
+void bitset_set_list_skip(void *bitset, const uint16_t *list, uint64_t length) {
+    uint64_t offset, load, pos;
+    uint64_t shift = 6;
+    const uint16_t *end = list + length;
+    if (!length) return;
+    // bts is not available as an intrinsic in GCC
+    __asm volatile(
+        "1:\n"
+        "movzwq (%[list]), %[pos]\n"
+        "shrx %[shift], %[pos], %[offset]\n"
+        "mov (%[bitset],%[offset],8), %[load]\n"
+        "bts %[pos], %[load]\n"
+        "jc 2f\n"
+        "mov %[load], (%[bitset],%[offset],8)\n"
+        "2:\n"
+        "add $2, %[list]\n"
+        "cmp %[list], %[end]\n"
+        "jnz 1b"
+        : [list] "+&r"(list), [load] "=&r"(load), [pos] "=&r"(pos),
+          [offset] "=&r"(offset)
+        : [end] "r"(end), [bitset] "r"(bitset), [shift] "r"(shift));
+}
+
+
 void check(void *bitset, const uint16_t *list, uint64_t length) {
   const char * c = (const char *)bitset;
   for(uint32_t i = 0; i < length; ++i) {
@@ -488,7 +512,15 @@ void demo() {
     for (int i = 0; i < length; i++) {
         list[i] = i * mult;
     }
-    RDTSC_LOOP(bitset_set_list_intrin(out, list, length),reset(list,length),  repeat, length);
+    RDTSC_LOOP(bitset_set_list_skip(out, list, length),reset(list,length),  repeat, length);
+
+    check(out, list, length);
+    printf("%d \n",*(int *)out);
+    for (int i = 0; i < length; i++) {
+        list[i] = i * mult;
+    }
+
+    RDTSC_LOOP(bitset_set_list_skip(out, list, length),reset(list,length),  repeat, length);
 
     check(out, list, length);
     printf("%d \n",*(int *)out);

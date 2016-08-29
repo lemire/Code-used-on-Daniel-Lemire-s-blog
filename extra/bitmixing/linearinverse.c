@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-enum {w = 5};
+enum {w = 4};
 const uint64_t MAX = UINT64_C(1) << w;
 const uint64_t MAX2 = UINT64_C(1) << (2 * w);
 const uint64_t mask = ( UINT64_C(1) << w)  - 1;
@@ -43,7 +43,7 @@ bool is_invertible(uint64_t a, uint64_t b, uint64_t * bitsetbuffer) {
     clearbitset(bitsetbuffer);
     for (uint64_t i = 0; i < MAX; ++i) {
         uint64_t h = hash(a,b,i);
-        assert(h < MAX); 
+        assert(h < MAX);
         if(!setbit(bitsetbuffer,h)) return false;
     }
     return true;
@@ -239,13 +239,21 @@ int main() {
     }
     counter = 0;
     for(uint64_t a = 0; a < MAX2 ; a++) {
+          size_t thiscount = 0;
+
         for(uint64_t b = 0; b < MAX2 ; b++) {
             if(is_invertible(a,b,bitsetbuffer)) {
-                printf("%u ",a % MAX);
+                thiscount ++ ;
+              //  printf("%x %x \n",a ,b);
                 counter ++;
-                break;
+                //break;
             }
         }
+            if(thiscount > 0) {
+                              printf("%x %zu \n",a ,thiscount);
+
+            }
+
     }
     printf("%zu \n",counter);
     free(bitsetbuffer);
