@@ -17,6 +17,9 @@ typedef struct {
   uint64_t * data;
   size_t size;// can be assumed to be a power of two
   uint64_t multiplier[K];
+  __m256i vmultiplier;// = _mm256_loadu_si256((__m256i const * )set->multiplier);//
+  __m256i sizemask;// _mm256_set1_epi64x(set->size-1);
+ 
 } hashset_t;
 
 // simple mutiply-shift
@@ -25,7 +28,7 @@ static inline uint64_t hash(uint64_t multiplier, uint64_t target) {
 }
 
 // simple function that tests whether the hash set contains the value
-bool contains(hashset_t * set, uint64_t target) {
+static inline bool contains(hashset_t * set, uint64_t target) {
   for(int i = 0; i < K; i++) {
     size_t hashlocation = hash(set->multiplier[i], target) & (set->size - 1);
     if(set->data[hashlocation] == target) return true;
@@ -36,9 +39,13 @@ bool contains(hashset_t * set, uint64_t target) {
 static inline __m256i mulhi_epu64(__m256i x, __m256i y) {
   __m256i x_hi = _mm256_srli_epi64(x, 32);
   __m256i y_hi = _mm256_srli_epi64(y, 32);
-  __m256i mask = _mm256_set1_epi64x(0xFFFFFFFFL);
-  __m256i x_lo = _mm256_and_si256(x, mask);
-  __m256i y_lo = _mm256_and_si256(y, mask);
+//  __m256i mask = _mm256_set1_epi64x(0xFFFFFFFFL);
+ // __m256i x_lo = _mm256_and_si256(x, mask);
+//  __m256i y_lo = _mm256_and_si256(y, mask);
+/// masking is unnecessary because _mm256_mul_epu32 does it for us (for free):
+__m256i x_lo = x;
+__m256i y_lo = y;
+/////////////
   __m256i result = _mm256_mul_epu32(x_lo,y_lo);
   result = _mm256_srli_epi64(result, 32);
   __m256i result1 = _mm256_mul_epu32(x_hi,y_lo);
@@ -56,27 +63,35 @@ static inline __m256i avxhash(__m256i multipliers, __m256i target) {
   return mulhi_epu64(multipliers, target);
 }
 
-bool avxcontains(hashset_t * set, uint64_t target) {
+static inline bool avxcontains(hashset_t * set, uint64_t target) {
   __m256i vtarget = _mm256_set1_epi64x(target);
-  __m256i vmultiplier = _mm256_loadu_si256((__m256i const * )set->multiplier);// if expensive could be precomp
-  __m256i vlocation = _mm256_and_si256(avxhash(vtarget, vmultiplier),_mm256_set1_epi64x(set->size-1));
-  __m256i svalue = _mm256_i64gather_epi64(set->data,vlocation,8);
+  __m256i vlocation = _mm256_and_si256(avxhash(vtarget, set->vmultiplier),set->sizemask);
+  __m256i svalue = _mm256_i64gather_epi64((const long long int *) set->data,vlocation,8);
   __m256i eq = _mm256_cmpeq_epi64(vtarget,svalue);
   return _mm256_testz_si256(eq,eq) == 0;
 }
 
-int checkthemall(hashset_t * H, uint64_t howmany) {
+int expected(hashset_t * H, uint64_t howmany, uint64_t * keys) {
   int sum = 0;
   for(uint64_t k = 0; k < howmany; ++k) {
-    if(contains(H,k)) sum++;
+    if(contains(H,keys[k])) sum++;
   }
   return sum;
 }
 
-int avxcheckthemall(hashset_t * H, uint64_t howmany) {
+
+int __attribute__ ((noinline)) checkthemall(hashset_t * H, uint64_t howmany, uint64_t * keys) {
   int sum = 0;
   for(uint64_t k = 0; k < howmany; ++k) {
-    if(avxcontains(H,k)) sum++;
+    if(contains(H,keys[k])) sum++;
+  }
+  return sum;
+}
+
+int __attribute__ ((noinline)) avxcheckthemall(hashset_t * H, uint64_t howmany, uint64_t * keys) {
+  int sum = 0;
+  for(uint64_t k = 0; k < howmany; ++k) {
+    if(avxcontains(H,keys[k])) sum++;
   }
   return sum;
 }
@@ -136,7 +151,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
   } while (0)							      \
 
 
-#define RDTSC_BEST(test, answer, repeat, num_ops)			\
+#define RDTSC_BEST(test, answer, reset, repeat, num_ops)			\
   do {									\
     if (global_rdtsc_overhead == UINT64_MAX) {				\
       RDTSC_SET_OVERHEAD(rdtsc_overhead_func(1), repeat);		\
@@ -146,6 +161,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
     uint64_t cycles_start, cycles_final, cycles_diff;			\
     uint64_t min_diff = UINT64_MAX;					\
     for (size_t i = 0; i < repeat; i++) {				\
+      reset;                                                            \
       __asm volatile("" ::: /* pretend to clobber */ "memory");		\
       RDTSC_START(cycles_start);					\
       if(test != answer) printf("bug");				\
@@ -162,17 +178,39 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
     fflush(NULL);							\
   } while (0)
 
+void cache_flush(hashset_t * H, uint64_t howmany, uint64_t * keys) {
+    const size_t CACHELINESIZE =
+        64;
+    for (size_t k = 0; k <  H->size;
+         k += CACHELINESIZE / sizeof(uint64_t)) {
+        __builtin_ia32_clflush(H->data + k);
+    }
+    for (size_t k = 0; k <  howmany;
+         k += CACHELINESIZE / sizeof(uint64_t)) {
+        __builtin_ia32_clflush(keys + k);
+    }
+}
+
+uint64_t getrand64() {
+    return rand() | ((uint64_t) rand() << 32);
+}
+
 int main() {
   hashset_t H;
-  for(int k = 0; k < K; ++k) H.multiplier[k] = rand() | ((uint64_t) rand() << 32);
+  for(int k = 0; k < K; ++k) H.multiplier[k] = getrand64();
+  H.vmultiplier= _mm256_loadu_si256((__m256i const * )H.multiplier);
+  uint64_t howmany = 100;
+  uint64_t * keys = malloc(sizeof(uint64_t) * howmany);
+  for(uint64_t k = 0; k < howmany; ++k) keys[k] = getrand64();
   for(H.size = 1024; H.size < (UINT64_C(1) << 32) ; H.size *=2) {
-    uint64_t howmany = 100;
+    H.sizemask = _mm256_set1_epi64x(H.size-1);
     printf("alloc size  = %f MB \n", H.size * sizeof(uint64_t) / (1024 * 1024.0));
     H.data = calloc(H.size , sizeof(uint64_t));
     for(int j = 0; j < howmany; j += 2) H.data[hash(H.multiplier[0],j) & (H.size - 1)] = j;
-    int answer = checkthemall(&H,howmany);
-    RDTSC_BEST(checkthemall(&H,howmany), answer, 1,howmany);
-    RDTSC_BEST(avxcheckthemall(&H,howmany), answer, 1,howmany);
+    int answer = expected(&H,howmany,keys);
+    RDTSC_BEST(checkthemall(&H,howmany,keys), answer, cache_flush(&H,howmany,keys), 50,howmany);
+    RDTSC_BEST(avxcheckthemall(&H,howmany,keys), answer, cache_flush(&H,howmany,keys),  50,howmany);
     free(H.data);
   }
+  free(keys);
 }
