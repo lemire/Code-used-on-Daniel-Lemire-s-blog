@@ -11,7 +11,7 @@
 #include <x86intrin.h>
 #include <stdio.h>
 
-const int K = 4;
+enum {K=4};
 
 typedef struct {
   uint64_t * data;
@@ -136,7 +136,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
   } while (0)							      \
 
 
-#define RDTSC_BEST(test, repeat, num_ops)			\
+#define RDTSC_BEST(test, answer, repeat, num_ops)			\
   do {									\
     if (global_rdtsc_overhead == UINT64_MAX) {				\
       RDTSC_SET_OVERHEAD(rdtsc_overhead_func(1), repeat);		\
@@ -148,7 +148,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
     for (size_t i = 0; i < repeat; i++) {				\
       __asm volatile("" ::: /* pretend to clobber */ "memory");		\
       RDTSC_START(cycles_start);					\
-      test;				\
+      if(test != answer) printf("bug");				\
       RDTSC_STOP(cycles_final);                                         \
       cycles_diff = (cycles_final - cycles_start);			\
       if (cycles_diff < min_diff) min_diff = cycles_diff;		\
@@ -164,11 +164,15 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
 
 int main() {
   hashset_t H;
-  H.size = 64 * 1024 * 1024;
-  uint64_t howmany = 100000;
-  printf("alloc size in bytes = %zu \n", H.size * sizeof(uint64_t));
-  H.data = malloc(H.size * sizeof(uint64_t));
-  RDTSC_BEST(checkthemall(&H,howmany), 5,howmany);
-  RDTSC_BEST(avxcheckthemall(&H,howmany), 5,howmany);
-  free(H.data);
+  H.multiplier[0] = ~UINT64_C(0);
+  for(H.size = 1024; H.size < (UINT64_C(1) << 32) ; H.size *=2) {
+    uint64_t howmany = 100000;
+    printf("alloc size  = %f MB \n", H.size * sizeof(uint64_t) / (1024 * 1024.0));
+    H.data = malloc(H.size * sizeof(uint64_t));
+    for(int j = 0; j < howmany; j += 2) H.data[hash(H.multiplier[0],j) & (H.size - 1)] = j;
+    int answer = checkthemall(&H,howmany);
+    RDTSC_BEST(checkthemall(&H,howmany), answer, 1,howmany);
+    RDTSC_BEST(avxcheckthemall(&H,howmany), answer, 1,howmany);
+    free(H.data);
+  }
 }
