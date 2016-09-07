@@ -164,11 +164,11 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
 
 int main() {
   hashset_t H;
-  H.multiplier[0] = ~UINT64_C(0);
+  for(int k = 0; k < K; ++k) H.multiplier[k] = rand() | ((uint64_t) rand() << 32);
   for(H.size = 1024; H.size < (UINT64_C(1) << 32) ; H.size *=2) {
-    uint64_t howmany = 100000;
+    uint64_t howmany = 100;
     printf("alloc size  = %f MB \n", H.size * sizeof(uint64_t) / (1024 * 1024.0));
-    H.data = malloc(H.size * sizeof(uint64_t));
+    H.data = calloc(H.size , sizeof(uint64_t));
     for(int j = 0; j < howmany; j += 2) H.data[hash(H.multiplier[0],j) & (H.size - 1)] = j;
     int answer = checkthemall(&H,howmany);
     RDTSC_BEST(checkthemall(&H,howmany), answer, 1,howmany);
