@@ -20,7 +20,7 @@ typedef struct {
 } hashset_t;
 
 // simple mutiply-shift
-uint64_t hash(uint64_t multiplier, uint64_t target) {
+static inline uint64_t hash(uint64_t multiplier, uint64_t target) {
   return (((__uint128_t)target) * multiplier) >> 64;
 }
 
@@ -33,7 +33,7 @@ bool contains(hashset_t * set, uint64_t target) {
   return false;
 }
 
-__m256i mulhi_epu64(__m256i x, __m256i y) {
+static inline __m256i mulhi_epu64(__m256i x, __m256i y) {
   __m256i x_hi = _mm256_srli_epi64(x, 32);
   __m256i y_hi = _mm256_srli_epi64(y, 32);
   __m256i mask = _mm256_set1_epi64x(0xFFFFFFFFL);
@@ -52,7 +52,7 @@ __m256i mulhi_epu64(__m256i x, __m256i y) {
 }
 
 // simple mutiply-shift
-__m256i avxhash(__m256i multipliers, __m256i target) {
+static inline __m256i avxhash(__m256i multipliers, __m256i target) {
   return mulhi_epu64(multipliers, target);
 }
 
