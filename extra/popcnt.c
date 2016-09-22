@@ -131,6 +131,57 @@ typedef __m256i ymm_t;
                     "r" (end)                                           \
                     )
 
+#define ASM_SUM_POPCNT2(total, tmp1, tmp2, neg, end)         \
+    __asm volatile ("1:\n"                                              \
+                    "popcnt 0(%4,%3,1), %1\n"                           \
+                    "popcnt 8(%4,%3,1), %2\n"                           \
+                    "add %1, %0\n"                                      \
+                    "add %2, %0\n"                                      \
+                    "add $32, %3\n"                                     \
+                    "jnz 1b\n" :                                        \
+                    "+&r" (total),                                      \
+                    "=&r" (tmp1),                                       \
+                    "=&r" (tmp2),                                       \
+                    "+&r" (neg) :                                       \
+                    "r" (end)                                           \
+                    )
+
+
+
+
+#define ASM_SUM_POPCNT8(total, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, neg, end)         \
+    __asm volatile ("1:\n"                                              \
+                    "popcnt 0(%10,%9,1), %1\n"                           \
+                    "popcnt 8(%10,%9,1), %2\n"                           \
+                    "popcnt 16(%10,%9,1), %3\n"                          \
+                    "popcnt 24(%10,%9,1), %4\n"                          \
+                    "popcnt 32(%10,%9,1), %5\n"                           \
+                    "popcnt 40(%10,%9,1), %6\n"                           \
+                    "popcnt 48(%10,%9,1), %7\n"                          \
+                    "popcnt 56(%10,%9,1), %8\n"                          \
+                     "add %1, %0\n"                                      \
+                    "add %2, %0\n"                                      \
+                    "add %3, %0\n"                                      \
+                    "add %4, %0\n"                                      \
+                     "add %5, %0\n"                                      \
+                    "add %6, %0\n"                                      \
+                    "add %7, %0\n"                                      \
+                    "add %8, %0\n"                                      \
+                     "add $32, %9\n"                                     \
+                    "jnz 1b\n" :                                        \
+                    "+&r" (total),                                      \
+                    "=&r" (tmp1),                                       \
+                    "=&r" (tmp2),                                       \
+                    "=&r" (tmp3),                                       \
+                    "=&r" (tmp4),                                       \
+                    "=&r" (tmp5),                                       \
+                    "=&r" (tmp6),                                       \
+                    "=&r" (tmp7),                                       \
+                    "=&r" (tmp8),                                       \
+                     "+&r" (neg) :                                       \
+                    "r" (end)                                           \
+                    )
+
 
 
 #define ASM_POPCNT_AVX2_512(bytes, ymm1, ymm2, ymm3, ymm4, total,       \
@@ -456,6 +507,16 @@ typedef __m256i ymm_t;
                     "x" (shuf)                                          \
                     )
 
+uint64_t bitset_count_popcnt2(uint8_t *bitset) {
+    uint64_t count1, count2, count3, count4;
+    uint64_t total_count = 0;
+    uint8_t *end = bitset + BITSET_BYTES;
+    int64_t neg = -(BITSET_BYTES);
+
+    ASM_SUM_POPCNT(total_count, count1, count2, count3, count4, neg, end);
+
+    return total_count;
+}
 uint64_t bitset_count_popcnt(uint8_t *bitset) {
     uint64_t count1, count2, count3, count4;
     uint64_t total_count = 0;
@@ -466,6 +527,17 @@ uint64_t bitset_count_popcnt(uint8_t *bitset) {
 
     return total_count;
 }
+uint64_t bitset_count_popcnt8(uint8_t *bitset) {
+    uint64_t count1, count2, count3, count4, count5, count6, count7, count8;
+    uint64_t total_count = 0;
+    uint8_t *end = bitset + BITSET_BYTES;
+    int64_t neg = -(BITSET_BYTES);
+
+    ASM_SUM_POPCNT8(total_count, count1, count2, count3, count4, count5, count6, count7, count8, neg, end);
+
+    return total_count;
+}
+
 
 uint64_t intrinsics_countloop4(uint8_t *bitset) {
     // these are precomputed hamming weights (weight(0), weight(1)...)
@@ -627,7 +699,9 @@ int main(/* int argc, char **argv */) {
 
     RDTSC_BEST(intrinsics_count4(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
     RDTSC_BEST(intrinsics_countloop4(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
-    RDTSC_BEST(bitset_count_popcnt(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
+    RDTSC_BEST(bitset_count_popcnt2(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
+     RDTSC_BEST(bitset_count_popcnt(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
+    RDTSC_BEST(bitset_count_popcnt8(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
     RDTSC_BEST(bitset_count_avx2_32(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
     RDTSC_BEST(bitset_count_avx2_64(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
     RDTSC_BEST(bitset_count_avx2_128(bitset), count, RDTSC_REPEAT, BITSET_BYTES / 8);
