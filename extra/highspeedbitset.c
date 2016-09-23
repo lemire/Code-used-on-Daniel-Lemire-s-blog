@@ -168,6 +168,64 @@ void bitset_set_list_avx(void *bitset,
 }
 
 
+void bitset_set_list_avx_extract(void *bitset,
+                         uint16_t *list, uint64_t length) {
+    uint64_t offset, load, newload, pos, index;
+    uint16_t *end = list + length;
+    __m256i sillymask = _mm256_set1_epi16(63);
+    __m256i justone = _mm256_set1_epi64x(1);
+    __m256i justzero = _mm256_setzero_si256();
+    //uint16_t indexes16[16];
+    //uint64_t shiftsarray[16];
+    uint64_t * bitset64 = (uint64_t*)bitset;
+    while(list + 16 <= end) {
+      __m256i vlist = _mm256_loadu_si256((const __m256i *) list);
+      __m256i indexes = _mm256_srli_epi16 (vlist, 6);
+      //_mm256_store_si256((__m256i *) indexes16,indexes);
+      __m256i shifts = _mm256_and_si256 (vlist, sillymask);
+      __m256i u1 = _mm256_unpacklo_epi16(shifts,justzero);
+      __m256i u2 = _mm256_unpackhi_epi16(shifts,justzero);
+      __m256i shifts1 = _mm256_unpacklo_epi32(u1,justzero);
+      __m256i shifts2 = _mm256_unpackhi_epi32(u1,justzero);
+      __m256i shifts3 = _mm256_unpacklo_epi32(u2,justzero);
+      __m256i shifts4 = _mm256_unpackhi_epi32(u2,justzero);
+      _mm256_sllv_epi64(justone,shifts1);
+      _mm256_sllv_epi64(justone,shifts2);
+      _mm256_sllv_epi64(justone,shifts3);
+      _mm256_sllv_epi64(justone,shifts4);
+      //_mm256_store_si256((__m256i *) shiftsarray,shifts1);
+      //_mm256_store_si256((__m256i *) shiftsarray + 1,shifts2);
+      //_mm256_store_si256((__m256i *) shiftsarray + 2,shifts3);
+      //_mm256_store_si256((__m256i *) shiftsarray + 3,shifts4);
+      bitset64[_mm256_extract_epi16(indexes,0)] |= _mm256_extract_epi64(shifts1,0);
+      bitset64[_mm256_extract_epi16(indexes,1)] |= _mm256_extract_epi64(shifts1,1);
+      bitset64[_mm256_extract_epi16(indexes,2)] |= _mm256_extract_epi64(shifts1,2);
+      bitset64[_mm256_extract_epi16(indexes,3)] |= _mm256_extract_epi64(shifts1,3);
+      bitset64[_mm256_extract_epi16(indexes,4)] |= _mm256_extract_epi64(shifts2,0);
+      bitset64[_mm256_extract_epi16(indexes,5)] |= _mm256_extract_epi64(shifts2,1);
+      bitset64[_mm256_extract_epi16(indexes,6)] |= _mm256_extract_epi64(shifts2,2);
+      bitset64[_mm256_extract_epi16(indexes,7)] |= _mm256_extract_epi64(shifts2,3);
+      bitset64[_mm256_extract_epi16(indexes,8)] |= _mm256_extract_epi64(shifts3,0);
+      bitset64[_mm256_extract_epi16(indexes,9)] |= _mm256_extract_epi64(shifts3,1);
+      bitset64[_mm256_extract_epi16(indexes,10)] |= _mm256_extract_epi64(shifts3,2);
+      bitset64[_mm256_extract_epi16(indexes,11)] |= _mm256_extract_epi64(shifts3,3);
+      bitset64[_mm256_extract_epi16(indexes,12)] |= _mm256_extract_epi64(shifts4,0);
+      bitset64[_mm256_extract_epi16(indexes,13)] |= _mm256_extract_epi64(shifts4,1);
+      bitset64[_mm256_extract_epi16(indexes,14)] |= _mm256_extract_epi64(shifts4,2);
+      bitset64[_mm256_extract_epi16(indexes,15)] |= _mm256_extract_epi64(shifts4,3);
+      list += 16;
+    }
+    while(list != end) {
+      pos =  *(uint16_t *)  list;
+      offset = pos >> 6;
+      index = pos % 64;
+      load = ((uint64_t *) bitset)[offset];
+      newload = load | (UINT64_C(1) << index);
+      ((uint64_t *) bitset)[offset] = newload;
+      list ++;
+    }
+}
+
 void bitset_set_list_intrin(void *bitset,
                          uint16_t *list, uint64_t length) {
     uint64_t offset, load, newload, pos, index;
@@ -535,6 +593,15 @@ void demo() {
         list[i] = i * mult;
     }
     RDTSC_LOOP(bitset_set_list_avx(out, list, length),reset(list,length),  repeat, length);
+
+    //check(out, list, length);
+    printf("%d \n",*(int *)out);
+    memset(out, 0x00, bitsetbytes);
+            printf("%d \n",*(int *)out);
+    for (int i = 0; i < length; i++) {
+        list[i] = i * mult;
+    }
+    RDTSC_LOOP(bitset_set_list_avx_extract(out, list, length),reset(list,length),  repeat, length);
 
     //check(out, list, length);
     printf("%d \n",*(int *)out);

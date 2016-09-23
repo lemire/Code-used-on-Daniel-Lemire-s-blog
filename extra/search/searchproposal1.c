@@ -103,7 +103,63 @@ int32_t __attribute__ ((noinline)) linear256_16(uint16_t * array, int32_t length
     }
     return - length - 1;
 }
+int32_t __attribute__ ((noinline)) simple_linear_search(uint16_t* source, int32_t n, uint16_t target) {
+    int32_t length = n;
+    for(int32_t k = 0; k  < length; k ++) {
+        uint16_t val = source[k];
+        if(val >= target) {
+            if(val == target) return k;
+            else return - k - 1;
+        }
+    }
+    return - length - 1;
+}
 
+// breaks the contract
+int32_t __attribute__ ((noinline)) justequal_linear_search(uint16_t* source, int32_t n, uint16_t target) {
+    int32_t length = n;
+    for(int32_t k = 0; k  < length; k ++) {
+        uint16_t val = source[k];
+        if(val == target) return k;
+    }
+    return - 1;
+}
+
+// breaks the contract
+int32_t __attribute__ ((noinline)) skippingjustequal_linear_search(uint16_t* source, int32_t n, uint16_t target) {
+    int32_t k = 0;
+    int32_t length = n;
+    for(; k + 7 < length; k += 8) {
+        uint16_t val = source[k + 7];
+        if(val >= target) {
+          length = k + 7;
+          break;
+        }
+    }
+    for(; k  < length; k ++) {
+        uint16_t val = source[k];
+        if(val == target) return k;
+    }
+    return - 1;
+}
+
+// breaks the contract
+int32_t __attribute__ ((noinline)) wideskippingjustequal_linear_search(uint16_t* source, int32_t n, uint16_t target) {
+    int32_t k = 0;
+    int32_t length = n;
+    for(; k + 15 < length; k += 16) {
+        uint16_t val = source[k + 15];
+        if(val >= target) {
+          length = k + 15;
+          break;
+        }
+    }
+    for(; k  < length; k ++) {
+        uint16_t val = source[k];
+        if(val == target) return k;
+    }
+    return - 1;
+}
 
 
 //  Paul-Virak Khuong and Pat Morin, http://arxiv.org/pdf/1509.05053.pdf
@@ -175,6 +231,7 @@ int32_t __attribute__ ((noinline)) branchless_binary_search_wp(uint16_t* source,
         uint64_t cycles_start, cycles_final, cycles_diff;                               \
         uint64_t min_diff = (uint64_t)-1;                                               \
         int sum = 0;                                                                    \
+        printf("[%s %s] ", #test, #pre);\
         for (size_t j = 0; j < nbrtestvalues; j++) {                                    \
             pre(base,length);                                                           \
             pre(base,length);                                                           \
@@ -188,6 +245,7 @@ int32_t __attribute__ ((noinline)) branchless_binary_search_wp(uint16_t* source,
         }                                                                               \
         uint64_t S = nbrtestvalues;                                                     \
         cpo = sum / (double)S;                                                 \
+        printf("%f \n",cpo);\
     } while (0)
 
 #define ASSERT_PRE_ARRAY(base, length, test,   testvalues, nbrtestvalues)               \
@@ -232,17 +290,18 @@ void demo() {
     int32_t bogus = 0;
     printf("# Objective: fast search in 16-bit arrays of up to 4096 integers.\n");
     printf("# output is formatted for processing with gnuplot.\n");
-    for(double Nd = 32; Nd <= 4100; Nd*=sqrt(sqrt(2))) {
+    for(double Nd = 1; Nd <= 64; Nd++) {
         size_t N = round(Nd);
         value_t * source = create_sorted_array(N);
-        
+
         ASSERT_PRE_ARRAY(source,N,binary_search,testvalues,nbrtestvalues);
         ASSERT_PRE_ARRAY(source,N,branchless_binary_search,testvalues,nbrtestvalues);
         ASSERT_PRE_ARRAY(source,N,branchless_binary_search_wp,testvalues,nbrtestvalues);
         ASSERT_PRE_ARRAY(source,N,linear256_16,testvalues,nbrtestvalues);
 
         float cpo_bs, cpo_branchless,cpo_branchless_wp, cpo_linear256_16;
-        float cpo_bs_pre, cpo_256_16_pre, cpo_256_16_branchless,cpo_256_16_branchless_wp ;
+        float cpo_bs_pre, cpo_256_16_pre, cpo_256_16_branchless,cpo_256_16_branchless_wp, idontcare ;
+
         BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_prefetch,   testvalues, nbrtestvalues, cpo_bs_pre, bogus);
         BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_flush,   testvalues, nbrtestvalues, cpo_bs, bogus);
 
@@ -254,6 +313,24 @@ void demo() {
 
         BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_prefetch,   testvalues, nbrtestvalues, cpo_256_16_branchless_wp, bogus);
         BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search_wp, array_cache_flush,   testvalues, nbrtestvalues, cpo_branchless_wp, bogus);
+
+        BEST_TIME_PRE_ARRAY(source, N, simple_linear_search, array_cache_prefetch,   testvalues, nbrtestvalues, idontcare, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, simple_linear_search, array_cache_flush,   testvalues, nbrtestvalues, idontcare, bogus);
+
+
+        BEST_TIME_PRE_ARRAY(source, N, justequal_linear_search, array_cache_prefetch,   testvalues, nbrtestvalues, idontcare, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, justequal_linear_search, array_cache_flush,   testvalues, nbrtestvalues, idontcare, bogus);
+
+        BEST_TIME_PRE_ARRAY(source, N, skippingjustequal_linear_search, array_cache_prefetch,   testvalues, nbrtestvalues, idontcare, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, skippingjustequal_linear_search, array_cache_flush,   testvalues, nbrtestvalues, idontcare, bogus);
+
+        BEST_TIME_PRE_ARRAY(source, N, wideskippingjustequal_linear_search, array_cache_prefetch,   testvalues, nbrtestvalues, idontcare, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, wideskippingjustequal_linear_search, array_cache_flush,   testvalues, nbrtestvalues, idontcare, bogus);
+
+
+
+
+
         printf("# N=%10d (flushed cache)  branchy = %.2f  linear256_16 = %2.f  branchless = %.2f branchless+prefetching = %.2f\n",
                (int)N,cpo_bs,cpo_linear256_16,cpo_branchless,cpo_branchless_wp);
         printf("# N=%10d (in-cache)  branchy = %.2f  linear256_16 = %.2f  branchless=%.2f branchless+prefetching=%.2f \n",
