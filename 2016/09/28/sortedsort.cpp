@@ -103,7 +103,10 @@ void demo(int size) {
     BEST_TIME_COND(std::is_sorted(v.begin(), v.end()),false,std::random_shuffle(v.begin(), v.end()), repeat, size);
     BEST_TIME(std::stable_sort(v.begin(), v.end()),std::random_shuffle(v.begin(), v.end()), repeat, size);
     BEST_TIME(gfx::timsort(v.begin(), v.end()),std::random_shuffle(v.begin(), v.end()), repeat, size);
-
+    BEST_TIME(std::sort(v.begin(), v.end()),std::sort(v.rbegin(), v.rend()), repeat, size);
+    BEST_TIME(std::stable_sort(v.begin(), v.end()),std::sort(v.rbegin(), v.rend()), repeat, size);
+    BEST_TIME(gfx::timsort(v.begin(), v.end()),std::sort(v.rbegin(), v.rend()), repeat, size);
+ 
     printf("\n");
 }
 
