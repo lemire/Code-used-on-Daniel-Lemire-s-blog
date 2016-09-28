@@ -1,4 +1,4 @@
-// g+++ -O3  -march=native -o sortedsort sortedsort.cpp
+// g++ -O3  -march=native -std=c++11 -o sortedsort sortedsort.cpp -I .
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
