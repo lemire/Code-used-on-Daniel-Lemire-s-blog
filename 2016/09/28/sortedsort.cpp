@@ -93,7 +93,8 @@ void demo(int size) {
     std::vector<uint32_t> v(size);
     //std::iota(v.begin(), v.end());
     for(uint32_t i = 0; i < size; ++i) v[i] = i;
-
+    std::vector<uint32_t> buffer(size);
+    BEST_TIME(buffer.assign(v.begin(), v.end()),, repeat, size);
     BEST_TIME_COND(std::is_sorted(v.begin(), v.end()),true,std::sort(v.begin(), v.end()), repeat, size);
     BEST_TIME(std::sort(v.begin(), v.end()),std::sort(v.begin(), v.end()), repeat, size);
     BEST_TIME(std::stable_sort(v.begin(), v.end()),std::sort(v.begin(), v.end()), repeat, size);
@@ -109,6 +110,6 @@ void demo(int size) {
 int main() {
     demo(1024);
     demo(1<<16);
-
+    demo(1000000);
     return 0;
 }
