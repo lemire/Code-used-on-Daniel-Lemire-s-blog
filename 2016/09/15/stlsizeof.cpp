@@ -144,5 +144,8 @@ int main() {
   treeset t;
   for(uint32_t k = 0; k < N; k++) t.insert(k);
   std::cout << "memory usage per element of a set<uint32_t> : " << getMemUsageInBytes() * 1.0 / N << std::endl;
-
+  
+  std::cout << "Comments : " << std::endl;
+  std::cout << "This is an optimistic estimate: the overhead of the data structure and the allocations is ignored." << std::endl;
+  std::cout << "Because the per-value overhead might be fixed, the results might be less dramatic with larger elements, such as long strings." << std::endl;
 }
