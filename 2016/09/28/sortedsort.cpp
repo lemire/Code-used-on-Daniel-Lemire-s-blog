@@ -7,7 +7,7 @@
 #include <numeric>
 #include <vector>
 #include <algorithm>
-
+#include <timsort.hpp>
 
 #define RDTSC_START(cycles)                                                   \
     do {                                                                      \
@@ -64,6 +64,28 @@
             fflush(NULL);                                                 \
  } while (0)
 
+#define BEST_TIME_COND(test, expected,  pre, repeat, size)                         \
+        do {                                                              \
+            printf("%40s [%40s]: ", #test, #pre);                                        \
+            fflush(NULL);                                                 \
+            uint64_t cycles_start, cycles_final, cycles_diff;             \
+            uint64_t min_diff = (uint64_t)-1;                             \
+            for (int i = 0; i < repeat; i++) {                            \
+                pre;                                                       \
+                __asm volatile("" ::: /* pretend to clobber */ "memory"); \
+                RDTSC_START(cycles_start);                                \
+                if(test!= expected) printf("bug");                         \
+                RDTSC_FINAL(cycles_final);                                \
+                cycles_diff = (cycles_final - cycles_start);              \
+                if (cycles_diff < min_diff) min_diff = cycles_diff;       \
+            }                                                             \
+            uint64_t S = size;                                            \
+            float cycle_per_op = (min_diff) / (double)S;                  \
+            printf(" %.2f cycles per element", cycle_per_op);           \
+            printf("\n");                                                 \
+            fflush(NULL);                                                 \
+ } while (0)
+
 
 void demo(int size) {
     printf("size = %d bytes \n",size);
@@ -72,10 +94,14 @@ void demo(int size) {
     //std::iota(v.begin(), v.end());
     for(uint32_t i = 0; i < size; ++i) v[i] = i;
 
+    BEST_TIME_COND(std::is_sorted(v.begin(), v.end()),true,std::sort(v.begin(), v.end()), repeat, size);
     BEST_TIME(std::sort(v.begin(), v.end()),std::sort(v.begin(), v.end()), repeat, size);
     BEST_TIME(std::stable_sort(v.begin(), v.end()),std::sort(v.begin(), v.end()), repeat, size);
+    BEST_TIME(gfx::timsort(v.begin(), v.end()),std::sort(v.begin(), v.end()), repeat, size);
     BEST_TIME(std::sort(v.begin(), v.end()),std::random_shuffle(v.begin(), v.end()), repeat, size);
+    BEST_TIME_COND(std::is_sorted(v.begin(), v.end()),false,std::random_shuffle(v.begin(), v.end()), repeat, size);
     BEST_TIME(std::stable_sort(v.begin(), v.end()),std::random_shuffle(v.begin(), v.end()), repeat, size);
+    BEST_TIME(gfx::timsort(v.begin(), v.end()),std::random_shuffle(v.begin(), v.end()), repeat, size);
 
     printf("\n");
 }
