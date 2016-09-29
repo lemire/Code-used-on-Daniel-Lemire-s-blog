@@ -3,29 +3,31 @@ import XCTest
 class SwiftCallOverheadTests : XCTestCase {
   func testNativePerformance() {
     measure() {
-      var i = 1;
-      var j = 1;
+      var i : Int32 = 1;
+      var j : Int32 = 1;
+      var counter = 0;
       // fibonacci
-      while ( j < 1000000 ) {
+      while ( j != 0 ) {
         let c = j;
-        j = i + j;
-        i = j;
+        j = i &+ j;
+        i = c;
+        counter += 1;
       }
-      print (j);
+      print (counter);
     }
   }
 
   func testCPerformance() {
     measure() {
-      var i = 1;
-      var j = 1;
+      var i : Int32 = 1;
+      var j : Int32 = 1;
+      var counter = 0;
       // fibonacci
-      while ( j < 1000000 ) {
-        let ip = UnsafeMutablePointer<Int32>(i)
-        let jp = UnsafeMutablePointer<Int32>(j)
-        SwiftCallOverhead.fibo(ip,jp)
+      while ( j != 0 ) {
+        SwiftCallOverhead.fibo(&i,&j);
+        counter += 1;
       }
-      print (j);
+      print (counter);
     }
   }
 
