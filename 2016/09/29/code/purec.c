@@ -1,6 +1,7 @@
 #include <stdint.h>
+#include <stdio.h>
 
-static void fibo(int * x, int * y) {
+void fibo(int * x, int * y) {
   int c = * y;
   *y = *x + *y;
   *x = c;
@@ -17,4 +18,6 @@ uint64_t howmany() {
   return counter;
 }
 
-
+int main() {
+  printf("%u \n", (unsigned int) howmany());
+}
