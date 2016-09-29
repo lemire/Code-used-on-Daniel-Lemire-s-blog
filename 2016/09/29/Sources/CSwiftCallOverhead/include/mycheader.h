@@ -11,7 +11,9 @@ uint64_t howmany() {
   int y = 1;
   uint64_t counter = 0;
   while( y != 0) {
-    fibo(&x, &y);
+    int c = y;
+    y = x + y;
+    x = c;
     counter++;
   }
   return counter;
