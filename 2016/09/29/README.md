@@ -28,7 +28,7 @@ real       0m1.747s
 user       0m1.744s
 sys        0m0.000s
 ```
-## For XCode users (Mac only)
+## For Xcode users (Mac only)
 
 ```
 $  swift package generate-xcodeproj
