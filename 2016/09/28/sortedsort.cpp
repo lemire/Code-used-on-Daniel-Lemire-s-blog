@@ -88,7 +88,7 @@
 
 
 void demo(int size) {
-    printf("size = %d bytes \n",size);
+    printf("size = %d values \n",size);
     int repeat = 500;
     std::vector<uint32_t> v(size);
     //std::iota(v.begin(), v.end());
