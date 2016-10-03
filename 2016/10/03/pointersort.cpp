@@ -100,10 +100,11 @@ void demo(int size) {
     int repeat = 500;
     std::vector<uint32_t> v(size);
     for(uint32_t i = 0; i < size; ++i) v[i] = i;
+    std::vector<uint32_t> t(size);
+    for(uint32_t i = 0; i < size; ++i) t[i] = i;
     std::vector<uint32_t*> pv(size);
     for(uint32_t i = 0; i < size; ++i) {
-      pv[i] =  new uint32_t;
-      *pv[i] = i;
+      pv[i] = & t[i];
     }
     pointer_cmp<uint32_t> cmp;
 
@@ -146,9 +147,6 @@ void demo(int size) {
     BEST_TIME(gfx::timsort(v.begin(), v.end()),std::sort(v.rbegin(), v.rend()), repeat, size);
     BEST_TIME(gfx::timsort(pv.begin(), pv.end(),cmp),std::sort(pv.rbegin(), pv.rend(),cmp), repeat, size);
 
-    for(uint32_t i = 0; i < size; ++i) {
-      delete pv[i];
-    }
     printf("\n");
 }
 
