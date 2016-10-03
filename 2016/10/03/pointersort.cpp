@@ -102,6 +102,13 @@ void demo(int size) {
     for(uint32_t i = 0; i < size; ++i) v[i] = i;
     std::vector<uint32_t> t(size);
     for(uint32_t i = 0; i < size; ++i) t[i] = i;
+    std::vector<std::string> s(size);
+    for(uint32_t i = 0; i < size; ++i) s[i] = i;
+    std::vector<std::string> sp(size);
+    for(uint32_t i = 0; i < size; ++i) {
+      sp[i] = i;
+      sp[i].resize(8,' ');
+    }
     std::vector<uint32_t*> pv(size);
     for(uint32_t i = 0; i < size; ++i) {
       pv[i] = & t[i];
@@ -110,24 +117,36 @@ void demo(int size) {
 
     std::vector<uint32_t> buffer(size);
     std::vector<uint32_t> pbuffer(size);
+    std::vector<std::string> sbuffer(size);
+
 
     BEST_TIME(buffer.assign(v.begin(), v.end()),, repeat, size);
-    BEST_TIME(pbuffer.assign(v.begin(), v.end()),, repeat, size);
+
 
     BEST_TIME_COND(std::is_sorted(v.begin(), v.end()),true,std::sort(v.begin(), v.end()), repeat, size);
     BEST_TIME_COND(std::is_sorted(pv.begin(), pv.end(),cmp),true,std::sort(pv.begin(), pv.end(),cmp), repeat, size);
-
+    BEST_TIME_COND(std::is_sorted(s.begin(), s.end()),true,std::sort(s.begin(), s.end()), repeat, size);
+    BEST_TIME_COND(std::is_sorted(sp.begin(), sp.end()),true,std::sort(sp.begin(), sp.end()), repeat, size);
+   
     BEST_TIME(std::sort(v.begin(), v.end()),std::sort(v.begin(), v.end()), repeat, size);
     BEST_TIME(std::sort(pv.begin(), pv.end(),cmp),std::sort(pv.begin(), pv.end(),cmp), repeat, size);
-
+    BEST_TIME(std::sort(s.begin(), s.end()),std::sort(s.begin(), s.end()), repeat, size);
+    BEST_TIME(std::sort(sp.begin(), sp.end()),std::sort(sp.begin(), sp.end()), repeat, size);
+   
     BEST_TIME(std::stable_sort(v.begin(), v.end()),std::sort(v.begin(), v.end()), repeat, size);
     BEST_TIME(std::stable_sort(pv.begin(), pv.end(),cmp),std::sort(pv.begin(), pv.end(),cmp), repeat, size);
 
     BEST_TIME(gfx::timsort(v.begin(), v.end()),std::sort(v.begin(), v.end()), repeat, size);
     BEST_TIME(gfx::timsort(pv.begin(), pv.end(),cmp),std::sort(pv.begin(), pv.end(),cmp), repeat, size);
+    BEST_TIME(gfx::timsort(s.begin(), s.end()),std::sort(s.begin(), s.end()), repeat, size);
+
 
     BEST_TIME(std::sort(v.begin(), v.end()),std::random_shuffle(v.begin(), v.end()), repeat, size);
     BEST_TIME(std::sort(pv.begin(), pv.end(),cmp),std::random_shuffle(pv.begin(), pv.end()), repeat, size);
+    BEST_TIME(std::sort(s.begin(), s.end()),std::random_shuffle(s.begin(), s.end()), repeat, size);
+    BEST_TIME(std::sort(sp.begin(), sp.end()),std::random_shuffle(sp.begin(), sp.end()), repeat, size);
+
+
 
     BEST_TIME_COND(std::is_sorted(v.begin(), v.end()),false,std::random_shuffle(v.begin(), v.end()), repeat, size);
     BEST_TIME_COND(std::is_sorted(pv.begin(), pv.end(),cmp),false,std::random_shuffle(pv.begin(), pv.end()), repeat, size);
@@ -137,6 +156,8 @@ void demo(int size) {
 
     BEST_TIME(gfx::timsort(v.begin(), v.end()),std::random_shuffle(v.begin(), v.end()), repeat, size);
     BEST_TIME(gfx::timsort(pv.begin(), pv.end(),cmp),std::random_shuffle(pv.begin(), pv.end()), repeat, size);
+    BEST_TIME(gfx::timsort(s.begin(), s.end()),std::random_shuffle(s.begin(), s.end()), repeat, size);
+
 
     BEST_TIME(std::sort(v.begin(), v.end()),std::sort(v.rbegin(), v.rend()), repeat, size);
     BEST_TIME(std::sort(pv.begin(), pv.end()),std::sort(pv.rbegin(), pv.rend(),cmp), repeat, size);
