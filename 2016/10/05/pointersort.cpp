@@ -91,6 +91,12 @@ template <class T> struct pointer_cmp {
   bool operator()(T *a, T *b) { return *a < *b; }
 };
 
+struct vstr_cmp {
+  bool operator()(const char *a, const char *b) {
+     return strcmp(a,b) < 0;
+  }
+ };
+
 template <int length> struct cstr_cmp {
   bool operator()(const char *a, const char *b) {
     if (length == 8) {
@@ -128,32 +134,29 @@ void demo(int size) {
   for (uint32_t i = 0; i < size; ++i) {
     s[i] = std::to_string(i);
   }
+  std::vector<const char *> vs(size);
+  for (uint32_t i = 0; i < size; ++i) {
+    vs[i] = s[i].c_str();
+  }
   std::vector<const char *> cs(size);
   for (uint32_t i = 0; i < size; ++i) {
     cs[i] = strncpy(new char[N], s[i].c_str(), N);
     assert(strcmp(s[i].c_str(), cs[i]) == 0);
   }
 
-  std::vector<uint32_t *> pv(size);
-  for (uint32_t i = 0; i < size; ++i) {
-    pv[i] = &t[i];
-  }
   pointer_cmp<uint32_t> cmp;
   cstr_cmp<N> ccmp;
-
-  std::vector<uint32_t> buffer(size);
-  std::vector<uint32_t> pbuffer(size);
-  std::vector<std::string> sbuffer(size);
+  vstr_cmp vcmp;
 
   BEST_TIME_COND(std::is_sorted(v.begin(), v.end()),true, std::sort(v.begin(), v.end()),
             repeat, size);
-  BEST_TIME_COND(std::is_sorted(pv.begin(), pv.end(), cmp),true,
-            std::sort(pv.begin(), pv.end(), cmp), repeat, size);
   BEST_TIME_COND(std::is_sorted(s.begin(), s.end()),true, std::sort(s.begin(), s.end()),
             repeat, size);
   BEST_TIME_COND(std::is_sorted(cs.begin(), cs.end(), ccmp),true,
             std::sort(cs.begin(), cs.end(), ccmp), repeat, size);
-  for (uint32_t i = 0; i < size; ++i) {
+  BEST_TIME_COND(std::is_sorted(vs.begin(), vs.end(), vcmp),true,
+            std::sort(vs.begin(), vs.end(), vcmp), repeat, size);
+   for (uint32_t i = 0; i < size; ++i) {
     assert(strcmp(s[i].c_str(), cs[i]) == 0);
   }
 
@@ -161,19 +164,18 @@ void demo(int size) {
   printf("\n");
   BEST_TIME(std::sort(v.begin(), v.end()), std::sort(v.begin(), v.end()),
             repeat, size);
-  BEST_TIME(std::sort(pv.begin(), pv.end(), cmp),
-            std::sort(pv.begin(), pv.end(), cmp), repeat, size);
   BEST_TIME(std::sort(s.begin(), s.end()), std::sort(s.begin(), s.end()),
             repeat, size);
   BEST_TIME(std::sort(cs.begin(), cs.end(), ccmp),
             std::sort(cs.begin(), cs.end(), ccmp), repeat, size);
+  BEST_TIME(std::sort(vs.begin(), vs.end(), ccmp),
+            std::sort(vs.begin(), vs.end(), vcmp), repeat, size);
+
 
   printf("\n");
 
   BEST_TIME(gfx::timsort(v.begin(), v.end()), std::sort(v.begin(), v.end()),
             repeat, size);
-  BEST_TIME(gfx::timsort(pv.begin(), pv.end(), cmp),
-            std::sort(pv.begin(), pv.end(), cmp), repeat, size);
   BEST_TIME(gfx::timsort(s.begin(), s.end()), std::sort(s.begin(), s.end()),
             repeat, size);
   BEST_TIME(gfx::timsort(cs.begin(), cs.end(), ccmp),
@@ -183,19 +185,18 @@ void demo(int size) {
 
   BEST_TIME(std::sort(v.begin(), v.end()),
             std::random_shuffle(v.begin(), v.end()), repeat, size);
-  BEST_TIME(std::sort(pv.begin(), pv.end(), cmp),
-            std::random_shuffle(pv.begin(), pv.end()), repeat, size);
   BEST_TIME(std::sort(s.begin(), s.end()),
             std::random_shuffle(s.begin(), s.end()), repeat, size);
   BEST_TIME(std::sort(cs.begin(), cs.end(), ccmp),
             std::random_shuffle(cs.begin(), cs.end()), repeat, size);
+  BEST_TIME(std::sort(vs.begin(), vs.end(), vcmp),
+            std::random_shuffle(vs.begin(), vs.end()), repeat, size);
+
 
   printf("\n");
 
   BEST_TIME(gfx::timsort(v.begin(), v.end()),
             std::random_shuffle(v.begin(), v.end()), repeat, size);
-  BEST_TIME(gfx::timsort(pv.begin(), pv.end(), cmp),
-            std::random_shuffle(pv.begin(), pv.end()), repeat, size);
   BEST_TIME(gfx::timsort(s.begin(), s.end()),
             std::random_shuffle(s.begin(), s.end()), repeat, size);
   BEST_TIME(gfx::timsort(cs.begin(), cs.end(), ccmp),
