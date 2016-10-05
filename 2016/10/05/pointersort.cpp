@@ -145,6 +145,20 @@ void demo(int size) {
   std::vector<uint32_t> pbuffer(size);
   std::vector<std::string> sbuffer(size);
 
+  BEST_TIME_COND(std::is_sorted(v.begin(), v.end()),true, std::sort(v.begin(), v.end()),
+            repeat, size);
+  BEST_TIME_COND(std::is_sorted(pv.begin(), pv.end(), cmp),true,
+            std::sort(pv.begin(), pv.end(), cmp), repeat, size);
+  BEST_TIME_COND(std::is_sorted(s.begin(), s.end()),true, std::sort(s.begin(), s.end()),
+            repeat, size);
+  BEST_TIME_COND(std::is_sorted(cs.begin(), cs.end(), ccmp),true,
+            std::sort(cs.begin(), cs.end(), ccmp), repeat, size);
+  for (uint32_t i = 0; i < size; ++i) {
+    assert(strcmp(s[i].c_str(), cs[i]) == 0);
+  }
+
+
+  printf("\n");
   BEST_TIME(std::sort(v.begin(), v.end()), std::sort(v.begin(), v.end()),
             repeat, size);
   BEST_TIME(std::sort(pv.begin(), pv.end(), cmp),
