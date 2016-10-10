@@ -144,7 +144,8 @@ void demo(int size) {
     int repeat = 500;
     std::vector<std::string> testvalues(size);
     for(size_t i = 0 ; i < testvalues.size() ; ++i) testvalues[i] = i;
-
+    std::vector<const char *> testcvalues(size);
+    for(size_t i = 0 ; i < testcvalues.size() ; ++i) testcvalues[i] = testvalues[i].c_str();
     PCGUniformRandomBitGenerator pgcgen;
 
     std::random_device rd;
@@ -156,6 +157,13 @@ void demo(int size) {
     BEST_TIME(shuffle_pcg(testvalues.data(),size), , repeat, size);
 
     BEST_TIME(shuffle_pcg_divisionless(testvalues.data(),size), , repeat, size);
+
+    BEST_TIME(std::shuffle(testcvalues.begin(),testcvalues.end(),pgcgen), , repeat, size);
+
+    BEST_TIME(shuffle_pcg(testcvalues.data(),size), , repeat, size);
+
+    BEST_TIME(shuffle_pcg_divisionless(testcvalues.data(),size), , repeat, size);
+
 
     printf("\n");
 }
