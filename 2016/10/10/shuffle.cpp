@@ -32,6 +32,17 @@ static inline uint32_t pcg32_random_bounded(uint32_t bound) {
     }
 }
 
+// as per the PCG implementation , uses two 64-bit divisions
+static inline uint32_t pcg32_random_bounded_bad(uint64_t bound) {
+    uint64_t threshold = (~bound + 1) % bound;// -bound % bound
+    for (;;) {
+        uint64_t r = pcg32_random();
+        if (r >= threshold)
+            return r % bound;
+    }
+}
+
+
 
 // map random value to [0,range) with slight bias, redraws to avoid bias if needed
 static inline uint32_t pcg32_random_bounded_divisionless(uint32_t range) {
@@ -129,6 +140,16 @@ void  shuffle_pcg(T *storage, uint32_t size) {
 }
 
 template <class T>
+void  shuffle_pcg_bad(T *storage, uint32_t size) {
+    uint32_t i;
+    for (i=size; i>1; i--) {
+        uint32_t nextpos = pcg32_random_bounded_bad(i);
+        std::swap(storage[i-1],storage[nextpos]);
+    }
+}
+
+
+template <class T>
 void  shuffle_pcg_divisionless(T *storage, uint32_t size) {
     uint32_t i;
     for (i=size; i>1; i--) {
@@ -143,8 +164,10 @@ void demo(int size) {
     printf("Tests assume that array is in cache as much as possible.\n");
     int repeat = 500;
     std::vector<std::string> testvalues(size);
+    printf("sizeof(string)=%d \n",sizeof(testvalues[0]));
     for(size_t i = 0 ; i < testvalues.size() ; ++i) testvalues[i] = i;
     std::vector<const char *> testcvalues(size);
+    printf("sizeof(char *)=%d \n",sizeof(testcvalues[0]));
     for(size_t i = 0 ; i < testcvalues.size() ; ++i) testcvalues[i] = testvalues[i].c_str();
     PCGUniformRandomBitGenerator pgcgen;
 
@@ -156,11 +179,17 @@ void demo(int size) {
 
     BEST_TIME(shuffle_pcg(testvalues.data(),size), , repeat, size);
 
+    BEST_TIME(shuffle_pcg_bad(testvalues.data(),size), , repeat, size);
+
+
     BEST_TIME(shuffle_pcg_divisionless(testvalues.data(),size), , repeat, size);
 
     BEST_TIME(std::shuffle(testcvalues.begin(),testcvalues.end(),pgcgen), , repeat, size);
 
     BEST_TIME(shuffle_pcg(testcvalues.data(),size), , repeat, size);
+
+    BEST_TIME(shuffle_pcg_bad(testcvalues.data(),size), , repeat, size);
+
 
     BEST_TIME(shuffle_pcg_divisionless(testcvalues.data(),size), , repeat, size);
 
