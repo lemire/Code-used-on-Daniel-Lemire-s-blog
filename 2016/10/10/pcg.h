@@ -15,6 +15,7 @@ typedef struct pcg_state_setseq_64 {    // Internals are *Private*.
 
 static pcg32_random_t pcg32_global = { 0x853c49e6748fea9bULL, 0xda3e39cb94b95bdbULL };
 
+__attribute__((always_inline))
 static inline uint32_t pcg32_random_r(pcg32_random_t* rng) {
     uint64_t oldstate = rng->state;
     rng->state = oldstate * 6364136223846793005ULL + rng->inc;
