@@ -1,4 +1,4 @@
-// clang++ -mavx2 -march=native -std=c++11 -O3 -o shuffle shuffle.cpp -Wall -Wextra
+// clang++ -mavx512cd -march=native -std=c++11 -O3 -o shuffle shuffle.cpp -Wall -Wextra
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -31,6 +31,17 @@ static inline uint32_t pcg32_random_bounded(uint32_t bound) {
             return r % bound;
     }
 }
+
+// as per the PCG implementation , uses two 64-bit divisions
+static inline uint32_t pcg32_random_bounded_bad(uint64_t bound) {
+    uint64_t threshold = (~bound + 1) % bound;// -bound % bound
+    for (;;) {
+        uint64_t r = pcg32_random();
+        if (r >= threshold)
+            return r % bound;
+    }
+}
+
 
 
 // map random value to [0,range) with slight bias, redraws to avoid bias if needed
@@ -129,6 +140,16 @@ void  shuffle_pcg(T *storage, uint32_t size) {
 }
 
 template <class T>
+void  shuffle_pcg_bad(T *storage, uint32_t size) {
+    uint32_t i;
+    for (i=size; i>1; i--) {
+        uint32_t nextpos = pcg32_random_bounded_bad(i);
+        std::swap(storage[i-1],storage[nextpos]);
+    }
+}
+
+
+template <class T>
 void  shuffle_pcg_divisionless(T *storage, uint32_t size) {
     uint32_t i;
     for (i=size; i>1; i--) {
@@ -137,25 +158,140 @@ void  shuffle_pcg_divisionless(T *storage, uint32_t size) {
     }
 }
 
+
+#ifdef HAVE_AVX512CD_INSTRUCTIONS
+
+#define random_fun pcg32_random_bounded_divisionless
+
+
+__m512i __attribute__((always_inline)) random_epi32_optimistic(uint32_t i) {
+
+    uint32_t tmp[16] __attribute__((aligned(64)));
+
+    tmp[0]  = random_fun(i - 0);
+    tmp[1]  = random_fun(i - 1);
+    tmp[2]  = random_fun(i - 2);
+    tmp[3]  = random_fun(i - 3);
+    tmp[4]  = random_fun(i - 4);
+    tmp[5]  = random_fun(i - 5);
+    tmp[5]  = random_fun(i - 5);
+    tmp[6]  = random_fun(i - 6);
+    tmp[7]  = random_fun(i - 7);
+    tmp[8]  = random_fun(i - 8);
+    tmp[9]  = random_fun(i - 9);
+    tmp[10] = random_fun(i - 10);
+    tmp[11] = random_fun(i - 11);
+    tmp[12] = random_fun(i - 12);
+    tmp[13] = random_fun(i - 13);
+    tmp[14] = random_fun(i - 14);
+    tmp[15] = random_fun(i - 15);
+
+    return _mm512_loadu_si512(tmp);
+}
+
+
+void  shuffle_avx512_pcg_divisionless(uint32_t* storage, uint32_t size) {
+
+    uint32_t i;
+    unsigned tries = 0;
+    __m512i indices;
+
+    for (i=size; i>16; i-=16) {
+
+        indices = random_epi32_optimistic(i); // fast path, we assume there were no repeatitons...
+        const __m512i conflicts = _mm512_conflict_epi32(indices);
+
+        if (_mm512_test_epi32_mask(conflicts, _mm512_set1_epi32(-1))) {
+
+            indices  = _mm512_set1_epi32(random_fun(i));
+            uint32_t cmp_mask = 0x01;
+            uint32_t merge_mask = 0x01;
+            for (int j=1; j < 16; j++) {
+            try_again:
+                const __m512i tmp =  _mm512_set1_epi32(random_fun(i));
+                if (_mm512_mask_cmpeq_epi32_mask(cmp_mask, tmp, indices)) {
+                    tries += 1;
+                    goto try_again;
+                }
+
+                indices = _mm512_mask_mov_epi32(indices, merge_mask, tmp);
+                cmp_mask = 2 * cmp_mask + 1;
+                merge_mask *= 2;
+            }
+        }
+
+
+        // swapping 16 pairs at once
+        const __m512i a = _mm512_loadu_si512(storage + i - 16);
+        const __m512i b = _mm512_i32gather_epi32(indices, (int32_t*)storage, 4);
+
+        _mm512_storeu_si512(storage + i - 16, b);
+        _mm512_i32scatter_epi32((int32_t*)storage, indices, a, 4);
+    }
+
+    for (/**/; i>1; i--) {
+        uint32_t nextpos = pcg32_random_bounded_divisionless(i);
+        std::swap(storage[i-1],storage[nextpos]);
+    }
+
+    //printf("tries: %u\n", tries);
+}
+
+#undef random_fun
+
+#endif // HAVE_AVX512CD_INSTRUCTIONS
+
+
 void demo(int size) {
     printf("Shuffling arrays of size %d \n",size);
     printf("Time reported in number of cycles per array element.\n");
     printf("Tests assume that array is in cache as much as possible.\n");
     int repeat = 500;
     std::vector<std::string> testvalues(size);
+    printf("sizeof(string)=%d \n",sizeof(testvalues[0]));
     for(size_t i = 0 ; i < testvalues.size() ; ++i) testvalues[i] = i;
-
+    std::vector<const char *> testcvalues(size);
+    printf("sizeof(char *)=%d \n",sizeof(testcvalues[0]));
+    for(size_t i = 0 ; i < testcvalues.size() ; ++i) testcvalues[i] = testvalues[i].c_str();
     PCGUniformRandomBitGenerator pgcgen;
+
+    std::vector<uint32_t> testints(size);
 
     std::random_device rd;
     std::mt19937 gmt19937(rd());
 
 
+    puts("");
+    puts("shuffle std::string");
+    puts("");
+
     BEST_TIME(std::shuffle(testvalues.begin(),testvalues.end(),pgcgen), , repeat, size);
-
     BEST_TIME(shuffle_pcg(testvalues.data(),size), , repeat, size);
-
+    BEST_TIME(shuffle_pcg_bad(testvalues.data(),size), , repeat, size);
     BEST_TIME(shuffle_pcg_divisionless(testvalues.data(),size), , repeat, size);
+
+
+    puts("");
+    puts("shuffle C string");
+    puts("");
+
+    BEST_TIME(std::shuffle(testcvalues.begin(),testcvalues.end(),pgcgen), , repeat, size);
+    BEST_TIME(shuffle_pcg(testcvalues.data(),size), , repeat, size);
+    BEST_TIME(shuffle_pcg_bad(testcvalues.data(),size), , repeat, size);
+    BEST_TIME(shuffle_pcg_divisionless(testcvalues.data(),size), , repeat, size);
+
+
+    puts("");
+    puts("shuffle int32_t");
+    puts("");
+
+    BEST_TIME(std::shuffle(testints.begin(),testints.end(),pgcgen), , repeat, size);
+    BEST_TIME(shuffle_pcg(testints.data(),size), , repeat, size);
+    BEST_TIME(shuffle_pcg_bad(testints.data(),size), , repeat, size);
+    BEST_TIME(shuffle_pcg_divisionless(testints.data(),size), , repeat, size);
+#ifdef HAVE_AVX512CD_INSTRUCTIONS
+    BEST_TIME(shuffle_avx512_pcg_divisionless(testints.data(),size), , repeat, size);
+#endif
 
     printf("\n");
 }
