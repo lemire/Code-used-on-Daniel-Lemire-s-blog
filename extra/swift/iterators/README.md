@@ -26,3 +26,10 @@ $  swift package generate-xcodeproj
 generated: ./flatteniterator.xcodeproj
 $ open ./flatteniterator.xcodeproj
 ```
+
+You can also profile the application:
+```
+$ iprofiler -timeprofiler ./.build/release/flatteniterator
+```
+Then open the newly created file with Instrument.
+
