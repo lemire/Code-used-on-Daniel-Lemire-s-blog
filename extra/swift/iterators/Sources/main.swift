@@ -1,5 +1,5 @@
 import Foundation
-
+import Dispatch
 
 /**
 * We assume that the provided array is made of integers or arrays
