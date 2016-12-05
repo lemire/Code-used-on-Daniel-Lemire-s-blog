@@ -10,7 +10,7 @@ public struct FastFlattenIterator: IteratorProtocol {
     var i = 0 // top-level index
     var j = 0 // second-level index
     var jmax = 0 // essentially, this is currentarray.count, but we buffer it
-    var currentarray : [Int]! // quick reference to an int array to be flatten
+    var currentarray : [Int]! // quick reference to an int array to be flattened
 
    init(_ segments: [Any]) {
        self.segments = segments
@@ -33,7 +33,7 @@ public struct FastFlattenIterator: IteratorProtocol {
             return e
           case let E as [Int]: // first encounter with an array
             jmax = E.count
-            currentarray = E
+            currentarray = E // swift is smart enough not to make a copy
             if jmax > 0 {
               j = 1
               return E[0]
@@ -105,34 +105,34 @@ func time(test_array: [Any], cycles: Int = 10) -> (array_iterate: Double,
     let expectedlength = flatten_array(test_array).count
     var t0 = start()
 
-    for _ in 0..<cycles {
+/*    for _ in 0..<cycles {
         for _ in flatten_array(test_array) { }
-    }
+    }*/
     let ΔE1 = lap(t0)
 
     t0 = start()
-    for _ in 0..<cycles {
+/*    for _ in 0..<cycles {
         let myarray: [Int] = flatten_array(test_array)
         if expectedlength != myarray.count {
           print("bug")
         }
-    }
+    }*/
     let ΔE2 = lap(t0)
 
     t0 = start()
-    for _ in 0..<cycles {
+/*    for _ in 0..<cycles {
         let G = chain(test_array)
         while let _ = G.next() { }
-    }
+    }*/
     let ΔG1 = lap(t0)
 
     t0 = start()
-    for _ in 0..<cycles {
+/*    for _ in 0..<cycles {
         let myarray: [Int] = Array(chain(test_array))
         if expectedlength != myarray.count {
             print("bug")
         }
-    }
+    }*/
     let ΔG2 = lap(t0)
 
 
@@ -155,7 +155,7 @@ func time(test_array: [Any], cycles: Int = 10) -> (array_iterate: Double,
     let ΔFF2 = lap(t0)
 
 
-    let Denom = 1000_000.0
+    let Denom = Double(expectedlength * cycles)
 
     return (Double(ΔE1)/Denom, Double(ΔE2)/Denom, Double(ΔG1)/Denom, Double(ΔG2)/Denom, Double(ΔFF1)/Denom, Double(ΔFF2)/Denom)
 }
@@ -165,7 +165,7 @@ let array1: [Any] = [Array(1...100), Array(101...105), 106,
 let array2: [Any] = Array(repeating: Array(1...5), count: 2000)
 let array3: [Any] = Array(repeating: 31, count: 10000)
 
-print("print time elapsed in ms for array_iterate, array_store, generate_iterate, generate_store, fastiterator, fast iterator store")
+print("print time elapsed in ns per value for array_iterate, array_store, generate_iterate, generate_store, fastiterator, fast iterator store")
 
 print(time(test_array: array1, cycles: 10))
 
