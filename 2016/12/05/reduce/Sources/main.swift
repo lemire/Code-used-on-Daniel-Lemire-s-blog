@@ -24,7 +24,7 @@ func time() -> (Double,Double) {
     }
     var array = [Int]()
     var expectedsum = 0
-    for index in 1...1000 {
+    for index in 1...100000 {
       array.append(index)
       expectedsum += index
     }
