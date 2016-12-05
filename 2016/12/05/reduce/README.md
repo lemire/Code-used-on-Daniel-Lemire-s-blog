@@ -8,7 +8,7 @@ Requirement: Swift 3.0 or better.
 ```
 $ swift build --configuration release
 $ ./.build/release/reduce
-(0.53400000000000003, 0.64600000000000002)
+(0.4, 0.6)
 ```
 
 ## For Xcode users (Mac only)
