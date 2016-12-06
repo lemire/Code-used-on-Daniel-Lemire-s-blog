@@ -11,6 +11,12 @@ $ ./.build/release/reduce
 (0.4, 0.6, 0.19, 0.55)
 ```
 
+Try also 
+
+```
+swift build --configuration release  -Xswiftc -Ounchecked
+```
+
 ## For Xcode users (Mac only)
 
 ```
