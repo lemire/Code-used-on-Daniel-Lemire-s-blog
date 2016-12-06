@@ -1,8 +1,6 @@
 import Foundation
 import Dispatch
 
-
-
 func basicsum(_ array: [Int]) -> Int {
     var s = 0
     for i in array {
@@ -19,11 +17,10 @@ func unsafebasicsum(_ array: [Int]) -> Int {
     return s
 }
 
-
-
 func reducesum(_ array: [Int]) -> Int {
     return array.reduce(0,+)
 }
+
 func unsafereducesum(_ array: [Int]) -> Int {
     return array.reduce(0,{$0 &+ $1})
 }
@@ -42,30 +39,28 @@ func time() -> (Double,Double,Double,Double) {
       expectedsum += index
     }
     var t0 = start()
-          if basicsum(array) != expectedsum {
+    if basicsum(array) != expectedsum {
             print ("bug")
-          }
+    }
     let ΔE1 = lap(t0)
 
     t0 = start()
-          if reducesum(array) != expectedsum {
+    if reducesum(array) != expectedsum {
             print ("bug")
-          }
+    }
     let ΔE2 = lap(t0)
 
     t0 = start()
-          if unsafebasicsum(array) != expectedsum {
+    if unsafebasicsum(array) != expectedsum {
             print ("bug")
-          }
+    }
     let ΔE3 = lap(t0)
 
     t0 = start()
-          if unsafereducesum(array) != expectedsum {
+    if unsafereducesum(array) != expectedsum {
             print ("bug")
-          }
+    }
     let ΔE4 = lap(t0)
-
-
 
     let Denom = Double(array.count)
 
