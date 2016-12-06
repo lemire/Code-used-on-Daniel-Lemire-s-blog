@@ -22,7 +22,7 @@ func unsafebasicsum(_ array: [Int]) -> Int {
 
 
 func reducesum(_ array: [Int]) -> Int {
-    return array.reduce(0,{$0 + $1})
+    return array.reduce(0,+)
 }
 func unsafereducesum(_ array: [Int]) -> Int {
     return array.reduce(0,{$0 &+ $1})
@@ -71,6 +71,5 @@ func time() -> (Double,Double,Double,Double) {
 
     return (Double(ΔE1)/Denom, Double(ΔE2)/Denom, Double(ΔE3)/Denom, Double(ΔE4)/Denom)
 }
-
 
 print(time())

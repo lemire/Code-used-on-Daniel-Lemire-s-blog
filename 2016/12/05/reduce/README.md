@@ -17,6 +17,14 @@ Try also
 swift build --configuration release  -Xswiftc -Ounchecked
 ```
 
+To dissamble, try this:
+
+```
+$ swift build --configuration release  -Xswiftc -Ounchecked -Xswiftc -g
+$ lldb ./.build/release/reduce
+> di -m -n reduce.basicsum
+```
+
 ## For Xcode users (Mac only)
 
 ```
