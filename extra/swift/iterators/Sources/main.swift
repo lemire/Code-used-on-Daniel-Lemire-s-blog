@@ -105,34 +105,34 @@ func time(test_array: [Any], cycles: Int = 10) -> (array_iterate: Double,
     let expectedlength = flatten_array(test_array).count
     var t0 = start()
 
-/*    for _ in 0..<cycles {
+    for _ in 0..<cycles {
         for _ in flatten_array(test_array) { }
-    }*/
+    }
     let ΔE1 = lap(t0)
 
     t0 = start()
-/*    for _ in 0..<cycles {
+    for _ in 0..<cycles {
         let myarray: [Int] = flatten_array(test_array)
         if expectedlength != myarray.count {
           print("bug")
         }
-    }*/
+    }
     let ΔE2 = lap(t0)
 
     t0 = start()
-/*    for _ in 0..<cycles {
+    for _ in 0..<cycles {
         let G = chain(test_array)
         while let _ = G.next() { }
-    }*/
+    }
     let ΔG1 = lap(t0)
 
     t0 = start()
-/*    for _ in 0..<cycles {
+    for _ in 0..<cycles {
         let myarray: [Int] = Array(chain(test_array))
         if expectedlength != myarray.count {
             print("bug")
         }
-    }*/
+    }
     let ΔG2 = lap(t0)
 
 
