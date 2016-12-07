@@ -12,6 +12,17 @@ func loopflatmap (_ test_array: [Int]) -> [String] {
     return result;
 }
 
+func fastloopflatmap (_ test_array: [Int]) -> [String] {
+   var result: [String] = []
+    for x in array {
+      if x % 10000 == 1234 {
+          result.append("string\(x)")
+      }
+    }
+    return result;
+}
+
+
 func filtermap (_ test_array: [Int]) -> [String] {
   return array.map { "string\($0)" }
                                .filter { $0.hasSuffix("1234") }
@@ -25,7 +36,7 @@ func straightflatmap (_ test_array: [Int]) -> [String] {
 }
 
 
-func time(test_array: [Int]) -> (Double, Double, Double) {
+func time(test_array: [Int]) -> (Double, Double, Double, Double) {
     func start() -> DispatchTime { return  DispatchTime.now() }
     func lap(_ t0: DispatchTime) -> UInt64 {
         let newtime = DispatchTime.now()
@@ -51,9 +62,16 @@ func time(test_array: [Int]) -> (Double, Double, Double) {
     }
     let ΔE3 = lap(t0)
 
+    t0 = start()
+    if fastloopflatmap(test_array).count != expectedlength {
+      print("bug")
+    }
+    let ΔE4 = lap(t0)
+
+ 
     let Denom = Double(test_array.count)
 
-    return (Double(ΔE1)/Denom, Double(ΔE2)/Denom, Double(ΔE3)/Denom)
+    return (Double(ΔE1)/Denom, Double(ΔE2)/Denom, Double(ΔE3)/Denom, Double(ΔE4)/Denom)
 }
 
 var array: [Int] = []
