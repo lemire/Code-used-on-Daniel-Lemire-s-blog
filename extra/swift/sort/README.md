@@ -1,9 +1,11 @@
 ## Sorting performance in Swift
 
-Which general purpose sorting algorithm does Swift use? It does not perform well on sorted data
+The Swift sort function does poorly on already sorted data...
 http://stackoverflow.com/questions/41031106/which-general-purpose-sorting-algorithm-does-swift-use-it-does-not-perform-well
 
 Requirement: Swift 3.0 or better.
+
+Let us verify:
 
 ```
 $ swift build --configuration release
@@ -18,6 +20,7 @@ array size =  10000
 ```
 
 Thus sorting an already sorted array over 2x more expensive than sorting a shuffled array.
+
 
 Why?  Because Swift uses the first element as the pivot, thus getting poor performance on nearly already sorted arrays.
 
