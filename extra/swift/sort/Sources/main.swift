@@ -1,6 +1,21 @@
 import Foundation
 import Dispatch
 
+#if os(Linux)
+    import Glibc
+#else
+    import Darwin
+#endif
+
+func randomInt(_ max: Int) -> Int {
+    #if os(Linux)
+        let n = random() % max
+    #else
+        let n = arc4random_uniform(UInt32(max))
+    #endif
+    return Int(n)
+}
+
 // http://stackoverflow.com/questions/24026510/how-do-i-shuffle-an-array-in-swift
 extension MutableCollection where Indices.Iterator.Element == Index {
     /// Shuffles the contents of this collection.
@@ -9,7 +24,7 @@ extension MutableCollection where Indices.Iterator.Element == Index {
         guard c > 1 else { return }
 
         for (firstUnshuffled , unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
-            let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
+            let d: IndexDistance = numericCast(randomInt(numericCast(unshuffledCount)))
             guard d != 0 else { continue }
             let i = index(firstUnshuffled, offsetBy: d)
             swap(&self[firstUnshuffled], &self[i])
@@ -32,17 +47,17 @@ func time(test_array: [Int]) -> (Double, Double) {
         let newtime = DispatchTime.now()
         return newtime.uptimeNanoseconds - t0.uptimeNanoseconds
     }
-    let shuffledarray = test_array.shuffled()
-    let sortedarray = array.sorted()
+    var shuffledarray = test_array.shuffled()
+    var sortedarray = test_array.sorted()
 
     var t0 = start()
-    let x = shuffledarray.sorted()
+    shuffledarray.sort()
     let ΔE1 = lap(t0)
     t0 = start()
-    let y = sortedarray.sorted()
+    sortedarray.sort()
     let ΔE2 = lap(t0)
 
-    if x != y {
+    if shuffledarray != sortedarray {
       print ("bug")
     }
     let Denom = Double(test_array.count)
@@ -50,10 +65,16 @@ func time(test_array: [Int]) -> (Double, Double) {
     return (Double(ΔE1)/Denom, Double(ΔE2)/Denom)
 }
 
-var array: [Int] = []
-for x in 0..<10000 {
-    array.append(x)
-}
-for i in 0..<10 {
+func runtest(_ size : Int) {
+  print("array size = ",size)
+  var array: [Int] = []
+  for _ in 0..<size {
+    array.append(randomInt(1000_000))
+  }
   print(time(test_array: array))
 }
+
+runtest(100)
+runtest(1000)
+runtest(10000)
+
