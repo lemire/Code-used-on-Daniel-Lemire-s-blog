@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <x86intrin.h>
 
+
 #define RDTSC_START(cycles)                                                   \
     do {                                                                      \
         register unsigned cyc_high, cyc_low;                                  \
@@ -78,7 +79,7 @@ Dump of assembler code for function mod23:
 */
 
 
-uint32_t fastmod23(uint32_t a) {
+uint32_t fastmod23x(uint32_t a) {
     uint64_t lowbits =  UINT64_C(802032351030850071) * a; // high 64 bits of this mult is the division
     // we use the low bits to retrieve the modulo
     uint64_t highbits;
@@ -100,6 +101,17 @@ Dump of assembler code for function fastmod23:
 End of assembler dump.
 ****/
 
+#define MUL64(rh,rl,i1,i2) asm ("mulq %3" : "=a"(rl), "=d"(rh) : "a"(i1), "r"(i2) : "cc")
+#define MUL64HIGH(rh,i1,i2) asm ("mulq %2" : "=d"(rh) : "a"(i1), "r"(i2) : "cc")
+
+uint32_t fastmod23(uint32_t a) {
+    uint64_t lowbits =  UINT64_C(802032351030850071) * a; // high 64 bits of this mult is the division
+    // we use the low bits to retrieve the modulo
+    uint64_t highbits;
+    MUL64HIGH(highbits,lowbits,UINT64_C(23));
+    return highbits;
+}
+
 
 uint32_t sumofmod23(uint32_t maxval) {
   uint32_t sumofmods = 0;
@@ -116,13 +128,21 @@ uint32_t fastsumofmod23(uint32_t maxval) {
   return sumofmods;
 }
 
+uint32_t fastsumofmod23x(uint32_t maxval) {
+  uint32_t sumofmods = 0;
+  // we use a test that prevents the use of fancy compiler tricks like trivial vectorization
+  for(uint32_t k = 0; k < maxval; ++k) sumofmods += fastmod23x(k + sumofmods);
+  return sumofmods;
+}
+
 int main() {
   uint32_t sumofmods = 0;
   const uint32_t maxval = 1000000;
   for(uint32_t k = 0; k < maxval; ++k) sumofmods += ( k + sumofmods )  % 23;
   const int repeat = 5;
-  BEST_TIME(altsumofmod23(maxval), sumofmods, repeat, maxval) ;
+  BEST_TIME(sumofmod23(maxval), sumofmods, repeat, maxval) ;
   BEST_TIME(fastsumofmod23(maxval), sumofmods, repeat, maxval) ;
+  BEST_TIME(fastsumofmod23x(maxval), sumofmods, repeat, maxval) ;
 
 
 
