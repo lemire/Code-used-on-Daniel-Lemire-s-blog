@@ -1,3 +1,7 @@
+/**
+* Fast modulo reduction
+*/
+
 #include <stdio.h>
 #include <stdint.h>
 #include <x86intrin.h>
@@ -78,7 +82,7 @@ uint32_t altmod23(uint32_t a) {
 }
 
 
-uint32_t fasttmod23(uint32_t a) {
+uint32_t fastmod23(uint32_t a) {
     uint64_t lowbits =  UINT64_C(802032351030850071) * a; // high 64 bits of this mult is the division
     // we use the low bits to retrieve the modulo
     uint64_t highbits;
@@ -103,27 +107,30 @@ End of assembler dump.
 
 uint32_t sumofmod23(uint32_t maxval) {
   uint32_t sumofmods = 0;
-  for(uint32_t k = 0; k < maxval; ++k) sumofmods += mod23(k);
+  // we use a test that prevents the use of fancy compiler tricks like trivial vectorization
+  for(uint32_t k = 0; k < maxval; ++k) sumofmods += mod23(k + sumofmods);
   return sumofmods;
 }
 
 
 uint32_t altsumofmod23(uint32_t maxval) {
   uint32_t sumofmods = 0;
-  for(uint32_t k = 0; k < maxval; ++k) sumofmods += altmod23(k);
+  // we use a test that prevents the use of fancy compiler tricks like trivial vectorization
+  for(uint32_t k = 0; k < maxval; ++k) sumofmods += altmod23(k + sumofmods);
   return sumofmods;
 }
 
 uint32_t fastsumofmod23(uint32_t maxval) {
   uint32_t sumofmods = 0;
-  for(uint32_t k = 0; k < maxval; ++k) sumofmods += fastmod23(k);
+  // we use a test that prevents the use of fancy compiler tricks like trivial vectorization
+  for(uint32_t k = 0; k < maxval; ++k) sumofmods += fastmod23(k + sumofmods);
   return sumofmods;
 }
 
 int main() {
   uint32_t sumofmods = 0;
   const uint32_t maxval = 1000000;
-  for(uint32_t k = 0; k < maxval; ++k) sumofmods += k % 23;
+  for(uint32_t k = 0; k < maxval; ++k) sumofmods += ( k + sumofmods )  % 23;
   const int repeat = 5;
   BEST_TIME(sumofmod23(maxval), sumofmods, repeat, maxval) ;
   BEST_TIME(altsumofmod23(maxval), sumofmods, repeat, maxval) ;
