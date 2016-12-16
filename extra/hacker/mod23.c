@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <x86intrin.h>
 
 #define RDTSC_START(cycles)                                                   \
     do {                                                                      \
@@ -55,9 +56,50 @@ uint32_t mod23(uint32_t a) {
   return a % 23;
 }
 
-uint32_t fastmod23(uint32_t a) {
+/**
+(gdb) disas mod23
+Dump of assembler code for function mod23:
+   0x0000000100000cb0 <+0>:	push   %rbp
+   0x0000000100000cb1 <+1>:	mov    %rsp,%rbp
+   0x0000000100000cb4 <+4>:	mov    %edi,%eax
+   0x0000000100000cb6 <+6>:	mov    $0xb21642c9,%ecx
+   0x0000000100000cbb <+11>:	imul   %rax,%rcx
+   0x0000000100000cbf <+15>:	shr    $0x24,%rcx
+   0x0000000100000cc3 <+19>:	imul   $0x17,%ecx,%eax
+   0x0000000100000cc6 <+22>:	sub    %eax,%edi
+   0x0000000100000cc8 <+24>:	mov    %edi,%eax
+   0x0000000100000cca <+26>:	pop    %rbp
+   0x0000000100000ccb <+27>:	retq
+   0x0000000100000ccc <+28>:	nopl   0x0(%rax)
+*/
+
+uint32_t altmod23(uint32_t a) {
     return ( ((2987803337*a) & ((1ULL<<36)-1)) * 23 ) >> 36;
 }
+
+
+uint32_t fastmod23(uint32_t a) {
+    uint64_t lowbits =  UINT64_C(802032351030850071) * a; // high 64 bits of this mult is the division
+    // we use the low bits to retrieve the modulo
+    uint64_t highbits;
+    _mulx_u64(lowbits,23,&highbits);
+    return highbits;
+}
+/***
+(gdb) disas fastmod23
+Dump of assembler code for function fastmod23:
+   0x0000000100000cf0 <+0>:	push   %rbp
+   0x0000000100000cf1 <+1>:	mov    %rsp,%rbp
+   0x0000000100000cf4 <+4>:	mov    %edi,%eax
+   0x0000000100000cf6 <+6>:	movabs $0xb21642c8590b217,%rdx
+   0x0000000100000d00 <+16>:	imul   %rax,%rdx
+   0x0000000100000d04 <+20>:	mov    $0x17,%eax
+   0x0000000100000d09 <+25>:	mulx   %rax,%rcx,%rax
+   0x0000000100000d0e <+30>:	pop    %rbp
+   0x0000000100000d0f <+31>:	retq
+End of assembler dump.
+****
+
 
 uint32_t sumofmod23(uint32_t maxval) {
   uint32_t sumofmods = 0;
@@ -65,6 +107,12 @@ uint32_t sumofmod23(uint32_t maxval) {
   return sumofmods;
 }
 
+
+uint32_t altsumofmod23(uint32_t maxval) {
+  uint32_t sumofmods = 0;
+  for(uint32_t k = 0; k < maxval; ++k) sumofmods += altmod23(k);
+  return sumofmods;
+}
 
 uint32_t fastsumofmod23(uint32_t maxval) {
   uint32_t sumofmods = 0;
@@ -78,11 +126,13 @@ int main() {
   for(uint32_t k = 0; k < maxval; ++k) sumofmods += k % 23;
   const int repeat = 5;
   BEST_TIME(sumofmod23(maxval), sumofmods, repeat, maxval) ;
+  BEST_TIME(altsumofmod23(maxval), sumofmods, repeat, maxval) ;
   BEST_TIME(fastsumofmod23(maxval), sumofmods, repeat, maxval) ;
 
 
 
   for(uint32_t x = 1; x !=0; x++) {
+    if(mod23(x) != altmod23(x)) printf("%x\n",x);
     if(mod23(x) != fastmod23(x)) printf("%x\n",x);
   }
 }
