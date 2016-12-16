@@ -77,10 +77,6 @@ Dump of assembler code for function mod23:
    0x0000000100000ccc <+28>:	nopl   0x0(%rax)
 */
 
-uint32_t altmod23(uint32_t a) {
-    return ( ((2987803337*a) & ((1ULL<<36)-1)) * 23 ) >> 36;
-}
-
 
 uint32_t fastmod23(uint32_t a) {
     uint64_t lowbits =  UINT64_C(802032351030850071) * a; // high 64 bits of this mult is the division
@@ -113,13 +109,6 @@ uint32_t sumofmod23(uint32_t maxval) {
 }
 
 
-uint32_t altsumofmod23(uint32_t maxval) {
-  uint32_t sumofmods = 0;
-  // we use a test that prevents the use of fancy compiler tricks like trivial vectorization
-  for(uint32_t k = 0; k < maxval; ++k) sumofmods += altmod23(k + sumofmods);
-  return sumofmods;
-}
-
 uint32_t fastsumofmod23(uint32_t maxval) {
   uint32_t sumofmods = 0;
   // we use a test that prevents the use of fancy compiler tricks like trivial vectorization
@@ -132,14 +121,12 @@ int main() {
   const uint32_t maxval = 1000000;
   for(uint32_t k = 0; k < maxval; ++k) sumofmods += ( k + sumofmods )  % 23;
   const int repeat = 5;
-  BEST_TIME(sumofmod23(maxval), sumofmods, repeat, maxval) ;
   BEST_TIME(altsumofmod23(maxval), sumofmods, repeat, maxval) ;
   BEST_TIME(fastsumofmod23(maxval), sumofmods, repeat, maxval) ;
 
 
 
   for(uint32_t x = 1; x !=0; x++) {
-    if(mod23(x) != altmod23(x)) printf("%x\n",x);
     if(mod23(x) != fastmod23(x)) printf("%x\n",x);
   }
 }
