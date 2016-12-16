@@ -52,7 +52,7 @@
     } while (0)
 
 
-uint32_t mod23(uint32_t a) {
+uint32_t  mod23(uint32_t a) {
   return a % 23;
 }
 
@@ -78,11 +78,11 @@ uint32_t altmod23(uint32_t a) {
 }
 
 
-uint32_t fastmod23(uint32_t a) {
+uint32_t fasttmod23(uint32_t a) {
     uint64_t lowbits =  UINT64_C(802032351030850071) * a; // high 64 bits of this mult is the division
     // we use the low bits to retrieve the modulo
     uint64_t highbits;
-    _mulx_u64(lowbits,23,&highbits);
+    _mulx_u64(lowbits,23,(long long unsigned int *) &highbits);
     return highbits;
 }
 /***
@@ -98,7 +98,7 @@ Dump of assembler code for function fastmod23:
    0x0000000100000d0e <+30>:	pop    %rbp
    0x0000000100000d0f <+31>:	retq
 End of assembler dump.
-****
+****/
 
 
 uint32_t sumofmod23(uint32_t maxval) {
