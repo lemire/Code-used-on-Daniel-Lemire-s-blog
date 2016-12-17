@@ -41,12 +41,13 @@ The latter expression looks monstrous, but if ``L`` is the number of bits in a m
 Let us look at actual code:
 
 ```C
+#define MUL64HIGH(rh,i1,i2) asm ("mulq %2" : "=d"(rh) : "a"(i1), "r"(i2) : "cc")
 
 uint32_t fastmod23(uint32_t a) {
     uint64_t lowbits =  UINT64_C(802032351030850071) * a; // high 64 bits of this mult is the division
     // we use the low bits to retrieve the modulo
     uint64_t highbits;
-    _mulx_u64(lowbits,23,(long long unsigned int *) &highbits);
+    MUL64HIGH(highbits,lowbits,UINT64_C(23));
     return highbits;
 }
 ```
