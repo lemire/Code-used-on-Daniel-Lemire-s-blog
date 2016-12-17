@@ -64,45 +64,42 @@ uint32_t  mod23(uint32_t a) {
 /**
 (gdb) disas mod23
 Dump of assembler code for function mod23:
-   0x0000000100000cb0 <+0>:	push   %rbp
-   0x0000000100000cb1 <+1>:	mov    %rsp,%rbp
-   0x0000000100000cb4 <+4>:	mov    %edi,%eax
-   0x0000000100000cb6 <+6>:	mov    $0xb21642c9,%ecx
-   0x0000000100000cbb <+11>:	imul   %rax,%rcx
-   0x0000000100000cbf <+15>:	shr    $0x24,%rcx
-   0x0000000100000cc3 <+19>:	imul   $0x17,%ecx,%eax
-   0x0000000100000cc6 <+22>:	sub    %eax,%edi
-   0x0000000100000cc8 <+24>:	mov    %edi,%eax
-   0x0000000100000cca <+26>:	pop    %rbp
-   0x0000000100000ccb <+27>:	retq
-   0x0000000100000ccc <+28>:	nopl   0x0(%rax)
+   0x0000000100000a70 <+0>:	mov    %edi,%eax
+   0x0000000100000a72 <+2>:	mov    $0xb21642c9,%edx
+   0x0000000100000a77 <+7>:	mul    %edx
+   0x0000000100000a79 <+9>:	mov    %edx,%eax
+   0x0000000100000a7b <+11>:	shr    $0x4,%eax
+   0x0000000100000a7e <+14>:	imul   $0x17,%eax,%eax
+   0x0000000100000a81 <+17>:	sub    %eax,%edi
+   0x0000000100000a83 <+19>:	mov    %edi,%eax
+   0x0000000100000a85 <+21>:	retq
+   0x0000000100000a86 <+22>:	nopw   %cs:0x0(%rax,%rax,1)
 */
 
-
-uint32_t fastmod23x(uint32_t a) {
-    uint64_t lowbits =  UINT64_C(802032351030850071) * a; // high 64 bits of this mult is the division
-    // we use the low bits to retrieve the modulo
-    uint64_t highbits;
-    _mulx_u64(lowbits,23,(long long unsigned int *) &highbits);
-    return highbits;
-}
 /***
 (gdb) disas fastmod23
 Dump of assembler code for function fastmod23:
-   0x0000000100000cf0 <+0>:	push   %rbp
-   0x0000000100000cf1 <+1>:	mov    %rsp,%rbp
-   0x0000000100000cf4 <+4>:	mov    %edi,%eax
-   0x0000000100000cf6 <+6>:	movabs $0xb21642c8590b217,%rdx
-   0x0000000100000d00 <+16>:	imul   %rax,%rdx
-   0x0000000100000d04 <+20>:	mov    $0x17,%eax
-   0x0000000100000d09 <+25>:	mulx   %rax,%rcx,%rax
-   0x0000000100000d0e <+30>:	pop    %rbp
-   0x0000000100000d0f <+31>:	retq
+   0x0000000100000ab0 <+0>:	movabs $0xb21642c8590b217,%rdx
+   0x0000000100000aba <+10>:	mov    %edi,%eax
+   0x0000000100000abc <+12>:	imul   %rdx,%rax
+   0x0000000100000ac0 <+16>:	mov    $0x17,%edx
+   0x0000000100000ac5 <+21>:	mul    %rdx
+   0x0000000100000ac8 <+24>:	mov    %rdx,%rax
+   0x0000000100000acb <+27>:	retq
+   0x0000000100000acc <+28>:	nopl   0x0(%rax)
 End of assembler dump.
 ****/
 
-#define MUL64(rh,rl,i1,i2) asm ("mulq %3" : "=a"(rl), "=d"(rh) : "a"(i1), "r"(i2) : "cc")
+//#define MUL64(rh,rl,i1,i2) asm ("mulq %3" : "=a"(rl), "=d"(rh) : "a"(i1), "r"(i2) : "cc")
+
 #define MUL64HIGH(rh,i1,i2) asm ("mulq %2" : "=d"(rh) : "a"(i1), "r"(i2) : "cc")
+
+uint32_t fastdiv23(uint32_t a) {
+    uint64_t highbits;
+    MUL64HIGH(highbits,(uint64_t)a,UINT64_C(802032351030850071));
+    return highbits;
+}
+
 
 uint32_t fastmod23(uint32_t a) {
     uint64_t lowbits =  UINT64_C(802032351030850071) * a; // high 64 bits of this mult is the division
@@ -111,6 +108,7 @@ uint32_t fastmod23(uint32_t a) {
     MUL64HIGH(highbits,lowbits,UINT64_C(23));
     return highbits;
 }
+
 
 
 uint32_t sumofmod23(uint32_t maxval) {
@@ -128,13 +126,6 @@ uint32_t fastsumofmod23(uint32_t maxval) {
   return sumofmods;
 }
 
-uint32_t fastsumofmod23x(uint32_t maxval) {
-  uint32_t sumofmods = 0;
-  // we use a test that prevents the use of fancy compiler tricks like trivial vectorization
-  for(uint32_t k = 0; k < maxval; ++k) sumofmods += fastmod23x(k + sumofmods);
-  return sumofmods;
-}
-
 int main() {
   uint32_t sumofmods = 0;
   const uint32_t maxval = 1000000;
@@ -142,7 +133,6 @@ int main() {
   const int repeat = 5;
   BEST_TIME(sumofmod23(maxval), sumofmods, repeat, maxval) ;
   BEST_TIME(fastsumofmod23(maxval), sumofmods, repeat, maxval) ;
-  BEST_TIME(fastsumofmod23x(maxval), sumofmods, repeat, maxval) ;
 
 
 
