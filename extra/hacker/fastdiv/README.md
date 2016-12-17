@@ -56,14 +56,19 @@ Looking at the assembly of this function, we find only two non-move instructions
 We can design a benchmark to measure the latency of the two C functions... (see the mod23.c file)
 
 ```
-$ gcc -O3 -o mod23 mod23.c -march=native
+$ gcc -O3 -o mod23 mod23.c
 $ ./mod23
 sumofmod23(maxval):  11.27 cycles per operation
-fastsumofmod23(maxval):  9.04 cycles per operation
+fastsumofmod23(maxval):  9.05 cycles per operation
 
-$ icc -O3 -o mod23 mod23.c -march=native
+$ icc -O3 -o mod23 mod23.c
 $ ./mod23
-sumofmod23(maxval):  11.35 cycles per operation
+sumofmod23(maxval):  11.23 cycles per operation
+fastsumofmod23(maxval):  9.05 cycles per operation
+
+$ clang  -O3 -o mod23 mod23.c
+$ ./mod23
+sumofmod23(maxval):  11.05 cycles per operation
 fastsumofmod23(maxval):  9.04 cycles per operation
 ```
 
