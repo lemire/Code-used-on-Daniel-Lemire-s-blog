@@ -84,3 +84,25 @@ Further work: What about 64-bit divisions? What about signed divisions?
 
 Further reading: Warren, Henry S. Hacker's delight. Pearson Education, 2013.
 
+## Fast division
+
+```
+
+div23(unsigned long):                              # @div23(unsigned long)
+        movabs  rcx, 7218291159277650633
+        mov     rax, rdi
+        mul     rcx
+        sub     rdi, rdx
+        shr     rdi
+        lea     rax, [rdi + rdx]
+        shr     rax, 4
+        ret
+
+fastdiv23(unsigned long):                          # @fastdiv23(unsigned long)
+        movabs  rcx, 802032351030850071
+        mov     rax, rdi
+        mul     rcx
+        mov     rax, rdx
+        ret
+```
+
