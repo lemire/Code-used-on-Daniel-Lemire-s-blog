@@ -2,7 +2,10 @@
 
 Assumption: recent Intel CPU.
 
-Credit: Most of the code was written by Jason Aten (@glycerine)
+Credit: Most of the code was written by the Go team at Google,
+        and cryptographer Adam Langely (https://www.imperialviolet.org/)
+        in particular; it comes from the Go standard library go/src/math/big
+        package. 
 
 Usage:
 
