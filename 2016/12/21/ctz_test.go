@@ -1,10 +1,10 @@
 package ctz
 
 import (
+	"encoding/binary"
+	"fmt"
+	"math/rand"
 	"testing"
-  "math/rand"
-  "encoding/binary"
-  "fmt"
 )
 
 //go test -bench=.
@@ -47,9 +47,12 @@ func getRandomUint64Set(n int) []uint64 {
 
 	var buf [8]byte
 	var o []uint64
-	for i := 0; i < n; i++ {
+	for len(o) < n {
 		rand.Read(buf[:])
-		o = append(o, binary.LittleEndian.Uint64(buf[:]))
+		x := binary.LittleEndian.Uint64(buf[:])
+		if x != 0 {
+			o = append(o, binary.LittleEndian.Uint64(buf[:]))
+		}
 	}
 	return o
 }
@@ -69,7 +72,7 @@ func Benchmark100CountTrailingZerosDeBruijn(b *testing.B) {
 		}
 	}
 	if sum != expected {
-    fmt.Println("bug",sum, expected)
+		fmt.Println("bug", sum, expected)
 		panic("bug")
 	}
 
@@ -90,7 +93,7 @@ func Benchmark100CountTrailingZerosAsm(b *testing.B) {
 		}
 	}
 	if sum != expected {
-    fmt.Println("bug",sum, expected)
+		fmt.Println("bug", sum, expected)
 		panic("bug")
 	}
 }
