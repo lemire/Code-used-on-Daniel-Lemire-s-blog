@@ -2,6 +2,7 @@
 
 Assumption: recent Intel CPU.
 
+Credit: Most of the code was written by Jason Aten (@glycerine)
 
 Usage:
 
