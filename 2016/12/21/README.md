@@ -10,9 +10,10 @@ Usage:
 $ go get github.com/klauspost/cpuid
 
 $ go test -bench=.
-``
+```
 
 Result on a Skylake-based server configured for testing:
+
 ```
 $ go version
 go version go1.7.1 linux/amd64
