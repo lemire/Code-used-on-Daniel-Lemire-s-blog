@@ -19,7 +19,7 @@ var noasm_deBruijn64Lookup = []byte{
 }
 
 // trailingZeroBits returns the number of consecutive least significant zero
-// bits of x.
+// bits of x. If x is zero, the result is 0.
 func noasm_countTrailingZeros(x uint64) int {
 	// x & -x leaves only the right-most bit set in the word. Let k be the
 	// index of that bit. Since only a single bit is set, the value is two
