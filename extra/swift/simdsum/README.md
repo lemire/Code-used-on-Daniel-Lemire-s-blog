@@ -9,6 +9,14 @@ $ swift build --configuration release
 $ ./.build/release/simdsum
 ```
 
+## check the assembly
+
+```
+$ swift build --configuration release  -Xswiftc -Ounchecked -Xswiftc -g
+$ lldb ./.build/release/simdsum
+(lldb) di -m -n simdsum.scalarsum
+```
+
 ## For Xcode users (Mac only)
 
 ```

@@ -47,7 +47,7 @@ func time(test_array: [UInt32]) -> (Double, Double) {
 }
 
 var array: [UInt32] = []
-for x in 0..<10000 {
+for x in 0..<100000 {
     array.append(UInt32(x))
 }
 for i in 0..<10 {
