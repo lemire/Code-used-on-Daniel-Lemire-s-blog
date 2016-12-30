@@ -12,7 +12,7 @@ func scalarproduct(_ array1: [Float], _ array2: [Float]) -> Float {
     var s = Float(0)
     let mylength = min(array1.count, array2.count) // please don't mess with me
     for i in 0..<mylength {
-      s = s &+ (array1[i] * array2[i])
+      s = s + (array1[i] * array2[i])
     }
     return s
 }
