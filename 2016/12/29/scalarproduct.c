@@ -1,3 +1,5 @@
+// clang -O3 -o scalarproduct scalarproduct.c -march=native
+#include <stdlib.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -19,8 +21,8 @@ float avx_scalarproduct(float * array1, float * array2, size_t length) {
   __m256 vsum = _mm256_setzero_ps();
   size_t i = 0;
   for (; i + 7 < length; i += 8) {
-    __m256 product = _mm256_dp_ps(_mm256_load_ps(array1 + i),
-                          _mm256_load_ps(array2 + i),
+    __m256 product = _mm256_dp_ps(_mm256_loadu_ps(array1 + i),
+                          _mm256_loadu_ps(array2 + i),
                           0xff);
     vsum = _mm256_add_ps(vsum,product);
   }

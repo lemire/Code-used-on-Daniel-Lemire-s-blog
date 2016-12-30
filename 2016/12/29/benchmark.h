@@ -1,7 +1,7 @@
 #ifndef _BENCHMARK_H_
 #define _BENCHMARK_H_
 
-
+#include <stdint.h>
 #define RDTSC_START(cycles)                                             \
     do {                                                                \
         uint32_t cyc_high, cyc_low;                                     \
