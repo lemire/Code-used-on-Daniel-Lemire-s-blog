@@ -444,91 +444,74 @@ int32_t difference_vector16(const uint16_t *A, size_t s_a, const uint16_t *B,
   const int32_t st_a = (s_a / vectorlength) * vectorlength;
   const int32_t st_b = (s_b / vectorlength) * vectorlength;
   if ((i_a < st_a) && (i_b < st_b)) { // this is the vectorized code path
-    __m128i v_a, v_b; //, v_bmax;
+    __m128i v_a, v_b;                 //, v_bmax;
     // we load a vector from A and a vector from B
     v_a = _mm_lddqu_si128((__m128i *)&A[i_a]);
     v_b = _mm_lddqu_si128((__m128i *)&B[i_b]);
     // we have a runningmask which indicates which values from A have been
     // spotted in B, these don't get written out.
-    __m128i runningmask = _mm_setzero_si128();
-    // replicatelast is just a shuffling mask that replicates the last
-    // value from  v_b to all components
-   // const __m128i replicatelast = _mm_set_epi8(15, 14, 15, 14, 15, 14, 15, 14,
-                                            //   15, 14, 15, 14, 15, 14, 15, 14);
-   // v_bmax = _mm_shuffle_epi8(v_b, replicatelast); // contains only the last (largest) values
+    __m128i runningmask_a_found_in_b = _mm_setzero_si128();
+    /****
+    * start of the main vectorized loop
+    *****/
     while (true) {
-      // afoundinb will contain a 16-bit large value for each entry in A seen found in B
-      const __m128i afoundinb =
-          _mm_cmpistrm(v_b, v_a, _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY |
-                                     _SIDD_MOST_SIGNIFICANT);
-      // we OR this with our runningmask (initially empty)
-      runningmask = _mm_or_si128(runningmask, afoundinb);
+      // afoundinb will contain a mask indicate for each entry in A whether it is seen
+      // in B
+      const __m128i a_found_in_b = _mm_cmpistrm(
+          v_b, v_a, _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_BIT_MASK);
+      runningmask_a_found_in_b =
+          _mm_or_si128(runningmask_a_found_in_b, a_found_in_b);
       // we always compare the last values of A and B
       const uint16_t a_max = A[i_a + vectorlength - 1];
       const uint16_t b_max = B[i_b + vectorlength - 1];
       if (a_max <= b_max) {
-        // Ok. In this code path, we are ready to write our v_a 
+        // Ok. In this code path, we are ready to write our v_a
         // because there is no need to read more from B, they will
         // all be large values.
-        const __m128i altb = _mm_set1_epi16(-1);//_mm_cmple_epu16(v_a, v_bmax);
-//printf("%d %d %d %d %d %d %d %d \n", _mm_extract_epi16(altb,0),_mm_extract_epi16(altb,1),_mm_extract_epi16(altb,2),_mm_extract_epi16(altb,3),_mm_extract_epi16(altb,4),_mm_extract_epi16(altb,5),_mm_extract_epi16(altb,6),_mm_extract_epi16(altb,7));
-       //__m128i finalmask = _mm_andnot_si128(runningmask, altb);
-       __m128i finalmask = runningmask;//_mm_andnot_si128(runningmask, altb);
- finalmask = _mm_packs_epi16(finalmask, _mm_setzero_si128());
-        const int r = _mm_movemask_epi8(finalmask) ^0xFF;
-        __m128i sm16 = _mm_load_si128((const __m128i *)shuffle_mask16 + r);
+        const int bitmask_belongs_to_difference =
+            _mm_extract_epi32(runningmask_a_found_in_b, 0) ^ 0xFF;
+        /*** next few lines is probably expensive *****/
+        __m128i sm16 = _mm_load_si128((const __m128i *)shuffle_mask16 +
+                                      bitmask_belongs_to_difference);
         __m128i p = _mm_shuffle_epi8(v_a, sm16);
         _mm_storeu_si128((__m128i *)&C[count], p); // can overflow
-        count += _mm_popcnt_u32(r);
+        count += _mm_popcnt_u32(bitmask_belongs_to_difference);
+        // we advance a
         i_a += vectorlength;
-        if (i_a == st_a)
+        if (i_a == st_a)// no more
           break;
-        runningmask = _mm_setzero_si128();
+        runningmask_a_found_in_b = _mm_setzero_si128();
         v_a = _mm_lddqu_si128((__m128i *)&A[i_a]);
       }
       if (b_max <= a_max) {
+        // in this code path, the current v_b has become useless
         i_b += vectorlength;
         if (i_b == st_b)
           break;
         v_b = _mm_lddqu_si128((__m128i *)&B[i_b]);
-        //v_bmax = _mm_shuffle_epi8(v_b, replicatelast);
       }
     }
-    // at this point, either we have i_a == st_a, which is the end,
-    // or we have i_b == st_b
-    if (i_a < st_a) {     // we have unfinished business...
+    // at this point, either we have i_a == st_a, which is the end of the vectorized processing,
+    // or we have i_b == st_b,  and we are not done processing the vector... so we need to finish it off.
+   if (i_a < st_a) {     // we have unfinished business...
       uint16_t buffer[8]; // buffer to do a masked load
       memset(buffer, 0, 8 * sizeof(uint16_t));
       memcpy(buffer, B + i_b, (s_b - i_b) * sizeof(uint16_t));
       v_b = _mm_lddqu_si128((__m128i *)buffer);
-      // while (true) {
-      const __m128i afoundinb =
-          _mm_cmpistrm(v_b, v_a, _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY |
-                                     _SIDD_MOST_SIGNIFICANT);
-      runningmask = _mm_or_si128(runningmask, afoundinb);
-      __m128i finalmask =
-          _mm_packs_epi16(runningmask, _mm_setzero_si128()); //_mm_packus_epi16
-      const int r = _mm_movemask_epi8(finalmask) ^ 0xFF;
-      __m128i sm16 = _mm_load_si128((const __m128i *)shuffle_mask16 + r);
+      const __m128i a_found_in_b = _mm_cmpistrm(
+          v_b, v_a, _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_BIT_MASK);
+      runningmask_a_found_in_b =
+          _mm_or_si128(runningmask_a_found_in_b, a_found_in_b);
+      const int bitmask_belongs_to_difference =
+          _mm_extract_epi32(runningmask_a_found_in_b, 0) ^ 0xFF;
+      __m128i sm16 = _mm_load_si128((const __m128i *)shuffle_mask16 +
+                                    bitmask_belongs_to_difference);
       __m128i p = _mm_shuffle_epi8(v_a, sm16);
       _mm_storeu_si128((__m128i *)&C[count], p); // can overflow
-      count += _mm_popcnt_u32(r);
+      count += _mm_popcnt_u32(bitmask_belongs_to_difference);
       i_a += vectorlength;
-      // we are now going to exhaust it out
-      while (i_a < st_a) {
-        v_a = _mm_lddqu_si128((__m128i *)&A[i_a]);
-
-        const __m128i anotfoundinb = _mm_cmpistrm(
-            v_b, v_a, _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_BIT_MASK | _SIDD_NEGATIVE_POLARITY);
-        const int r = _mm_extract_epi32(anotfoundinb, 0);
-        __m128i sm16 = _mm_load_si128((const __m128i *)shuffle_mask16 + r);
-        __m128i p = _mm_shuffle_epi8(v_a, sm16);
-        _mm_storeu_si128((__m128i *)&C[count], p); // can overflow
-        count += _mm_popcnt_u32(r);
-        i_a += vectorlength;
-      }
     }
-    // at this point we should have i_a == st_a;
+    // at this point we should have i_a == st_a and i_b == st_b
   }
   // do the tail using scalar code
   while (i_a < s_a && i_b < s_b) {
@@ -590,8 +573,10 @@ void randomtest() {
   assert(f1 == g1);
   for (int k = 0; k < g1; ++k)
     assert(buffer1[k] == buffer2[k]);
-  BEST_TIME(difference(A, lenA, B, lenB, buffer1), f1, , repeat, lenA+lenB, true);
-  BEST_TIME(difference_vector16(A, lenA, B, lenB, buffer2), f1, , repeat, lenA+lenB, true);
+  BEST_TIME(difference(A, lenA, B, lenB, buffer1), f1, , repeat, lenA + lenB,
+            true);
+  BEST_TIME(difference_vector16(A, lenA, B, lenB, buffer2), f1, , repeat,
+            lenA + lenB, true);
 
   // second side
   int f2 = difference(B, lenB, A, lenA, buffer1);
@@ -599,8 +584,10 @@ void randomtest() {
   assert(f2 == g2);
   for (int k = 0; k < g2; ++k)
     assert(buffer1[k] == buffer2[k]);
-  BEST_TIME(difference(B, lenB, A, lenA, buffer1), f2, , repeat, lenA+lenB, true);
-  BEST_TIME(difference_vector16(B, lenB, A, lenA, buffer2), f2, , repeat, lenA+lenB, true);
+  BEST_TIME(difference(B, lenB, A, lenA, buffer1), f2, , repeat, lenA + lenB,
+            true);
+  BEST_TIME(difference_vector16(B, lenB, A, lenA, buffer2), f2, , repeat,
+            lenA + lenB, true);
 
   // cleaning
   free(A);
