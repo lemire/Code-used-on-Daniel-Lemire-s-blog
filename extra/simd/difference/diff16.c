@@ -470,7 +470,7 @@ int32_t difference_vector16(const uint16_t *A, size_t s_a, const uint16_t *B,
         // all be large values.
         const int bitmask_belongs_to_difference =
             _mm_extract_epi32(runningmask_a_found_in_b, 0) ^ 0xFF;
-        /*** next few lines is probably expensive *****/
+        /*** next few lines are probably expensive *****/
         __m128i sm16 = _mm_load_si128((const __m128i *)shuffle_mask16 +
                                       bitmask_belongs_to_difference);
         __m128i p = _mm_shuffle_epi8(v_a, sm16);
