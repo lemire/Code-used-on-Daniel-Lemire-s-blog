@@ -16,19 +16,15 @@ static int difference(const uint16_t *a1, int length1, const uint16_t *a2,
                       int length2, uint16_t *a_out) {
   int out_card = 0;
   int k1 = 0, k2 = 0;
-
   if (length1 == 0)
     return 0;
-
   if (length2 == 0) {
     if (a1 != a_out)
       memcpy(a_out, a1, sizeof(uint16_t) * length1);
     return length1;
   }
-
   uint16_t s1 = a1[k1];
   uint16_t s2 = a2[k2];
-
   while (true) {
     if (s1 < s2) {
       a_out[out_card++] = s1;
@@ -456,19 +452,17 @@ int32_t difference_vector16(const uint16_t *A, size_t s_a, const uint16_t *B,
     v_bmax = _mm_shuffle_epi8(v_b, replicatelast);
     while (true) {
 
-      const __m128i afoundinb = _mm_cmpistrm(
-          v_b, v_a,
-          _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_MOST_SIGNIFICANT);
+      const __m128i afoundinb =
+          _mm_cmpistrm(v_b, v_a, _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY |
+                                     _SIDD_MOST_SIGNIFICANT);
       runningmask = _mm_or_si128(runningmask, afoundinb);
       const uint16_t a_max = A[i_a + vectorlength - 1];
       const uint16_t b_max = B[i_b + vectorlength - 1];
       if (a_max <= b_max) {
         const __m128i altb = _mm_cmple_epu16(v_a, v_bmax);
         __m128i finalmask = _mm_andnot_si128(runningmask, altb);
-        finalmask = _mm_packs_epi16(finalmask,
-                                    _mm_setzero_si128());
-        const int r =
-            _mm_movemask_epi8(finalmask);
+        finalmask = _mm_packs_epi16(finalmask, _mm_setzero_si128());
+        const int r = _mm_movemask_epi8(finalmask);
         __m128i sm16 = _mm_load_si128((const __m128i *)shuffle_mask16 + r);
         __m128i p = _mm_shuffle_epi8(v_a, sm16);
         _mm_storeu_si128((__m128i *)&C[count], p); // can overflow
@@ -489,29 +483,36 @@ int32_t difference_vector16(const uint16_t *A, size_t s_a, const uint16_t *B,
     }
     // at this point, either we have i_a == st_a, which is the end,
     // or we have i_b == st_b
-    if (i_a < st_a) { // we have unfinished business...
+    if (i_a < st_a) {     // we have unfinished business...
       uint16_t buffer[8]; // buffer to do a masked load
       memset(buffer, 0, 8 * sizeof(uint16_t));
       memcpy(buffer, B + i_b, (s_b - i_b) * sizeof(uint16_t));
       v_b = _mm_lddqu_si128((__m128i *)buffer);
-      while (true) {
-        const __m128i afoundinb =
-            _mm_cmpistrm(v_b, v_a, _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY |
-                                       _SIDD_MOST_SIGNIFICANT);
-        runningmask = _mm_or_si128(runningmask, afoundinb);
-        __m128i finalmask = _mm_packs_epi16(
-            runningmask, _mm_setzero_si128()); //_mm_packus_epi16
-        const int r = _mm_movemask_epi8(finalmask) ^
-                      0xFF;
+      // while (true) {
+      const __m128i afoundinb =
+          _mm_cmpistrm(v_b, v_a, _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY |
+                                     _SIDD_MOST_SIGNIFICANT);
+      runningmask = _mm_or_si128(runningmask, afoundinb);
+      __m128i finalmask =
+          _mm_packs_epi16(runningmask, _mm_setzero_si128()); //_mm_packus_epi16
+      const int r = _mm_movemask_epi8(finalmask) ^ 0xFF;
+      __m128i sm16 = _mm_load_si128((const __m128i *)shuffle_mask16 + r);
+      __m128i p = _mm_shuffle_epi8(v_a, sm16);
+      _mm_storeu_si128((__m128i *)&C[count], p); // can overflow
+      count += _mm_popcnt_u32(r);
+      i_a += vectorlength;
+      // we are now going to exhaust it out
+      while (i_a < st_a) {
+        v_a = _mm_lddqu_si128((__m128i *)&A[i_a]);
+
+        const __m128i anotfoundinb = _mm_cmpistrm(
+            v_b, v_a, _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY | _SIDD_BIT_MASK | _SIDD_NEGATIVE_POLARITY);
+        const int r = _mm_extract_epi32(anotfoundinb, 0);
         __m128i sm16 = _mm_load_si128((const __m128i *)shuffle_mask16 + r);
         __m128i p = _mm_shuffle_epi8(v_a, sm16);
         _mm_storeu_si128((__m128i *)&C[count], p); // can overflow
         count += _mm_popcnt_u32(r);
         i_a += vectorlength;
-        if (i_a == st_a)
-          break;
-        runningmask = _mm_setzero_si128();
-        v_a = _mm_lddqu_si128((__m128i *)&A[i_a]);
       }
     }
     // at this point we should have i_a == st_a;
@@ -541,6 +542,7 @@ int32_t difference_vector16(const uint16_t *A, size_t s_a, const uint16_t *B,
 void randomtest() {
   // const int lenA = (rand() % 30);
   // const int lenB = (rand() % 30);
+  const int repeat = 50;
   const int lenA = (rand() % 4096);
   const int lenB = (rand() % 4096);
 
@@ -556,15 +558,15 @@ void randomtest() {
     for (int i = 1; i < lenB; i++)
       B[i] = B[i - 1] + 1 + (rand() % (50000 / lenB));
   }
-
-  printf("A=");
-  for (int k = 0; k < lenA; ++k)
-    printf("%d ", A[k]);
-  printf("\n");
-  printf("B=");
-  for (int k = 0; k < lenB; ++k)
-    printf("%d ", B[k]);
-  printf("\n");
+  /*
+    printf("A=");
+    for (int k = 0; k < lenA; ++k)
+      printf("%d ", A[k]);
+    printf("\n");
+    printf("B=");
+    for (int k = 0; k < lenB; ++k)
+      printf("%d ", B[k]);
+    printf("\n");*/
 
   uint16_t *buffer1 = (uint16_t *)malloc((lenB + lenA) * sizeof(uint16_t));
   uint16_t *buffer2 = (uint16_t *)malloc((lenB + lenA) * sizeof(uint16_t));
@@ -572,36 +574,21 @@ void randomtest() {
   // first side
   int f1 = difference(A, lenA, B, lenB, buffer1);
   int g1 = difference_vector16(A, lenA, B, lenB, buffer2);
-  printf("f1 = %d, g1 = %d \n", f1, g1);
-  printf("expected answer :");
-  for (int k = 0; k < f1; ++k)
-    printf("%d ", buffer1[k]);
-  printf("\n");
-  printf("SIMD answer :");
-  for (int k = 0; k < g1; ++k)
-    printf("%d ", buffer2[k]);
-  printf("\n");
-
   assert(f1 == g1);
   for (int k = 0; k < g1; ++k)
     assert(buffer1[k] == buffer2[k]);
+  BEST_TIME(difference(A, lenA, B, lenB, buffer1), f1, , repeat, lenA+lenB, true);
+  BEST_TIME(difference_vector16(A, lenA, B, lenB, buffer2), f1, , repeat, lenA+lenB, true);
 
   // second side
   int f2 = difference(B, lenB, A, lenA, buffer1);
   int g2 = difference_vector16(B, lenB, A, lenA, buffer2);
-  printf("f2 = %d, g2 = %d \n", f2, g2);
-  printf("expected answer :");
-  for (int k = 0; k < f2; ++k)
-    printf("%d ", buffer1[k]);
-  printf("\n");
-  printf("SIMD answer :");
-  for (int k = 0; k < g2; ++k)
-    printf("%d ", buffer2[k]);
-  printf("\n");
-
   assert(f2 == g2);
   for (int k = 0; k < g2; ++k)
     assert(buffer1[k] == buffer2[k]);
+  BEST_TIME(difference(B, lenB, A, lenA, buffer1), f2, , repeat, lenA+lenB, true);
+  BEST_TIME(difference_vector16(B, lenB, A, lenA, buffer2), f2, , repeat, lenA+lenB, true);
+
   // cleaning
   free(A);
   free(B);
@@ -610,69 +597,8 @@ void randomtest() {
 }
 
 int main() {
-  //  randomtest();
-  const int lenA = 17;
-  const int lenB = 16;
-  uint16_t *A = (uint16_t *)malloc(lenA * sizeof(uint16_t));
-  uint16_t *B = (uint16_t *)malloc(lenB * sizeof(uint16_t));
-  for (int i = 0; i < lenA; i++)
-    A[i] = 3 * i + 1;
-  for (int i = 0; i < lenB; i++)
-    B[i] = 7 * i + 1;
-  /*  printf("A=");
-    for (int k = 0; k < lenA; ++k)
-      printf("%d ", A[k]);
-    printf("\n");
-    printf("B=");
-    for (int k = 0; k < lenB; ++k)
-      printf("%d ", B[k]);
-    printf("\n");
-  */
-  uint16_t *buffer1 = (uint16_t *)malloc((lenB + lenA) * sizeof(uint16_t));
-  uint16_t *buffer2 = (uint16_t *)malloc((lenB + lenA) * sizeof(uint16_t));
-
-  // first side
-
-  int f1 = difference(A, lenA, B, lenB, buffer1);
-  int g1 = difference_vector16(A, lenA, B, lenB, buffer2);
-  printf("f1 = %d, g1 = %d \n", f1, g1);
-  /*  printf("expected answer :");
-    for (int k = 0; k < f1; ++k)
-      printf("%d ", buffer1[k]);
-    printf("\n");
-    printf("SIMD answer :");
-    for (int k = 0; k < g1; ++k)
-      printf("%d ", buffer2[k]);
-    printf("\n");*/
-  assert(f1 == g1);
-  for (int k = 0; k < g1; ++k)
-    assert(buffer1[k] == buffer2[k]);
-
-  // second side
-  int f2 = difference(B, lenB, A, lenA, buffer1);
-  int g2 = difference_vector16(B, lenB, A, lenA, buffer2);
-  /*  printf("expected answer :");
-    for (int k = 0; k < f2; ++k)
-      printf("%d ", buffer1[k]);
-    printf("\n");
-    printf("SIMD answer :");
-    for (int k = 0; k < g2; ++k)
-      printf("%d ", buffer2[k]);
-    printf("\n");
-  */
-  printf("f2 = %d, g2 = %d \n", f2, g2);
-  assert(f2 == g2);
-  for (int k = 0; k < g2; ++k)
-    assert(buffer1[k] == buffer2[k]);
-  // cleaning
-  free(A);
-  free(B);
-  free(buffer1);
-  free(buffer2);
-
-  for (int k = 0; k < 1000000; ++k) {
+  for (int k = 0; k < 10; ++k) {
     printf("\n\n\n");
     randomtest();
-    printf("\n \n k=%d\n \n \n", k);
   }
 }
