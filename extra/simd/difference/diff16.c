@@ -437,32 +437,45 @@ int32_t difference_vector16(const uint16_t *A, size_t s_a, const uint16_t *B,
       s_b--;
     }
   }
-
+  // at this point, we have two non-empty arrays, made of non-zero
+  // increasing values.
   int32_t i_a = 0, i_b = 0;
   const int vectorlength = sizeof(__m128i) / sizeof(uint16_t);
   const int32_t st_a = (s_a / vectorlength) * vectorlength;
   const int32_t st_b = (s_b / vectorlength) * vectorlength;
-  __m128i v_a, v_b, v_bmax;
-  if ((i_a < st_a) && (i_b < st_b)) {
+  if ((i_a < st_a) && (i_b < st_b)) { // this is the vectorized code path
+    __m128i v_a, v_b; //, v_bmax;
+    // we load a vector from A and a vector from B
     v_a = _mm_lddqu_si128((__m128i *)&A[i_a]);
     v_b = _mm_lddqu_si128((__m128i *)&B[i_b]);
+    // we have a runningmask which indicates which values from A have been
+    // spotted in B, these don't get written out.
     __m128i runningmask = _mm_setzero_si128();
-    const __m128i replicatelast = _mm_set_epi8(15, 14, 15, 14, 15, 14, 15, 14,
-                                               15, 14, 15, 14, 15, 14, 15, 14);
-    v_bmax = _mm_shuffle_epi8(v_b, replicatelast);
+    // replicatelast is just a shuffling mask that replicates the last
+    // value from  v_b to all components
+   // const __m128i replicatelast = _mm_set_epi8(15, 14, 15, 14, 15, 14, 15, 14,
+                                            //   15, 14, 15, 14, 15, 14, 15, 14);
+   // v_bmax = _mm_shuffle_epi8(v_b, replicatelast); // contains only the last (largest) values
     while (true) {
-
+      // afoundinb will contain a 16-bit large value for each entry in A seen found in B
       const __m128i afoundinb =
           _mm_cmpistrm(v_b, v_a, _SIDD_UWORD_OPS | _SIDD_CMP_EQUAL_ANY |
                                      _SIDD_MOST_SIGNIFICANT);
+      // we OR this with our runningmask (initially empty)
       runningmask = _mm_or_si128(runningmask, afoundinb);
+      // we always compare the last values of A and B
       const uint16_t a_max = A[i_a + vectorlength - 1];
       const uint16_t b_max = B[i_b + vectorlength - 1];
       if (a_max <= b_max) {
-        const __m128i altb = _mm_cmple_epu16(v_a, v_bmax);
-        __m128i finalmask = _mm_andnot_si128(runningmask, altb);
-        finalmask = _mm_packs_epi16(finalmask, _mm_setzero_si128());
-        const int r = _mm_movemask_epi8(finalmask);
+        // Ok. In this code path, we are ready to write our v_a 
+        // because there is no need to read more from B, they will
+        // all be large values.
+        const __m128i altb = _mm_set1_epi16(-1);//_mm_cmple_epu16(v_a, v_bmax);
+//printf("%d %d %d %d %d %d %d %d \n", _mm_extract_epi16(altb,0),_mm_extract_epi16(altb,1),_mm_extract_epi16(altb,2),_mm_extract_epi16(altb,3),_mm_extract_epi16(altb,4),_mm_extract_epi16(altb,5),_mm_extract_epi16(altb,6),_mm_extract_epi16(altb,7));
+       //__m128i finalmask = _mm_andnot_si128(runningmask, altb);
+       __m128i finalmask = runningmask;//_mm_andnot_si128(runningmask, altb);
+ finalmask = _mm_packs_epi16(finalmask, _mm_setzero_si128());
+        const int r = _mm_movemask_epi8(finalmask) ^0xFF;
         __m128i sm16 = _mm_load_si128((const __m128i *)shuffle_mask16 + r);
         __m128i p = _mm_shuffle_epi8(v_a, sm16);
         _mm_storeu_si128((__m128i *)&C[count], p); // can overflow
@@ -478,7 +491,7 @@ int32_t difference_vector16(const uint16_t *A, size_t s_a, const uint16_t *B,
         if (i_b == st_b)
           break;
         v_b = _mm_lddqu_si128((__m128i *)&B[i_b]);
-        v_bmax = _mm_shuffle_epi8(v_b, replicatelast);
+        //v_bmax = _mm_shuffle_epi8(v_b, replicatelast);
       }
     }
     // at this point, either we have i_a == st_a, which is the end,
