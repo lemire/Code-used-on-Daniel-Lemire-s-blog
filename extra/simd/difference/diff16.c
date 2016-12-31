@@ -536,8 +536,6 @@ int32_t difference_vector16(const uint16_t *A, size_t s_a, const uint16_t *B,
 }
 
 void randomtest() {
-  // const int lenA = (rand() % 30);
-  // const int lenB = (rand() % 30);
   const int repeat = 50;
   const int lenA = (rand() % 4096);
   const int lenB = (rand() % 4096);
@@ -554,15 +552,6 @@ void randomtest() {
     for (int i = 1; i < lenB; i++)
       B[i] = B[i - 1] + 1 + (rand() % (50000 / lenB));
   }
-  /*
-    printf("A=");
-    for (int k = 0; k < lenA; ++k)
-      printf("%d ", A[k]);
-    printf("\n");
-    printf("B=");
-    for (int k = 0; k < lenB; ++k)
-      printf("%d ", B[k]);
-    printf("\n");*/
 
   uint16_t *buffer1 = (uint16_t *)malloc((lenB + lenA) * sizeof(uint16_t));
   uint16_t *buffer2 = (uint16_t *)malloc((lenB + lenA) * sizeof(uint16_t));
