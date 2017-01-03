@@ -607,7 +607,7 @@ static uint32_t sse_unite_opti(uint16_t * __restrict__ array1, uint32_t length1 
     vB = _mm_lddqu_si128((const __m128i* )array2 + pos2);
     pos2++;
     sse_merge(&vA,&vB,&vecMin,&vecMax);
-    laststore = _mm_set1_epi32(array1[0] < array2[0] ? array1[0] -1 : array2[0] -1);
+    laststore = _mm_set1_epi16(-1);
     output+= store_unique(laststore,vecMin, output);
     laststore=vecMin;
     if((pos1 < len1) && (pos2<len2)) {
@@ -686,7 +686,7 @@ static uint32_t sse_unite_opti_pack(uint16_t * __restrict__ array1, uint32_t len
     vB = _mm_lddqu_si128((const __m128i* )array2 + pos2);
     pos2++;
     sse_merge(&vA,&vB,&vecMin,&vecMax);
-    laststore = _mm_set1_epi32(array1[0] < array2[0] ? array1[0] -1 : array2[0] -1);
+    laststore = _mm_set1_epi16(-1);
     output+= store_unique_pack(laststore,vecMin, output);
     laststore=vecMin;
     if((pos1 < len1) && (pos2<len2)) {
