@@ -391,6 +391,15 @@ static inline int store_unique(__m128i old,__m128i new, uint16_t *  output) {
     return numberofnewvalues;
 }
 
+static inline int store_unique_pack(__m128i old,__m128i new, uint16_t *  output) {
+    __m128i vecTmp = _mm_alignr_epi8(new, old, 16 - 2);
+    int M = _mm_movemask_epi8(_mm_packs_epi16(_mm_cmpeq_epi16(vecTmp,new),_mm_setzero_si128()));
+    int numberofnewvalues = 8 - _mm_popcnt_u32(M);
+    __m128i key =  _mm_lddqu_si128((const __m128i* )uniqshuf + M);
+    __m128i val =  _mm_shuffle_epi8(new,key);
+    _mm_storeu_si128((__m128i* )output,val);
+    return numberofnewvalues;
+}
 
 // working in-place, this function overwrites the repeated values
 static uint32_t unique(uint16_t *  out, uint32_t len) {
@@ -658,6 +667,84 @@ static uint32_t sse_unite_opti(uint16_t * __restrict__ array1, uint32_t length1 
 }
 
 
+// a one-pass SSE union algorithm
+static uint32_t sse_unite_opti_pack(uint16_t * __restrict__ array1, uint32_t length1 ,
+                               uint16_t *  __restrict__ array2, uint32_t length2, uint16_t *  __restrict__  output) {
+    if ((length1 < 8) || (length2 < 8)) {
+       return union_uint16(array1, length1, array2, length2,output);
+    }
+    __m128i vA, vB, V, vecMin,vecMax;
+    __m128i laststore;
+    uint16_t * initoutput = output;
+    uint32_t len1 = length1 / 8;
+    uint32_t len2 = length2 / 8;
+    uint32_t pos1 = 0;
+    uint32_t pos2 = 0;
+    // we start the machine
+    vA = _mm_lddqu_si128((const __m128i* )array1 + pos1);
+    pos1++;
+    vB = _mm_lddqu_si128((const __m128i* )array2 + pos2);
+    pos2++;
+    sse_merge(&vA,&vB,&vecMin,&vecMax);
+    laststore = _mm_set1_epi32(array1[0] < array2[0] ? array1[0] -1 : array2[0] -1);
+    output+= store_unique_pack(laststore,vecMin, output);
+    laststore=vecMin;
+    if((pos1 < len1) && (pos2<len2)) {
+        uint16_t curA, curB;
+        curA = array1[8*pos1];
+        curB = array2[8*pos2];
+        while(true) {
+            if(curA <= curB) {
+                V = _mm_lddqu_si128((const __m128i* )array1 + pos1);
+                pos1++;
+                if(pos1 < len1 ) {
+                    curA =  array1[8*pos1];
+                } else {
+                    break;
+                }
+            } else {
+                V = _mm_lddqu_si128((const __m128i* )array2 + pos2);
+                pos2++;
+                if(pos2 < len2 ) {
+                    curB =  array2[8*pos2];
+                } else {
+                    break;
+                }
+            }
+            sse_merge(&V,&vecMax,&vecMin,&vecMax);
+            output+= store_unique_pack(laststore,vecMin, output);
+            laststore = vecMin;
+        }
+        sse_merge(&V,&vecMax,&vecMin,&vecMax);
+        output+= store_unique_pack(laststore,vecMin, output);
+        laststore = vecMin;
+    }
+    // we finish the rest off using a scalar algorithm
+    // copy the small end on a tmp buffer
+    uint32_t len = (uint32_t) (output-initoutput);
+    uint16_t buffer[16];
+    uint32_t leftoversize = store_unique_pack(laststore,vecMax, buffer);
+    if(pos1 == len1) {
+        memcpy(buffer + leftoversize, array1 + 8 * pos1, (length1 - 8 * len1) * sizeof(uint16_t));
+        leftoversize += length1 - 8 * len1;
+        qsort (buffer, leftoversize, sizeof(uint16_t), uint16_compare);
+
+
+        leftoversize= unique(buffer, leftoversize);
+        len += union_uint16(buffer,leftoversize, array2 + 8 * pos2,
+                            length2 - 8 * pos2, output);
+    } else {
+        memcpy(buffer + leftoversize, array2 + 8 * pos2, (length2 - 8 * len2) * sizeof(uint16_t));
+        leftoversize += length2 - 8 * len2;
+        qsort (buffer, leftoversize, sizeof(uint16_t), uint16_compare);
+        leftoversize= unique(buffer, leftoversize);
+        len += union_uint16(buffer,leftoversize, array1 + 8 * pos1,
+                            length1 - 8 * pos1, output);
+    }
+    return len;
+
+}
+
 
 
 
@@ -701,6 +788,15 @@ void generic_unittesting(uint32_t len1, uint32_t len2) {
         }
     }
 
+    lenopti = sse_unite_opti_pack(array1, len1,array2, len2,outputopti);
+    for(int k = 0 ; k < lenopti; ++k) {
+        if(k>0) {
+            if(outputopti[k]<=outputopti[k-1]) {
+                printf("bug opti SSE at k =%d out of %d:  %u %u",k,lenopti,outputopti[k-1],outputopti[k]);
+                abort();
+            }
+        }
+    }
 
     uint16_t * output2 = malloc((len1 + len2) * sizeof(uint16_t));
 
@@ -774,7 +870,15 @@ void unittesting(uint32_t len1, uint32_t len2) {
             }
         }
     }
-
+    lenopti = sse_unite_opti_pack(array1, len1,array2, len2,outputopti);
+    for(int k = 0 ; k < lenopti; ++k) {
+      if(k>0) {
+         if(outputopti[k]<=outputopti[k-1]) {
+            printf("bug opti SSE at k =%d out of %d:  %u %u",k,lenopti,outputopti[k-1],outputopti[k]);
+            abort();
+         }
+      }
+    }
 
     uint16_t * output2 = malloc((len1 + len2) * sizeof(uint16_t));
 
@@ -856,6 +960,11 @@ void benchmark(uint32_t len1, uint32_t len2) {
     uint32_t optilensse = sse_unite_opti(array1, len1,array2, len2,output2);
     RDTSC_FINAL(cycles_final);
     printf("opti SSE took %" PRIu64 " cycles\n",
+           cycles_final - cycles_start);
+    RDTSC_START(cycles_start);
+    uint32_t optilenssepack = sse_unite_opti_pack(array1, len1,array2, len2,output2);
+    RDTSC_FINAL(cycles_final);
+    printf("opti pack SSE took %" PRIu64 " cycles\n",
            cycles_final - cycles_start);
 
     RDTSC_START(cycles_start);
