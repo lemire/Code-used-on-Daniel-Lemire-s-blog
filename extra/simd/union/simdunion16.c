@@ -6,31 +6,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include <assert.h>
-
-
-#define RDTSC_START(cycles)                                                   \
-    do {                                                                      \
-        register unsigned cyc_high, cyc_low;                                  \
-        __asm volatile(                                                       \
-            "cpuid\n\t"                                                       \
-            "rdtsc\n\t"                                                       \
-            "mov %%edx, %0\n\t"                                               \
-            "mov %%eax, %1\n\t"                                               \
-            : "=r"(cyc_high), "=r"(cyc_low)::"%rax", "%rbx", "%rcx", "%rdx"); \
-        (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;                      \
-    } while (0)
-
-#define RDTSC_FINAL(cycles)                                                   \
-    do {                                                                      \
-        register unsigned cyc_high, cyc_low;                                  \
-        __asm volatile(                                                       \
-            "rdtscp\n\t"                                                      \
-            "mov %%edx, %0\n\t"                                               \
-            "mov %%eax, %1\n\t"                                               \
-            "cpuid\n\t"                                                       \
-            : "=r"(cyc_high), "=r"(cyc_low)::"%rax", "%rbx", "%rcx", "%rdx"); \
-        (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;                      \
-    } while (0)
+#include "benchmark.h"
 
 
 #include <x86intrin.h>
@@ -953,29 +929,29 @@ void benchmark(uint32_t len1, uint32_t len2) {
     uint64_t cycles_start = 0, cycles_final = 0;
     RDTSC_START(cycles_start);
     uint32_t lensse = sse_unite(array1, len1,array2, len2,output1);
-    RDTSC_FINAL(cycles_final);
+    RDTSC_STOP(cycles_final);
     printf("SSE took %" PRIu64 " cycles\n",
            cycles_final - cycles_start);
     RDTSC_START(cycles_start);
     uint32_t optilensse = sse_unite_opti(array1, len1,array2, len2,output2);
-    RDTSC_FINAL(cycles_final);
+    RDTSC_STOP(cycles_final);
     printf("opti SSE took %" PRIu64 " cycles\n",
            cycles_final - cycles_start);
     RDTSC_START(cycles_start);
     uint32_t optilenssepack = sse_unite_opti_pack(array1, len1,array2, len2,output2);
-    RDTSC_FINAL(cycles_final);
+    RDTSC_STOP(cycles_final);
     printf("opti pack SSE took %" PRIu64 " cycles\n",
            cycles_final - cycles_start);
 
     RDTSC_START(cycles_start);
     uint32_t slensse = sse_unite_simple(array1, len1,array2, len2,output3);
-    RDTSC_FINAL(cycles_final);
+    RDTSC_STOP(cycles_final);
     printf("simple SSE took %" PRIu64 " cycles\n",
            cycles_final - cycles_start);
 
     RDTSC_START(cycles_start);
     uint32_t lenslow =  union_uint16(array1, len1,array2, len2,output4);
-    RDTSC_FINAL(cycles_final);
+    RDTSC_STOP(cycles_final);
     printf("scalar took %" PRIu64 " cycles\n",
            cycles_final - cycles_start);
     printf("lensse = %d slensse = %d lenslow = %d \n", lensse, slensse,lenslow);
@@ -993,6 +969,77 @@ void benchmark(uint32_t len1, uint32_t len2) {
     free(output4);
     free(array1);
     free(array2);
+}
+
+
+
+void randomtest() {
+  const int repeat = 50;
+  int lenA = (rand() % 4096);
+  int lenB = (rand() % 4096);
+  uint16_t *A = (uint16_t *)malloc(lenA * sizeof(uint16_t));
+  uint16_t *B = (uint16_t *)malloc(lenB * sizeof(uint16_t));
+  if (lenA > 0) {
+    A[0] = rand() % 10;
+    for (int i = 1; i < lenA; i++)
+      A[i] = A[i - 1] + 1 + (rand() % (50000 / lenA));
+  }
+  if (lenB > 0) {
+    B[0] = rand() % 10;
+    for (int i = 1; i < lenB; i++)
+      B[i] = B[i - 1] + 1 + (rand() % (50000 / lenB));
+  }
+  uint16_t *buffer1 = (uint16_t *)malloc((lenB + lenA) * sizeof(uint16_t));
+  uint16_t *buffer2 = (uint16_t *)malloc((lenB + lenA) * sizeof(uint16_t));
+
+  // first side
+  int f1 = union_uint16(A, lenA, B, lenB, buffer1);
+
+  int g1 = sse_unite_opti_pack(A, lenA, B, lenB, buffer2);
+  if (f1 != g1) {
+    printf("A:");
+    for (int k = 0; k < lenA; ++k)
+      printf(" %d ", A[k]);
+    printf("\n");
+    printf("B:");
+    for (int k = 0; k < lenB; ++k)
+      printf(" %d ", B[k]);
+    printf("\n");
+
+    printf("xor:");
+    for (int k = 0; k < f1; ++k)
+      printf(" %d ", buffer1[k]);
+    printf("\n");
+    printf("simd xor:");
+    for (int k = 0; k < g1; ++k)
+      printf(" %d ", buffer2[k]);
+    printf("\n");
+  }
+
+  assert(f1 == g1);
+  for (int k = 0; k < g1; ++k)
+    assert(buffer1[k] == buffer2[k]);
+  BEST_TIME(union_uint16(A, lenA, B, lenB, buffer1), f1, , repeat, lenA + lenB,
+            true);
+  BEST_TIME(sse_unite_opti_pack(A, lenA, B, lenB, buffer2), f1, , repeat, lenA + lenB,
+            true);
+
+  // second side
+  int f2 = union_uint16(B, lenB, A, lenA, buffer1);
+  int g2 = sse_unite_opti_pack(B, lenB, A, lenA, buffer2);
+  assert(f2 == g2);
+  for (int k = 0; k < g2; ++k)
+    assert(buffer1[k] == buffer2[k]);
+  BEST_TIME(union_uint16(B, lenB, A, lenA, buffer1), f2, , repeat, lenA + lenB,
+            true);
+  BEST_TIME(sse_unite_opti_pack(B, lenB, A, lenA, buffer2), f2, , repeat, lenA + lenB,
+            true);
+
+  // cleaning
+  free(A);
+  free(B);
+  free(buffer1);
+  free(buffer2);
 }
 
 int main() {
@@ -1021,5 +1068,6 @@ int main() {
     benchmark(1024,512);
     benchmark(512,1024);
     benchmark(2048,512);
+    for(int k = 0; k < 100; ++k) { randomtest(); printf("\n");}
 
 }
