@@ -11,8 +11,6 @@
 
 int32_t xor_uint16(const uint16_t *array_1, int32_t card_1,
                    const uint16_t *array_2, int32_t card_2, uint16_t *out) {
-  const int32_t max_cardinality = card_1 + card_2;
-
   int32_t pos1 = 0, pos2 = 0, pos_out = 0;
   while (pos1 < card_1 && pos2 < card_2) {
     const uint16_t v1 = array_1[pos1];
@@ -30,11 +28,15 @@ int32_t xor_uint16(const uint16_t *array_1, int32_t card_1,
       ++pos2;
     }
   }
-  // todo: memcpys instead
-  while (pos1 < card_1)
-    out[pos_out++] = array_1[pos1++];
-  while (pos2 < card_2)
-    out[pos_out++] = array_2[pos2++];
+  if (pos1 < card_1) {
+      const size_t n_elems = card_1 - pos1;
+      memcpy(out + pos_out, array_1 + pos1, n_elems * sizeof(uint16_t));
+      pos_out += n_elems;
+  } else if (pos2 < card_2) {
+      const size_t n_elems = card_2 - pos2;
+      memcpy(out + pos_out, array_2 + pos2, n_elems * sizeof(uint16_t));
+      pos_out += n_elems;
+  }
 
   return pos_out;
 }
