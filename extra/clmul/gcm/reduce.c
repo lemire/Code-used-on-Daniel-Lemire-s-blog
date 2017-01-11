@@ -135,15 +135,44 @@ __m128i ReduceOrig(const __m128i IH, const __m128i IL) {
   return answer;
 }
 
+__m128i chain(__m128i ih, __m128i il, size_t number) {
+  for(size_t i = 0; i < number; ++i) {
+    __m128i r = Reduce(ih,il);
+    il = ih;
+    ih = r;
+  }
+  return il;
+}
 
+
+__m128i chainorig(__m128i ih, __m128i il, size_t number) {
+  for(size_t i = 0; i < number; ++i) {
+    __m128i r = ReduceOrig(ih,il);
+    il = ih;
+    ih = r;
+  }
+  return il;
+}
 int main() {
   __m128i il = _mm_set_epi64x(2,1);
   __m128i ih = _mm_set_epi64x(8,4);
   print(Reduce(ih,il));
-  const int repeat = 500;
+  const int repeat = 50;
+  const int N = 1000;
 
-  BEST_TIME_NOCHECK(Reduce(ih,il),  repeat, 1, true);
-  BEST_TIME_NOCHECK(ReduceOrig(ih,il),  repeat, 1, true);
+  il = _mm_set_epi64x(2,1);
+  ih = _mm_set_epi64x(8,4);
+  BEST_TIME_NOCHECK(il = chain(ih,il,N),  repeat, N, true);
+  print(il);
+  print(ih);
+
+  printf("%d \n",(int)il[0]);
+
+  il = _mm_set_epi64x(2,1);
+  ih = _mm_set_epi64x(8,4);
+  BEST_TIME_NOCHECK(il = chainorig(ih,il,N),  repeat, N, true);
+  print(il);
+  print(ih);
 
   return 0;
 
