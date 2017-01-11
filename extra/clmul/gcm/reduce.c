@@ -1,4 +1,4 @@
-// gcc -o reduce reduce.c -O3 -mpclmul
+// gcc -o reduce reduce.c -O3 -mpclmul -msse4.2
 
 #include <stdint.h>
 #include <stddef.h>
@@ -114,7 +114,8 @@ void print(__m128i x) {
 // so we have 0 mul2_2 mul2_1 0
 // so we can add mul2_2 to IH0 and reduce them together.
 /////////////
-__m128i Reduce(const __m128i IH, const __m128i IL) {
+static inline __m128i Reduce(const __m128i IH, const __m128i IL) {
+  // Designed by D. Lemire in January 2017
   const __m128i p = _mm_set1_epi64x(0x87U);  // x^7 + x^2 + x + 1
   const __m128i IHshifted = _mm_slli_si128(IH,8);// we preshift so that when H1mul, we can remultiply early
   const __m128i H1mul = _mm_clmulepi64_si128(IH, p, 0x11); // multiply the most significant 64 bits of IH by (x^7 + x^2 + x + 1)
@@ -125,7 +126,8 @@ __m128i Reduce(const __m128i IH, const __m128i IL) {
 }
 
 
-__m128i ReduceOrig(const __m128i IH, const __m128i IL) {
+// source unknown
+static inline __m128i ReduceOrig(const __m128i IH, const __m128i IL) {
   const __m128i p = _mm_set1_epi64x(0x87U);  // x^7 + x^2 + x + 1
   const __m128i H1mul = _mm_clmulepi64_si128(IH, p, 0x11); // multiply the most significant 64 bits of IH by (x^7 + x^2 + x + 1)
   const __m128i H1mul_L0 = _mm_unpacklo_epi64(_mm_setzero_si128(), H1mul); // grab the lowest 64 bits of H1mul and move it up
@@ -133,6 +135,55 @@ __m128i ReduceOrig(const __m128i IH, const __m128i IL) {
   const __m128i mul2 = _mm_clmulepi64_si128(_mm_xor_si128(H1mul_L0, IH), p, 0x00);
   __m128i answer = _mm_xor_si128(mul2 , _mm_xor_si128(H1mul_0H , IL));
   return answer;
+}
+
+
+
+static inline __m128i lazymod127(__m128i Alow, __m128i Ahigh) {
+    ///////////////////////////////////////////////////
+    // CHECKING THE PRECONDITION:
+    // Important: we are assuming that the two highest bits of Ahigh
+    // are zero. This could be checked by adding a line such as this one:
+    // if(_mm_extract_epi64(Ahigh,1) >= (1ULL<<62)){printf("bug\n");abort();}
+    //                       (this assumes SSE4.1 support)
+    ///////////////////////////////////////////////////
+    // The answer is Alow XOR  (  Ahigh <<1 ) XOR (  Ahigh <<2 )
+    // This is correct because the two highest bits of Ahigh are
+    // assumed to be zero.
+    ///////////////////////////////////////////////////
+    // We want to take Ahigh and compute       (  Ahigh <<1 ) XOR (  Ahigh <<2 )
+    // Except that there is no way to shift an entire XMM register by 1 or 2 bits  using a single instruction.
+    // So how do you compute Ahigh <<1 using as few instructions as possible?
+    //
+    // First you do _mm_slli_epi64(Ahigh,1). This is *almost* correct... except that
+    // the 64th bit is not shifted in 65th position.
+    // Well, ok, but we can compute Ahigh >> 8, this given by _mm_srli_si128(Ahigh,1)
+    // _mm_srli_si128(Ahigh,1) has the same bits as Ahigh (except that we lose the lowest 8)
+    // but at different positions.
+    // So let us shift left the result again...
+    //  _mm_slli_epi64(_mm_srli_si128(Ahigh,1),1)
+    // If you keep track, this is "almost" equivalent to A >> 7, except that the 72th bit
+    // from A is lost.
+    // From something that is almost A >>7, we can get back something that is almost A << 1
+    // by shifting left by 8 bits...
+    // _mm_slli_si128(_mm_slli_epi64(_mm_srli_si128(Ahigh,1),1),1)
+    // So this is a shift left by 1, except that the 72th bit is lost along with the lowest 8 bits.
+    // We have that  _mm_slli_epi64(Ahigh,1) is a shift let by 1 except that the 64th bit
+    // is lost. We can combine the two to get the desired result (just OR them).
+    // The algorithm below is just an optimized version of this where we do both shifts (by 1 and 2)
+    // at the same time and XOR the result.
+    //
+    __m128i shifteddownAhigh = _mm_srli_si128(Ahigh,1);
+    __m128i s1 = _mm_slli_epi64(Ahigh,1);
+    __m128i s2 = _mm_slli_epi64(Ahigh,2);
+    __m128i sd1 = _mm_slli_si128(_mm_slli_epi64(shifteddownAhigh,1),1);
+    __m128i sd2 = _mm_slli_si128(_mm_slli_epi64(shifteddownAhigh,2),1);
+    s1 = _mm_or_si128(s1,sd1);
+    s2 = _mm_or_si128(s2,sd2);
+    __m128i reduced = _mm_xor_si128(s1,s2);
+    // combining results
+    __m128i final = _mm_xor_si128(Alow,reduced);
+    return final;
 }
 
 __m128i chain(__m128i ih, __m128i il, size_t number) {
@@ -153,26 +204,41 @@ __m128i chainorig(__m128i ih, __m128i il, size_t number) {
   }
   return il;
 }
+
+__m128i chainlazy(__m128i ih, __m128i il, size_t number) {
+  for(size_t i = 0; i < number; ++i) {
+    __m128i r = lazymod127(il,ih);
+    il = ih;
+    ih = r;
+  }
+  return il;
+}
 int main() {
   __m128i il = _mm_set_epi64x(2,1);
   __m128i ih = _mm_set_epi64x(8,4);
-  print(Reduce(ih,il));
   const int repeat = 50;
   const int N = 1000;
+  printf("This program attempts to measure the latency of modulo reduction functions.\n");
 
   il = _mm_set_epi64x(2,1);
   ih = _mm_set_epi64x(8,4);
   BEST_TIME_NOCHECK(il = chain(ih,il,N),  repeat, N, true);
-  print(il);
-  print(ih);
+  printf("bogus line (ignore me): "); print(il);
+  printf("bogus line (ignore me): "); print(ih);
 
-  printf("%d \n",(int)il[0]);
 
   il = _mm_set_epi64x(2,1);
   ih = _mm_set_epi64x(8,4);
   BEST_TIME_NOCHECK(il = chainorig(ih,il,N),  repeat, N, true);
-  print(il);
-  print(ih);
+  printf("bogus line (ignore me): ") ;print(il);
+  printf("bogus line (ignore me): "); print(ih);
+
+
+  il = _mm_set_epi64x(2,1);
+  ih = _mm_set_epi64x(8,4);
+  BEST_TIME_NOCHECK(il = chainlazy(ih,il,N),  repeat, N, true);
+  printf("bogus line (ignore me): "); print(il);
+  printf("bogus line (ignore me): "); print(ih);
 
   return 0;
 
