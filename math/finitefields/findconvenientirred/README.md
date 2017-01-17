@@ -1,0 +1,3 @@
+We have that (x^128 + x^8 + 2) / x is irreducible...
+So is ( x^64 +x^32 +2 ) / x .
+
