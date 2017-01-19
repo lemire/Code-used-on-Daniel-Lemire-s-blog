@@ -157,9 +157,25 @@ void init(__m128i * X, __m128i * Y) {
   *X = _mm_set1_epi64x(1);
   *Y = _mm_set1_epi64x(3);
 }
+
+bool equals(__m128i v0, __m128i v1) {
+   __m128i vcmp = _mm_xor_si128(v0, v1);        // PXOR
+  return _mm_testz_si128(vcmp, vcmp);
+}
+
 int main() {
-  __m128i x = _mm_set1_epi64x(1);
-  __m128i y = _mm_set1_epi64x(2);
+  uint64_t r1, r2;
+  for(int z = 0; z < 10000; ++z) {
+  _rdrand64_step(&r1);
+  _rdrand64_step(&r2);
+  __m128i x = _mm_set_epi64x(r1,r2);
+  _rdrand64_step(&r1);
+  _rdrand64_step(&r2);
+
+  __m128i y = _mm_set_epi64x(r1,r2);
+  assert(equals(lazymod127(x,y),alt_lazymod127(x,y)));
+}
+
   const int repeat = 1000;
 
 
