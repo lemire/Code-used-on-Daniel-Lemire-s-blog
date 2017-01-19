@@ -108,7 +108,7 @@ __m128i alt_lazymod127(__m128i Alow, __m128i Ahigh) {
 IACA_START;
     __m128i shift1 = leftshift1(Ahigh);
     __m128i shift2 = leftshift2(Ahigh);
-    __m128i final =  _mm_or_si128(_mm_or_si128(Alow, shift1),shift2);
+    __m128i final =  _mm_xor_si128(_mm_xor_si128(Alow, shift1),shift2);
 IACA_END;
     return final;
 }
@@ -164,23 +164,16 @@ bool equals(__m128i v0, __m128i v1) {
 }
 
 int main() {
-  uint64_t r1, r2;
+  __m128i x,y;
   for(int z = 0; z < 10000; ++z) {
-  _rdrand64_step(&r1);
-  _rdrand64_step(&r2);
-  __m128i x = _mm_set_epi64x(r1,r2);
-  _rdrand64_step(&r1);
-  _rdrand64_step(&r2);
-
-  __m128i y = _mm_set_epi64x(r1,r2);
-  assert(equals(lazymod127(x,y),alt_lazymod127(x,y)));
-}
-
+    x = _mm_set_epi64x(((uint64_t) rand() << 32) + rand(),((uint64_t) rand() << 32) + rand());
+    y = _mm_set_epi64x(((uint64_t) rand() << 32) + rand(),((uint64_t) rand() << 32) + rand());
+    assert(equals(lazymod127(x,y),alt_lazymod127(x,y)));
+  }
   const int repeat = 1000;
 
+   BEST_TIME_NOCHECK(x = lazymod127(x,y), y = lazymod127(y,x), repeat, 1, true);
 
-   BEST_TIME_NOCHECK(lazymod127(x,y), lazymod127(y,x), repeat, 1, true);
-
-   BEST_TIME_NOCHECK(alt_lazymod127(x,y), lazymod127(y,x), repeat, 1, true);
-   return _mm_cvtsd_si32(x);
+   BEST_TIME_NOCHECK(x = alt_lazymod127(x,y), y = lazymod127(y,x), repeat, 1, true);
+   return _mm_cvtsi128_si32(x);
 }
