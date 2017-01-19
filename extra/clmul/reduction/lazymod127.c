@@ -157,14 +157,17 @@ void init(__m128i * X, __m128i * Y) {
   *X = _mm_set1_epi64x(1);
   *Y = _mm_set1_epi64x(3);
 }
+
+
+
 int main() {
   __m128i x = _mm_set1_epi64x(1);
   __m128i y = _mm_set1_epi64x(2);
-  const int repeat = 1000;
+  const int repeat = 100;
 
 
-   BEST_TIME_NOCHECK(lazymod127(x,y), lazymod127(y,x), repeat, 1, true);
+   BEST_TIME_NOCHECK(x = lazymod127(x,y), y = lazymod127(y,x), repeat, 1, true);
 
-   BEST_TIME_NOCHECK(alt_lazymod127(x,y), lazymod127(y,x), repeat, 1, true);
-   return _mm_cvtsd_si32(x);
+   BEST_TIME_NOCHECK(x = alt_lazymod127(x,y), y = lazymod127(y,x), repeat, 1, true);
+   return _mm_cvtsi128_si32(x);
 }
