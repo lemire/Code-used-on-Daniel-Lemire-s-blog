@@ -1,4 +1,4 @@
-
+import Foundation;
 import Swimsuit;
 
 let newcount = 10000
@@ -6,12 +6,13 @@ let newcount = 10000
 
 let nano1 = Swimsuit.nanotime() {
    var z = [Int]()
-   while z.count < newcount {
-      z.append(z.count)
+   for i in 0..<newcount {
+      z.append(i)
    }
 }
 
-print(nano1)
+let nano1perentry = round(Double(nano1)/Double(newcount))
+print("\(nano1perentry) ns/entry")
 
 let nano2 = Swimsuit.nanotime() {
    var z = UnsafeMutablePointer<Int>.allocate(capacity:newcount)
@@ -21,5 +22,7 @@ let nano2 = Swimsuit.nanotime() {
    z.deallocate(capacity:newcount)
 }
 
-print(nano2)
+let nano2perentry = round(Double(nano2)/Double(newcount))
+print("\(nano2perentry) ns/entry")
+
 
