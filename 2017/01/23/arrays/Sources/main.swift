@@ -1,118 +1,86 @@
 import Foundation;
 import Swimsuit;
+let newcount = 1000
 
-let newcount = 10000
+for t in 0..<10 {
+print("trial \(t)")
+var z = [Int]()
+var nano = Swimsuit.nanotime() {
+   z = Array(repeating: 0, count: newcount)
+}
+
+var nanoperentry = Double(nano)/Double(newcount)
+print("\(nanoperentry) ns/entry (init)")
+z[newcount-1] = 10
 
 
+var z1 = [Int]()
+z1.append(10)
 let nano1 = Swimsuit.nanotime() {
-   var z = [Int]()
-   z.append(10)
    for i in 0..<newcount {
-      z.append(0)
+      z1.append(0)
    }
 }
 
 let nano1perentry = Double(nano1)/Double(newcount + 1)
 print("\(nano1perentry) ns/entry (for loop)")
 
-
+var z1r = [Int]()
+z1r.append(10)
 let nano1r = Swimsuit.nanotime() {
-   var z = [Int]()
-   z.append(10)
-   z.reserveCapacity(newcount + 1)
+   z1r.reserveCapacity(newcount + 1)
    for i in 0..<newcount {
-      z.append(0)
+      z1r.append(0)
    }
 }
 
 let nano1rperentry = Double(nano1r)/Double(newcount + 1)
 print("\(nano1rperentry) ns/entry (for loop with reserve) ")
 
-
+var z2 = UnsafeMutablePointer<Int>.allocate(capacity:newcount + 1)
+z2[0] = 10
 let nano2 = Swimsuit.nanotime() {
-   var z = UnsafeMutablePointer<Int>.allocate(capacity:newcount + 1)
-   z[0] = 10
    for i in 1...newcount {
-      z[i] = 0
+      z2[i] = 0
    }
-   z.deallocate(capacity:newcount + 1)
 }
+z2.deallocate(capacity:newcount + 1)
 
 let nano2perentry = Double(nano2)/Double(newcount + 1)
 print("\(nano2perentry) ns/entry (unsafe)")
 
 
-
-let nano3 = Swimsuit.nanotime() {
-   let z = [10] + repeatElement(0,count:newcount)
-}
-
-let nano3perentry = Double(nano3)/Double(newcount + 1)
-print("\(nano3perentry) ns/entry (one go construction) ")
-
+var z4 = [Int]()
+z4.append(10)
 let nano4 = Swimsuit.nanotime() {
-   var z = [Int]()
-   z.append(10)
-   z += repeatElement(0,count:newcount)
+   z4 += repeatElement(0,count:newcount)
 }
 
 let nano4perentry = Double(nano4)/Double(newcount + 1)
 print("\(nano4perentry) ns/entry (with call to repeatElement)")
 
-let nano4r = Swimsuit.nanotime() {
-   var z = [Int]()
-   z.append(10)
-   z.reserveCapacity(newcount + 1)
-   z += repeatElement(0,count:newcount)
-}
 
-let nano4rperentry = Double(nano4r)/Double(newcount + 1)
-print("\(nano4rperentry) ns/entry (with call to repeatElement and reserve)")
-
-
-let nano5 = Swimsuit.nanotime() {
-   var z = Array(repeating: 0, count: newcount + 1)
-   z[0] = 10
-}
-
-let nano5perentry = Double(nano5)/Double(newcount + 1)
-print("\(nano5perentry) ns/entry (one big array first)")
-
-
-let nano6 = Swimsuit.nanotime() {
-   var z = [Int]()
-   z.append(10)
-   z += Array(repeating: 0, count: newcount)
-}
-
-let nano6perentry = Double(nano6)/Double(newcount + 1)
-print("\(nano6perentry) ns/entry (append huge array)")
-
-
-let nano7 = Swimsuit.nanotime() {
-   var z = [Int]()
-   z.append(10)
-   z = z + repeatElement(0,count:newcount)
-}
-
-let nano7perentry = Double(nano7)/Double(newcount + 1)
-print("\(nano7perentry) ns/entry (append huge array)")
-
-func extendArray(_ x : [Int], newsize: Int) -> [Int] {
+func extendArray(_ x : inout [Int], newsize: Int) {
    var answer = Array(repeating: 0, count: newsize)
    for i in 0..<x.count {
      answer[i] = x[i]
    }
-   return answer
+   x = answer
 }
 
+var z8 = [Int]()
+z8.append(10)
+
 let nano8 = Swimsuit.nanotime() {
-   var z = [Int]()
-   z.append(10)
-   z = extendArray(z,newsize:newcount+1)
+   extendArray(&z8,newsize:newcount+1)
 }
 
 let nano8perentry = Double(nano8)/Double(newcount + 1)
-print("\(nano8perentry) ns/entry (append huge array)")
+print("\(nano8perentry) ns/entry (extendArray)")
 
 
+
+print("bogus: \(z[0]) \(z[newcount - 1])")
+print()
+
+}
