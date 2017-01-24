@@ -51,7 +51,6 @@ template <class T> void runtest() {
       cout << " spans cache line" << endl;
     }
     int sumt = 0;
-    size_t sumofsquares = 0;
     int mintime = 0xFFFFFF;
     int maxtime = 0;
     for (int k = 0; k < repeat; ++k) {
@@ -65,24 +64,21 @@ template <class T> void runtest() {
       if(mintime > time) mintime = time;
       if(maxtime < time) maxtime = time;
       sumt += time;
-      sumofsquares += time * time;
     }
     double average = sumt * 1.0 / repeat;
-    double averagesquare = sumofsquares * 1.0 / repeat;
-    double error = sqrt(averagesquare - average * average);
     cout << " average time for offset " << (absolute_offset % CacheLineSize) << " is "
-         << average << " (+/- "<< error <<", range : ["<<mintime<<"-"<<maxtime<<"] ) " << endl;
+         << average << " (range : ["<<mintime<<"-"<<maxtime<<"] ) " << endl;
     cout << endl;
   }
 }
 
 int main() {
   runtest<int>();
-  cout << sizeof(int) << endl;
+  /*cout << sizeof(int) << endl;
   runtest<long>();
   cout << sizeof(long) << endl;
   runtest<long long>();
-  cout << sizeof(long long) << endl;
+  cout << sizeof(long long) << endl;*/
   return 0;
 }
 
