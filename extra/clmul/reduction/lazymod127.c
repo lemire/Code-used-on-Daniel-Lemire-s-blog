@@ -23,7 +23,6 @@
 **/
 
 __m128i lazymod127(__m128i Alow, __m128i Ahigh) {
-  IACA_START;
       __m128i shifteddownAhigh = _mm_srli_si128(Ahigh,1);
     __m128i s1 = _mm_slli_epi64(Ahigh,1);
     __m128i s2 = _mm_slli_epi64(Ahigh,2);
@@ -34,7 +33,6 @@ __m128i lazymod127(__m128i Alow, __m128i Ahigh) {
     __m128i reduced = _mm_xor_si128(s1,s2);
     // combining results
     __m128i final = _mm_xor_si128(Alow,reduced);
-IACA_END;
     return final;
 }
 
@@ -90,10 +88,20 @@ Total Num Of Uops: 11
 // computes a << 1
 static inline __m128i leftshift1(__m128i a) {
     const int x = 1;
-    __m128i u64shift =  _mm_slli_epi64(a,x);
+    __m128i u64shift =  _mm_slli_epi64(a,x);// probably gets computed as _mm_add_epi64(a,a)
     __m128i topbits =  _mm_slli_si128(_mm_srli_epi64(a,64 - x),sizeof(uint64_t));
     return _mm_or_si128(u64shift, topbits);
 }
+
+
+// computes a << 1
+static inline __m128i leftshift1_add(__m128i a) {
+    const int x = 1;
+    __m128i u64shift =  _mm_add_epi64(a,a);
+    __m128i topbits =  _mm_slli_si128(_mm_srli_epi64(a,64 - x),sizeof(uint64_t));
+    return _mm_or_si128(u64shift, topbits);
+}
+
 
 // computes a << 2
 static inline __m128i leftshift2(__m128i a) {
@@ -107,6 +115,16 @@ static inline __m128i leftshift2(__m128i a) {
 __m128i alt_lazymod127(__m128i Alow, __m128i Ahigh) {
 IACA_START;
     __m128i shift1 = leftshift1(Ahigh);
+    __m128i shift2 = leftshift2(Ahigh);
+    __m128i final =  _mm_xor_si128(_mm_xor_si128(Alow, shift1),shift2);
+IACA_END;
+    return final;
+}
+
+
+__m128i alt_lazymod127_add(__m128i Alow, __m128i Ahigh) {
+IACA_START;
+    __m128i shift1 = leftshift1_add(Ahigh);
     __m128i shift2 = leftshift2(Ahigh);
     __m128i final =  _mm_xor_si128(_mm_xor_si128(Alow, shift1),shift2);
 IACA_END;
@@ -153,6 +171,25 @@ Total Num Of Uops: 10
 */
 
 
+
+
+__m128i new_alt_lazymod127(__m128i Alow, __m128i Ahigh) {
+IACA_START;
+    //
+    __m128i u64shift_1 =  _mm_add_epi64(Ahigh,Ahigh); // potentially faster than a shift
+    __m128i topbits_1 =  _mm_slli_si128(_mm_srli_epi64(Ahigh,64 - 1),sizeof(uint64_t));
+    __m128i shift1 = _mm_or_si128(u64shift_1, topbits_1);
+
+    __m128i u64shift_2 =   _mm_add_epi64(u64shift_1,u64shift_1);
+    __m128i topbits_2 =  _mm_slli_si128(_mm_srli_epi64(Ahigh,64 - 2),sizeof(uint64_t));
+    __m128i shift2 =  _mm_or_si128(u64shift_2, topbits_2);
+    __m128i final =  _mm_xor_si128(_mm_xor_si128(Alow, shift1),shift2);
+
+IACA_END;
+    return final;
+}
+
+
 void init(__m128i * X, __m128i * Y) {
   *X = _mm_set1_epi64x(1);
   *Y = _mm_set1_epi64x(3);
@@ -169,11 +206,19 @@ int main() {
     x = _mm_set_epi64x(((uint64_t) rand() << 32) + rand(),((uint64_t) rand() << 32) + rand());
     y = _mm_set_epi64x(((uint64_t) rand() << 32) + rand(),((uint64_t) rand() << 32) + rand());
     assert(equals(lazymod127(x,y),alt_lazymod127(x,y)));
+    assert(equals(lazymod127(x,y),alt_lazymod127_add(x,y)));
+    assert(equals(lazymod127(x,y),new_alt_lazymod127(x,y)));
   }
   const int repeat = 1000;
 
    BEST_TIME_NOCHECK(x = lazymod127(x,y), y = lazymod127(y,x), repeat, 1, true);
 
    BEST_TIME_NOCHECK(x = alt_lazymod127(x,y), y = lazymod127(y,x), repeat, 1, true);
+
+   BEST_TIME_NOCHECK(x = alt_lazymod127_add(x,y), y = lazymod127(y,x), repeat, 1, true);
+
+
+   BEST_TIME_NOCHECK(x = new_alt_lazymod127(x,y), y = lazymod127(y,x), repeat, 1, true);
+
    return _mm_cvtsi128_si32(x);
 }
