@@ -3,11 +3,11 @@
 
 __m512i vectorFibo(__m512i a, __m512i b, size_t number) {
   __m512i t;
-  while(number -- != 0) {
+  while((number --) != 0) {
     t = a;
     a = b;
     b = _mm512_add_epi32(b,t);
-  }
+     }
   return b;
 }
 
