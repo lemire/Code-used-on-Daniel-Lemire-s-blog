@@ -1,4 +1,4 @@
-// gcc -O3 -o bitsetunion bitsetunion.c  -mavx2
+// gcc -O3 -o bitsetunion bitsetunion.c  -march=native
 #include <stdint.h>
 #include <stdio.h>
 #include <stddef.h>
@@ -16,7 +16,8 @@ void or_novect(uint64_t * __restrict__ a, const uint64_t * __restrict__ b, size_
     a[i] |= b[i];
   }
 }
-#pragma GCC optimize(pop)
+#pragma GCC reset_options
+
 
 #pragma GCC optimize("tree-vectorize")
 void or(uint64_t * __restrict__ a, const uint64_t * __restrict__ b, size_t len) {
@@ -26,7 +27,8 @@ void or(uint64_t * __restrict__ a, const uint64_t * __restrict__ b, size_t len) 
     a[i] |= b[i];
   }
 }
-#pragma GCC optimize(pop) 
+#pragma GCC reset_options
+
 
 void vor(uint64_t * __restrict__ a, const uint64_t * __restrict__ b, size_t len) {
    for(size_t i = 0 ; i + 4 <= len ; i +=4) {
