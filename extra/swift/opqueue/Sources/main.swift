@@ -9,17 +9,19 @@ fileprivate func increment(_ offset : Int) {
   for i in data.indices { data[i] = data[i] &+ offset }
 }
 
+var best_nano = UInt64.max
 for t in 1..<5 {
-  print("single threaded trial number \(t)")
-  print( Double(Swimsuit.nanotime() {
+  best_nano = min(best_nano,Swimsuit.nanotime() {
    increment(1)
-  } ) / Double( count ), " ns/operation" )
+  } )
 }
 
-let queues = 10
+print("single threaded : ", Double(best_nano) / Double(count), " ns/operation")
+
+best_nano =  UInt64.max
+let queues = 100
 for t in 1..<5 {
-  print("OperationQueue trial number \(t)")
-  let nano = Swimsuit.nanotime() {
+  best_nano = min(best_nano,Swimsuit.nanotime() {
   var q = OperationQueue()
   for i in 1...queues {
     q.addOperation {
@@ -27,6 +29,8 @@ for t in 1..<5 {
     }
   }
   q.waitUntilAllOperationsAreFinished()
-  }
-  print(Double (nano) / Double ( queues * count), " ns/operation")
+  })
 }
+
+print("OperationQueue  : ", Double(best_nano) / Double(count * queues), " ns/operation")
+
