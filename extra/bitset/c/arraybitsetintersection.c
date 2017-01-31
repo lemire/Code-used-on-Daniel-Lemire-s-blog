@@ -9,11 +9,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline bool bitset_contains(const uint64_t *bitset,
+static inline uint64_t bitset_contains(const uint64_t *bitset,
                                         uint16_t pos) {
     const uint64_t word = bitset[pos >> 6];
     return (word >> (pos & 63)) & 1;
 }
+
+
+static inline uint64_t neg_bitset_contains(const uint64_t *bitset,
+                                        uint16_t pos) {
+    const uint64_t word = ~ (bitset[pos >> 6]);
+    return (word >> (pos & 63)) & 1;
+}
+
 
 
 
@@ -24,7 +32,15 @@ static inline bool bitset_contains(const uint64_t *bitset,
                    "r"(bitsReg) /* read only */  \
                    )
 
-static inline bool asm_bitset_contains(const uint64_t *bitset,
+static inline uint64_t asm_bitset_contains(const uint64_t *bitset,
+                                        uint16_t pos) {
+    uint64_t word = bitset[pos >> 6];
+    const uint64_t p = pos;
+    ASM_INPLACESHIFT_RIGHT(word, p);
+    return word & 1;
+}
+
+static inline uint64_t neg_asm_bitset_contains(const uint64_t *bitset,
                                         uint16_t pos) {
     uint64_t word = bitset[pos >> 6];
     const uint64_t p = pos;
@@ -48,6 +64,33 @@ size_t array_bitset_intersection(const uint16_t *src_1, size_t origcard,
     }
     return newcard;
 }
+
+size_t branchless_array_bitset_intersection(const uint16_t *src_1, size_t origcard,
+                                         const uint64_t *src_2,
+                                         uint16_t *dst) {
+    size_t newcard = 0;
+    for (int i = 0; i < origcard; ++i) {
+        uint16_t key = src_1[i];
+        dst[newcard] = key;
+        newcard += neg_bitset_contains(src_2, key);
+   }
+    return newcard;
+}
+
+size_t asm_branchless_array_bitset_intersection(const uint16_t *src_1, size_t origcard,
+                                         const uint64_t *src_2,
+                                         uint16_t *dst) {
+    size_t newcard = 0;
+    for (int i = 0; i < origcard; ++i) {
+        uint16_t key = src_1[i];
+        dst[newcard] = key;
+        newcard += neg_asm_bitset_contains(src_2, key);
+   }
+    return newcard;
+}
+
+
+
 
 size_t asm_array_bitset_intersection(const uint16_t *src_1, size_t origcard,
                                          const uint64_t *src_2,
@@ -81,6 +124,8 @@ int main() {
   randomize(array,N);
   const int repeat = 50;
   BEST_TIME_NOCHECK(array_bitset_intersection(array,N,bitset,array), randomize(array,N), repeat, N, true);
+  BEST_TIME_NOCHECK(branchless_array_bitset_intersection(array,N,bitset,array), randomize(array,N), repeat, N, true);
+  BEST_TIME_NOCHECK(asm_branchless_array_bitset_intersection(array,N,bitset,array), randomize(array,N), repeat, N, true);
   BEST_TIME_NOCHECK(asm_array_bitset_intersection(array,N,bitset,array), randomize(array,N), repeat, N, true);
 
   free(bitset);
