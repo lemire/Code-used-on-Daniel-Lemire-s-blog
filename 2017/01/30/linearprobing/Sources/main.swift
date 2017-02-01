@@ -3,11 +3,13 @@ import Swimsuit;
 
 for power in 20...30 {
   let size = 1 << power
-  print("trial \(size)")
+  let sizeinmbytes = size * MemoryLayout<Int>.size / (1024 * 1024)
+  print("trial \(size), data size in bytes \(sizeinmbytes) MB ")
+  var source = [Int](1...size)
   // could use an  IndexSet, but we want to illustrate a generic problem (not specific to Int)
   var d = Set<Int>()
   let nanobuild = Swimsuit.nanotime() {
-     for i in 1...size {
+     for i in source {
        d.insert(i)
      }
   }
