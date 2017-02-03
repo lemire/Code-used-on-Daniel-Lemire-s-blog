@@ -19,16 +19,16 @@ for t in 1..<5 {
 print("single threaded : ", Double(best_nano) / Double(count), " ns/operation")
 
 best_nano =  UInt64.max
-let queues = 100
+let queues = 10
 for t in 1..<5 {
   best_nano = min(best_nano,Swimsuit.nanotime() {
   var q = OperationQueue()
   for i in 1...queues {
-    q.addOperation {
+    q.addOperation( {
       increment(i)
-    }
+    })
   }
-  q.waitUntilAllOperationsAreFinished()
+   q.waitUntilAllOperationsAreFinished()
   })
 }
 
