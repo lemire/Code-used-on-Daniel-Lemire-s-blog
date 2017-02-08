@@ -50,7 +50,7 @@ var answer = [card]()
 // we pick a card at random, first card is special
 var rnd = portablerand(decksize)
 answer.append(deck[rnd / 4].remove(at: rnd % 4))
-
+var proba = 1.0 / Double(decksize)
 while answer.count < decksize {
   // no matter what, we do not want to repeat this rank
   let lastrank = answer.last!.rank
@@ -64,7 +64,6 @@ while answer.count < decksize {
         maxbag = i
       }
   }
-  print(totalchoice)
   if 2 * deck[maxbag].count >= totalchoice {
     // we have to pick from maxbag
     rnd = portablerand(deck[maxbag].count)
@@ -72,6 +71,7 @@ while answer.count < decksize {
   } else {
     // any bag will do
     rnd = portablerand(totalchoice)
+    proba *= 1.0 / Double(totalchoice)
     for i in myindices {
         if rnd >= deck[i].count {
           rnd = rnd - deck[i].count
@@ -87,4 +87,4 @@ while answer.count < decksize {
 for card in answer {
   print(card)
 }
-
+print("probability : ", proba)
