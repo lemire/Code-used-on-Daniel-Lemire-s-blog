@@ -100,3 +100,23 @@ print("bogus: \(z[0]) \(z[newcount - 1])")
 print()
 
 }
+
+
+var x = Array(repeating: 1738, count: 1_000_000)
+var sink = x
+
+print("A:")
+print(Swimsuit.nanotime() {
+  var answer = Array(repeating: 0, count: 2_000_000)
+  for i in 0 ..< x.count {
+    answer[i] = x[i]
+  }
+  // Prevent `answer` from being DCE&#039;d
+  sink = answer
+})
+
+print("B:")
+print(Swimsuit.nanotime() {
+  var answer = Array((0..<2_000_000).lazy.map { $0 < x.count ? x[$0] : 0 })
+  sink = answer
+})
