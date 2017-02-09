@@ -78,6 +78,22 @@ let nano8 = Swimsuit.nanotime() {
 let nano8perentry = Double(nano8)/Double(newcount + 1)
 print("\(nano8perentry) ns/entry (extendArray)")
 
+var z9 = [Int]()
+z9.append(10)
+
+func fastExtendArray(_ x : [Int], newsize: Int) -> [Int] {
+   return Array((0..<newsize).lazy.map { $0 < x.count ? x[$0] : 0 })
+}
+
+
+
+let nano9 = Swimsuit.nanotime() {
+   z9 = fastExtendArray(z9,newsize:newcount+1)
+}
+
+let nano9perentry = Double(nano9)/Double(newcount + 1)
+print("\(nano9perentry) ns/entry (lazy.map)")
+
 
 
 print("bogus: \(z[0]) \(z[newcount - 1])")
