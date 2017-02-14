@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <string.h>
 
 #include "x86intrin.h"
 
@@ -38,6 +39,18 @@ size_t basiccount(char * buffer, size_t size) {
     size_t cnt = 0;
     for(size_t i = 0; i < size; i++)
         if(buffer[i] == '\n') cnt ++;
+    return cnt;
+}
+
+
+size_t memchrcount(char * buffer, size_t size) {
+    size_t cnt = 0;
+    char * ptr = buffer;
+    char * last = buffer + size;
+    while((ptr = memchr(ptr,'\n', last - ptr))) {
+      cnt ++;
+      ptr ++;
+    }
     return cnt;
 }
 
@@ -166,6 +179,7 @@ int main() {
     size_t tc = basiccount(buffer,N);
     const int repeat = 5;
     BEST_TIME(basiccount(buffer,N),tc, , repeat, N, true);
+    BEST_TIME(memchrcount(buffer,N),tc, , repeat, N, true);
     BEST_TIME(avxcount(buffer,N),tc, , repeat, N, true);
     BEST_TIME(avxcountu(buffer,N),tc, , repeat, N, true);
     BEST_TIME(avxcountuu(buffer,N),tc, , repeat, N, true);
