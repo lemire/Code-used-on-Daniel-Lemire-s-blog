@@ -804,6 +804,7 @@ int demo(int align) {
     memset(out, 0x00, BITSET_BYTES);
     uint64_t card;
     memset(out, 0x00, BITSET_BYTES);
+    printf("bitset_set_list maintains the cardinality\n");
     card = bitset_set_list(out, 0, list, 256);
     if (card != 256) printf("Error: expected %ld, got %ld\n", 256L, (long) card);
     TIMING_LOOP(bitset_set_list_regular(out, 256, list, 256), 256, REPEAT, 256);

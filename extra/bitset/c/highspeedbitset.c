@@ -674,6 +674,7 @@ void demo() {
 }
 
 int main(/* int argc, char **argv */) {
+    printf("does not maintain the cardinality\n");
     demo();
     return 0;
 }
