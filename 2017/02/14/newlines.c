@@ -55,6 +55,29 @@ size_t memchrcount(char * buffer, size_t size) {
 }
 
 
+
+#define haszero(v) (((v) - 0x0101010101010101llu) & ~(v) & 0x8080808080808080llu) // magick provided by https://graphics.stanford.edu/~seander/bithacks.html 
+
+size_t swarcount(char * buffer, size_t size) {
+    size_t cnt = 0;
+    const uint64_t nls = 0x0a0a0a0a0a0a0a0allu;
+    size_t i=0;
+    while (i + 8 < size) {
+        const uint64_t v = *(uint64_t*)(buffer + i);
+        if (haszero(v ^ nls)) {
+            for (size_t j=0; j < 8; j++) { 
+                if (buffer[i + j] == '\n') cnt ++;
+            }
+        }
+
+        i += 8;
+    }
+
+    for(/**/; i < size; i++)
+        if(buffer[i] == '\n') cnt ++;
+
+    return cnt;
+}
 size_t avxcount(char * buffer, size_t size) {
     size_t answer = 0;
     __m256i cnt = _mm256_setzero_si256();
@@ -171,6 +194,7 @@ int main() {
     const int repeat = 5;
     BEST_TIME(basiccount(buffer,N),tc, , repeat, N, true);
     BEST_TIME(memchrcount(buffer,N),tc, , repeat, N, true);
+    BEST_TIME(swarcount(buffer,N),tc, , repeat, N, true);
     BEST_TIME(avxcount(buffer,N),tc, , repeat, N, true);
     BEST_TIME(avxcountu(buffer,N),tc, , repeat, N, true);
     BEST_TIME(avxcountuu(buffer,N),tc, , repeat, N, true);
