@@ -85,10 +85,10 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             uint64_t S = size;                                            \
             float cycle_per_op = (min_diff) / (double)S;                  \
             float avg_cycle_per_op = (sum_diff) / ((double)S * repeat);   \
-            if(verbose) printf(" %.2f cycles per operation (best) ", cycle_per_op);   \
-            if(verbose) printf("\t%.2f cycles per operation (avg) ", avg_cycle_per_op);   \
+            if(verbose) printf(" %.3f cycles per operation (best) ", cycle_per_op);   \
+            if(verbose) printf("\t%.3f cycles per operation (avg) ", avg_cycle_per_op);   \
             if(verbose) printf("\n");                                                 \
-            if(!verbose) printf(" %.2f ",cycle_per_op);                   \
+            if(!verbose) printf(" %.3f ",cycle_per_op);                   \
             fflush(NULL);                                                 \
  } while (0)
 
@@ -116,10 +116,10 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             uint64_t S = size;                                            \
             float cycle_per_op = (min_diff) / (double)S;                  \
             float avg_cycle_per_op = (sum_diff) / ((double)S * repeat);   \
-            if(verbose) printf(" %.2f cycles per operation (best) ", cycle_per_op);   \
-            if(verbose) printf("\t%.2f cycles per operation (avg) ", avg_cycle_per_op);   \
+            if(verbose) printf(" %.3f cycles per operation (best) ", cycle_per_op);   \
+            if(verbose) printf("\t%.3f cycles per operation (avg) ", avg_cycle_per_op);   \
             if(verbose) printf("\n");                                                 \
-            if(!verbose) printf(" %.2f ",cycle_per_op);                   \
+            if(!verbose) printf(" %.3f ",cycle_per_op);                   \
             fflush(NULL);                                                 \
  } while (0)
 
@@ -149,10 +149,10 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             uint64_t S = size;                                            \
             float cycle_per_op = (min_diff) / (double)S;                  \
             float avg_cycle_per_op = (sum_diff) / ((double)S * repeat);   \
-            if(verbose) printf(" %.2f cycles per operation (best) ", cycle_per_op);   \
-            if(verbose) printf("\t%.2f cycles per operation (avg) ", avg_cycle_per_op);   \
+            if(verbose) printf(" %.3f cycles per operation (best) ", cycle_per_op);   \
+            if(verbose) printf("\t%.3f cycles per operation (avg) ", avg_cycle_per_op);   \
             if(verbose) printf("\n");                                                 \
-            if(!verbose) printf(" %.2f ",cycle_per_op);                   \
+            if(!verbose) printf(" %.3f ",cycle_per_op);                   \
             fflush(NULL);                                                 \
  } while (0)
 
