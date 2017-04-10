@@ -27,6 +27,20 @@ static size_t unique(uint32_t *out, size_t len) {
     return pos;
 }
 
+static size_t hope_unique(uint32_t *out, size_t len) {
+    if(len ==  0) return 0; // duh!
+    size_t pos = 1;
+    uint32_t oldv = out[0];
+    for (size_t i = 1; i < len; ++i) {
+        uint32_t newv = out[i];
+        out[pos] = newv;
+        pos += (newv != oldv);
+        oldv = newv;
+    }
+    return pos;
+}
+
+
 uint32_t uniqshuf[] = {
 0,1,2,3,4,5,6,7,
 1,2,3,4,5,6,7,0,
@@ -345,6 +359,7 @@ int main() {
   const bool verbose = true;
   BEST_TIME_NOCHECK(stl_unique(data,N), init(data,N), repeat, N, verbose);
   BEST_TIME_NOCHECK(unique(data,N), init(data,N), repeat, N, verbose);
+  BEST_TIME_NOCHECK(hope_unique(data,N), init(data,N), repeat, N, verbose);
   BEST_TIME_NOCHECK(avx_unique(data,N), init(data,N), repeat, N, verbose);
 
   free(data);
