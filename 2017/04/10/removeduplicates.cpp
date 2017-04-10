@@ -5,6 +5,7 @@
 #include <x86intrin.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "benchmark.h"
 
 
@@ -293,7 +294,7 @@ static inline int _avx_unique_store(__m256i old, __m256i newval, uint32_t *outpu
     __m256i recon  = _mm256_or_si256(wipelast,oldkeeplast);
     const __m256i movebyone_mask = _mm256_set_epi32(6,5,4,3,2,1,0,7);
     __m256i vecTmp = _mm256_permutevar8x32_epi32(recon,movebyone_mask);
-    int M = _mm256_movemask_ps(_mm256_cmpeq_epi32(vecTmp, newval));
+    int M = _mm256_movemask_ps(_mm256_cvtepi32_ps(_mm256_cmpeq_epi32(vecTmp, newval)));
     int numberofnewvalues =  sizeof(__m256i) / sizeof(uint32_t) - _mm_popcnt_u64(M);
     __m256i key = _mm256_loadu_si256((const __m256i *)uniqshuf + M);
     __m256i val =_mm256_permutevar8x32_epi32(newval,key);
@@ -333,7 +334,7 @@ static int uint32_compare(const void *a, const void *b) {
 }
 
 void init(uint32_t * data, size_t N) {
-  for(int i = 0; i < N; i++) data[i] = rand() % N;
+  for(size_t i = 0; i < N; i++) data[i] = rand() % N;
   qsort(data, N, sizeof(uint32_t), uint32_compare);
 }
 
