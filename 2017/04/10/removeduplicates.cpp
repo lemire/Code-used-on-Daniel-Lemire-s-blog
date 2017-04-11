@@ -5,6 +5,7 @@
 #include <x86intrin.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "benchmark.h"
 
 
@@ -25,6 +26,20 @@ static size_t unique(uint32_t *out, size_t len) {
     }
     return pos;
 }
+
+static size_t hope_unique(uint32_t *out, size_t len) {
+    if(len ==  0) return 0; // duh!
+    size_t pos = 1;
+    uint32_t oldv = out[0];
+    for (size_t i = 1; i < len; ++i) {
+        uint32_t newv = out[i];
+        out[pos] = newv;
+        pos += (newv != oldv);
+        oldv = newv;
+    }
+    return pos;
+}
+
 
 uint32_t uniqshuf[] = {
 0,1,2,3,4,5,6,7,
@@ -293,7 +308,7 @@ static inline int _avx_unique_store(__m256i old, __m256i newval, uint32_t *outpu
     __m256i recon  = _mm256_or_si256(wipelast,oldkeeplast);
     const __m256i movebyone_mask = _mm256_set_epi32(6,5,4,3,2,1,0,7);
     __m256i vecTmp = _mm256_permutevar8x32_epi32(recon,movebyone_mask);
-    int M = _mm256_movemask_ps(_mm256_cmpeq_epi32(vecTmp, newval));
+    int M = _mm256_movemask_ps(_mm256_cvtepi32_ps(_mm256_cmpeq_epi32(vecTmp, newval)));
     int numberofnewvalues =  sizeof(__m256i) / sizeof(uint32_t) - _mm_popcnt_u64(M);
     __m256i key = _mm256_loadu_si256((const __m256i *)uniqshuf + M);
     __m256i val =_mm256_permutevar8x32_epi32(newval,key);
@@ -333,7 +348,7 @@ static int uint32_compare(const void *a, const void *b) {
 }
 
 void init(uint32_t * data, size_t N) {
-  for(int i = 0; i < N; i++) data[i] = rand() % N;
+  for(size_t i = 0; i < N; i++) data[i] = rand() % N;
   qsort(data, N, sizeof(uint32_t), uint32_compare);
 }
 
@@ -344,6 +359,7 @@ int main() {
   const bool verbose = true;
   BEST_TIME_NOCHECK(stl_unique(data,N), init(data,N), repeat, N, verbose);
   BEST_TIME_NOCHECK(unique(data,N), init(data,N), repeat, N, verbose);
+  BEST_TIME_NOCHECK(hope_unique(data,N), init(data,N), repeat, N, verbose);
   BEST_TIME_NOCHECK(avx_unique(data,N), init(data,N), repeat, N, verbose);
 
   free(data);
