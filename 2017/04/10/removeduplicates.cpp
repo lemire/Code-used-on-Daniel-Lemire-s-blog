@@ -302,7 +302,7 @@ uint32_t uniqshuf[] = {
 
 
 static inline int _avx_unique_store(__m256i old, __m256i newval, uint32_t *output) {
-    const __m256i wipelast_mask  = _mm256_set_epi32(0x00000000,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF);
+    const __m256i wipelast_mask  = _mm256_set_epi32(0,-1,-1,-1,-1,-1,-1,-1);
     __m256i wipelast = _mm256_and_si256(newval,wipelast_mask);
     __m256i oldkeeplast = _mm256_andnot_si256(wipelast_mask, old);
     __m256i recon  = _mm256_or_si256(wipelast,oldkeeplast);
@@ -316,12 +316,11 @@ static inline int _avx_unique_store(__m256i old, __m256i newval, uint32_t *outpu
     return numberofnewvalues;
 }
 
-size_t avx_unique(uint32_t *out, size_t len) {
+static size_t avx_unique(uint32_t *out, size_t len) {
     if(len ==  0) return 0; // duh!
     __m256i old = _mm256_set1_epi32(out[0] - 1);
     uint32_t *outbegin = out;
     uint32_t *outend = out + len;
-    out += 1;
     uint32_t *output = out;
     while(out + sizeof(__m256i) / sizeof(uint32_t) <= outend) {
       __m256i newval = _mm256_loadu_si256((const __m256i *) out);
@@ -347,6 +346,14 @@ static int uint32_compare(const void *a, const void *b) {
   return (*(uint32_t *)a - *(uint32_t *)b);// potentially unsafe but we don't care
 }
 
+static bool is_unique(uint32_t *out, size_t len) {
+    for (size_t i = 1; i < len; ++i) {
+        if (out[i - 1] == out[i])
+            return false;
+    }
+    return true;
+}
+
 void init(uint32_t * data, size_t N) {
   for(size_t i = 0; i < N; i++) data[i] = rand() % N;
   qsort(data, N, sizeof(uint32_t), uint32_compare);
@@ -357,10 +364,10 @@ int main() {
   uint32_t * data = (uint32_t *)malloc(N * sizeof(uint32_t));
   const int repeat = 50;
   const bool verbose = true;
-  BEST_TIME_NOCHECK(stl_unique(data,N), init(data,N), repeat, N, verbose);
-  BEST_TIME_NOCHECK(unique(data,N), init(data,N), repeat, N, verbose);
-  BEST_TIME_NOCHECK(hope_unique(data,N), init(data,N), repeat, N, verbose);
-  BEST_TIME_NOCHECK(avx_unique(data,N), init(data,N), repeat, N, verbose);
-
+  size_t num_unique = 0;
+  BEST_TIME_CHECK(num_unique = stl_unique(data,N), is_unique(data,num_unique), init(data,N), repeat, N, verbose);
+  BEST_TIME_CHECK(num_unique = unique(data,N), is_unique(data,num_unique), init(data,N), repeat, N, verbose);
+  BEST_TIME_CHECK(num_unique = hope_unique(data,N), is_unique(data,num_unique), init(data,N), repeat, N, verbose);
+  BEST_TIME_CHECK(num_unique = avx_unique(data,N), is_unique(data,num_unique), init(data,N), repeat, N, verbose);
   free(data);
 }
