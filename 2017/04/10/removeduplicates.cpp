@@ -302,12 +302,11 @@ uint32_t uniqshuf[] = {
 
 
 static inline uint32_t _avx_unique_store(__m256i old, __m256i newval, uint32_t *output) {
-    const constexpr uint32_t C = sizeof(__m256i) / sizeof(uint32_t);
-    __m256i recon = _mm256_blend_epi32(old, newval, 0b0111'1111);
+    __m256i recon = _mm256_blend_epi32(old, newval, 0b01111111);
     const __m256i movebyone_mask = _mm256_set_epi32(6,5,4,3,2,1,0,7); // rotate shuffle
     __m256i vecTmp = _mm256_permutevar8x32_epi32(recon, movebyone_mask);
     uint32_t M = _mm256_movemask_ps((__m256)_mm256_cmpeq_epi32(vecTmp, newval));
-    uint32_t numberofnewvalues = C - (uint32_t)_mm_popcnt_u32(M);
+    uint32_t numberofnewvalues = sizeof(__m256i) / sizeof(uint32_t) - (uint32_t)_mm_popcnt_u32(M);
     __m256i key = _mm256_loadu_si256((const __m256i *)uniqshuf + M);
     __m256i val =_mm256_permutevar8x32_epi32(newval,key);
     _mm256_storeu_si256((__m256i *)output, val);
