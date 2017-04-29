@@ -27,22 +27,7 @@ int32_t __attribute__ ((noinline)) binary_search(uint16_t * array, int32_t lenar
     }
     return -(low + 1);
 }
-int32_t __attribute__ ((noinline)) broken_binary_search(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
-    int32_t low = 0;
-    int32_t high = lenarray - 1;
-    while( low + 16 <= high) {
-        int32_t middleIndex = (low+high) >> 1;
-        int32_t middleValue = array[middleIndex];
-        if (middleValue < ikey) {
-            low = middleIndex + 1;
-        } else if (middleValue > ikey) {
-            high = middleIndex - 1;
-        } else {
-            return middleIndex;
-        }
-    }
-    return -(low + 1);
-}
+
 
 int32_t __attribute__ ((noinline)) linear(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
     int32_t low = 0;
@@ -63,63 +48,45 @@ void print16(__m256i x) {
   printf("\n");
 }
 
-int locateEqual(__m256i data, __m256i vkey) {
+
+// attempts to find where data and vkey agree, returns -1 if this never happens
+// otherwise it returns the index where they agree (it assumed that it will only happen at one index)
+static inline int locateEqual(__m256i data, __m256i vkey) {
   __m256i matches = _mm256_cmpeq_epi16(data,vkey);
   if(_mm256_testz_si256(matches,matches)) return -1; // not found
   int M = _mm256_movemask_epi8(matches);
   return _tzcnt_u32(M) / 2;
 }
-int searchIn128(uint16_t * array,uint16_t ikey )  {
+
+// mostly branchless search within an array of 128 uint16_t values.
+// if the value is present, this returns its location, otherwise it returns a 
+// negative value.
+static inline int searchIn128(uint16_t * array,uint16_t ikey )  {
   __m256i vkey = _mm256_set1_epi16(ikey);
-//  printf("vkey");
-
-  // print16(vkey);
   __m256i every32bytes = _mm256_i32gather_epi32(array, _mm256_set_epi32(8*32-4,7*32-4,6*32-4,5*32-4,4*32-4,3*32-4,2*32,32-4), 1);
-//printf("every32bytes");
-  //print16(every32bytes);
-  //printf("subs");
   __m256 subs = _mm256_subs_epu16(vkey,every32bytes);
-  //print16(subs);
   __m256i diff = _mm256_cmpeq_epi16(subs,_mm256_setzero_si256());
-//    printf("diff");
-
-  ///  print16(diff);
-
   int M = _mm256_movemask_epi8(diff);
-  // &0b1010101010101010;
-//  printf("M = %u", M);
   int adv =  _tzcnt_u32(M)/4;
-  //printf("adv = %d ", adv);
   int withinblock = locateEqual(_mm256_loadu_si256((const __m256i *)array + adv ),vkey);
   if(withinblock < 0) return withinblock;
   return adv * sizeof(__m256i) / sizeof(uint16_t) + withinblock;
 }
 
-int searchIn1024(uint16_t * array,uint16_t ikey )  {
+// mostly branchless search within an array of 1024 uint16_t values.
+// if the value is present, this returns its location, otherwise it returns a
+// negative value
+static inline int searchIn1024(uint16_t * array,uint16_t ikey )  {
   __m256i vkey = _mm256_set1_epi16(ikey);
-//  printf("vkey");
-
-  // print16(vkey);
   __m256i every32bytes = _mm256_i32gather_epi32(array, _mm256_set_epi32(8*32*8-4,7*32*8-4,6*32*8-4,5*32*8-4,4*32*8-4,3*32*8-4,2*32*8,32*8-4), 1);
-//printf("every32bytes");
-  //print16(every32bytes);
-  //printf("subs");
   __m256 subs = _mm256_subs_epu16(vkey,every32bytes);
-  //print16(subs);
   __m256i diff = _mm256_cmpeq_epi16(subs,_mm256_setzero_si256());
-//    printf("diff");
-
-  ///  print16(diff);
-
   int M = _mm256_movemask_epi8(diff);
-  // &0b1010101010101010;
-//  printf("M = %u", M);
   int adv =  _tzcnt_u32(M)/4;
-  //printf("adv = %d ", adv);
   return searchIn128(array + adv * 32 * 8,ikey);
 }
 
-int32_t __attribute__ ((noinline)) binary_search128(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
+int32_t __attribute__ ((noinline)) avx_binary_search(uint16_t * array, int32_t lenarray, uint16_t ikey )  {
   if(lenarray >= 1024) {
     for(int k = 1024 - 1; k < lenarray; k+=1024)
       if(array[k]>=ikey) return searchIn1024(array +k + 1 - 1024,ikey);
@@ -282,16 +249,15 @@ void demo() {
     value_t * testvalues = create_random_array(nbrtestvalues);
     printf("# N, prefetched seek, fresh seek  (in cycles) then same values normalized by tree height\n");
     int32_t bogus = 0;
-    for(double Nd = 32; Nd <= 4100; Nd*=2) {//sqrt(2)
-        size_t N = round(Nd);
+    for(int Nd = 32; Nd <= 4100; Nd*=2) {//sqrt(2)
+        size_t N = Nd;
         printf("N = %zu \n",N);
         value_t * source = create_sorted_array(N);
         ASSERT_PRE_ARRAY(source,N,linear,testvalues,nbrtestvalues);
         ASSERT_PRE_ARRAY(source,N,binary_search,testvalues,nbrtestvalues);
         BEST_TIME_PRE_ARRAY(source, N, linear,               array_cache_prefetch,   testvalues, nbrtestvalues, bogus);
         BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_prefetch,   testvalues, nbrtestvalues, bogus);
-        BEST_TIME_PRE_ARRAY(source, N, broken_binary_search,               array_cache_prefetch,   testvalues, nbrtestvalues, bogus);
-        BEST_TIME_PRE_ARRAY(source, N, binary_search128,               array_cache_prefetch,   testvalues, nbrtestvalues, bogus);
+        BEST_TIME_PRE_ARRAY(source, N, avx_binary_search,               array_cache_prefetch,   testvalues, nbrtestvalues, bogus);
 
         free(source);
         printf("\n");
@@ -301,12 +267,5 @@ void demo() {
 }
 int main() {
     demo();
-    /*uint16_t * testvalues = malloc(128*sizeof(uint16_t));
-    for(int k = 0; k < 128; k++) testvalues[k] = 3*k;
-    for(int k = 0; k < 128*3; ++k){
-      int index = searchIn128(testvalues,k) ;
-      printf("index = %d \n", index);
-    }
-    free(testvalues);*/
     return 0;
 }
