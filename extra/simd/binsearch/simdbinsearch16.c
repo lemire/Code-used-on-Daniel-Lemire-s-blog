@@ -58,10 +58,18 @@ void print16(__m256i x) {
 // happen at one index)
 static inline int locateEqual(__m256i data, __m256i vkey) {
   __m256i matches = _mm256_cmpeq_epi16(data, vkey);
-  if (_mm256_testz_si256(matches, matches))
-    return -1; // not found
-  int M = _mm256_movemask_epi8(matches);
-  return _tzcnt_u32(M) / 2;
+  if (!_mm256_testz_si256(matches, matches)) {
+    int M = _mm256_movemask_epi8(matches);
+    return _tzcnt_u32(M) / 2;
+  } else {
+    //return -1 ;
+    // no key is equal // we could bypass this extra work
+    __m256 subs = _mm256_subs_epu16(vkey, data);
+    __m256i diff = _mm256_cmpeq_epi16(subs, _mm256_setzero_si256());
+    int M = _mm256_movemask_epi8(diff);
+    if(M == 0) return - (int) sizeof(__m256i)/(int) sizeof(uint16_t) - 1;
+    return - (_tzcnt_u32(M) / 2) - 1;
+  }
 }
 
 // mostly branchless search within an array of 128 uint16_t values.
@@ -79,8 +87,9 @@ static inline int searchIn128(uint16_t *array, uint16_t ikey) {
   int adv = _tzcnt_u32(M) / 4;
   int withinblock =
       locateEqual(_mm256_loadu_si256((const __m256i *)array + adv), vkey);
-  if (withinblock < 0)
-    return withinblock;
+  if (withinblock < 0) {
+    return withinblock - adv * sizeof(__m256i) / sizeof(uint16_t);
+  }
   return adv * sizeof(__m256i) / sizeof(uint16_t) + withinblock;
 }
 
@@ -100,7 +109,10 @@ static inline int searchIn1024(uint16_t *array, uint16_t ikey) {
   if(M == 0) return -1;
   int adv = _tzcnt_u32(M) / 4;
   int r = searchIn128(array + adv * 128, ikey);
-  if( r < 0) return r;
+  //printf(" searchIn1024 got back %d \n",r);
+  if( r < 0) {
+    return r - adv * 128;
+  }
   return r + adv * 128;
 }
 
@@ -113,31 +125,35 @@ avx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
       if (array[k] >= ikey) {
         int r = searchIn1024(array + k + 1 - 1024, ikey);
         if (r < 0)
-          return r;
+          return r - (k + 1 - 1024);
         return r + k + 1 - 1024;
       }
     }
-    offset += k;
-    array += k;
-    lenarray -= k;
+    offset = lenarray - (lenarray % 1024);
+    array += offset;
+    lenarray = lenarray % 1024;
   }
-  // here lenarray should be < 1024
   if (lenarray >= 128) {
     int k = 128 - 1;
     for (; k < lenarray; k += 128) {
       if (array[k] >= ikey) {
-        int r = searchIn128(array + k + 1 - 128, ikey);
-        if (r < 0)
-          return r;
-        return offset + r + k + 1 - 128;
+        int startpoint = k + 1 - 128;
+        int r = searchIn128(array + startpoint, ikey);
+        if (r < 0) {
+          int revert = -(r - (startpoint + offset))-1;
+          return r - (startpoint + offset);
+        }
+        return offset + r + startpoint;
       }
     }
-    offset += k;
-    array += k;
-    lenarray -= k;
+    offset = lenarray - (lenarray % 128);
+    array += offset;
+    lenarray = lenarray % 128;
   }
   // here bin search should be over less than 128
-  return offset + binary_search(array, lenarray, ikey);
+  int r = binary_search(array, lenarray, ikey);
+  if( r < 0) return r - offset;
+  return r + offset;
 }
 
 struct pcg_state_setseq_64 { // Internals are *Private*.
@@ -316,23 +332,9 @@ void demo() {
     printf("N = %zu \n", N);
     value_t *source = create_sorted_array(N);
 
-    for (int k = 0; k < nbrtestvalues; k++) {
-      int cor = linear(source, N, testvalues[k]);
-      int av = avx_binary_search(source, N, testvalues[k]);
-      if ((av > 0) && (cor > 0)) {
-        if (cor != av) {
-          printf("expected %d but got %d N=%zu \n", cor, av,N);
-          assert(false);
-        }
-      } else      if(cor>  0) {
-                  printf("expected %d but got %d \n", cor, av);
-          assert(false);
-
-      }
-    }
     ASSERT_PRE_ARRAY(source, N, linear, testvalues, nbrtestvalues);
     ASSERT_PRE_ARRAY(source, N, binary_search, testvalues, nbrtestvalues);
-    ASSERT_PRE_ARRAY_POSITIVE(source, N, avx_binary_search, testvalues,
+    ASSERT_PRE_ARRAY(source, N, avx_binary_search, testvalues,
                               nbrtestvalues);
 
     BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_prefetch, testvalues,
