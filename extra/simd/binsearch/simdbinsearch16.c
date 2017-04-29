@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 #include <math.h>
-#include <assert.h>
 #include <x86intrin.h>
 
 typedef uint16_t value_t;
@@ -189,6 +188,47 @@ avx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
   return r + offset;
 }
 
+int32_t __attribute__((noinline))
+fullavx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
+  int offset = 0;
+  if (lenarray >= 1024) {
+    int k = 1024 - 1;
+    for (; k < lenarray; k += 1024) {
+      if (array[k] >= ikey) {
+        int r = searchIn1024(array + k + 1 - 1024, ikey);
+        if (r < 0)
+          return r - (k + 1 - 1024);
+        return r + k + 1 - 1024;
+      }
+    }
+    offset = lenarray - (lenarray % 1024);
+    array += offset;
+    lenarray = lenarray % 1024;
+  }
+  if (lenarray >= 128) {
+    int k = 128 - 1;
+    for (; k < lenarray; k += 128) {
+      if (array[k] >= ikey) {
+        int startpoint = k + 1 - 128;
+        int r = searchIn128(array + startpoint, ikey);
+        if (r < 0) {
+          int revert = -(r - (startpoint + offset))-1;
+          return r - (startpoint + offset);
+        }
+        return offset + r + startpoint;
+      }
+    }
+    offset = lenarray - (lenarray % 128);
+    array += offset;
+    lenarray = lenarray % 128;
+  }
+  // here bin search should be over less than 128
+  int r = shortavx_binary_search(array, lenarray, ikey);
+  if( r < 0) return r - offset;
+  return r + offset;
+}
+
+
 struct pcg_state_setseq_64 { // Internals are *Private*.
   uint64_t state;            // RNG state.  All values are possible.
   uint64_t inc;              // Controls which RNG sequence (stream) is
@@ -312,7 +352,7 @@ void array_cache_prefetch(value_t *B, int32_t length) {
           if (base[ip] <= testvalues[j]) {                                     \
             printf(" Index returned is %d which points at %d for target %d. ", \
                    ip, base[ip], testvalues[j]);                               \
-            assert(false);error = 3;                                                         \
+            error = 3;                                                         \
             break;                                                             \
           }                                                                    \
         }                                                                      \
@@ -360,7 +400,7 @@ void demo() {
   printf("# N, prefetched seek, fresh seek  (in cycles) then same values "
          "normalized by tree height\n");
   int32_t bogus = 0;
-  for (int Nd = 256; Nd <= 4100; Nd *= 2) { // sqrt(2)
+  for (int Nd = 16; Nd <= 4100; Nd += rand() % 100) { // sqrt(2)
     size_t N = Nd;
     printf("N = %zu \n", N);
     value_t *source = create_sorted_array(N);
@@ -369,6 +409,8 @@ void demo() {
     ASSERT_PRE_ARRAY(source, N, binary_search, testvalues, nbrtestvalues);
     ASSERT_PRE_ARRAY(source, N, avx_binary_search, testvalues,
                               nbrtestvalues);
+    ASSERT_PRE_ARRAY(source, N, fullavx_binary_search, testvalues,
+                              nbrtestvalues);
     ASSERT_PRE_ARRAY(source, N, shortavx_binary_search, testvalues,
                               nbrtestvalues);
     BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_prefetch, testvalues,
@@ -376,6 +418,8 @@ void demo() {
     BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_prefetch,
                         testvalues, nbrtestvalues, bogus);
     BEST_TIME_PRE_ARRAY(source, N, avx_binary_search, array_cache_prefetch,
+                        testvalues, nbrtestvalues, bogus);
+    BEST_TIME_PRE_ARRAY(source, N, fullavx_binary_search, array_cache_prefetch,
                         testvalues, nbrtestvalues, bogus);
     BEST_TIME_PRE_ARRAY(source, N, shortavx_binary_search, array_cache_prefetch,
                         testvalues, nbrtestvalues, bogus);
