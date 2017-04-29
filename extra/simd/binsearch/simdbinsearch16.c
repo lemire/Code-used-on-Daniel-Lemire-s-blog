@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include <stdint.h>
 #include <math.h>
@@ -109,12 +110,44 @@ static inline int searchIn1024(uint16_t *array, uint16_t ikey) {
   if(M == 0) return -1;
   int adv = _tzcnt_u32(M) / 4;
   int r = searchIn128(array + adv * 128, ikey);
-  //printf(" searchIn1024 got back %d \n",r);
   if( r < 0) {
     return r - adv * 128;
   }
   return r + adv * 128;
 }
+
+int32_t shortavx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
+  int32_t low = 0;
+  int32_t high = lenarray - 1;
+  while (low + 16 < high) {
+    int32_t middleIndex = (low + high) >> 1;
+    int32_t middleValue = array[middleIndex];
+    if (middleValue < ikey) {
+      low = middleIndex + 1;
+    } else if (middleValue > ikey) {
+      high = middleIndex - 1;
+    } else {
+      return middleIndex;
+    }
+  }
+  __m256i vkey = _mm256_set1_epi16(ikey);
+  __m256i data;
+  if(high-low+1 == 16) {
+    data =_mm256_loadu_si256((const __m256i *)(array + low));
+  } else {
+    uint16_t buffer[16];
+    memset(buffer,0xFF,16*sizeof(uint16_t));
+    memcpy(buffer,array+low,(high-low+1)*sizeof(uint16_t));
+    data =_mm256_loadu_si256((const __m256i *)buffer);
+  }
+  int withinblock =
+      locateEqual(data, vkey);
+  if (withinblock < 0) {
+    return withinblock - low;
+  }
+  return low + withinblock;
+}
+
 
 int32_t __attribute__((noinline))
 avx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
@@ -279,7 +312,7 @@ void array_cache_prefetch(value_t *B, int32_t length) {
           if (base[ip] <= testvalues[j]) {                                     \
             printf(" Index returned is %d which points at %d for target %d. ", \
                    ip, base[ip], testvalues[j]);                               \
-            error = 3;                                                         \
+            assert(false);error = 3;                                                         \
             break;                                                             \
           }                                                                    \
         }                                                                      \
@@ -336,14 +369,16 @@ void demo() {
     ASSERT_PRE_ARRAY(source, N, binary_search, testvalues, nbrtestvalues);
     ASSERT_PRE_ARRAY(source, N, avx_binary_search, testvalues,
                               nbrtestvalues);
-
+    ASSERT_PRE_ARRAY(source, N, shortavx_binary_search, testvalues,
+                              nbrtestvalues);
     BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_prefetch, testvalues,
                         nbrtestvalues, bogus);
     BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_prefetch,
                         testvalues, nbrtestvalues, bogus);
     BEST_TIME_PRE_ARRAY(source, N, avx_binary_search, array_cache_prefetch,
                         testvalues, nbrtestvalues, bogus);
-
+    BEST_TIME_PRE_ARRAY(source, N, shortavx_binary_search, array_cache_prefetch,
+                        testvalues, nbrtestvalues, bogus);
     free(source);
     printf("\n");
   }
