@@ -271,6 +271,22 @@ void array_cache_prefetch(value_t* B, int32_t length) {
      } while (0)
 
 
+#define ASSERT_PRE_ARRAY_POSITIVE(base, length, test,   testvalues, nbrtestvalues)               \
+    do {                                                                                \
+        int error = 0;                                                                  \
+        for (size_t j = 0; j < nbrtestvalues; j++) {                                    \
+            int32_t re = test(base,length,testvalues[j]);                               \
+            if(re >= 0) {                                                               \
+              if(base[re] != testvalues[j]) {                                           \
+                error=1; break;                                                         \
+              }                                                                         \
+            } else {                                                                    \
+               if(linear(base,length,testvalues[j]) >=0) {error=1;break;}              \
+            }                                                                           \
+        }                                                                               \
+        if(error != 0) printf("[%s error: %d]\n",#test,error);                     \
+     } while (0)
+
 
 
 
@@ -288,6 +304,8 @@ void demo() {
         value_t * source = create_sorted_array(N);
         ASSERT_PRE_ARRAY(source,N,linear,testvalues,nbrtestvalues);
         ASSERT_PRE_ARRAY(source,N,binary_search,testvalues,nbrtestvalues);
+        ASSERT_PRE_ARRAY_POSITIVE(source,N,binary_search,testvalues,nbrtestvalues);
+
         BEST_TIME_PRE_ARRAY(source, N, linear,               array_cache_prefetch,   testvalues, nbrtestvalues, bogus);
         BEST_TIME_PRE_ARRAY(source, N, binary_search,               array_cache_prefetch,   testvalues, nbrtestvalues, bogus);
         BEST_TIME_PRE_ARRAY(source, N, broken_binary_search,               array_cache_prefetch,   testvalues, nbrtestvalues, bogus);
