@@ -29,6 +29,24 @@ binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
   }
   return -(low + 1);
 }
+static inline int32_t 
+inline_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
+  int32_t low = 0;
+  int32_t high = lenarray - 1;
+  while (low <= high) {
+    int32_t middleIndex = (low + high) >> 1;
+    int32_t middleValue = array[middleIndex];
+    if (middleValue < ikey) {
+      low = middleIndex + 1;
+    } else if (middleValue > ikey) {
+      high = middleIndex - 1;
+    } else {
+      return middleIndex;
+    }
+  }
+  return -(low + 1);
+}
+
 
 int32_t __attribute__((noinline))
 linear(uint16_t *array, int32_t lenarray, uint16_t ikey) {
@@ -64,7 +82,7 @@ static inline int locateEqual(__m256i data, __m256i vkey) {
   } else {
     //return -1 ;
     // no key is equal // we could bypass this extra work
-    __m256 subs = _mm256_subs_epu16(vkey, data);
+    __m256i subs = _mm256_subs_epu16(vkey, data);
     __m256i diff = _mm256_cmpeq_epi16(subs, _mm256_setzero_si256());
     int M = _mm256_movemask_epi8(diff);
     if(M == 0) return - (int) sizeof(__m256i)/(int) sizeof(uint16_t) - 1;
@@ -81,7 +99,7 @@ static inline int searchIn128(uint16_t *array, uint16_t ikey) {
       array, _mm256_set_epi32(8 * 32 - 4, 7 * 32 - 4, 6 * 32 - 4, 5 * 32 - 4,
                               4 * 32 - 4, 3 * 32 - 4, 2 * 32 - 4, 32 - 4),
       1);
-  __m256 subs = _mm256_subs_epu16(vkey, every32bytes);
+  __m256i subs = _mm256_subs_epu16(vkey, every32bytes);
   __m256i diff = _mm256_cmpeq_epi16(subs, _mm256_setzero_si256());
   int M = _mm256_movemask_epi8(diff);
   int adv = _tzcnt_u32(M) / 4;
@@ -103,7 +121,7 @@ static inline int searchIn1024(uint16_t *array, uint16_t ikey) {
                               5 * 128 * 2 - 4, 4 * 128 * 2 - 4, 3 * 128 * 2 - 4,
                               2 * 128 * 2 - 4, 128 * 2 - 4),
       1);
-  __m256 subs = _mm256_subs_epu16(vkey, every32bytes);
+  __m256i subs = _mm256_subs_epu16(vkey, every32bytes);
   __m256i diff = _mm256_cmpeq_epi16(subs, _mm256_setzero_si256());
   int M = _mm256_movemask_epi8(diff);
   if(M == 0) return -1;
@@ -115,10 +133,10 @@ static inline int searchIn1024(uint16_t *array, uint16_t ikey) {
   return r + adv * 128;
 }
 
-int32_t shortavx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
+static inline int32_t shortavx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
   int32_t low = 0;
   int32_t high = lenarray - 1;
-  while (low + 16 < high) {
+  while (low + 16 <= high) {
     int32_t middleIndex = (low + high) >> 1;
     int32_t middleValue = array[middleIndex];
     if (middleValue < ikey) {
@@ -129,6 +147,9 @@ int32_t shortavx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey)
       return middleIndex;
     }
   }
+  // here we have low + 16 > high
+  // or high - low < 16
+   // or high - low + 1 <= 16
   __m256i vkey = _mm256_set1_epi16(ikey);
   __m256i data;
   if(high-low+1 == 16) {
@@ -150,11 +171,11 @@ int32_t shortavx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey)
 
 int32_t __attribute__((noinline))
 avx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
-  int offset = 0;
+   int offset = 0;
   if (lenarray >= 1024) {
     int k = 1024 - 1;
     for (; k < lenarray; k += 1024) {
-      if (array[k] >= ikey) {
+       if (array[k] >= ikey) {
         int r = searchIn1024(array + k + 1 - 1024, ikey);
         if (r < 0)
           return r - (k + 1 - 1024);
@@ -162,39 +183,35 @@ avx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
       }
     }
     offset = lenarray - (lenarray % 1024);
-    array += offset;
-    lenarray = lenarray % 1024;
   }
-  if (lenarray >= 128) {
+  if (lenarray - offset >= 128) {
     int k = 128 - 1;
-    for (; k < lenarray; k += 128) {
-      if (array[k] >= ikey) {
-        int startpoint = k + 1 - 128;
+    for (; k < lenarray - offset ; k += 128) {
+      if (array[k + offset] >= ikey) {
+        int startpoint = k + 1 - 128 + offset;
         int r = searchIn128(array + startpoint, ikey);
         if (r < 0) {
-          int revert = -(r - (startpoint + offset))-1;
-          return r - (startpoint + offset);
+          int revert = -(r - startpoint)-1;
+          return r - (startpoint);
         }
-        return offset + r + startpoint;
+        return r + startpoint;
       }
     }
     offset = lenarray - (lenarray % 128);
-    array += offset;
-    lenarray = lenarray % 128;
   }
   // here bin search should be over less than 128
-  int r = binary_search(array, lenarray, ikey);
+  int r = inline_binary_search(array + offset, lenarray-offset, ikey);
   if( r < 0) return r - offset;
   return r + offset;
 }
 
 int32_t __attribute__((noinline))
 fullavx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
-  int offset = 0;
+   int offset = 0;
   if (lenarray >= 1024) {
     int k = 1024 - 1;
     for (; k < lenarray; k += 1024) {
-      if (array[k] >= ikey) {
+       if (array[k] >= ikey) {
         int r = searchIn1024(array + k + 1 - 1024, ikey);
         if (r < 0)
           return r - (k + 1 - 1024);
@@ -202,32 +219,27 @@ fullavx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
       }
     }
     offset = lenarray - (lenarray % 1024);
-    array += offset;
-    lenarray = lenarray % 1024;
   }
-  if (lenarray >= 128) {
+  if (lenarray - offset >= 128) {
     int k = 128 - 1;
-    for (; k < lenarray; k += 128) {
-      if (array[k] >= ikey) {
-        int startpoint = k + 1 - 128;
+    for (; k < lenarray - offset ; k += 128) {
+      if (array[k + offset] >= ikey) {
+        int startpoint = k + 1 - 128 + offset;
         int r = searchIn128(array + startpoint, ikey);
         if (r < 0) {
-          int revert = -(r - (startpoint + offset))-1;
-          return r - (startpoint + offset);
+          int revert = -(r - startpoint)-1;
+          return r - (startpoint);
         }
-        return offset + r + startpoint;
+        return r + startpoint;
       }
     }
     offset = lenarray - (lenarray % 128);
-    array += offset;
-    lenarray = lenarray % 128;
   }
   // here bin search should be over less than 128
-  int r = shortavx_binary_search(array, lenarray, ikey);
+  int r = shortavx_binary_search(array + offset, lenarray-offset, ikey);
   if( r < 0) return r - offset;
   return r + offset;
 }
-
 
 struct pcg_state_setseq_64 { // Internals are *Private*.
   uint64_t state;            // RNG state.  All values are possible.
@@ -343,7 +355,7 @@ void array_cache_prefetch(value_t *B, int32_t length) {
       int32_t re = test(base, length, testvalues[j]);                          \
       if (re >= 0) {                                                           \
         if (base[re] != testvalues[j]) {                                       \
-          error = 1;                                                           \
+          error = 1;   assert(false);                                                        \
           break;                                                               \
         }                                                                      \
       } else {                                                                 \
@@ -352,7 +364,7 @@ void array_cache_prefetch(value_t *B, int32_t length) {
           if (base[ip] <= testvalues[j]) {                                     \
             printf(" Index returned is %d which points at %d for target %d. ", \
                    ip, base[ip], testvalues[j]);                               \
-            error = 3;                                                         \
+            error = 3;assert(false);                                                         \
             break;                                                             \
           }                                                                    \
         }                                                                      \
@@ -362,7 +374,7 @@ void array_cache_prefetch(value_t *B, int32_t length) {
                    ip, base[ip], testvalues[j]);                               \
             printf(" Previous index is %d which points at %d for target %d. ", \
                    ip - 1, base[ip - 1], testvalues[j]);                       \
-            error = 4;                                                         \
+            error = 4;       assert(false);                                                  \
             break;                                                             \
           }                                                                    \
         }                                                                      \
@@ -400,7 +412,7 @@ void demo() {
   printf("# N, prefetched seek, fresh seek  (in cycles) then same values "
          "normalized by tree height\n");
   int32_t bogus = 0;
-  for (int Nd = 16; Nd <= 4100; Nd += rand() % 100) { // sqrt(2)
+  for (int Nd = 16; Nd <= 4096; Nd += rand() % Nd) { // sqrt(2)
     size_t N = Nd;
     printf("N = %zu \n", N);
     value_t *source = create_sorted_array(N);
