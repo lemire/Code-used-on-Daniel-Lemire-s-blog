@@ -29,6 +29,19 @@ binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
   }
   return -(low + 1);
 }
+int32_t __attribute__ ((noinline)) branchless_binary_search(uint16_t* source, int32_t n, uint16_t target) {
+    uint16_t * base = source;
+    if(n == 0) return -1;
+    if(target > source[n-1]) return - n - 1;// without this we have a buffer overrun
+    while(n>1) {
+        int32_t half = n >> 1;
+        base = (base[half] < target) ? &base[half] : base;
+        n -= half;
+    }
+    base += *base < target;
+    return *base == target ? base - source : source - base -1;
+}
+
 static inline int32_t 
 inline_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
   int32_t low = 0;
@@ -96,7 +109,7 @@ static inline int locateEqual(__m256i data, __m256i vkey) {
 static inline int searchIn128(uint16_t *array, uint16_t ikey) {
   __m256i vkey = _mm256_set1_epi16(ikey);
   __m256i every32bytes = _mm256_i32gather_epi32(
-      array, _mm256_set_epi32(8 * 32 - 4, 7 * 32 - 4, 6 * 32 - 4, 5 * 32 - 4,
+      (const int *) array, _mm256_set_epi32(8 * 32 - 4, 7 * 32 - 4, 6 * 32 - 4, 5 * 32 - 4,
                               4 * 32 - 4, 3 * 32 - 4, 2 * 32 - 4, 32 - 4),
       1);
   __m256i subs = _mm256_subs_epu16(vkey, every32bytes);
@@ -117,7 +130,7 @@ static inline int searchIn128(uint16_t *array, uint16_t ikey) {
 static inline int searchIn1024(uint16_t *array, uint16_t ikey) {
   __m256i vkey = _mm256_set1_epi16(ikey);
   __m256i every32bytes = _mm256_i32gather_epi32(
-      array, _mm256_set_epi32(8 * 128 * 2 - 4, 7 * 128 * 2 - 4, 6 * 128 * 2 - 4,
+      (const int *)array, _mm256_set_epi32(8 * 128 * 2 - 4, 7 * 128 * 2 - 4, 6 * 128 * 2 - 4,
                               5 * 128 * 2 - 4, 4 * 128 * 2 - 4, 3 * 128 * 2 - 4,
                               2 * 128 * 2 - 4, 128 * 2 - 4),
       1);
@@ -191,7 +204,6 @@ avx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
         int startpoint = k + 1 - 128 + offset;
         int r = searchIn128(array + startpoint, ikey);
         if (r < 0) {
-          int revert = -(r - startpoint)-1;
           return r - (startpoint);
         }
         return r + startpoint;
@@ -227,7 +239,6 @@ fullavx_binary_search(uint16_t *array, int32_t lenarray, uint16_t ikey) {
         int startpoint = k + 1 - 128 + offset;
         int r = searchIn128(array + startpoint, ikey);
         if (r < 0) {
-          int revert = -(r - startpoint)-1;
           return r - (startpoint);
         }
         return r + startpoint;
@@ -425,17 +436,29 @@ void demo() {
                               nbrtestvalues);
     ASSERT_PRE_ARRAY(source, N, shortavx_binary_search, testvalues,
                               nbrtestvalues);
+    printf("in cache\n");
     BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_prefetch, testvalues,
                         nbrtestvalues, bogus);
+    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_prefetch,
+                        testvalues, nbrtestvalues, bogus);
     BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_prefetch,
                         testvalues, nbrtestvalues, bogus);
     BEST_TIME_PRE_ARRAY(source, N, avx_binary_search, array_cache_prefetch,
                         testvalues, nbrtestvalues, bogus);
-    BEST_TIME_PRE_ARRAY(source, N, fullavx_binary_search, array_cache_prefetch,
+  //  BEST_TIME_PRE_ARRAY(source, N, fullavx_binary_search, array_cache_prefetch,
+  //                      testvalues, nbrtestvalues, bogus);
+  //  BEST_TIME_PRE_ARRAY(source, N, shortavx_binary_search, array_cache_prefetch,
+  //                      testvalues, nbrtestvalues, bogus);
+    printf("out-of-cache cache\n");
+    BEST_TIME_PRE_ARRAY(source, N, linear, array_cache_flush, testvalues,
+                        nbrtestvalues, bogus);
+    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_flush,
                         testvalues, nbrtestvalues, bogus);
-    BEST_TIME_PRE_ARRAY(source, N, shortavx_binary_search, array_cache_prefetch,
+    BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_flush,
                         testvalues, nbrtestvalues, bogus);
-    free(source);
+    BEST_TIME_PRE_ARRAY(source, N, avx_binary_search, array_cache_flush,
+                        testvalues, nbrtestvalues, bogus);
+     free(source);
     printf("\n");
   }
   printf("bogus = %d \n", bogus);
