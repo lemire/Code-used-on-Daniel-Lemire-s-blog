@@ -1,4 +1,9 @@
-## Fast modulo reduction/division
+## abstract
+
+
+Division instructions on modern processors are much more expensive than other arithmetic operations and they can become bottlenecks. Thus, when the divisor is known in advance, compilers and libraries use algorithms to find the quotient by a multiplication followed by a shift. The remainder of the division can then be computed from the quotient by a multiplication a subtraction. If the quotient is unneeded, computing the quotient to get the remainder might be suboptimal due to a longer chain of dependent instructions. We present a generally applicable algorithm to compute the remainder directly. 
+
+## Fast modulo reduction when the dividor is known ahead of time
 
 Divisions and modulo reductions are tremendously expensive, even on modern computers. 
 When the divisor is known ahead of time, we can transform a division into a single
@@ -83,26 +88,3 @@ So, at a glance, we can outdo the compiler by a couple of cycles. That's what we
 Further work: What about 64-bit divisions? What about signed divisions? 
 
 Further reading: Warren, Henry S. Hacker's delight. Pearson Education, 2013.
-
-## Fast division
-
-```
-
-div23(unsigned long):                              # @div23(unsigned long)
-        movabs  rcx, 7218291159277650633
-        mov     rax, rdi
-        mul     rcx
-        sub     rdi, rdx
-        shr     rdi
-        lea     rax, [rdi + rdx]
-        shr     rax, 4
-        ret
-
-fastdiv23(unsigned long):                          # @fastdiv23(unsigned long)
-        movabs  rcx, 802032351030850071
-        mov     rax, rdi
-        mul     rcx
-        mov     rax, rdx
-        ret
-```
-
