@@ -1,11 +1,11 @@
 ## abstract
 
 
-Division instructions on modern processors are much more expensive than other arithmetic operations and they can become bottlenecks. Thus, when the divisor is known in advance, compilers and libraries use algorithms to find the quotient by a multiplication followed by a shift. The remainder of the division can then be computed from the quotient by a multiplication a subtraction. If the quotient is unneeded, computing the quotient to get the remainder might be suboptimal due to a longer chain of dependent instructions. We present a generally applicable algorithm to compute the remainder directly. 
+Division instructions on modern processors are much more expensive than other arithmetic operations and they can become bottlenecks. Thus, when the divisor is known in advance, compilers and libraries use algorithms to find the quotient by a multiplication followed by a shift. The remainder of the division can then be computed from the quotient by a multiplication a subtraction. If the quotient is unneeded, computing the quotient to get the remainder might be suboptimal due to a longer chain of dependent instructions. We present a generally applicable algorithm to compute the remainder directly.
 
 ## Fast modulo reduction when the dividor is known ahead of time
 
-Divisions and modulo reductions are tremendously expensive, even on modern computers. 
+Divisions and modulo reductions are tremendously expensive, even on modern computers.
 When the divisor is known ahead of time, we can transform a division into a single
 multiplication followed by a shift.
 
@@ -85,6 +85,15 @@ fastsumofmod23(maxval):  9.04 cycles per operation
 
 So, at a glance, we can outdo the compiler by a couple of cycles. That's what we would expect since we do away with two 1-cycle instructions along the data-dependency path (``shr`` and ``sub``).
 
-Further work: What about 64-bit divisions? What about signed divisions? 
+Further work: What about 64-bit divisions? What about signed divisions?
 
 Further reading: Warren, Henry S. Hacker's delight. Pearson Education, 2013.
+
+
+## Guide to the software
+
+The ``mod23.c`` and ``mod7.c`` files provide working examples.
+
+The ``wordaligneddiv.py`` script is a script that computes the magic numbers used to
+turn a division into a multiplication following by a shift. Calling ``python wordaligneddiv.py`` provides
+a list of magic numbers. 
