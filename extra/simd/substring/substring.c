@@ -96,7 +96,7 @@ int sse4search(char * hay, int size, char *needle, int needlesize) {
   __m128i n = tovector(needle);
   for(int i = 0; i + 15 < size; i+=16) {
     __m128i v = _mm_loadu_si128((const __m128i *)(hay + i));
-    __m128 x = _mm_cmpistrm(n,v,_SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED | _SIDD_BIT_MASK);
+    __m128i x = _mm_cmpistrm(n,v,_SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED | _SIDD_BIT_MASK);
     int r = _mm_cvtsi128_si32(x);
     if(r != 0) {
       int offset = __builtin_ctz(r);
@@ -118,7 +118,7 @@ int sse4searchp2(char * hay, int size, char *needle, int needlesize) {
   __m128i n = tovector(needle);
   for(int i = 0; i + 15 < size; i+=16) {
     __m128i v = _mm_loadu_si128((const __m128i *)(hay + i));
-    __m128 x = _mm_cmpistrm(n,v,_SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED | _SIDD_BIT_MASK);
+    __m128i x = _mm_cmpistrm(n,v,_SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED | _SIDD_BIT_MASK);
     int r = _mm_cvtsi128_si32(x);
     if(r != 0) {
       int offset = __builtin_ctz(r);
