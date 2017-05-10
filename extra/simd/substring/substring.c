@@ -72,17 +72,19 @@ char *create_random_string(size_t count) {
     uint64_t cycles_start, cycles_final, cycles_diff;                          \
     uint64_t min_diff = (uint64_t)-1;                                          \
     int sum = 0;                                                               \
+    bool bug = false;                                                   \
     for (size_t j = 0; j < repeat; j++) {                               \
       __asm volatile("" ::: /* pretend to clobber */ "memory");                \
       refresh;\
       RDTSC_START(cycles_start);                                               \
-      if( test != expected) printf("bug %d %d \n", test,expected);                              \
+      if( test != expected) bug = true;                              \
       RDTSC_FINAL(cycles_final);                                               \
       cycles_diff = (cycles_final - cycles_start);                             \
       if (cycles_diff < min_diff)                                              \
         min_diff = cycles_diff;                                                \
       sum += cycles_diff;                                                      \
     }                                                                          \
+    if(bug) printf("bug\n");                                                 \
     uint64_t S = repeat * N;                                                \
     double cycle_per_op = sum / (double)S;                                     \
     printf("%f \n", cycle_per_op);                                             \
@@ -124,6 +126,24 @@ int sse4searchp2(char * hay, int size, char *needle, int needlesize) {
       r = _mm_cvtsi128_si32(x);
       if((r & 1 ) != 0) return i + offset;
     }
+  }
+  return size;
+}
+
+// taken from Java
+int naive(char * hay, int size, char *needle, int needlesize) {
+  const char first = needle[0];
+  const int maxpos = size - needlesize;
+  for(int i = 0; i < maxpos; i++) {
+    if(hay[i] != first) {
+       i++;
+       while( i < maxpos && hay[i] != first ) i++;
+       if ( i == maxpos ) break;
+    }
+    int j = 1;
+    for( ; j < needlesize; ++j)
+      if(hay[ i + j ] != needle[ j ] ) break;
+    if( j == needlesize) return i;
   }
   return size;
 }
@@ -219,6 +239,34 @@ size_t  avx2_strstr_anysize(const char* s, size_t n, const char* needle, size_t 
     return n;
 }
 
+
+// implements scheme described in http://0x80.pl/articles/simd-friendly-karp-rabin.html
+size_t  avx2_strstr_anysize_onesided(const char* s, size_t n, const char* needle, size_t k) {
+    assert(k > 0);
+    assert(n > 0);
+    const __m256i first = _mm256_set1_epi8(needle[0]);
+    for (size_t i = 0; i < n; i += 32) {
+
+        const __m256i block_first = _mm256_loadu_si256((const __m256i*)(s + i));
+
+        const __m256i eq_first = _mm256_cmpeq_epi8(first, block_first);
+
+        uint32_t mask = _mm256_movemask_epi8(eq_first);
+
+        while (mask != 0) {
+            int bitpos = __builtin_ctz(mask);
+            // this bit can be optimized as per Mula's code since k is fixed
+            if (memcmp(s + i + bitpos + 1, needle + 1, k - 1) == 0) {
+                return i + bitpos;
+            }
+            mask ^= mask & (-mask);
+        }
+    }
+
+    return n;
+}
+
+
 void demo() {
   const int N = 64;
   char *hay = create_random_string(N);
@@ -230,11 +278,15 @@ void demo() {
   const int repeat = 10;
   BEST_TIME(strstr(hay,needle) - hay, ,expected,
                         repeat, N);
+  BEST_TIME(naive(hay,N,needle,16) , ,expected,
+repeat, N);
   BEST_TIME(sse4search(hay,N,needle,16) , ,expected,
                         repeat, N);
   BEST_TIME(sse4searchp2(hay,N,needle,16) , ,expected,
                         repeat, N);
   BEST_TIME(avx2_strstr_anysize(hay,N,needle,16) , ,expected,
+                        repeat, N);
+  BEST_TIME(avx2_strstr_anysize_onesided(hay,N,needle,16) , ,expected,
                         repeat, N);
   BEST_TIME(naiveavx2(hay,N,needle,16) , ,expected,
                         repeat, N);
@@ -246,6 +298,7 @@ void demo() {
 int main() {
   printf("results are randomized from one pass to the other\n");
   for(int k = 0; k < 10; ++k) {
+    demo();
     demo();
     printf("\n");
   }
