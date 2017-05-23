@@ -8,7 +8,7 @@
 #include "benchmark.h"
 
 size_t distinct_count_hash(const uint64_t * values, size_t howmany) {
-  std::unordered_set<uint64_t> hash(values, values + howmany, howmany);
+  std::unordered_set<uint64_t> hash(values, values + howmany);
   return hash.size();
 }
 
