@@ -102,7 +102,7 @@ function check(streamsize, k) {
         QuickSelect(a, k, defaultcomparator);
         var eaten = 2 * k;
         while (eaten < streamsize) {
-            var nextsize = eaten + k; // assume that streamsize is divisible by k
+            // assume that k divides streamsize
             for (var i = 0; i < k; i++) {
                 a[k + i] = rand(i + eaten);
             }
