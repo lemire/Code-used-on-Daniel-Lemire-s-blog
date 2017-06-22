@@ -62,6 +62,23 @@ function check(streamsize, k) {
         for (i = k; i < streamsize; i++) {
             var x = rand(i);
             if (x < b.peek()) {
+                b.replaceTop(x);
+            }
+        }
+        var answer = b.array.slice(0, k).sort(function(a, b) {
+            return a - b
+        });
+        if (!compare(answer, expectedanswer)) console.log("bug FastPriorityQueue-KWillets-replaceTop", answer, expectedanswer);
+
+    } {
+
+        var b = new FastPriorityQueue(reverseddefaultcomparator);
+        for (var i = 0; i < k; i++) {
+            b.add(rand(i));
+        }
+        for (i = k; i < streamsize; i++) {
+            var x = rand(i);
+            if (x < b.peek()) {
                 b.add(x);
                 b.poll();
             }
@@ -182,6 +199,23 @@ function QueueEnqueueBench(streamsize, k) {
             });
             return answer;
         })
+        .add('FastPriorityQueue-KWillets-replaceTop', function() {
+            var b = new FastPriorityQueue(reverseddefaultcomparator);
+            for (var i = 0; i < k; i++) {
+                b.add(rand(i));
+            }
+            for (i = k; i < streamsize; i++) {
+                var x = rand(i);
+                if (x < b.peek()) {
+                    b.replaceTop(x);
+                }
+            }
+            var answer = b.array.slice(0, k).sort(function(a, b) {
+                return a - b
+            });
+            return answer;
+        })
+
         .add('sort', function() {
             var a = new Array();
             for (var i = 0; i < streamsize; i++) {
