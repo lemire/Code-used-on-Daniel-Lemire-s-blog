@@ -42,6 +42,15 @@ static inline uint64_t is_not_zero(uint8x16_t v) {
 #endif
 }
 
+/*
+* could also have 
+*
+static inline uint16_t is_not_zero(uint8x16_t v) {
+    return vaddlvq_u8(v);
+}
+* but experimentally, it appears slower.
+* credit: Cyril Lashkevich
+*/
 
 
 static inline size_t neon_despace(char *bytes, size_t howmany) {
