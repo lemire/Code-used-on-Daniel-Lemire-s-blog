@@ -176,6 +176,8 @@ int main(int argc, char ** argv) {
                   howmanywhite = fillwithtext(buffer, N), repeat, N);
   BEST_TIME(neon_despace(buffer, N), N - howmanywhite,
                   howmanywhite = fillwithtext(buffer, N), repeat, N);
+  BEST_TIME(neon_despace_branchless(buffer, N), N - howmanywhite,
+                  howmanywhite = fillwithtext(buffer, N), repeat, N);
   free(origbuffer);
   free(origtmpbuffer);
 }
