@@ -35,11 +35,7 @@ static inline uint64_t is_not_zero(uint8x16_t v) {
   uint64x2_t v64 = vreinterpretq_u64_u8(v);
   uint32x2_t v32 = vqmovn_u64(v64);
   uint64x1_t result = vreinterpret_u64_u32(v32);
-#ifdef __clang__
-  return result[0];
-#else
-  return result;
-#endif
+  return vget_lane_u64(result, 0);
 }
 
 /*
