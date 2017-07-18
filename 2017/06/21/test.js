@@ -4,6 +4,7 @@ var QuickSelect = require('qselect');
 var FastPriorityQueue = require('fastpriorityqueue');
 var Benchmark = require('benchmark');
 var os = require('os');
+var FastPriorityQueueGP = require ("./pqgp.js");
 
 
 // very fast semi-random function
@@ -53,6 +54,34 @@ function check(streamsize, k) {
             return a - b
         });
         if (!compare(answer, expectedanswer)) console.log("bug FastPriorityQueue ", answer, expectedanswer);
+    } {
+
+      var b = new FastPriorityQueueGP(k, reverseddefaultcomparator);
+      for (var i = 0; i < k; i++) {
+          b.add(rand(i));
+      }
+      for (i = k; i < streamsize; i++) {
+          b.add(rand(i));
+      }
+      var answer = b.array.slice(0, k).sort(function(a, b) {
+          return a - b
+      });
+      if (!compare(answer, expectedanswer)) console.log("bug FastPriorityQueueGP-add", answer, expectedanswer);
+
+    } {
+
+      var b = new FastPriorityQueueGP(k, reverseddefaultcomparator);
+      for (var i = 0; i < k; i++) {
+          b.add2(rand(i));
+      }
+      for (i = k; i < streamsize; i++) {
+          b.add2(rand(i));
+      }
+      var answer = b.array.slice(0, k).sort(function(a, b) {
+          return a - b
+      });
+      if (!compare(answer, expectedanswer)) console.log("bug FastPriorityQueueGP-add2", answer, expectedanswer);
+
     } {
 
         var b = new FastPriorityQueue(reverseddefaultcomparator);
@@ -215,7 +244,32 @@ function QueueEnqueueBench(streamsize, k) {
             });
             return answer;
         })
-
+        .add('FastPriorityQueueGP-add', function() {
+            var b = new FastPriorityQueueGP(k, reverseddefaultcomparator);
+            for (var i = 0; i < k; i++) {
+                b.add(rand(i));
+            }
+            for (i = k; i < streamsize; i++) {
+                b.add(rand(i));
+            }
+            var answer = b.array.slice(0, k).sort(function(a, b) {
+                return a - b
+            });
+            return answer;
+        })
+        .add('FastPriorityQueueGP-add2', function() {
+            var b = new FastPriorityQueueGP(k, reverseddefaultcomparator);
+            for (var i = 0; i < k; i++) {
+                b.add2(rand(i));
+            }
+            for (i = k; i < streamsize; i++) {
+                b.add2(rand(i));
+            }
+            var answer = b.array.slice(0, k).sort(function(a, b) {
+                return a - b
+            });
+            return answer;
+        })
         .add('sort', function() {
             var a = new Array();
             for (var i = 0; i < streamsize; i++) {
