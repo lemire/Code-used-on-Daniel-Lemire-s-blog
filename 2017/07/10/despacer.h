@@ -35,11 +35,7 @@ static inline uint64_t is_not_zero(uint8x16_t v) {
   uint64x2_t v64 = vreinterpretq_u64_u8(v);
   uint32x2_t v32 = vqmovn_u64(v64);
   uint64x1_t result = vreinterpret_u64_u32(v32);
-#ifdef __clang__
-  return result[0];
-#else
-  return result;
-#endif
+  return vget_lane_u64(result, 0);
 }
 
 /*
@@ -229,5 +225,76 @@ static inline size_t neon_despace_branchless(char *bytes, size_t howmany) {
   }
   return pos;
 }
+
+
+
+static inline uint8x16_t is_nonwhite(uint8x16_t data) {
+  const uint8x16_t wchar = vdupq_n_u8(' '+1);
+  uint8x16_t isw = vcgeq_u8(data, wchar);
+  return isw;
+}
+
+static inline uint16_t neonmovemask_addv(uint8x16_t input8) {
+  uint16x8_t input = vreinterpretq_u16_u8(input8);
+  const uint16x8_t bitmask = { 0x0101 , 0x0202, 0x0404, 0x0808, 0x1010, 0x2020, 0x4040, 0x8080 };
+  uint16x8_t minput = vandq_u16(input, bitmask);
+  return vaddvq_u16(minput);
+}
+
+static inline uint8_t bytepopcount(uint8x16_t v) {
+  return vaddvq_u8(vshrq_n_u8(v,7));
+}
+
+#include "bigtable.h"
+
+
+static inline size_t neontbl_despace(char *bytes, size_t howmany) {
+   size_t i = 0, pos = 0;
+  const size_t chunk_size = 16 * 4 * 1;
+  for (; i + chunk_size <= howmany; i += chunk_size) {
+    uint8x16_t vecbytes0 = vld1q_u8((uint8_t *)bytes + i);
+    uint8x16_t vecbytes1 = vld1q_u8((uint8_t *)bytes + i + 16);
+    uint8x16_t vecbytes2 = vld1q_u8((uint8_t *)bytes + i + 32);
+    uint8x16_t vecbytes3 = vld1q_u8((uint8_t *)bytes + i + 48);
+    // as early as possible, we compute the population counts
+    uint8x16_t w0 = is_nonwhite(vecbytes0);
+    uint8_t numberofkeptchars0 = bytepopcount(w0);
+    uint8x16_t shuf0 = vld1q_u8(shufmask + 16 * neonmovemask_addv(w0));
+    uint8x16_t reshuf0 = vqtbl1q_u8(vecbytes0,shuf0);
+    uint8x16_t w1 = is_nonwhite(vecbytes1);
+    uint8_t numberofkeptchars1 = bytepopcount(w1);
+    uint8x16_t shuf1 = vld1q_u8(shufmask + 16 * neonmovemask_addv(w1));
+    uint8x16_t reshuf1 = vqtbl1q_u8(vecbytes1,shuf1);
+    uint8x16_t w2 = is_nonwhite(vecbytes2);
+    uint8_t numberofkeptchars2 = bytepopcount(w2);
+    uint8x16_t shuf2 = vld1q_u8(shufmask + 16 * neonmovemask_addv(w2));
+    uint8x16_t reshuf2 = vqtbl1q_u8(vecbytes2,shuf2);
+    uint8x16_t w3 = is_nonwhite(vecbytes3);
+    uint8_t numberofkeptchars3 = bytepopcount(w3);
+    uint8x16_t shuf3 = vld1q_u8(shufmask + 16 * neonmovemask_addv(w3));
+    uint8x16_t reshuf3 = vqtbl1q_u8(vecbytes3,shuf3);
+
+    vst1q_u8((uint8_t *)bytes + pos,reshuf0);
+    pos += numberofkeptchars0;
+
+    vst1q_u8((uint8_t *)bytes + pos,reshuf1);
+    pos += numberofkeptchars1;
+
+    vst1q_u8((uint8_t *)bytes + pos,reshuf2);
+    pos += numberofkeptchars2;
+
+    vst1q_u8((uint8_t *)bytes + pos,reshuf3);
+    pos += numberofkeptchars3;
+
+  }
+  while (i < howmany) {
+    const unsigned char c = bytes[i];
+    bytes[pos] = c;
+    pos += (c > 32) ? 1 : 0;
+  }
+  return pos;
+}
+
+
 
 #endif // end of file
