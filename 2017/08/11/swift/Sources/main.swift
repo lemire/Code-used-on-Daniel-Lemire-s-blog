@@ -10,10 +10,21 @@ for i in 1...100_000 {
 func simpleHash(_ array : [Int]) -> Int {
   var hash = 0
   for x in array {
-    hash = hash &* 31 + x
+    hash = hash &* 31 &+ x
   }
   return hash
 }
+
+
+
+func shiftHash(_ array : [Int]) -> Int {
+  var hash = 0
+  for x in array {
+    hash = (hash << 5) &- hash &+ x
+  }
+  return hash
+}
+
 
 
 func unrolledHash(_ array : [Int]) -> Int {
@@ -51,6 +62,25 @@ for i in 1...10 {
 
 
 print()
+
+
+func testSHashPerformance() {
+    let nano = Swimsuit.nanotime() {
+      bogus = shiftHash(someInts)
+    }
+    print("Shift hash ", Double(nano) / Double(someInts.count), " ns/value")
+}
+
+
+
+for i in 1...10 {
+  testSHashPerformance()
+  print("\(bogus)")
+}
+
+
+print()
+
 
 func testUHashPerformance() {
     let nano = Swimsuit.nanotime() {
