@@ -29,8 +29,16 @@ func shiftHash(_ array : [Int]) -> Int {
 
 func unrolledHash(_ array : [Int]) -> Int {
   var hash = 0
+  let c = 31
+  let c2 = 31 &* 31
+  let c3 = 31 &* c2
+  let c4 = 31 &* c3
   for i in stride(from:0,to:array.count/4*4,by:4) {
-    hash = hash &* 31  &* 31  &* 31  &* 31  &+ array[i]  &* 31  &* 31  &* 31 &+ array[i + 1]  &* 31  &* 31    &+ array[i + 2]  &* 31  &+ array[i + 3]
+    hash = hash &* c4  
+    hash = hash &+ array[i]  &* c3 
+    hash = hash &+ array[i + 1]  &* c2   
+    hash = hash &+ array[i + 2]  &* c  
+    hash = hash &+ array[i + 3]
   }
   for i in stride(from:array.count/4*4,to:array.count,by:1) {
       hash = hash &* 31 &+ array[i]
@@ -55,7 +63,7 @@ func testHashPerformance() {
 
 
 
-for i in 1...10 {
+for _ in 1...10 {
   testHashPerformance()
   print("\(bogus)")
 }
@@ -73,7 +81,7 @@ func testSHashPerformance() {
 
 
 
-for i in 1...10 {
+for _ in 1...10 {
   testSHashPerformance()
   print("\(bogus)")
 }
@@ -89,7 +97,7 @@ func testUHashPerformance() {
     print("Unrolled hash ", Double(nano) / Double(someInts.count), " ns/value")
 }
 
-for i in 1...10 {
+for _ in 1...10 {
   testUHashPerformance()
   print("\(bogus)")
 }
