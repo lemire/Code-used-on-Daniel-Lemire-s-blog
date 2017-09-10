@@ -194,24 +194,6 @@ int32_t batched_intersect_skewed_uint16(const uint16_t *small, size_t size_s,
     idx_s += 4;
     idx_l += index1;
   }
-  /*  if((idx_s + 2 <= size_s) && (idx_l < size_l)){
-      int32_t index1, index2;
-      uint16_t target1 = small[idx_s];
-      uint16_t target2 = small[idx_s + 1];
-      binarySearch2(large + idx_l, size_l - idx_l,
-        target1,  target2,
-        &index1, &index2);
-      if((index1 + idx_l < size_l) && (large[idx_l + index1] == target1)) {
-            buffer[pos++] = target1;
-      }
-      if((index2 + idx_l < size_l) && (large[idx_l + index2] == target2)) {
-            buffer[pos++] = target2;
-      }
-
-      idx_s += 1;
-      idx_l += index1;
-}*/
-
   if (idx_s < size_s) {
     uint16_t val_l = large[idx_l], val_s = small[idx_s];
     while (true) {
