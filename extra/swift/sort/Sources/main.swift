@@ -23,7 +23,7 @@ extension MutableCollection where Indices.Iterator.Element == Index {
         let c = count
         guard c > 1 else { return }
 
-        for (firstUnshuffled , unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
+        for (firstUnshuffled, unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
             let d: IndexDistance = numericCast(randomInt(numericCast(unshuffledCount)))
             guard d != 0 else { continue }
             let i = index(firstUnshuffled, offsetBy: d)
@@ -65,8 +65,8 @@ func time(test_array: [Int]) -> (Double, Double) {
     return (Double(ΔE1)/Denom, Double(ΔE2)/Denom)
 }
 
-func runtest(_ size : Int) {
-  print("array size = ",size)
+func runtest(_ size: Int) {
+  print("array size = ", size)
   var array: [Int] = []
   for _ in 0..<size {
     array.append(randomInt(1000_000))
@@ -77,4 +77,3 @@ func runtest(_ size : Int) {
 runtest(100)
 runtest(1000)
 runtest(10000)
-

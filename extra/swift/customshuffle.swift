@@ -4,11 +4,10 @@ import Foundation
 
 let decksize = 52
 
+let rankStrings = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+let suitStrings = ["♠", "♥", "♦", "♣"]
 
-let rankStrings = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"]
-let suitStrings = ["♠", "♥","♦","♣"]
-
-struct card : Hashable, Equatable, CustomStringConvertible {
+struct card: Hashable, Equatable, CustomStringConvertible {
     var rank: Int //1,2...,11,12,13
     var suit: Int // 1,2,3,4
 
@@ -25,7 +24,7 @@ struct card : Hashable, Equatable, CustomStringConvertible {
 }
 
 // seems like Swift still lacks a portable random number generator
-func portablerand(_ max: Int)->Int {
+func portablerand(_ max: Int) -> Int {
       #if os(Linux)
             return Int(random() % (max + 1))
        #else
@@ -40,7 +39,7 @@ var deck = [[card]]()
 for i in 1...13 {
     var thisset = [card]()
     for j in 1...4 {
-        thisset.append(card(rank:i,suit:j))
+        thisset.append(card(rank:i, suit:j))
     }
     deck.append(thisset)
 }
@@ -82,7 +81,6 @@ while answer.count < decksize {
     }
   }
 }
-
 
 for card in answer {
   print(card)

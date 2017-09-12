@@ -6,8 +6,6 @@ import Dispatch
 // We know: if one is interested in performance, one should not code
 // one's own linear algebra functions. Yes, yes.
 
-
-
 func scalarproduct(_ array1: [Float], _ array2: [Float]) -> Float {
     var s = Float(0)
     let mylength = min(array1.count, array2.count) // please don't mess with me
@@ -20,4 +18,4 @@ func scalarproduct(_ array1: [Float], _ array2: [Float]) -> Float {
 let a =  Array(repeating: Float(12), count: 4*1024)
 let b =  Array(repeating: Float(42), count: 4*1024)
 
-print(scalarproduct(a,b))
+print(scalarproduct(a, b))

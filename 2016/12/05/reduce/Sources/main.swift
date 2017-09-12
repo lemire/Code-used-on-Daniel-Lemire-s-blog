@@ -18,15 +18,14 @@ func unsafebasicsum(_ array: [Int]) -> Int {
 }
 
 func reducesum(_ array: [Int]) -> Int {
-    return array.reduce(0,+)
+    return array.reduce(0, +)
 }
 
 func unsafereducesum(_ array: [Int]) -> Int {
-    return array.reduce(0,{$0 &+ $1})
+    return array.reduce(0, {$0 &+ $1})
 }
 
-
-func time() -> (Double,Double,Double,Double) {
+func time() -> (Double, Double, Double, Double) {
     func start() -> DispatchTime { return  DispatchTime.now() }
     func lap(_ t0: DispatchTime) -> UInt64 {
         let newtime = DispatchTime.now()

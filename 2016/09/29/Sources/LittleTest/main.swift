@@ -1,3 +1,2 @@
-import CSwiftCallOverhead;
+import CSwiftCallOverhead
 print(CSwiftCallOverhead.howmany())
-

@@ -1,54 +1,54 @@
 import XCTest
 @testable import SwiftCallOverhead
 @testable import CSwiftCallOverhead
-class SwiftCallOverheadTests : XCTestCase {
+class SwiftCallOverheadTests: XCTestCase {
   func testPureCPerformance() {
-    measure() {
-     print(CSwiftCallOverhead.howmany());
+    measure {
+     print(CSwiftCallOverhead.howmany())
     }
   }
 
   func testNativePerformance() {
-    measure() {
-      var i : Int32 = 1;
-      var j : Int32 = 1;
-      var counter = 0;
+    measure {
+      var i: Int32 = 1
+      var j: Int32 = 1
+      var counter = 0
       // fibonacci
       while ( j != 0 ) {
-        let c = j;
-        j = i &+ j;
-        i = c;
-        counter += 1;
+        let c = j
+        j = i &+ j
+        i = c
+        counter += 1
       }
-      print (counter);
+      print (counter)
     }
   }
 
   func testDirectCPerformance() {
-    measure() {
-      var i : Int32 = 1;
-      var j : Int32 = 1;
-      var counter = 0;
+    measure {
+      var i: Int32 = 1
+      var j: Int32 = 1
+      var counter = 0
       // fibonacci
       while ( j != 0 ) {
-        CSwiftCallOverhead.fibo(&i,&j);
-        counter += 1;
+        CSwiftCallOverhead.fibo(&i, &j)
+        counter += 1
       }
-      print (counter);
+      print (counter)
     }
   }
 
   func testCPerformance() {
-    measure() {
-      var i : Int32 = 1;
-      var j : Int32 = 1;
-      var counter = 0;
+    measure {
+      var i: Int32 = 1
+      var j: Int32 = 1
+      var counter = 0
       // fibonacci
       while ( j != 0 ) {
-        SwiftCallOverhead.wrappedfibo(&i,&j);
-        counter += 1;
+        SwiftCallOverhead.wrappedfibo(&i, &j)
+        counter += 1
       }
-      print (counter);
+      print (counter)
     }
   }
 
@@ -56,7 +56,7 @@ class SwiftCallOverheadTests : XCTestCase {
 
 #if os(Linux)
 extension SwiftCallOverheadTests {
-  static var allTests : [(String, (SwiftCallOverheadTests)->() throws->Void)] {
+  static var allTests: [(String, (SwiftCallOverheadTests) -> Void throws->Void)] {
     return [
       ("testDirectCPerformance()", testDirectCPerformance),
       ("testNativePerformance()", testNativePerformance),

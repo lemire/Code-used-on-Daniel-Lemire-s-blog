@@ -5,7 +5,7 @@ let package = Package(
     targets: [
         Target(name: "SwiftCallOverhead", dependencies: ["CSwiftCallOverhead"]),
         Target(name: "LittleTest", dependencies: ["CSwiftCallOverhead"]),
-        Target(name: "LittleCOverheadTest", dependencies: ["CSwiftCallOverhead"]),
+        Target(name: "LittleCOverheadTest", dependencies: ["CSwiftCallOverhead"])
       ],
     exclude: ["code"]
 )

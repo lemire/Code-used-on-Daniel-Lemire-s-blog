@@ -9,7 +9,7 @@ func loopflatmap (_ test_array: [Int]) -> [String] {
           result.append(tmp)
       }
     }
-    return result;
+    return result
 }
 
 func fastloopflatmap (_ test_array: [Int]) -> [String] {
@@ -19,9 +19,8 @@ func fastloopflatmap (_ test_array: [Int]) -> [String] {
           result.append("string\(x)")
       }
     }
-    return result;
+    return result
 }
-
 
 func filtermap (_ test_array: [Int]) -> [String] {
   return array.map { "string\($0)" }
@@ -35,7 +34,6 @@ func straightflatmap (_ test_array: [Int]) -> [String] {
         }
 }
 
-
 func time(test_array: [Int]) -> (Double, Double, Double, Double) {
     func start() -> DispatchTime { return  DispatchTime.now() }
     func lap(_ t0: DispatchTime) -> UInt64 {
@@ -48,7 +46,6 @@ func time(test_array: [Int]) -> (Double, Double, Double, Double) {
       print("bug")
     }
     let ΔE1 = lap(t0)
-
 
     t0 = start()
     if filtermap(test_array).count != expectedlength {
@@ -68,7 +65,6 @@ func time(test_array: [Int]) -> (Double, Double, Double, Double) {
     }
     let ΔE4 = lap(t0)
 
- 
     let Denom = Double(test_array.count)
 
     return (Double(ΔE1)/Denom, Double(ΔE2)/Denom, Double(ΔE3)/Denom, Double(ΔE4)/Denom)

@@ -10,7 +10,7 @@ public struct FastFlattenIterator: IteratorProtocol {
     var i = 0 // top-level index
     var j = 0 // second-level index
     var jmax = 0 // essentially, this is currentarray.count, but we buffer it
-    var currentarray : [Int]! // quick reference to an int array to be flattened
+    var currentarray: [Int]! // quick reference to an int array to be flattened
 
    init(_ segments: [Any]) {
        self.segments = segments
@@ -47,8 +47,7 @@ public struct FastFlattenIterator: IteratorProtocol {
    }
 }
 
-
-func chain(_ segments: [Any]) -> AnyIterator<Int>{
+func chain(_ segments: [Any]) -> AnyIterator<Int> {
     var i = 0
     var j = 0
     return AnyIterator<Int> {
@@ -74,7 +73,6 @@ func chain(_ segments: [Any]) -> AnyIterator<Int>{
     }
 }
 
-
 func flatten_array(_ segments: [Any]) -> [Int] {
     var result = [Int]()
     for segment in segments {
@@ -90,9 +88,8 @@ func flatten_array(_ segments: [Any]) -> [Int] {
     return result
 }
 
-
 func time(test_array: [Any], cycles: Int = 10) -> (array_iterate: Double,
-                                                        array_store  : Double,
+                                                        array_store: Double,
                                                         generate_iterate: Double,
                                                         generate_store: Double,
                                                         fastflatten_iterator: Double,
@@ -135,7 +132,6 @@ func time(test_array: [Any], cycles: Int = 10) -> (array_iterate: Double,
     }
     let ΔG2 = lap(t0)
 
-
     t0 = start()
     for _ in 0..<cycles {
         var F = FastFlattenIterator(test_array)
@@ -153,7 +149,6 @@ func time(test_array: [Any], cycles: Int = 10) -> (array_iterate: Double,
         }
     }
     let ΔFF2 = lap(t0)
-
 
     let Denom = Double(expectedlength * cycles)
 

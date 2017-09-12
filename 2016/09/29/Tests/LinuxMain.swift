@@ -1,4 +1,4 @@
-import XCTest;
-@testable import SwiftCallOverheadTests;
+import XCTest
+@testable import SwiftCallOverheadTests
 
 XCTMain([testCase(SwiftCallOverheadTests.allTests)])

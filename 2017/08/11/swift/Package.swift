@@ -4,6 +4,6 @@ let package = Package(
     name: "hashbench"
 ,
     dependencies: [
-   .Package(url: "https://github.com/lemire/Swimsuit.git",  majorVersion: 0)
+   .Package(url: "https://github.com/lemire/Swimsuit.git", majorVersion: 0)
     ]
 )
