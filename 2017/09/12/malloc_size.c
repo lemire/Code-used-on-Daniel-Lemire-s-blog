@@ -8,21 +8,21 @@
 #ifdef __APPLE__
 #include <malloc/malloc.h>
 #endif
-#ifdef __LINUX__
+#ifdef __linux__
 #include <malloc.h>
 #endif 
  
 void demo(size_t N) {
-    int repeat = 5;
+    int repeat = 500;
     uint64_t * values = (uint64_t *) malloc(N * sizeof(uint64_t));
 #ifdef __APPLE__
     size_t expected = malloc_size(values);
     printf("allocated %zu, reported allocation = %zu \n", N * sizeof(uint64_t), expected);
     BEST_TIME(malloc_size(values), expected, , repeat, 1, true);
-#elif defined(__LINUX__)
+#elif defined(__linux__)
     size_t expected = malloc_usable_size(values);
     printf("allocated %zu, reported allocation = %zu \n", N * sizeof(uint64_t), expected);
-    BEST_TIME(malloc_size(values), expected, , repeat, 1, true);
+    BEST_TIME(malloc_usable_size(values), expected, , repeat, 1, true);
 #endif
     free(values);
 }
