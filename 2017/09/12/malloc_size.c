@@ -27,5 +27,6 @@ void demo(size_t N) {
     free(values);
 }
 int main() {
+  printf("%zu \n",malloc_usable_size(malloc(1)));
   for(size_t N = 10; N < 100000000; N*=10) demo(N);
 }
