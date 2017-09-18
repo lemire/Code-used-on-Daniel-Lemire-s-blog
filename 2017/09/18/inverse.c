@@ -5,7 +5,7 @@
 #include <assert.h>
 
 static inline uint32_t f32(uint32_t x, uint32_t y) {
-  return  y * ( UINT32_C(2) - y * x );
+  return  y * ( 2 - y * x );
 }
 
 static uint32_t findInverse32(uint32_t x) {
@@ -19,7 +19,7 @@ static uint32_t findInverse32(uint32_t x) {
 
 
 static inline uint64_t f64(uint64_t x, uint64_t y) {
-  return  y * ( UINT64_C(2) - y * x );
+  return  y * ( 2 - y * x );
 }
 
 static uint64_t findInverse64(uint64_t x) {
