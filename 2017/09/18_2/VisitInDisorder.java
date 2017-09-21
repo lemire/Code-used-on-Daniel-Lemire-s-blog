@@ -17,6 +17,8 @@ public class VisitInDisorder {
 
     public int getCurrentValue() {
       return (int)(( (long) index * prime + offset ) % ( maxrange));
+        // the multiplication and the modulo could be optimized away with 
+        // some work
     }
 
     public boolean hasNext() {
