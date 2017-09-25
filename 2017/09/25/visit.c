@@ -155,7 +155,6 @@ int main() {
     printf("N = %d \n", N);
     int * target = malloc(N * sizeof(int));
     demo(N, target);
-    demoFast(N, target);
 
     demoLCG(N, target);
     free(target);
