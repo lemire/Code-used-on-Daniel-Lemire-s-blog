@@ -5,6 +5,7 @@ public class VisitInDisorder {
     int prime;
     int index;
     int offset;
+    int runningvalue;
 
     public VisitInDisorder(int range) {
       if(range < 2) throw new IllegalArgumentException("Your range need to be greater than 1 "+range);
@@ -13,11 +14,13 @@ public class VisitInDisorder {
       prime = selectCoPrimeResev(min, range);
       offset = java.util.concurrent.ThreadLocalRandom.current().nextInt(range);
       index = 0;
-    }
+      runningvalue = offset;
 
-    public int getCurrentValue() {
+    }
+    // computed the long way
+    private int getCurrentValue() {
       return (int)(( (long) index * prime + offset ) % ( maxrange));
-        // the multiplication and the modulo could be optimized away with 
+        // the multiplication and the modulo could be optimized away with
         // some work
     }
 
@@ -26,9 +29,12 @@ public class VisitInDisorder {
     }
 
     public int next() {
-      int answer = getCurrentValue();
+      runningvalue += prime;
+      if(runningvalue >= maxrange) runningvalue -= maxrange;
       index ++;
-      return answer;
+      // next line can be safely uncommented
+      //if(runningvalue != getCurrentValue()) throw new RuntimeException("bug");
+      return runningvalue;
     }
 
     public static void main(String[] args) {
@@ -46,6 +52,7 @@ public class VisitInDisorder {
       }
       System.out.println();
       if(N != checker.size()) throw new RuntimeException("bad set size");
+      System.out.println("ok");
     }
 
     final static int MAX_COUNT = 100000;

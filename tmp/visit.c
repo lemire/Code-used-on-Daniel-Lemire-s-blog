@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <math.h>
 #include <time.h>
+#include <assert.h>
+
 #include "benchmark.h"
 
 static inline  int gcd(uint32_t u, uint32_t v) {
@@ -62,6 +64,30 @@ static void shuffle(int * source, int * target, uint32_t size) {
     target[index] = source[getMapped(index, prime, offset, size)];
 }
 
+static void shuffleReallyFast(int * source, int * target, uint32_t size) {
+  uint32_t prime = coPrime(size);
+  assert(prime<size);
+  uint32_t offset = (rand() >> 1)% size;
+  //printf("orig offset = %d\n", offset);
+
+  for(int  index = 0; index < size; index++) {
+  //printf("offset at %d  offset = %d\n", index, offset);
+
+    target[index] = source[offset];
+    offset += prime;
+    offset -= (((int32_t)size - (int32_t)size) >> 31) & size;
+  }
+}
+
+void shuffleReallyFast2(int * source, int * target, uint32_t size) {
+  uint32_t prime = coPrime(size);
+  uint32_t offset = (rand() >> 1)% size;
+  for(int  index = 0; index < size; index++) {
+    target[index] = source[offset];
+    uint32_t newoff = offset + prime;
+    offset = (newoff < size) ? newoff : newoff - size;
+  }
+}
 // M = ceil( (1<<64) / d ), d > 0
 static inline uint64_t computeM_u32(uint32_t d) {
   return UINT64_C(0xFFFFFFFFFFFFFFFF) / d + 1;
@@ -146,20 +172,40 @@ static void shuffleLCG(int * source, int * target, uint32_t size) {
   }
 }
 
+#define REPEAT 50
 
 void demo(size_t N, int * target) {
-  srand(time(NULL));
+  srand(1234);
   uint32_t size = N;
-  int repeat = 50;
+  int repeat = REPEAT;
   int * source = malloc(N * sizeof(int));
   for(int k = 0; k < size; k++)source[k] = k;
   BEST_TIME_NOCHECK(shuffle(source,target,size),,repeat,size,true);
   free(source);
 }
+
+void demoReallyFast(size_t N, int * target) {
+  srand(1234);
+  uint32_t size = N;
+  int repeat = REPEAT;
+  int * source = malloc(N * sizeof(int));
+  for(int k = 0; k < size; k++)source[k] = k;
+  BEST_TIME_NOCHECK(shuffleReallyFast(source,target,size),,repeat,size,true);
+  free(source);
+}
+void demoReallyFast2(size_t N, int * target) {
+  srand(1234);
+  uint32_t size = N;
+  int repeat = REPEAT;
+  int * source = malloc(N * sizeof(int));
+  for(int k = 0; k < size; k++)source[k] = k;
+  BEST_TIME_NOCHECK(shuffleReallyFast2(source,target,size),,repeat,size,true);
+  free(source);
+}
 void demoFast(size_t N, int * target) {
   srand(time(NULL));
   uint32_t size = N;
-  int repeat = 50;
+  int repeat = REPEAT;
   int * source = malloc(N * sizeof(int));
   for(int k = 0; k < size; k++)source[k] = k;
   BEST_TIME_NOCHECK(shuffleFast(source,target,size),,repeat,size,true);
@@ -168,7 +214,7 @@ void demoFast(size_t N, int * target) {
 void demoLCG(size_t N, int * target) {
   srand(time(NULL));
   uint32_t size = N;
-  int repeat = 50;
+  int repeat = REPEAT;
   int * source = malloc(N * sizeof(int));
   for(int k = 0; k < size; k++)source[k] = k;
   BEST_TIME_NOCHECK(shuffleLCG(source,target,size),,repeat,size,true);
@@ -177,14 +223,25 @@ void demoLCG(size_t N, int * target) {
 
 int main() {
 
-  for(int N = 7 ; N < 1000000; N *=7) {
+  for(int N = 7 ; N <= 1000000; N *=7) {
     printf("N = %d \n", N);
     int * target = malloc(N * sizeof(int));
-    demo(N, target);
-    demoFast(N, target);
 
+    demo(N, target);
+    printf("\n");
+    int * target2 = malloc(N * sizeof(int));
+  //  demoReallyFast(N, target2);
+
+  //  for(int k = 0; k < N; k++) if(target[k]!= target2[k]) {printf("bug\n");return -1;}
+
+demoReallyFast2(N, target2);
+
+for(int k = 0; k < N; k++) if(target[k]!= target2[k]) {printf("bug\n");return -1;}
+    demoFast(N, target);
     demoLCG(N, target);
     free(target);
+    free(target2);
+
   }
   return 0;
 }
