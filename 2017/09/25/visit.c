@@ -172,7 +172,7 @@ void demoLCG(size_t N, int *target) {
 }
 
 int main() {
-  for (int N = 7; N <= 1000000; N *= 7) {
+  for (int N = 500; N <= 10000000; N *= 7) {
     printf("N = %d \n", N);
     int *target = malloc(N * sizeof(int));
 
