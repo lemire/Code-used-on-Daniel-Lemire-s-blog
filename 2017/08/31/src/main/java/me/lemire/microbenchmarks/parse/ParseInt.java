@@ -23,6 +23,7 @@ public class ParseInt {
         public static int N = 2048;
 
         String myarray = new String();
+        int[] expected;
         Random rand = new Random();
         public int nextQuery()  {
             return  rand.nextInt();
@@ -30,8 +31,11 @@ public class ParseInt {
 
         public BenchmarkState() {
           // this won't be fast
+          expected = new int[N];
           for(int k = 0 ; k < N ; k++) {
-            myarray += (rand.nextInt() % 1000000);
+            int val = (rand.nextInt() % 1000000);
+            expected[k] = val;
+            myarray += val;
             if(k + 1 < N) myarray += ",";
           }
         }
@@ -54,14 +58,6 @@ public class ParseInt {
         return ans;
     }
 
-    public static int countChar(String s, char c) {
-      int l = s.length();
-      int count = 0;
-      for(int k = 0; k < l; k++)
-        if(s.charAt(k) == c) count ++;
-      return count;
-    }
-
     @Benchmark
     public int[] split(BenchmarkState s) {
         String[] positions = s.myarray.split(",");
@@ -70,48 +66,38 @@ public class ParseInt {
           ans[i] = Integer.parseInt(positions[i]);
         }
         if(ans.length != s.N) throw new RuntimeException("bug");
+        if(! Arrays.equals(ans,s.expected)) throw new RuntimeException("bug");
         return ans;
     }
 
-    // assume positive numbers, return -1 if not found
-    private static int parseSubstring(String s, int begin, int len) {
-      if(len == 0) return -1;
-      char c = s.charAt(begin);
-      int i = 0;
-      while(!Character.isDigit(c) ) {
-        i++;
-        if(i == len) return -1;
-        c = s.charAt(begin + i);
-      }
-      int ans = Character.digit(c,10);
-      i++;
-      for(; i < len; ++i) {
-        c = s.charAt(i + begin);
-        if(!Character.isDigit(c) ) {
-          break;
-        }
-        ans = 10 * ans +  Character.digit(c,10);
-      }
-      return ans;
-    }
 
     @Benchmark
-    public int[] manualSplit(BenchmarkState s) {
-      int maxsize = countChar(s.myarray, ',') + 1;
-      int[] ans = new int[maxsize];
-      int pos = 0;
-      int l = s.myarray.length();
-      for(int begin = 0; begin + 1 < l; ) {
-        int next = begin + 1;
-        while(next < l && s.myarray.charAt(next) != ',') next++;
-        int v = parseSubstring(s.myarray, begin, next - begin);
-        if(v >= 0) ans[pos++] = v;
-        begin = next;
+    public int[] monolithicSplit(BenchmarkState s) {
+      final String text = s.myarray;
+      final int length = text.length();
+      final int limit = (length / 2) + 1;
+      int[] array = new int[limit];
+      int pos = 0, tmp = 0;
+      boolean neg = false;
+      for (int i = 0; i < length; i++) {
+        char c = text.charAt(i);
+        if (c == ',') {
+          array[pos++] = neg ? 0 - tmp : tmp;
+          tmp = 0;
+          neg = false;
+        } else if (c == '-') {
+          neg = true;
+        } else {
+          tmp = (tmp << 3) + (tmp << 1) + (c & 0xF);
+        }
       }
-      if(pos < maxsize) ans = Arrays.copyOf(ans,pos);
-      if(ans.length != s.N) throw new RuntimeException("bug");
-      return ans;
+      array[pos++] = neg ? 0 - tmp : tmp;
+      if(pos != s.N) throw new RuntimeException("bug");
+      int[] result = new int[pos];
+      System.arraycopy(array, 0, result, 0, pos);
+      return result;
     }
+
     public static void main(String[] args) throws RunnerException {
        Options opt = new OptionsBuilder()
                 .include(ParseInt.class.getSimpleName())
