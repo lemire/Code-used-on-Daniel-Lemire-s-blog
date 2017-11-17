@@ -1,5 +1,6 @@
 #ifndef _BENCHMARK_H_
 #define _BENCHMARK_H_
+#ifdef __x86_64__
 
 #include <stdint.h>
 #define RDTSC_START(cycles)                                             \
@@ -31,6 +32,18 @@
                        );                                               \
         (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;                \
     } while (0)
+
+#else
+#define RDTSC_START(cycles) \
+    do {                    \
+        cycles = clock();   \
+    } while (0)
+
+#define RDTSC_FINAL(cycles) \
+    do {                    \
+        cycles = clock();   \
+    } while (0)
+#endif
 
 static __attribute__ ((noinline))
 uint64_t rdtsc_overhead_func(uint64_t dummy) {
