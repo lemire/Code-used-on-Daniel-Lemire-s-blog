@@ -79,6 +79,7 @@ void demo(size_t N) {
 
 
 int main() {
+  printf("clocks per s = %d \n", CLOCKS_PER_SEC);
   demo(1000);
   return 0;
 }

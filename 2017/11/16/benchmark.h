@@ -1,8 +1,11 @@
 #ifndef _BENCHMARK_H_
 #define _BENCHMARK_H_
+#include <stdint.h>
+#include <time.h>
 #ifdef __x86_64__
 
-#include <stdint.h>
+const char * unitname = "cycles";
+
 #define RDTSC_START(cycles)                                             \
     do {                                                                \
         uint32_t cyc_high, cyc_low;                                     \
@@ -34,12 +37,14 @@
     } while (0)
 
 #else
+const char * unitname = " (clock units) ";
+
 #define RDTSC_START(cycles) \
     do {                    \
         cycles = clock();   \
     } while (0)
 
-#define RDTSC_FINAL(cycles) \
+#define RDTSC_STOP(cycles) \
     do {                    \
         cycles = clock();   \
     } while (0)
@@ -98,8 +103,8 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             uint64_t S = size;                                            \
             float cycle_per_op = (min_diff) / (double)S;                  \
             float avg_cycle_per_op = (sum_diff) / ((double)S * repeat);   \
-            if(verbose) printf(" %.3f cycles per operation (best) ", cycle_per_op);   \
-            if(verbose) printf("\t%.3f cycles per operation (avg) ", avg_cycle_per_op);   \
+            if(verbose) printf(" %.3f %s per operation (best) ", cycle_per_op, unitname);   \
+            if(verbose) printf("\t%.3f %s per operation (avg) ", avg_cycle_per_op,unitname);   \
             if(verbose) printf("\n");                                                 \
             if(!verbose) printf(" %.3f ",cycle_per_op);                   \
             fflush(NULL);                                                 \
@@ -129,8 +134,8 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             uint64_t S = size;                                            \
             float cycle_per_op = (min_diff) / (double)S;                  \
             float avg_cycle_per_op = (sum_diff) / ((double)S * repeat);   \
-            if(verbose) printf(" %.3f cycles per operation (best) ", cycle_per_op);   \
-            if(verbose) printf("\t%.3f cycles per operation (avg) ", avg_cycle_per_op);   \
+            if(verbose) printf(" %.3f %s per operation (best) ", cycle_per_op, unitname);   \
+            if(verbose) printf("\t%.3f %s per operation (avg) ", avg_cycle_per_op,unitname);   \
             if(verbose) printf("\n");                                                 \
             if(!verbose) printf(" %.3f ",cycle_per_op);                   \
             fflush(NULL);                                                 \
