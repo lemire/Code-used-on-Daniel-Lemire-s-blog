@@ -39,6 +39,13 @@ void populate_float64(uint64_t num, double * array, uint64_t size) {
   }
 }
 
+ __attribute__((noinline))
+void populate_int32divbyconstant(uint32_t * array, uint32_t size) {
+  for(uint32_t i = 1; i <= size; i++) {
+    array[i] = i / 17;
+  }
+}
+
 
  __attribute__((noinline))
 void populate_int32(uint32_t num, uint32_t * array, uint32_t size) {
@@ -70,6 +77,7 @@ void demo(size_t N) {
 
   int repeat = 5;
   uint64_t inum64 = 1000000;
+  BEST_TIME_NOCHECK(populate_int32divbyconstant(iarray32,N),memset(iarray32,0,N * sizeof(uint64_t)) , repeat, N, true);
   BEST_TIME_NOCHECK(populate_int64(inum64,iarray64,N),memset(iarray64,0,N * sizeof(uint64_t)) , repeat, N, true);
   BEST_TIME_NOCHECK(populate_float64(inum64,farray64,N),memset(farray64,0,N * sizeof(double)) , repeat, N, true);
   BEST_TIME_NOCHECK(populate_int32(inum64,iarray32,N),memset(iarray32,0,N * sizeof(uint32_t)) , repeat, N, true);
