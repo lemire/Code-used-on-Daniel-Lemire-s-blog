@@ -8,19 +8,23 @@
 
 #include "benchmark.h"
 
+ __attribute__((noinline))
 uint64_t  int_div64(uint64_t a, uint64_t b) {
   return a / b;
 }
 
+ __attribute__((noinline))
 double float_div64(double a, double b) {
   return a / b;
 }
 
 
+ __attribute__((noinline))
 uint32_t  int_div32(uint32_t a, uint32_t b) {
   return a / b;
 }
 
+ __attribute__((noinline))
 double float_div32(float a, float b) {
   return a / b;
 }
