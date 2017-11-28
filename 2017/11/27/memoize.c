@@ -8,9 +8,13 @@
 
 #include "benchmark.h"
 
+int getlength(uint8_t x) {
+  return 4 + (x & 0b11) + ((x>>2) & 0b11) + ((x>>4) & 0b11) + (x>>6) ;
+}
+
 //credit:aqrit and KWillets
 int getlength_aqrit(uint8_t key) {
-  return ((0x11011000 * ((key * 0x0401) & 0x00033033)) >> 28)  + 4;
+  return ((uint32_t)(0x11011000 * ((key * 0x0401) & 0x00033033)) >> 28)  + 4;
 }
 
 
@@ -51,6 +55,15 @@ uint32_t sum_aqrit(uint8_t * key, size_t N) {
   return x;
 }
 
+
+uint32_t sum(uint8_t * key, size_t N) {
+  uint32_t x = 0;
+  for(size_t i = 0; i < N; i++) {
+    x += getlength(key[i]);
+  }
+  return x;
+}
+
 uint32_t sum_lookup(uint8_t * key, size_t N) {
   uint32_t x = 0;
   for(size_t i = 0; i < N; i++) {
@@ -77,6 +90,7 @@ uint32_t sum4_aqrit(uint8_t * key, size_t N) {
 void demo(size_t N) {
   uint8_t * keys = (uint8_t *) malloc(N * sizeof(uint8_t));
   for(size_t k = 0; k < 256; k++) {
+    assert(getlength_lookup(k) == getlength(k));
     assert(getlength_lookup(k) == getlength_aqrit(k));
   }
   uint32_t expected = 0;
@@ -86,6 +100,7 @@ void demo(size_t N) {
   }
 
   int repeat = 5;
+  BEST_TIME(sum(keys,N),expected, , repeat, N, true);
   BEST_TIME(sum_aqrit(keys,N),expected, , repeat, N, true);
   BEST_TIME(sum_lookup(keys,N),expected, , repeat, N, true);
   BEST_TIME(sum4_aqrit(keys,N),expected,  , repeat, N, true);
