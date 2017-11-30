@@ -14,7 +14,7 @@ int getlength(uint8_t x) {
 
 //credit:aqrit and KWillets
 int getlength_aqrit(uint8_t key) {
-  return ((uint32_t)(0x11011000 * ((key * 0x0401) & 0x00033033)) >> 28)  + 4;
+  return ((UINT32_C(0x11011000) * (((uint32_t)key * UINT32_C(0x0401)) & UINT32_C(0x00033033))) >> 28)  + 4;
 }
 
 
