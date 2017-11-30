@@ -1,4 +1,4 @@
-// gcc -O3 -o memoize memoize.c && ./memoize
+// gcc -O3 -o memoize memoize.c -march=native && ./memoize
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -11,6 +11,12 @@
 int getlength(uint8_t x) {
   return 4 + (x & 0b11) + ((x>>2) & 0b11) + ((x>>4) & 0b11) + (x>>6) ;
 }
+
+// credit: Thomas Mueller
+int getlength_mueller(uint8_t key) {
+  return __builtin_popcount(((key<<8)|key) & 0xaaff) + 4;
+}
+
 
 //credit:aqrit and KWillets
 int getlength_aqrit(uint8_t key) {
@@ -45,6 +51,14 @@ uint32_t getlength4_aqrit(uint32_t key) {
   uint32_t v = ((key >> 2) & 0x33333333) + (key & 0x33333333);
   v = ((v >> 4) & 0x0F0F0F0F) + (v & 0x0F0F0F0F);
   return v + 0x04040404;
+}
+
+uint32_t sum_mueller(uint8_t * key, size_t N) {
+  uint32_t x = 0;
+  for(size_t i = 0; i < N; i++) {
+    x += getlength_mueller(key[i]);
+  }
+  return x;
 }
 
 uint32_t sum_aqrit(uint8_t * key, size_t N) {
@@ -92,6 +106,7 @@ void demo(size_t N) {
   for(size_t k = 0; k < 256; k++) {
     assert(getlength_lookup(k) == getlength(k));
     assert(getlength_lookup(k) == getlength_aqrit(k));
+    assert(getlength_lookup(k) == getlength_mueller(k));
   }
   uint32_t expected = 0;
   for(size_t k = 0; k < N; k++) {
@@ -104,6 +119,8 @@ void demo(size_t N) {
   BEST_TIME(sum_aqrit(keys,N),expected, , repeat, N, true);
   BEST_TIME(sum_lookup(keys,N),expected, , repeat, N, true);
   BEST_TIME(sum4_aqrit(keys,N),expected,  , repeat, N, true);
+  BEST_TIME(sum_mueller(keys,N),expected,  , repeat, N, true);
+
 
   free(keys);
 }
