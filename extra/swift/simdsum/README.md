@@ -9,6 +9,8 @@ $ swift build --configuration release
 $ ./.build/release/simdsum
 ```
 
+Update: you can sum an array as ``array.reduce(0, &+)`` and get the same result.
+
 ## check the assembly
 
 ```
