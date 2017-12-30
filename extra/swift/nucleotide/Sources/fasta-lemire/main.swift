@@ -21,16 +21,16 @@ let endl : UInt8 = "\n".toASCIICode()
 
 typealias nucleotide_info = (letter: UInt8, probability: Float)
 
-var  iub_Nucleotides_Information : [nucleotide_info]=[
+let  iub_Nucleotides_Information : [nucleotide_info]=[
     ("a".toASCIICode(), 0.27), ("c".toASCIICode(), 0.12), ("g".toASCIICode(), 0.12), ("t".toASCIICode(), 0.27), ("B".toASCIICode(), 0.02),
     ("D".toASCIICode(), 0.02), ("H".toASCIICode(), 0.02), ("K".toASCIICode(), 0.02), ("M".toASCIICode(), 0.02), ("N".toASCIICode(), 0.02),
     ("R".toASCIICode(), 0.02), ("S".toASCIICode(), 0.02), ("V".toASCIICode(), 0.02), ("W".toASCIICode(), 0.02), ("Y".toASCIICode(), 0.02)];
 
-var  homo_Sapien_Nucleotides_Information: [nucleotide_info]=[
+let  homo_Sapien_Nucleotides_Information: [nucleotide_info]=[
     ("a".toASCIICode(), 0.3029549426680), ("c".toASCIICode(), 0.1979883004921),
     ("g".toASCIICode(), 0.1975473066391), ("t".toASCIICode(), 0.3015094502008)];
 
-func repeat_And_Wrap_String(_ string_To_Repeat: [UInt8], _ number_Of_Characters_To_Create : Int) {
+fileprivate func repeat_And_Wrap_String(_ string_To_Repeat: [UInt8], _ number_Of_Characters_To_Create : Int) {
     let string_To_Repeat_Length = string_To_Repeat.count
     let buffercap = MAXIMUM_LINE_WIDTH + string_To_Repeat_Length + 1
     let extended_String_To_Repeat = UnsafeMutablePointer<UInt8>.allocate(capacity:buffercap)
@@ -81,17 +81,17 @@ let IM : UInt32 = 139968
 let IMF : Float = Float(IM)
 let SEED : UInt32 = 42
 var seed = SEED
+let RIMF : Float = Float(1)/IMF
+let IA : UInt32 = 3877
+let IC : UInt32 = 29573
 
-func get_LCG_Pseudorandom_Number(_ max : UInt32) -> UInt32 {
-    let RIMF : Float = Float(1)/IMF
-    let IA : UInt32 = 3877
-    let IC : UInt32 = 29573
+fileprivate func get_LCG_Pseudorandom_Number() -> Float {
     seed=(seed &* IA &+ IC)%IM;
-    return UInt32(Float(max)*RIMF*Float(seed));
+    return RIMF*Float(seed);
 }
 
 
-func generate_And_Wrap_Pseudorandom_DNA_Sequence(
+fileprivate func generate_And_Wrap_Pseudorandom_DNA_Sequence(
     _  nucleotides_Information: [nucleotide_info],
     _ number_Of_Characters_To_Create: Int){
     // assume that number_Of_Nucleotides is small
@@ -126,7 +126,7 @@ func generate_And_Wrap_Pseudorandom_DNA_Sequence(
             currentbuffer = buffer
         }
         for column in 0..<line_Length {
-                let r = get_LCG_Pseudorandom_Number(IM)
+                let r = UInt32(IMF * get_LCG_Pseudorandom_Number())
                 var count = 0
                 for x in cumulative_Probabilities {
                     if(x<=r) {
