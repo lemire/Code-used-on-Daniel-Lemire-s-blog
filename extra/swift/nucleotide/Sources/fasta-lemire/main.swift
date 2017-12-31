@@ -5,15 +5,15 @@
 by Daniel Lemire, based on the C version by Jeremy Zerfas
 
 */
-//let array: [UInt8] = Array(string.utf8)
-
 import Foundation
 import Dispatch
 let stdout = FileHandle.standardOutput
 
 // This controls the width of lines that are output by this program.
 let MAXIMUM_LINE_WIDTH = 60
-let buffer_size = 64 * 1024  // use a 64kB printout buffer/
+let buffer_size = 64 * 1024  // use a 64kB printout buffer
+
+// converts first character of a string to an ASCII code
 extension String {
     func toASCIICode() -> UInt8 { return self.utf8.map{UInt8($0)}[0] }
 }
@@ -49,7 +49,7 @@ fileprivate func repeat_And_Wrap_String(_ string_To_Repeat: [UInt8], _ number_Of
     }
     var offset = 0
     var current_Number_Of_Characters_To_Create = number_Of_Characters_To_Create
-    
+
     var buffer = UnsafeMutablePointer<UInt8>.allocate(capacity:buffer_size)
     var currentbuffer = buffer
     let endbuffer = buffer.advanced(by: buffer_size)
@@ -96,12 +96,14 @@ fileprivate func generate_And_Wrap_Pseudorandom_DNA_Sequence(
     _ number_Of_Characters_To_Create: Int){
     // assume that number_Of_Nucleotides is small
     let number_Of_Nucleotides = nucleotides_Information.count
-    var cumulative_Probabilities = [UInt32](repeating:0,count:number_Of_Nucleotides-1)
+    var cumulative_Probabilities = [Float](repeating:0,count:number_Of_Nucleotides-1)
     var cumulative_Probability: Float=0.0
     for i in (0..<nucleotides_Information.count-1) {
         cumulative_Probability+=nucleotides_Information[i].probability;
-        cumulative_Probabilities[i]=UInt32(cumulative_Probability*IMF);
+        cumulative_Probabilities[i]=cumulative_Probability*IMF;
     }
+    print(cumulative_Probabilities.count)
+
     let buffercap = MAXIMUM_LINE_WIDTH+1
     let line = UnsafeMutablePointer<UInt8>.allocate(capacity:buffercap)
     defer {
@@ -109,7 +111,7 @@ fileprivate func generate_And_Wrap_Pseudorandom_DNA_Sequence(
     }
     line[MAXIMUM_LINE_WIDTH] = endl
     var current_Number_Of_Characters_To_Create = number_Of_Characters_To_Create
-    
+
     var buffer = UnsafeMutablePointer<UInt8>.allocate(capacity:buffer_size)
     var currentbuffer = buffer.advanced(by: 0)
     let endbuffer = buffer.advanced(by: buffer_size)
@@ -126,20 +128,23 @@ fileprivate func generate_And_Wrap_Pseudorandom_DNA_Sequence(
             currentbuffer = buffer
         }
         for column in 0..<line_Length {
-                let r = UInt32(IMF * get_LCG_Pseudorandom_Number())
+                let r = IMF * get_LCG_Pseudorandom_Number()
                 var count = 0
+                // this is the bottleneck
                 for x in cumulative_Probabilities {
                     if(x<=r) {
                         count = count &+ 1;
                     }
                 }
+                // is terrible:
+                //count = cumulative_Probabilities.filter({$0<=r}).count
                 currentbuffer[column]=nucleotides_Information[count].letter;
         }
         currentbuffer[line_Length] = endl
         currentbuffer = currentbuffer.advanced(by: line_Length + 1)
         current_Number_Of_Characters_To_Create = current_Number_Of_Characters_To_Create &- line_Length;
    }
-    stdout.write(Data(bytesNoCopy:buffer, count: currentbuffer - buffer, deallocator: .none))
+   stdout.write(Data(bytesNoCopy:buffer, count: currentbuffer - buffer, deallocator: .none))
 }
 
 // Read command line parameters
@@ -158,11 +163,8 @@ var homo_Sapiens_Alu : [UInt8] =
 repeat_And_Wrap_String(homo_Sapiens_Alu, 2*n);
 
 print(">TWO IUB ambiguity codes");
-print(iub_Nucleotides_Information)
 generate_And_Wrap_Pseudorandom_DNA_Sequence(iub_Nucleotides_Information, 3*n);
 
 print(">THREE Homo sapiens frequency");
 generate_And_Wrap_Pseudorandom_DNA_Sequence(
     homo_Sapien_Nucleotides_Information, 5*n);
-
-

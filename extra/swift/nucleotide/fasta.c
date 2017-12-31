@@ -142,7 +142,6 @@ static void generate_And_Wrap_Pseudorandom_DNA_Sequence(
          for(intnative_t i=0; i<number_Of_Nucleotides; i++)
             if(cumulative_Probabilities[i]<=r)
                count++;
-
          line[column]=nucleotides_Information[count].letter;
       }
 
