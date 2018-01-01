@@ -85,9 +85,9 @@ let RIMF : Float = Float(1)/IMF
 let IA : UInt32 = 3877
 let IC : UInt32 = 29573
 
-fileprivate func get_LCG_Pseudorandom_Number() -> Float {
+fileprivate func get_LCG_Pseudorandom_Number() -> UInt32 {
     seed=(seed &* IA &+ IC)%IM;
-    return RIMF*Float(seed);
+    return seed;
 }
 
 
@@ -96,14 +96,12 @@ fileprivate func generate_And_Wrap_Pseudorandom_DNA_Sequence(
     _ number_Of_Characters_To_Create: Int){
     // assume that number_Of_Nucleotides is small
     let number_Of_Nucleotides = nucleotides_Information.count
-    var cumulative_Probabilities = [Float](repeating:0,count:number_Of_Nucleotides-1)
+    var cumulative_Probabilities = [UInt32](repeating:0,count:number_Of_Nucleotides-1)
     var cumulative_Probability: Float=0.0
     for i in (0..<nucleotides_Information.count-1) {
         cumulative_Probability+=nucleotides_Information[i].probability;
-        cumulative_Probabilities[i]=cumulative_Probability*IMF;
+        cumulative_Probabilities[i]=UInt32(cumulative_Probability*IMF);
     }
-    print(cumulative_Probabilities.count)
-
     let buffercap = MAXIMUM_LINE_WIDTH+1
     let line = UnsafeMutablePointer<UInt8>.allocate(capacity:buffercap)
     defer {
@@ -128,7 +126,7 @@ fileprivate func generate_And_Wrap_Pseudorandom_DNA_Sequence(
             currentbuffer = buffer
         }
         for column in 0..<line_Length {
-                let r = IMF * get_LCG_Pseudorandom_Number()
+                let r = get_LCG_Pseudorandom_Number()
                 var count = 0
                 // this is the bottleneck
                 for x in cumulative_Probabilities {
@@ -136,8 +134,6 @@ fileprivate func generate_And_Wrap_Pseudorandom_DNA_Sequence(
                         count = count &+ 1;
                     }
                 }
-                // is terrible:
-                //count = cumulative_Probabilities.filter({$0<=r}).count
                 currentbuffer[column]=nucleotides_Information[count].letter;
         }
         currentbuffer[line_Length] = endl
