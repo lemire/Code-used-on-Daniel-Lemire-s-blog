@@ -91,12 +91,15 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             fflush(NULL);                                                 \
  } while (0)
 
+ __attribute__ ((noinline))
 uint32_t encode_hundreds(uint32_t hi, uint32_t lo) {
         uint32_t merged = hi | (lo << 16);
         uint32_t tens = (merged * 103UL) >> 10; // they discard lsb
         tens &= (0xFUL << 16) | 0xFUL;
         return tens + ((merged - 10UL * tens) << 8);
 }
+
+ __attribute__ ((noinline))
 uint32_t alt_encode_hundreds(uint32_t hi, uint32_t lo) {
         uint32_t merged = hi | (lo << 16);
         uint32_t multiply = merged * 103UL;
@@ -104,7 +107,7 @@ uint32_t alt_encode_hundreds(uint32_t hi, uint32_t lo) {
         uint32_t multiply_msb = multiply & 0x3c003c00;
         uint32_t tens = multiply_msb >> 10;
         uint32_t units = ((multiply_lsb * 10) >> 2)& 0x0F000F00;
-        return tens | units;// could be addition
+        return tens + units;// could be addition
 }
 
 uint32_t sumall() {
