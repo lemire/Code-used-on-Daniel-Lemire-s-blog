@@ -147,6 +147,7 @@ int main() {
   demooffset(1000, 5);
   demooffset(1008, 5);
   demooffset(1024, 5);
+  demooffset(1024+24, 5);
 //  demooffset_explain(1000, 5);
 //  demooffset_explain(1024, 5);
 //  demooffset_explain(1015, 5);
