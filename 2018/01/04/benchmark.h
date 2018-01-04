@@ -70,7 +70,6 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
       if (cycles_diff < min_diff) min_diff = cycles_diff;	      \
     }								      \
     global_rdtsc_overhead = min_diff;				      \
-    printf("rdtsc_overhead set to %d\n", (int)global_rdtsc_overhead);     \
   } while (0)							      \
 
 
@@ -116,7 +115,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             if (global_rdtsc_overhead == UINT64_MAX) {                    \
                RDTSC_SET_OVERHEAD(rdtsc_overhead_func(1), repeat);        \
             }                                                             \
-            if(verbose) printf("%-60s\t: ", #test);                                        \
+            if(verbose) printf("%-20s\t: ", #test);                                        \
             fflush(NULL);                                                 \
             uint64_t cycles_start, cycles_final, cycles_diff;             \
             uint64_t min_diff = (uint64_t)-1;                             \
@@ -135,7 +134,6 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             float cycle_per_op = (min_diff) / (double)S;                  \
             float avg_cycle_per_op = (sum_diff) / ((double)S * repeat);   \
             if(verbose) printf(" %.3f %s per operation (best) ", cycle_per_op, unitname);   \
-            if(verbose) printf("\t%.3f %s per operation (avg) ", avg_cycle_per_op,unitname);   \
             if(verbose) printf("\n");                                                 \
             if(!verbose) printf(" %.3f ",cycle_per_op);                   \
             fflush(NULL);                                                 \
