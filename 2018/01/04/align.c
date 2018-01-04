@@ -89,6 +89,11 @@ void demo(size_t N, bool flush) {
   free(farray1);
 }
 
+
+bool needPaddingTo32bytes(const void *inbyte) {
+  return ((uintptr_t)(inbyte) & 31) != 0;
+}
+
 void demooffset(size_t N, size_t maxoffset) {
   printf("N = %zu \n", N);
   size_t farray1size = (2 * N + 1 + maxoffset) * sizeof(double);
@@ -101,6 +106,8 @@ void demooffset(size_t N, size_t maxoffset) {
     memset(farray1, 0, farray1size); // fully clean
     double *a = (double *)(farray1 + (offset * sizeof(double)));
     double *b = (double *)(farray1 + (N + offset) * sizeof(double));
+    if(needPaddingTo32bytes(a)) printf("A is not 32-byte aligned\n");
+    if(needPaddingTo32bytes(b)) printf("B is not 32-byte aligned\n");
     init(a, b, N);
     BEST_TIME_NOCHECK(vecdaxpy(a, b, s, N), , repeat, N, true);
     check(a, s, repeat, N);
@@ -113,5 +120,6 @@ int main() {
     demo(i, false);
   }
   demooffset(500, 5);
+  demooffset(1000, 5);
   return 0;
 }
