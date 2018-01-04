@@ -121,5 +121,6 @@ int main() {
   }
   demooffset(500, 5);
   demooffset(1000, 5);
+  demooffset(1024, 5);
   return 0;
 }
