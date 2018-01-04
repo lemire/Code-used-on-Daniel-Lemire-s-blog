@@ -96,15 +96,15 @@ void demooffset(size_t N, size_t maxoffset) {
   memset(farray1, 0, farray1size); // fully clean
   const int repeat = 50;
   const double s = 1.2;
-  for (size_t offset = 0; offset <= maxoffset; offset += 6) {
+  for (size_t offset = 0; offset <= maxoffset; offset += 1) {
     printf("offset %zu -- \n", offset);
     memset(farray1, 0, farray1size); // fully clean
-    double *a = (double *)(farray1);
+    double *a = (double *)(farray1 + (offset * sizeof(double)));
     double *b = (double *)(farray1 + (N + offset) * sizeof(double));
     init(a, b, N);
     BEST_TIME_NOCHECK(vecdaxpy(a, b, s, N), , repeat, N, true);
     check(a, s, repeat, N);
-  }
+   }
   free(farray1);
 }
 
@@ -112,6 +112,6 @@ int main() {
   for (size_t i = 1000; i <= 1024; i += 4) {
     demo(i, false);
   }
-  demooffset(1000, 24);
+  demooffset(500, 5);
   return 0;
 }
