@@ -27,6 +27,7 @@ __attribute__((noinline)) void vecdaxpy(double *a, double *b, double s,
   assert(i == len);
 }
 
+
 void init(double *a, double *b, size_t N) {
   for (size_t i = 0; i < N; i++) {
     double A = i;
@@ -89,9 +90,8 @@ void demo(size_t N, bool flush) {
   free(farray1);
 }
 
-
-bool needPaddingTo32bytes(const void *inbyte) {
-  return ((uintptr_t)(inbyte) & 31) != 0;
+unsigned long long alias(const void *inbyte) {
+  return ((uintptr_t)(inbyte) & 4095) ;
 }
 
 void demooffset(size_t N, size_t maxoffset) {
@@ -106,14 +106,38 @@ void demooffset(size_t N, size_t maxoffset) {
     memset(farray1, 0, farray1size); // fully clean
     double *a = (double *)(farray1 + (offset * sizeof(double)));
     double *b = (double *)(farray1 + (N + offset) * sizeof(double));
-    if(needPaddingTo32bytes(a)) printf("A is not 32-byte aligned\n");
-    if(needPaddingTo32bytes(b)) printf("B is not 32-byte aligned\n");
     init(a, b, N);
     BEST_TIME_NOCHECK(vecdaxpy(a, b, s, N), , repeat, N, true);
     check(a, s, repeat, N);
+    BEST_TIME_NOCHECK(vecdaxpy(b, a, s, N), , repeat, N, true);
+  }
+  free(farray1);
+}
+
+void demooffset_explain(size_t N, size_t maxoffset) {
+  printf("N = %zu \n", N);
+  size_t farray1size = (2 * N + 1) * sizeof(double);
+  int8_t *farray1 = (int8_t *)malloc(farray1size);
+  for (size_t offset = 0; offset <= maxoffset; offset += 1) {
+    printf("offset %zu -- \n", offset);
+    double *a = (double *)(farray1 + (offset * sizeof(double)));
+    double *b = (double *)(farray1 + (N + offset) * sizeof(double));
+    for(size_t i = 0; i < 10; i++) {
+      unsigned long long aa = alias(a+i*4);
+      unsigned long long ab = alias(b+i*4);
+      unsigned long long cacheas = aa / 64;
+      unsigned long long cacheab = (aa + 31)/ 64;
+      unsigned long long cachebs = ab / 64;
+      unsigned long long cachebb = (ab + 31)/ 64;
+
+
+
+      printf("load/store %d %d , load %d %d \n",cacheas, cacheab, cachebs, cachebb);
+    }
    }
   free(farray1);
 }
+
 
 int main() {
   for (size_t i = 1000; i <= 1024; i += 4) {
@@ -121,6 +145,10 @@ int main() {
   }
   demooffset(500, 5);
   demooffset(1000, 5);
+  demooffset(1008, 5);
   demooffset(1024, 5);
-  return 0;
+//  demooffset_explain(1000, 5);
+//  demooffset_explain(1024, 5);
+//  demooffset_explain(1015, 5);
+    return 0;
 }
