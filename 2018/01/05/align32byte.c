@@ -107,6 +107,14 @@ void demo() {
   memset(farray1, 0, farray1size); // fully clean
   const int repeat = 50;
   const double s = 1.2;
+  for(int offset = 0; offset <= 32; offset += 1) {
+    printf("offset: %d bytes\n",offset);
+    double *a = (double *)(farray1);
+    double *b = (double *)(farray1 + 4096 - offset);
+    init(a, b, N);
+    BEST_TIME_NOCHECK(vecdaxpy(a, b, s, N), , repeat, N, true);
+    check(a, s, repeat, N);
+  }
   for(int offset = 0; offset <= 32 * 32; offset += 32) {
     printf("offset: %d bytes (%d 32-byte)\n",offset, offset/32);
     double *a = (double *)(farray1);
