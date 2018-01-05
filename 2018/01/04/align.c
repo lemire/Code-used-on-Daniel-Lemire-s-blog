@@ -1,15 +1,15 @@
 // gcc -O3 -o align align.c -mavx2  && ./align
-#include <stdint.h>
+#include "benchmark.h"
+#include <assert.h>
+#include <immintrin.h> // avx2
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
-#include <immintrin.h> // avx2
-#include "benchmark.h"
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 __attribute__((noinline)) void vecdaxpy(double *a, double *b, double s,
                                         size_t len) {
@@ -28,12 +28,11 @@ __attribute__((noinline)) void vecdaxpy(double *a, double *b, double s,
 }
 
 __attribute__((noinline)) void rvecdaxpy(double *a, double *b, double s,
-                                        size_t len) {
+                                         size_t len) {
   int i = len - sizeof(__m256d) / sizeof(double);
   assert(len % (sizeof(__m256d) / sizeof(double)) == 0);
   const __m256d vs = _mm256_set1_pd(s);
-  for (; i >= 0;
-       i -= sizeof(__m256d) / sizeof(double)) {
+  for (; i >= 0; i -= sizeof(__m256d) / sizeof(double)) {
     const __m256d va = _mm256_loadu_pd(a + i);
     const __m256d vb = _mm256_loadu_pd(b + i);
     const __m256d mults = _mm256_mul_pd(vb, vs);
@@ -41,8 +40,6 @@ __attribute__((noinline)) void rvecdaxpy(double *a, double *b, double s,
     _mm256_storeu_pd(a + i, vavb);
   }
 }
-
-
 
 void init(double *a, double *b, size_t N) {
   for (size_t i = 0; i < N; i++) {
@@ -107,7 +104,7 @@ void demo(size_t N, bool flush) {
 }
 
 unsigned long long alias(const void *inbyte) {
-  return ((uintptr_t)(inbyte) & 4095) ;
+  return ((uintptr_t)(inbyte)&4095);
 }
 
 void demooffset(size_t N, size_t maxoffset) {
@@ -141,34 +138,32 @@ void demooffset_explain(size_t N, size_t maxoffset) {
     printf("offset %zu -- \n", offset);
     double *a = (double *)(farray1 + (offset * sizeof(double)));
     double *b = (double *)(farray1 + (N + offset) * sizeof(double));
-    for(size_t i = 0; i < 10; i++) {
-      unsigned long long aa = alias(a+i*4);
-      unsigned long long ab = alias(b+i*4);
-      unsigned long long cacheas = aa / 64;
-      unsigned long long cacheab = (aa + 31)/ 64;
-      unsigned long long cachebs = ab / 64;
-      unsigned long long cachebb = (ab + 31)/ 64;
+    for (size_t i = 0; i < 10; i++) {
+      unsigned long long aa = alias(a + i * 4);
+      unsigned long long ab = alias(b + i * 4);
+      unsigned long long cacheas = aa / 32;
+      unsigned long long cacheab = (aa + 31) / 32;
+      unsigned long long cachebs = ab / 32;
+      unsigned long long cachebb = (ab + 31) / 32;
 
-
-
-      printf("load/store %d %d , load %d %d \n",cacheas, cacheab, cachebs, cachebb);
+      printf("load/store %d %d , load %d %d \n", cacheas, cacheab, cachebs,
+             cachebb);
     }
-   }
+  }
   free(farray1);
 }
-
 
 int main() {
   for (size_t i = 1000 - 16; i <= 1000 + 32; i += 4) {
     demo(i, false);
   }
-  //demooffset(500, 5);
-  //demooffset(1000, 5);
-  //demooffset(1008, 5);
-  //demooffset(1024, 5);
-  //demooffset(1024+24, 5);
-//  demooffset_explain(1000, 5);
-//  demooffset_explain(1024, 5);
-//  demooffset_explain(1015, 5);
-    return 0;
+  // demooffset(500, 5);
+  // demooffset(1000, 5);
+  // demooffset(1008, 5);
+  // demooffset(1024, 5);
+  // demooffset(1024+24, 5);
+  //  demooffset_explain(1000, 5);
+  //  demooffset_explain(1024, 5);
+  //  demooffset_explain(1015, 5);
+  return 0;
 }
