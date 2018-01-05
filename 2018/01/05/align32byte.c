@@ -98,15 +98,19 @@ unsigned long long alias(const void *inbyte) {
 
 void demo() {
   size_t farray1size = 4 * 4096; // 4 x 4kB (more than we need)
-  int8_t *farray1 = (int8_t *)aligned_malloc(farray1size,32);
-  const size_t N = 128;
+  int8_t *farray1 = (int8_t *)aligned_malloc(32, farray1size);
+  if(farray1 == NULL) {
+    printf("aborting\n");
+    return;
+  }
+  const size_t N = 256;
   memset(farray1, 0, farray1size); // fully clean
   const int repeat = 50;
   const double s = 1.2;
-  for(int offset = - 4 * 32; offset <= 4 * 32; offset += 32) {
-    printf("offset: %d bytes\n",offset);
+  for(int offset = 0; offset <= 32 * 32; offset += 32) {
+    printf("offset: %d bytes (%d 32-byte)\n",offset, offset/32);
     double *a = (double *)(farray1);
-    double *b = (double *)(farray1 + 4096 + offset);
+    double *b = (double *)(farray1 + 4096 - offset);
     init(a, b, N);
     BEST_TIME_NOCHECK(vecdaxpy(a, b, s, N), , repeat, N, true);
     check(a, s, repeat, N);
