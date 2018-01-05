@@ -27,6 +27,22 @@ __attribute__((noinline)) void vecdaxpy(double *a, double *b, double s,
   assert(i == len);
 }
 
+__attribute__((noinline)) void rvecdaxpy(double *a, double *b, double s,
+                                        size_t len) {
+  int i = len - sizeof(__m256d) / sizeof(double);
+  assert(len % (sizeof(__m256d) / sizeof(double)) == 0);
+  const __m256d vs = _mm256_set1_pd(s);
+  for (; i >= 0;
+       i -= sizeof(__m256d) / sizeof(double)) {
+    const __m256d va = _mm256_loadu_pd(a + i);
+    const __m256d vb = _mm256_loadu_pd(b + i);
+    const __m256d mults = _mm256_mul_pd(vb, vs);
+    const __m256d vavb = _mm256_add_pd(va, mults);
+    _mm256_storeu_pd(a + i, vavb);
+  }
+}
+
+
 
 void init(double *a, double *b, size_t N) {
   for (size_t i = 0; i < N; i++) {
@@ -109,6 +125,9 @@ void demooffset(size_t N, size_t maxoffset) {
     init(a, b, N);
     BEST_TIME_NOCHECK(vecdaxpy(a, b, s, N), , repeat, N, true);
     check(a, s, repeat, N);
+    init(a, b, N);
+    BEST_TIME_NOCHECK(rvecdaxpy(a, b, s, N), , repeat, N, true);
+    check(a, s, repeat, N);
     BEST_TIME_NOCHECK(vecdaxpy(b, a, s, N), , repeat, N, true);
   }
   free(farray1);
@@ -140,14 +159,14 @@ void demooffset_explain(size_t N, size_t maxoffset) {
 
 
 int main() {
-  for (size_t i = 1000; i <= 1024; i += 4) {
+  for (size_t i = 1000 - 16; i <= 1000 + 32; i += 4) {
     demo(i, false);
   }
-  demooffset(500, 5);
-  demooffset(1000, 5);
-  demooffset(1008, 5);
-  demooffset(1024, 5);
-  demooffset(1024+24, 5);
+  //demooffset(500, 5);
+  //demooffset(1000, 5);
+  //demooffset(1008, 5);
+  //demooffset(1024, 5);
+  //demooffset(1024+24, 5);
 //  demooffset_explain(1000, 5);
 //  demooffset_explain(1024, 5);
 //  demooffset_explain(1015, 5);
