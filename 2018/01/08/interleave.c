@@ -89,7 +89,7 @@ static inline uint32_t deinterleave_lowuint32_pext(uint64_t word) {
 }
 
 uint64_t interleave_pdep(uint32_2 input)  {
-    return interleave_uint32_with_zeros_pdep(input.x) | (interleave_uint32_with_zeros_pdep(input.y) << 1);
+    return _pdep_u64(input.x, 0x5555555555555555) | _pdep_u64(input.y,0xaaaaaaaaaaaaaaaa);
 }
 
 
@@ -101,8 +101,8 @@ void interleave_array_pdep(uint32_2 *input, size_t length, uint64_t * out)  {
 
 uint32_2 deinterleave_pext(uint64_t input)  {
   uint32_2 answer;
-  answer.x = deinterleave_lowuint32_pext(input);
-  answer.y = deinterleave_lowuint32_pext(input>>1);
+  answer.x = _pext_u64(input, 0x5555555555555555);
+  answer.y = _pext_u64(input, 0xaaaaaaaaaaaaaaaa);
   return answer;
 }
 
