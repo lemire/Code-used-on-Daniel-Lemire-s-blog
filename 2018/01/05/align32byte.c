@@ -105,7 +105,7 @@ void demo() {
   }
   const size_t N = 256;
   memset(farray1, 0, farray1size); // fully clean
-  const int repeat = 50;
+  const int repeat = 500;
   const double s = 1.2;
   for(int offset = 0; offset < 32; offset += 1) {
     printf("offset: %d bytes\n",offset);
