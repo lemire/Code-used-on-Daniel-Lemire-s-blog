@@ -1,3 +1,4 @@
+// credit : Geoff Langdale
 // gcc -O3 -o simdinterleave simdinterleave.c -march=native  && ./simdinterleave
 #include "benchmark.h"
 #include <assert.h>
