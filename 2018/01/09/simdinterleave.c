@@ -91,6 +91,22 @@ static inline void interleave_avx2(uint32_2 *input, uint64_t *out) {
   _mm256_storeu_si256((__m256i *)out, answer);
 }
 
+static inline void interleave_avx2_short(uint32_2 *input, uint64_t *out) {
+  __m256i xy = _mm256_lddqu_si256((const __m256i *)input);
+  __m256i justx = _mm256_shuffle_epi8(
+      xy, _mm256_set_epi8(-1, 11, -1, 10, -1, 9, -1, 8, -1, 3, -1, 2, -1, 1, -1,
+                          0, -1, 11, -1, 10, -1, 9, -1, 8, -1, 3, -1, 2, -1, 1,
+                          -1, 0));
+  __m256i justy = _mm256_shuffle_epi8(
+      xy, _mm256_set_epi8(-1, 15, -1, 14, -1, 13, -1, 12, -1, 7, -1, 6, -1, 5,
+                          -1, 4, -1, 15, -1, 14, -1, 13, -1, 12, -1, 7, -1, 6,
+                          -1, 5, -1, 4));
+  justx = interleave_uint8_with_zeros_avx(justx);
+  justy = interleave_uint8_with_zeros_avx(justy);
+  __m256i answer = _mm256_or_si256(justx, _mm256_slli_epi16(justy, 1));
+  _mm256_storeu_si256((__m256i *)out, answer);
+}
+
 void interleave_avx_array(uint32_2 *input, size_t length, uint64_t *out) {
   size_t i = 0;
   for (; i + 3 < length; i += 4) {
@@ -101,6 +117,18 @@ void interleave_avx_array(uint32_2 *input, size_t length, uint64_t *out) {
     out[i] = interleave(input[i]);
   }
 }
+
+void interleave_avx_short_array(uint32_2 *input, size_t length, uint64_t *out) {
+  size_t i = 0;
+  for (; i + 3 < length; i += 4) {
+    interleave_avx2(input + i, out + i);
+  }
+
+  for (; i < length; i++) {
+    out[i] = interleave(input[i]);
+  }
+}
+
 uint32_2 deinterleave(uint64_t input) {
   uint32_2 answer;
   answer.x = deinterleave_lowuint32(input);
@@ -180,6 +208,14 @@ void demo(size_t N) {
     assert(array[k].y == k + 1);
   }
 
+  BEST_TIME_NOCHECK(interleave_avx_short_array(array, N, storedarray), , repeat,
+                    N, true);
+  BEST_TIME_NOCHECK(deinterleave_array(storedarray, N, array), , repeat, N,
+                    true);
+  for (uint32_t k = 0; k < N; k++) {
+    assert(array[k].x == k);
+    assert(array[k].y == k + 1);
+  }
   free(array);
   free(storedarray);
 }
