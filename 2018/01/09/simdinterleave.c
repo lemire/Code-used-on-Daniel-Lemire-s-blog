@@ -69,18 +69,26 @@ static inline __m256i interleave_uint8_with_zeros_avx_lut(__m256i word) {
                                     64, 21, 20, 17, 16, 5, 4, 1, 0);
   __m256i lownibbles =
       _mm256_shuffle_epi8(m, _mm256_and_si256(word, _mm256_set1_epi8(0xf)));
-  __m256i highnibbles = _mm256_slli_epi16(_mm256_shuffle_epi8(
-      m, _mm256_srli_epi16(_mm256_and_si256(word, _mm256_set1_epi8(0xf0)), 4)),8);
-  return _mm256_or_si256(lownibbles,highnibbles);
+  __m256i highnibbles = _mm256_and_si256(word, _mm256_set1_epi8(0xf0));
+  highnibbles = _mm256_srli_epi16(highnibbles, 4);
+  highnibbles = _mm256_shuffle_epi8(m, highnibbles);
+  highnibbles = _mm256_slli_epi16(highnibbles, 8);
+  return _mm256_or_si256(lownibbles, highnibbles);
 }
 
 static inline __m256i interleave_uint8_with_zeros_avx_lut1(__m256i word) {
-  const __m256i m = _mm256_set_epi8((char)170, (char)168, (char)162, (char)160, (char)138, (char)136, (char)130, (char)128, 42, 40, 34, 32, 10, 8, 2, 0, (char)170, (char)168, (char)162, (char)160, (char)138, (char)136, (char)130, (char)128, 42, 40, 34, 32, 10, 8, 2, 0);
+  const __m256i m = _mm256_set_epi8(
+      (char)170, (char)168, (char)162, (char)160, (char)138, (char)136,
+      (char)130, (char)128, 42, 40, 34, 32, 10, 8, 2, 0, (char)170, (char)168,
+      (char)162, (char)160, (char)138, (char)136, (char)130, (char)128, 42, 40,
+      34, 32, 10, 8, 2, 0);
   __m256i lownibbles =
       _mm256_shuffle_epi8(m, _mm256_and_si256(word, _mm256_set1_epi8(0xf)));
-  __m256i highnibbles = _mm256_slli_epi16(_mm256_shuffle_epi8(
-      m, _mm256_srli_epi16(_mm256_and_si256(word, _mm256_set1_epi8(0xf0)), 4)),8);
-  return _mm256_or_si256(lownibbles,highnibbles);
+  __m256i highnibbles = _mm256_and_si256(word, _mm256_set1_epi8(0xf0));
+  highnibbles = _mm256_srli_epi16(highnibbles, 4);
+  highnibbles = _mm256_shuffle_epi8(m, highnibbles);
+  highnibbles = _mm256_slli_epi16(highnibbles, 8);
+  return _mm256_or_si256(lownibbles, highnibbles);
 }
 
 static inline __m256i interleave_zeroes_with_uint8_avx(__m256i word) {
