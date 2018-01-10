@@ -71,9 +71,18 @@ static inline __m256i interleave_uint8_with_zeros_avx_lut(__m256i word) {
       _mm256_shuffle_epi8(m, _mm256_and_si256(word, _mm256_set1_epi8(0xf)));
   __m256i highnibbles = _mm256_slli_epi16(_mm256_shuffle_epi8(
       m, _mm256_srli_epi16(_mm256_and_si256(word, _mm256_set1_epi8(0xf0)), 4)),8);
-
   return _mm256_or_si256(lownibbles,highnibbles);
 }
+
+static inline __m256i interleave_uint8_with_zeros_avx_lut1(__m256i word) {
+  const __m256i m = _mm256_set_epi8((char)170, (char)168, (char)162, (char)160, (char)138, (char)136, (char)130, (char)128, 42, 40, 34, 32, 10, 8, 2, 0, (char)170, (char)168, (char)162, (char)160, (char)138, (char)136, (char)130, (char)128, 42, 40, 34, 32, 10, 8, 2, 0);
+  __m256i lownibbles =
+      _mm256_shuffle_epi8(m, _mm256_and_si256(word, _mm256_set1_epi8(0xf)));
+  __m256i highnibbles = _mm256_slli_epi16(_mm256_shuffle_epi8(
+      m, _mm256_srli_epi16(_mm256_and_si256(word, _mm256_set1_epi8(0xf0)), 4)),8);
+  return _mm256_or_si256(lownibbles,highnibbles);
+}
+
 static inline __m256i interleave_zeroes_with_uint8_avx(__m256i word) {
   const __m256i m3 = _mm256_set1_epi64x(0xf0f0f0f0f0f0f0f0);
   const __m256i m4 = _mm256_set1_epi64x(0xCCCCCCCCCCCCCCCC);
@@ -99,6 +108,22 @@ static inline void interleave_avx2(uint32_2 *input, uint64_t *out) {
                           5, -1, 4, -1));
   justx = interleave_uint8_with_zeros_avx(justx);
   justy = interleave_zeroes_with_uint8_avx(justy);
+  __m256i answer = _mm256_or_si256(justx, justy);
+  _mm256_storeu_si256((__m256i *)out, answer);
+}
+
+static inline void interleave_avx2_fast(uint32_2 *input, uint64_t *out) {
+  __m256i xy = _mm256_lddqu_si256((const __m256i *)input);
+  __m256i justx = _mm256_shuffle_epi8(
+      xy, _mm256_set_epi8(-1, 11, -1, 10, -1, 9, -1, 8, -1, 3, -1, 2, -1, 1, -1,
+                          0, -1, 11, -1, 10, -1, 9, -1, 8, -1, 3, -1, 2, -1, 1,
+                          -1, 0));
+  __m256i justy = _mm256_shuffle_epi8(
+      xy, _mm256_set_epi8(-1, 15, -1, 14, -1, 13, -1, 12, -1, 7, -1, 6, -1, 5,
+                          -1, 4, -1, 15, -1, 14, -1, 13, -1, 12, -1, 7, -1, 6,
+                          -1, 5, -1, 4));
+  justx = interleave_uint8_with_zeros_avx_lut(justx);
+  justy = interleave_uint8_with_zeros_avx_lut1(justy);
   __m256i answer = _mm256_or_si256(justx, justy);
   _mm256_storeu_si256((__m256i *)out, answer);
 }
