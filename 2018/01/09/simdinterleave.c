@@ -62,6 +62,17 @@ static inline __m256i interleave_uint8_with_zeros_avx(__m256i word) {
   return word;
 }
 
+static inline __m256i interleave_uint8_with_zeros_avx_lut(__m256i word) {
+  const __m256i m = _mm256_set_epi8(85, 84, 81, 80, 69, 68, 65, 64, 21, 20, 17,
+                                    16, 5, 4, 1, 0, 85, 84, 81, 80, 69, 68, 65,
+                                    64, 21, 20, 17, 16, 5, 4, 1, 0);
+  __m256i lownibbles =
+      _mm256_shuffle_epi8(m, _mm256_and_si256(word, _mm256_set1_epi8(0xf)));
+  __m256i highnibbles = _mm256_slli_epi16(_mm256_shuffle_epi8(
+      m, _mm256_srli_epi16(_mm256_and_si256(word, _mm256_set1_epi8(0xf0)), 4)),8);
+
+  return _mm256_or_si256(lownibbles,highnibbles);
+}
 static inline __m256i interleave_zeroes_with_uint8_avx(__m256i word) {
   const __m256i m3 = _mm256_set1_epi64x(0xf0f0f0f0f0f0f0f0);
   const __m256i m4 = _mm256_set1_epi64x(0xCCCCCCCCCCCCCCCC);
@@ -111,6 +122,16 @@ void interleave_avx_array(uint32_2 *input, size_t length, uint64_t *out) {
   size_t i = 0;
   for (; i + 3 < length; i += 4) {
     interleave_avx2(input + i, out + i);
+  }
+
+  for (; i < length; i++) {
+    out[i] = interleave(input[i]);
+  }
+}
+void interleave_avx_fast_array(uint32_2 *input, size_t length, uint64_t *out) {
+  size_t i = 0;
+  for (; i + 3 < length; i += 4) {
+    interleave_avx2_fast(input + i, out + i);
   }
 
   for (; i < length; i++) {
@@ -216,6 +237,15 @@ void demo(size_t N) {
     assert(array[k].x == k);
     assert(array[k].y == k + 1);
   }
+  BEST_TIME_NOCHECK(interleave_avx_fast_array(array, N, storedarray), , repeat,
+                    N, true);
+  BEST_TIME_NOCHECK(deinterleave_array(storedarray, N, array), , repeat, N,
+                    true);
+  for (uint32_t k = 0; k < N; k++) {
+    assert(array[k].x == k);
+    assert(array[k].y == k + 1);
+  }
+
   free(array);
   free(storedarray);
 }
