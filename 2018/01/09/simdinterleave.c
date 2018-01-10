@@ -1,3 +1,4 @@
+// credit : Geoff Langdale
 // gcc -O3 -o simdinterleave simdinterleave.c -march=native  && ./simdinterleave
 #include "benchmark.h"
 #include <assert.h>
@@ -142,7 +143,7 @@ void interleave_avx_fast_array(uint32_2 *input, size_t length, uint64_t *out) {
 void interleave_avx_short_array(uint32_2 *input, size_t length, uint64_t *out) {
   size_t i = 0;
   for (; i + 3 < length; i += 4) {
-    interleave_avx2(input + i, out + i);
+    interleave_avx2_short(input + i, out + i);
   }
 
   for (; i < length; i++) {
