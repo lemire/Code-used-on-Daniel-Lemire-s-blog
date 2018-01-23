@@ -69,7 +69,7 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
       cycles_diff = (cycles_final - cycles_start);		      \
       if (cycles_diff < min_diff) min_diff = cycles_diff;	      \
     }								      \
-    global_rdtsc_overhead = min_diff;				      \
+   printf("%d:\n",min_diff); global_rdtsc_overhead = min_diff;				      \
   } while (0)							      \
 
 
