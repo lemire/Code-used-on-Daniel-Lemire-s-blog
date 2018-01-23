@@ -98,7 +98,7 @@ nano = Swimsuit.nanotime {
       }
       assert( b == checker, "You have a bug!")
 }
-print(pad("Erica Sedun"), Double(nano) / Double(size), " ns")
+print(pad("Erica Sadun"), Double(nano) / Double(size), " ns")
 
 
 public extension Array {
@@ -114,4 +114,4 @@ nano = Swimsuit.nanotime {
       let b = Array(countfast: size) {() -> Int in runningTotal = runningTotal &+ skip ; return runningTotal}
       assert( b == checker, "You have a bug!")
 }
-print(pad("fast Erica Sedun"), Double(nano) / Double(size), " ns")
+print(pad("fast Erica Sadun"), Double(nano) / Double(size), " ns")
