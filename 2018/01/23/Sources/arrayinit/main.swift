@@ -53,6 +53,13 @@ nano = Swimsuit.nanotime {
 }
 print(pad("map"), Double(nano) / Double(size), " ns")
 
+nano = Swimsuit.nanotime {
+      let b = (0..<size).map { skip * $0 }
+      assert( b == checker, "You have a bug!")
+}
+print(pad("direct map"), Double(nano) / Double(size), " ns")
+
+
 
 nano = Swimsuit.nanotime {
       let b = Array((0..<size).lazy.map { skip * $0 })
