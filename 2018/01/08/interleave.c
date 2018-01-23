@@ -194,21 +194,21 @@ void demo(size_t N) {
     array[k].x = k;
     array[k].y = k+1;
   }
-  int repeat = 5;
+  int repeat = 500;
   BEST_TIME_NOCHECK(interleave_array(array,N,storedarray),, repeat, N, true);
   BEST_TIME_NOCHECK(deinterleave_array(storedarray,N,array),, repeat, N, true);
   for(uint32_t k = 0; k < N; k++) {
     assert(array[k].x == k);
     assert(array[k].y == k+1);
   }
-  BEST_TIME_NOCHECK(interleave64_array(array,N,storedarray),, repeat, N, true);
+  /*BEST_TIME_NOCHECK(interleave64_array(array,N,storedarray),, repeat, N, true);
   BEST_TIME_NOCHECK(deinterleave64_array(storedarray,N,array),, repeat, N, true);
   for(uint32_t k = 0; k < N; k++) {
     assert(array[k].x == k);
     assert(array[k].y == k+1);
   }
-
-  BEST_TIME_NOCHECK(interleave_array_pdep(array,N,storedarray),, repeat, N, true);
+*/
+/*  BEST_TIME_NOCHECK(interleave_array_pdep(array,N,storedarray),, repeat, N, true);
   BEST_TIME_NOCHECK(deinterleave_array_pext(storedarray,N,array),, repeat, N, true);
   for(uint32_t k = 0; k < N; k++) {
     assert(array[k].x == k);
@@ -216,7 +216,7 @@ void demo(size_t N) {
   }
   BEST_TIME_NOCHECK(interleave_clmul_array(array,N,storedarray),, repeat, N, true);
 
-
+*/
   free(array);
   free(storedarray);
 

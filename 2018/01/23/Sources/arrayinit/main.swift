@@ -48,6 +48,13 @@ nano = Swimsuit.nanotime {
 print(pad("init + set"), Double(nano) / Double(size), " ns")
 
 nano = Swimsuit.nanotime {
+      let b = Array((0..<size).map { skip * $0 })
+      assert( b == checker, "You have a bug!")
+}
+print(pad("map"), Double(nano) / Double(size), " ns")
+
+
+nano = Swimsuit.nanotime {
       let b = Array((0..<size).lazy.map { skip * $0 })
       assert( b == checker, "You have a bug!")
 }
@@ -78,7 +85,10 @@ public extension Array {
 
 nano = Swimsuit.nanotime {
       var runningTotal : Int = 0
-      let b = Array(count: size) {() -> Int in runningTotal += skip ; return runningTotal}
+      let b = Array(count: size) {() -> Int in 
+           runningTotal += skip 
+           return runningTotal
+      }
       assert( b == checker, "You have a bug!")
 }
 print(pad("Erica Sedun"), Double(nano) / Double(size), " ns")
