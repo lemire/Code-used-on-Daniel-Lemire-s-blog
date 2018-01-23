@@ -1,5 +1,5 @@
 # arrayinit
 ```
-swift build    --configuration release
+swift build    --configuration release && ./.build/release/arrayinit
 ```
 
