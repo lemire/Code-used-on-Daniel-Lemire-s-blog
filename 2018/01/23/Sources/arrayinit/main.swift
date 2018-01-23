@@ -82,3 +82,19 @@ nano = Swimsuit.nanotime {
       assert( b == checker, "You have a bug!")
 }
 print(pad("Erica Sedun"), Double(nano) / Double(size), " ns")
+
+
+public extension Array {
+  public init(countfast: Int, generator: @escaping() -> Element) {
+    precondition(countfast >= 0, "arrays must have non-negative size")
+
+    self.init((0..<countfast).lazy.map { Element in generator() })
+  }
+}
+
+nano = Swimsuit.nanotime {
+      var runningTotal : Int = 0
+      let b = Array(countfast: size) {() -> Int in runningTotal = runningTotal &+ skip ; return runningTotal}
+      assert( b == checker, "You have a bug!")
+}
+print(pad("fast Erica Sedun"), Double(nano) / Double(size), " ns")
