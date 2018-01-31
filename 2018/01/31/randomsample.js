@@ -43,7 +43,7 @@ function sampleBitmap(m, n) {
 
 
 function negate(s, n) {
-  var news = new Set()
+  var news = new FastBitSet()
   let i = 0
   s.forEach(j => {while(i<j) {news.add(i);i++}; i = j+1})
   while(i<n) {news.add(i);i++}
@@ -53,7 +53,7 @@ function negate(s, n) {
 function fastsampleS(m, n) {
     if(m > n / 2 ) {
       let negatedanswer = fastsampleS(n-m, n)
-      return negate(negatedanswer)
+      return negate(negatedanswer,n)
     }
     if(m * 1024 > n) {
       return sampleBitmap(m, n)
@@ -71,7 +71,7 @@ function Bench(m,n) {
  console.log("Sampling "+m+" values in ["+0+","+n+"). Ratio: "+m/n*100+"%")
  assert(sampleF2(m, n).size == m, "bug in sampleF2")
  assert(sampleS(m, n).size == m, "bug in sampleS")
- assert((fastsampleS(m, n).size == m) || (fastsampleS(m, n).size() == m) , "bug in fastsampleS")
+ assert(fastsampleS(m, n).size() == m , "bug in fastsampleS")
 
  var suite = new Benchmark.Suite();
   // add tests
@@ -95,9 +95,11 @@ function Bench(m,n) {
 
 var main = function() {
   let n = 1000000;
-  Bench(n/100,n)
-  Bench(n/10,n)
-  Bench(n/2,n)
+  Bench(Math.floor(n/100),n)
+  Bench(Math.floor(n/10),n)
+  Bench(Math.floor(n/2),n)
+  Bench(Math.floor(3*n/4),n)
+  Bench(n,n)
 }
 if (require.main === module) {
   main();
