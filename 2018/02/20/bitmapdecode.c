@@ -1,10 +1,11 @@
+// gcc -O3 -o bitmapdecode bitmapdecode.c  -march=native -lm
 #include "benchmark.h"
+#include <assert.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stddef.h>
-#include <assert.h>
 
 #include <math.h>
 
@@ -23,35 +24,35 @@ size_t bitmap_decode_supernaive(uint64_t *bitmap, size_t bitmapsize, uint32_t *o
 }
 
 size_t bitmap_decode_naive(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
-    size_t pos = 0;
-    uint64_t bitset;
-    for(size_t k = 0; k < bitmapsize; ++k) {
-        bitset = bitmap[k];
-        size_t p = k * 64;
-        while (bitset != 0) {
-                if (bitset & 0x1) {
-                    out[pos++] = p;
-                }
-                bitset >>= 1;
-                p += 1;
-        }
+  size_t pos = 0;
+  uint64_t bitset;
+  for (size_t k = 0; k < bitmapsize; ++k) {
+    bitset = bitmap[k];
+    size_t p = k * 64;
+    while (bitset != 0) {
+      if (bitset & 0x1) {
+        out[pos++] = p;
+      }
+      bitset >>= 1;
+      p += 1;
     }
-    return pos;
+  }
+  return pos;
 }
 
 size_t bitmap_decode_ctz(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
-    size_t pos = 0;
-    uint64_t bitset;
-    for(size_t k = 0; k < bitmapsize; ++k) {
-        bitset = bitmap[k];
-        while (bitset != 0) {
-            uint64_t t = bitset & -bitset;
-            int r = __builtin_ctzl(bitset);
-            out[pos++] = k * 64 + r;
-            bitset ^= t;
-        }
+  size_t pos = 0;
+  uint64_t bitset;
+  for (size_t k = 0; k < bitmapsize; ++k) {
+    bitset = bitmap[k];
+    while (bitset != 0) {
+      uint64_t t = bitset & -bitset;
+      int r = __builtin_ctzl(bitset);
+      out[pos++] = k * 64 + r;
+      bitset ^= t;
     }
-    return pos;
+  }
+  return pos;
 }
 
 size_t bitmap_decode_ctzalt(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
@@ -97,21 +98,23 @@ size_t bitmap_decode_naive_callback(uint64_t *bitmap, size_t bitmapsize, void (*
                 p += 1;
         }
     }
-    return 0;
+  }
+  return 0;
 }
 
-size_t bitmap_decode_ctz_callpack(uint64_t *bitmap, size_t bitmapsize, void (*callback)(int)) {
-    uint64_t bitset;
-    for(size_t k = 0; k < bitmapsize; ++k) {
-        bitset = bitmap[k];
-        while (bitset != 0) {
-            uint64_t t = bitset & -bitset;
-            int r = __builtin_ctzl(bitset);
-            callback(k * 64 + r);
-            bitset ^= t;
-        }
+size_t bitmap_decode_ctz_callpack(uint64_t *bitmap, size_t bitmapsize,
+                                  void (*callback)(int)) {
+  uint64_t bitset;
+  for (size_t k = 0; k < bitmapsize; ++k) {
+    bitset = bitmap[k];
+    while (bitset != 0) {
+      uint64_t t = bitset & -bitset;
+      int r = __builtin_ctzl(bitset);
+      callback(k * 64 + r);
+      bitset ^= t;
     }
-    return 0;
+  }
+  return 0;
 }
 size_t bitmap_decode_ctzalt_callpack(uint64_t *bitmap, size_t bitmapsize, void (*callback)(int)) {
     size_t pos = 0;
@@ -130,19 +133,16 @@ size_t bitmap_decode_ctzalt_callpack(uint64_t *bitmap, size_t bitmapsize, void (
     return 0;
 }
 
-
 size_t bitmap_count(uint64_t *bitmap, size_t bitmapcount) {
-    uint64_t count = 0;
-    for(size_t i = 0 ; i < bitmapcount; ++i) {
-      count += __builtin_popcountll(bitmap[i]);
-    }
-    return count;
+  uint64_t count = 0;
+  for (size_t i = 0; i < bitmapcount; ++i) {
+    count += __builtin_popcountll(bitmap[i]);
+  }
+  return count;
 }
 
 int globalcount = 0;
-void defaultcallback(int x) {
-  globalcount += x;
-}
+void defaultcallback(int x) { globalcount += x; }
 
 void bitmap_decoding() {
     printf("[bitmap decoding]");
@@ -180,10 +180,35 @@ void bitmap_decoding() {
         BEST_TIME(bitmap_decode_altctz_callpack(bitmap, N, defaultcallback), 0, , repeat, bitcount, true);
 
     }
+    size_t appbitcount = (size_t)ceil(ratio * N * 64);
+    if (appbitcount > N * 64 / 2)
+      break;
+    size_t ccount = 0;
+    while (ccount < appbitcount) {
+      int bit = rand() % (N * 64);
+      uint64_t bef = bitmap[bit / 64];
+      uint64_t aft = bef | (UINT64_C(1) << (bit % 64));
+      if (bef != aft)
+        ccount++;
+      bitmap[bit / 64] = aft;
+    }
+    size_t bitcount = bitmap_count(bitmap, N);
+    assert(bitcount == ccount);
 
-    free(bitmap);
-    free(receiver);
+    printf("bitmap density %3.2f  \n", bitcount / (N * sizeof(uint64_t) * 8.0));
+    BEST_TIME(bitmap_decode_naive(bitmap, N, receiver), bitcount, , repeat,
+              bitcount, true);
+    BEST_TIME(bitmap_decode_ctz(bitmap, N, receiver), bitcount, , repeat,
+              bitcount, true);
 
+    BEST_TIME(bitmap_decode_naive_callback(bitmap, N, defaultcallback), 0, ,
+              repeat, bitcount, true);
+    BEST_TIME(bitmap_decode_ctz_callpack(bitmap, N, defaultcallback), 0, ,
+              repeat, bitcount, true);
+  }
+
+  free(bitmap);
+  free(receiver);
 }
 
 int main() {
