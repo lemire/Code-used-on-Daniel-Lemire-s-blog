@@ -41,6 +41,154 @@ size_t bitmap_decode_ctz(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
   return pos;
 }
 
+size_t bitmap_decode_block3(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
+  size_t pos = 0;
+  uint64_t bitset;
+  for (size_t k = 0; k < bitmapsize; ++k) {
+    bitset = bitmap[k];
+    size_t p = k * 64;
+    while (bitset != 0) {
+        switch (bitset & 0x7) {
+            case 0:
+                break;
+
+            case 1:
+                out[pos++] = p;
+                break;
+
+            case 2:
+                out[pos++] = p + 1;
+                break;
+
+            case 3:
+                out[pos++] = p;
+                out[pos++] = p + 1;
+                break;
+
+            case 4:
+                out[pos++] = p + 2;
+                break;
+
+            case 5:
+                out[pos++] = p;
+                out[pos++] = p + 2;
+                break;
+
+            case 6:
+                out[pos++] = p + 1;
+                out[pos++] = p + 2;
+                break;
+
+            case 7:
+                out[pos++] = p;
+                out[pos++] = p + 1;
+                out[pos++] = p + 2;
+                break;
+        } // switch
+
+        bitset >>= 3;
+        p += 3;
+    }
+  }
+  return pos;
+}
+
+size_t bitmap_decode_block4(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
+  size_t pos = 0;
+  uint64_t bitset;
+  for (size_t k = 0; k < bitmapsize; ++k) {
+    bitset = bitmap[k];
+    size_t p = k * 64;
+    while (bitset != 0) {
+        switch (bitset & 0xf) {
+            case 0:
+                break;
+
+            case 1:
+                out[pos++] = p;
+                break;
+
+            case 2:
+                out[pos++] = p + 1;
+                break;
+
+            case 3:
+                out[pos++] = p;
+                out[pos++] = p + 1;
+                break;
+
+            case 4:
+                out[pos++] = p + 2;
+                break;
+
+            case 5:
+                out[pos++] = p;
+                out[pos++] = p + 2;
+                break;
+
+            case 6:
+                out[pos++] = p + 1;
+                out[pos++] = p + 2;
+                break;
+
+            case 7:
+                out[pos++] = p;
+                out[pos++] = p + 1;
+                out[pos++] = p + 2;
+                break;
+
+            case 8:
+                out[pos++] = p + 3;
+                break;
+
+            case 9:
+                out[pos++] = p;
+                out[pos++] = p + 3;
+                break;
+
+            case 10:
+                out[pos++] = p + 1;
+                out[pos++] = p + 3;
+                break;
+
+            case 11:
+                out[pos++] = p;
+                out[pos++] = p + 1;
+                out[pos++] = p + 3;
+                break;
+
+            case 12:
+                out[pos++] = p + 2;
+                out[pos++] = p + 3;
+                break;
+
+            case 13:
+                out[pos++] = p;
+                out[pos++] = p + 2;
+                out[pos++] = p + 3;
+                break;
+
+            case 14:
+                out[pos++] = p + 1;
+                out[pos++] = p + 2;
+                out[pos++] = p + 3;
+                break;
+
+            case 15:
+                out[pos++] = p;
+                out[pos++] = p + 1;
+                out[pos++] = p + 2;
+                out[pos++] = p + 3;
+                break;
+        }
+
+        bitset >>= 4;
+        p += 4;
+    }
+  }
+  return pos;
+}
+
 size_t bitmap_decode_naive_callback(uint64_t *bitmap, size_t bitmapsize,
                                     void (*callback)(int)) {
   uint64_t bitset;
@@ -72,6 +220,155 @@ size_t bitmap_decode_ctz_callpack(uint64_t *bitmap, size_t bitmapsize,
   }
   return 0;
 }
+
+size_t bitmap_decode_block3_callback(uint64_t *bitmap, size_t bitmapsize,
+                                    void (*callback)(int)) {
+  uint64_t bitset;
+  for (size_t k = 0; k < bitmapsize; ++k) {
+    bitset = bitmap[k];
+    size_t p = k * 64;
+    while (bitset != 0) {
+        switch (bitset & 0x7) {
+            case 0:
+                break;
+
+            case 1:
+                callback(p);
+                break;
+
+            case 2:
+                callback(p + 1);
+                break;
+
+            case 3:
+                callback(p);
+                callback(p + 1);
+                break;
+
+            case 4:
+                callback(p + 2);
+                break;
+
+            case 5:
+                callback(p);
+                callback(p + 2);
+                break;
+
+            case 6:
+                callback(p + 1);
+                callback(p + 2);
+                break;
+
+            case 7:
+                callback(p);
+                callback(p + 1);
+                callback(p + 2);
+                break;
+        } // switch
+
+        bitset >>= 3;
+        p += 3;
+      } // for
+  }
+  return 0;
+}
+
+size_t bitmap_decode_block4_callback(uint64_t *bitmap, size_t bitmapsize,
+                                    void (*callback)(int)) {
+  uint64_t bitset;
+  for (size_t k = 0; k < bitmapsize; ++k) {
+    bitset = bitmap[k];
+    size_t p = k * 64;
+    while (bitset != 0) {
+        switch (bitset & 0xf) {
+            case 0:
+                break;
+
+            case 1:
+                callback(p);
+                break;
+
+            case 2:
+                callback(p + 1);
+                break;
+
+            case 3:
+                callback(p);
+                callback(p + 1);
+                break;
+
+            case 4:
+                callback(p + 2);
+                break;
+
+            case 5:
+                callback(p);
+                callback(p + 2);
+                break;
+
+            case 6:
+                callback(p + 1);
+                callback(p + 2);
+                break;
+
+            case 7:
+                callback(p);
+                callback(p + 1);
+                callback(p + 2);
+                break;
+
+            case 8:
+                callback(p + 3);
+                break;
+
+            case 9:
+                callback(p);
+                callback(p + 3);
+                break;
+
+            case 10:
+                callback(p + 1);
+                callback(p + 3);
+                break;
+
+            case 11:
+                callback(p);
+                callback(p + 1);
+                callback(p + 3);
+                break;
+
+            case 12:
+                callback(p + 2);
+                callback(p + 3);
+                break;
+
+            case 13:
+                callback(p);
+                callback(p + 2);
+                callback(p + 3);
+                break;
+
+            case 14:
+                callback(p + 1);
+                callback(p + 2);
+                callback(p + 3);
+                break;
+
+            case 15:
+                callback(p);
+                callback(p + 1);
+                callback(p + 2);
+                callback(p + 3);
+                break;
+        }
+
+        bitset >>= 4;
+        p += 4;
+      } // for
+  }
+  return 0;
+}
+
 
 size_t bitmap_count(uint64_t *bitmap, size_t bitmapcount) {
   uint64_t count = 0;
@@ -114,10 +411,18 @@ void bitmap_decoding() {
     printf("bitmap density %3.2f  \n", bitcount / (N * sizeof(uint64_t) * 8.0));
     BEST_TIME(bitmap_decode_naive(bitmap, N, receiver), bitcount, , repeat,
               bitcount, true);
+    BEST_TIME(bitmap_decode_block3(bitmap, N, receiver), bitcount, , repeat,
+              bitcount, true);
+    BEST_TIME(bitmap_decode_block4(bitmap, N, receiver), bitcount, , repeat,
+              bitcount, true);
     BEST_TIME(bitmap_decode_ctz(bitmap, N, receiver), bitcount, , repeat,
               bitcount, true);
 
     BEST_TIME(bitmap_decode_naive_callback(bitmap, N, defaultcallback), 0, ,
+              repeat, bitcount, true);
+    BEST_TIME(bitmap_decode_block3_callback(bitmap, N, defaultcallback), 0, ,
+              repeat, bitcount, true);
+    BEST_TIME(bitmap_decode_block4_callback(bitmap, N, defaultcallback), 0, ,
               repeat, bitcount, true);
     BEST_TIME(bitmap_decode_ctz_callpack(bitmap, N, defaultcallback), 0, ,
               repeat, bitcount, true);
