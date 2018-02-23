@@ -56,6 +56,32 @@ size_t bitmap_decode_ctz(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
   return pos;
 }
 
+size_t bitmap_decode_ctz__asm(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
+  uint32_t* orig_out = out;
+  uint64_t index;
+  uint64_t bitset;
+  for (size_t k = 0; k < bitmapsize; ++k) {
+    bitset = bitmap[k];
+    asm volatile(
+        "test %[bitset], %[bitset]          \n"
+        "jz 1f                              \n"
+        "2:                                 \n"
+        "tzcnt %[bitset], %%rax             \n" // int r = __builtin_ctzll(bitset);
+        "add $4, %[out]                     \n" // out++
+        "add %[k], %%rax                    \n" // r += (k * 64)
+        "blsr %[bitset], %[bitset]          \n" // bitset ^= (bitset & -bitset)
+        "movl -4(%[out]), %%eax             \n" // *(out - 1) = uint32_t(r)
+        "jnz 2b                             \n"
+        "1:                                 \n"
+        : [out] "+r" (&out[0])
+        : [bitset] "r" (bitset)
+        , [index] "a" (index) // access to %eax is required
+        , [k] "r" (k * 64)
+    );
+  }
+  return out - orig_out;
+}
+
 size_t bitmap_decode_block3(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
   size_t pos = 0;
   uint64_t bitset;
@@ -446,6 +472,8 @@ void bitmap_decoding() {
     BEST_TIME(bitmap_decode_block4(bitmap, N, receiver), bitcount, , repeat,
               bitcount, true);
     BEST_TIME(bitmap_decode_ctz(bitmap, N, receiver), bitcount, , repeat,
+              bitcount, true);
+    BEST_TIME(bitmap_decode_ctz__asm(bitmap, N, receiver), bitcount, , repeat,
               bitcount, true);
 
     BEST_TIME(bitmap_decode_supernaive_callback(bitmap, N, defaultcallback), 0,
