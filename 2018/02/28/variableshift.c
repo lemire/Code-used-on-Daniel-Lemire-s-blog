@@ -120,6 +120,55 @@ size_t varvectorshift_unrolled(uint32_t *array, size_t length, int shiftamount) 
 }
 
 
+__attribute__ ((noinline))
+size_t variablevectorshift(uint32_t *array, size_t length, int shiftamount) {
+  size_t k = 0;
+  __m256i * a = (__m256i *) array;
+  __m256i s = _mm256_set1_epi32(shiftamount);
+  for (; k  < length / 8 ; k ++, a++) {
+    __m256i v = _mm256_loadu_si256(a);
+    v = _mm256_srlv_epi32(v,s);
+     _mm256_storeu_si256(a,v);
+  }
+  k *= 8;
+  for (; k < length; ++k) {
+    array[k] = array[k] >> shiftamount;
+  }
+  return 0;
+}
+size_t variablevectorshift_unrolled(uint32_t *array, size_t length, int shiftamount) {
+  size_t k = 0;
+  __m256i * a = (__m256i *) array;
+  __m256i s = _mm256_set1_epi32(shiftamount);
+  for (; k + 3 < length / 8 ; k +=4, a+=4) {
+    __m256i v1 = _mm256_loadu_si256(a);
+    __m256i v2 = _mm256_loadu_si256(a + 1);
+    __m256i v3 = _mm256_loadu_si256(a + 2);
+    __m256i v4 = _mm256_loadu_si256(a + 3);
+
+    v1 = _mm256_srlv_epi32(v1,s);
+    v2 = _mm256_srlv_epi32(v2,s);
+    v3 = _mm256_srlv_epi32(v3,s);
+    v4 = _mm256_srlv_epi32(v4,s);
+
+     _mm256_storeu_si256(a,v1);
+     _mm256_storeu_si256(a + 1,v2);
+     _mm256_storeu_si256(a + 2,v3);
+     _mm256_storeu_si256(a + 3,v4);
+
+  }
+  for (; k  < length / 8 ; k ++, a++) {
+    __m256i v = _mm256_loadu_si256(a);
+    v = _mm256_srlv_epi32(v,s);
+     _mm256_storeu_si256(a,v);
+  }
+  k *= 8;
+  for (; k < length; ++k) {
+    array[k] = array[k] >> shiftamount;
+  }
+  return 0;
+}
+
 void randominit(uint32_t *array, size_t length) {
   for (size_t k = 0; k < length; ++k) {
     array[k] = rand();
@@ -145,6 +194,10 @@ void array_shifting() {
   BEST_TIME(varvectorshift_unrolled(array, N, shiftamount), 0, randominit(array, N), repeat,
       N, true);
 
+  BEST_TIME(variablevectorshift(array, N, shiftamount), 0, randominit(array, N), repeat,
+      N, true);
+  BEST_TIME(variablevectorshift_unrolled(array, N, shiftamount), 0, randominit(array, N), repeat,
+      N, true);
   free(array);
 }
 
