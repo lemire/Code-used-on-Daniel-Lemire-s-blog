@@ -138,7 +138,7 @@ void defaultcallback(int x) { globalcount += x; }
 
 void bitmap_decoding() {
   printf("[bitmap decoding]");
-  int repeat = 5;
+  int repeat = 50;
   size_t N = 1000;
   uint64_t *bitmap = malloc(N * sizeof(uint64_t));
   uint32_t *receiver = malloc((N + 64) * 64 * sizeof(uint32_t));
