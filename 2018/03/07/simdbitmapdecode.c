@@ -57,154 +57,6 @@ size_t bitmap_decode_ctz(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
   return pos;
 }
 
-size_t bitmap_decode_block3(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
-  size_t pos = 0;
-  uint64_t bitset;
-  for (size_t k = 0; k < bitmapsize; ++k) {
-    bitset = bitmap[k];
-    size_t p = k * 64;
-    while (bitset != 0) {
-        switch (bitset & 0x7) {
-            case 0:
-                break;
-
-            case 1:
-                out[pos++] = p;
-                break;
-
-            case 2:
-                out[pos++] = p + 1;
-                break;
-
-            case 3:
-                out[pos++] = p;
-                out[pos++] = p + 1;
-                break;
-
-            case 4:
-                out[pos++] = p + 2;
-                break;
-
-            case 5:
-                out[pos++] = p;
-                out[pos++] = p + 2;
-                break;
-
-            case 6:
-                out[pos++] = p + 1;
-                out[pos++] = p + 2;
-                break;
-
-            case 7:
-                out[pos++] = p;
-                out[pos++] = p + 1;
-                out[pos++] = p + 2;
-                break;
-        } // switch
-
-        bitset >>= 3;
-        p += 3;
-    }
-  }
-  return pos;
-}
-
-size_t bitmap_decode_block4(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
-  size_t pos = 0;
-  uint64_t bitset;
-  for (size_t k = 0; k < bitmapsize; ++k) {
-    bitset = bitmap[k];
-    size_t p = k * 64;
-    while (bitset != 0) {
-        switch (bitset & 0xf) {
-            case 0:
-                break;
-
-            case 1:
-                out[pos++] = p;
-                break;
-
-            case 2:
-                out[pos++] = p + 1;
-                break;
-
-            case 3:
-                out[pos++] = p;
-                out[pos++] = p + 1;
-                break;
-
-            case 4:
-                out[pos++] = p + 2;
-                break;
-
-            case 5:
-                out[pos++] = p;
-                out[pos++] = p + 2;
-                break;
-
-            case 6:
-                out[pos++] = p + 1;
-                out[pos++] = p + 2;
-                break;
-
-            case 7:
-                out[pos++] = p;
-                out[pos++] = p + 1;
-                out[pos++] = p + 2;
-                break;
-
-            case 8:
-                out[pos++] = p + 3;
-                break;
-
-            case 9:
-                out[pos++] = p;
-                out[pos++] = p + 3;
-                break;
-
-            case 10:
-                out[pos++] = p + 1;
-                out[pos++] = p + 3;
-                break;
-
-            case 11:
-                out[pos++] = p;
-                out[pos++] = p + 1;
-                out[pos++] = p + 3;
-                break;
-
-            case 12:
-                out[pos++] = p + 2;
-                out[pos++] = p + 3;
-                break;
-
-            case 13:
-                out[pos++] = p;
-                out[pos++] = p + 2;
-                out[pos++] = p + 3;
-                break;
-
-            case 14:
-                out[pos++] = p + 1;
-                out[pos++] = p + 2;
-                out[pos++] = p + 3;
-                break;
-
-            case 15:
-                out[pos++] = p;
-                out[pos++] = p + 1;
-                out[pos++] = p + 2;
-                out[pos++] = p + 3;
-                break;
-        }
-
-        bitset >>= 4;
-        p += 4;
-    }
-  }
-  return pos;
-}
-
 #include "bitmap_tables.h"
 
 int bitmap_decode_avx2(uint64_t * array, size_t sizeinwords, uint32_t *out) {
@@ -240,6 +92,38 @@ int bitmap_decode_avx2(uint64_t * array, size_t sizeinwords, uint32_t *out) {
 	return out - initout;
 }
 
+int bitmap_decode_avx2_turbo(uint64_t * array, size_t sizeinwords, uint32_t *out) {
+	uint32_t *initout = out;
+	__m256i baseVec = _mm256_set1_epi32(-1);
+	__m256i incVec = _mm256_set1_epi32(64);
+	__m256i add8 = _mm256_set1_epi32(8);
+
+	for (int i = 0; i < sizeinwords; ++i) {
+		uint64_t w = array[i];
+		if (w == 0) {
+			baseVec = _mm256_add_epi32(baseVec, incVec);
+		} else {
+			for (int k = 0; k < 4; ++k) {
+				uint8_t byteA = (uint8_t) w;
+				uint8_t byteB = (uint8_t)(w >> 8);
+				w >>= 16;
+				__m256i vecA =  _mm256_cvtepu8_epi32(_mm_cvtsi64_si128(*(uint64_t *)(vecDecodeTableByte[byteA])));
+				__m256i vecB =  _mm256_cvtepu8_epi32(_mm_cvtsi64_si128(*(uint64_t *)(vecDecodeTableByte[byteB])));
+				uint8_t advanceA = __builtin_popcount(byteA);
+				uint8_t advanceB = __builtin_popcount(byteB);
+				vecA = _mm256_add_epi32(baseVec, vecA);
+				baseVec = _mm256_add_epi32(baseVec, add8);
+				vecB = _mm256_add_epi32(baseVec, vecB);
+				baseVec = _mm256_add_epi32(baseVec, add8);
+				_mm256_storeu_si256((__m256i *) out, vecA);
+				out += advanceA;
+				_mm256_storeu_si256((__m256i *) out, vecB);
+				out += advanceB;
+			}
+		}
+	}
+	return out - initout;
+}
 
 size_t bitmap_count(uint64_t *bitmap, size_t bitmapcount) {
   uint64_t count = 0;
@@ -284,6 +168,9 @@ void bitmap_decoding() {
               bitcount, true);
     BEST_TIME(bitmap_decode_avx2(bitmap, N, receiver), bitcount, , repeat,
               bitcount, true);
+    BEST_TIME(bitmap_decode_avx2_turbo(bitmap, N, receiver), bitcount, , repeat,
+              bitcount, true);
+
 
 
   }
