@@ -10,7 +10,7 @@ import org.openjdk.jmh.runner.*;
 import org.openjdk.jmh.runner.options.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @State(Scope.Thread)
 @BenchmarkMode(Mode.Throughput)
@@ -18,55 +18,58 @@ import java.util.concurrent.TimeUnit;
 public class OrderHash {
 
 
-
-    @State(Scope.Benchmark)
-    public static class BenchmarkState {
-          @Param({"1000", "1000000", "10000000", "100000000"})
-        public int N ;
-
-        LinkedHashSet<Integer> lhs = new LinkedHashSet<Integer>();
-        HashSet<Integer> hs = new HashSet<Integer>();
-        TreeSet<Integer> ts = new TreeSet<Integer>();
-
-        int[] array = new int[N];
+   public int N = 1_000_000 ;
+   LinkedHashSet<Integer> lhs = new LinkedHashSet<Integer>();
+   HashSet<Integer> hs = new HashSet<Integer>();
+   int[] lhsdump = new int[N];
+   int[] hsdump = new int[N];
 
 
-        public BenchmarkState() {
+
+
+   @Setup
+   public void setup() {
+          ThreadLocalRandom r = ThreadLocalRandom.current();
           for(int k = 0 ; k < N ; k++) {
-            lhs.add(k);
-            hs.add(k);
-            ts.add(k);
-            array[k] = k;
+            int val = r.nextInt();
+            lhs.add(val);
+            hs.add(val);
           }
-        }
-
+          int pos = 0; 
+          for(int k : lhs) {
+           lhsdump[pos++] = k;
+          }
+          pos = 0;
+          for(int k : hs) {
+           hsdump[pos++] = k;
+          }
+ 
+    }
+    @Benchmark
+    public boolean verifyLinkedHashSet() {
+      for(int i : lhsdump) 
+        if(!lhs.contains(i)) return false;
+      return true;
+    }
+    @Benchmark
+    public boolean verifyHashSet() {
+      for(int i : hsdump) 
+        if(!hs.contains(i)) return false;
+      return true;
     }
 
     @Benchmark
-    public int scanLinkedHashSet(BenchmarkState s) {
+    public int scanLinkedHashSet() {
       int sum = 0;
-      for(int i : s.lhs) sum += i; // I know you could use lambdas, but why?
+      for(int i : lhs) 
+        sum += i;
       return sum;
     }
-
     @Benchmark
-    public int scanHashSet(BenchmarkState s) {
+    public int scanHashSet() {
       int sum = 0;
-      for(int i : s.hs) sum += i; // I know you could use lambdas, but why?
-      return sum;
-    }
-
-    @Benchmark
-    public int scanTreeSet(BenchmarkState s) {
-      int sum = 0;
-      for(int i : s.ts) sum += i; // I know you could use lambdas, but why?
-      return sum;
-    }
-
-    @Benchmark
-    public int scanArray(BenchmarkState s) {
-      int sum = 0;
-      for(int i : s.array) sum += i; // I know you could use lambdas, but why?
+      for(int i : hs) 
+        sum += i;
       return sum;
     }
 
