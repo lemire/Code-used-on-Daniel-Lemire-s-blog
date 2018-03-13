@@ -24,11 +24,12 @@ public class OrderHash {
    int[] lhsdump = new int[N];
    int[] hsdump = new int[N];
 
-
+   @Param({"false", "true"})
+   boolean gc;
 
 
    @Setup
-   public void setup() {
+   public void setup() throws InterruptedException  {
           ThreadLocalRandom r = ThreadLocalRandom.current();
           for(int k = 0 ; k < N ; k++) {
             int val = r.nextInt();
@@ -43,7 +44,14 @@ public class OrderHash {
           for(int k : hs) {
            hsdump[pos++] = k;
           }
- 
+
+          if (gc) {
+            for (int c = 0; c < 5; c++) {
+                System.gc();
+                TimeUnit.SECONDS.sleep(1);
+            }
+          } 
+
     }
     @Benchmark
     public boolean verifyLinkedHashSet() {
