@@ -1,0 +1,63 @@
+<project>
+<modelVersion>4.0.0</modelVersion>
+<groupId>me.lemire.microbenchmarks</groupId>
+<artifactId>microbenchmarks</artifactId>
+<version>0.0.1</version>
+
+<properties>
+<jmh.version>1.4</jmh.version>
+<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+<uberjar.name>benchmarks</uberjar.name>
+</properties>
+<packaging>jar</packaging>
+
+<build>
+<plugins>
+    <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-compiler-plugin</artifactId>
+       <version>2.3.2</version>
+      <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+   </plugin>
+ <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
+</plugins>
+</build>
+
+	<dependencies>
+
+  <dependency>
+    <groupId>com.github.alexeyr.pcg</groupId>
+    <artifactId>pcg</artifactId>
+    <version>0.9.1</version> 
+  </dependency>
+	<dependency>
+			<groupId>org.openjdk.jmh</groupId>
+			<artifactId>jmh-core</artifactId>
+			<version>${jmh.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjdk.jmh</groupId>
+			<artifactId>jmh-generator-annprocess</artifactId>
+			<version>${jmh.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>
