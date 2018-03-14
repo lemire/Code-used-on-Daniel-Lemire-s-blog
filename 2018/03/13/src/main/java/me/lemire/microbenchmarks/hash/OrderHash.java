@@ -21,6 +21,7 @@ public class OrderHash {
    public int N = 1_000_000 ;
    LinkedHashSet<Integer> lhs = new LinkedHashSet<Integer>();
    HashSet<Integer> hs = new HashSet<Integer>();
+   HashSet<Integer> hs2 = new HashSet<Integer>();
    int[] lhsdump = new int[N];
    int[] hsdump = new int[N];
 
@@ -51,6 +52,9 @@ public class OrderHash {
                 TimeUnit.SECONDS.sleep(1);
             }
           } 
+          for( int k : hsdump ) {
+            hs2.add(k);
+          }
 
     }
     @Benchmark
@@ -65,6 +69,13 @@ public class OrderHash {
         if(!hs.contains(i)) return false;
       return true;
     }
+    @Benchmark
+    public boolean verifyHashSet2() {
+      for(int i : hsdump) 
+        if(!hs2.contains(i)) return false;
+      return true;
+    }
+
 
     @Benchmark
     public int scanLinkedHashSet() {
@@ -80,6 +91,14 @@ public class OrderHash {
         sum += i;
       return sum;
     }
+    @Benchmark
+    public int scanHashSet2() {
+      int sum = 0;
+      for(int i : hs2) 
+        sum += i;
+      return sum;
+    }
+
 
     public static void main(String[] args) throws RunnerException {
        Options opt = new OptionsBuilder()
