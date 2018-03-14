@@ -55,7 +55,13 @@ public class OrderHash {
           for( int k : hsdump ) {
             hs2.add(k);
           }
-
+          if (gc) {
+            for (int c = 0; c < 5; c++) {
+                System.gc();
+                TimeUnit.SECONDS.sleep(1);
+            }
+          } 
+ 
     }
     @Benchmark
     public boolean verifyLinkedHashSet() {
