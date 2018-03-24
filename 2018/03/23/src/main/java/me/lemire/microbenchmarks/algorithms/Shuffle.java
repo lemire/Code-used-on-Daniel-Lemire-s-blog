@@ -36,7 +36,7 @@ public class Shuffle {
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
-        int N = 10000000;
+        int N = 100000000;
         int[] array = new int[N];
         int[] indexes = new int[N+1];
         public BenchmarkState() {
