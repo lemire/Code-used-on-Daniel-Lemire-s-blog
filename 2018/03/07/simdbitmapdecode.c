@@ -92,6 +92,51 @@ int bitmap_decode_avx2(uint64_t * array, size_t sizeinwords, uint32_t *out) {
 	return out - initout;
 }
 
+uint64_t bytepopcount(uint64_t x) {
+   const uint64_t c1 = UINT64_C(0x5555555555555555);
+   const uint64_t c2 = UINT64_C(0x3333333333333333);
+   const uint64_t c4 = UINT64_C(0x0F0F0F0F0F0F0F0F);
+   x = (x & c1) + ((x >> 1) & c1);
+   x = (x & c2) + ((x >> 2) & c2);
+   x = (x & c4) + ((x >> 4) & c4);
+   return x;
+}
+
+int bitmap_decode_avx2_turbo_thin(uint64_t * array, size_t sizeinwords, uint32_t *out) {
+	uint32_t *initout = out;
+	__m256i baseVec = _mm256_set1_epi32(-1);
+	__m256i incVec = _mm256_set1_epi32(64);
+	__m256i add8 = _mm256_set1_epi32(8);
+
+	for (int i = 0; i < sizeinwords; ++i) {
+		uint64_t w = array[i];
+		if (w == 0) {
+			baseVec = _mm256_add_epi32(baseVec, incVec);
+		} else {
+                        uint64_t pop = bytepopcount(w);
+			for (int k = 0; k < 4; ++k) {
+				uint8_t byteA = (uint8_t) w;
+				uint8_t byteB = (uint8_t)(w >> 8);
+				w >>= 16;
+				__m256i vecA =  _mm256_cvtepu8_epi32(_mm_cvtsi64_si128(*(uint64_t *)(vecDecodeTableByte[byteA])));
+				__m256i vecB =  _mm256_cvtepu8_epi32(_mm_cvtsi64_si128(*(uint64_t *)(vecDecodeTableByte[byteB])));
+				uint8_t advanceA = (uint8_t) pop;
+				uint8_t advanceB = (uint8_t) (pop >> 8);
+                                pop >>= 16;
+				vecA = _mm256_add_epi32(baseVec, vecA);
+				baseVec = _mm256_add_epi32(baseVec, add8);
+				vecB = _mm256_add_epi32(baseVec, vecB);
+				baseVec = _mm256_add_epi32(baseVec, add8);
+				_mm256_storeu_si256((__m256i *) out, vecA);
+				out += advanceA;
+				_mm256_storeu_si256((__m256i *) out, vecB);
+				out += advanceB;
+			}
+		}
+	}
+	return out - initout;
+}
+
 int bitmap_decode_avx2_turbo(uint64_t * array, size_t sizeinwords, uint32_t *out) {
 	uint32_t *initout = out;
 	__m256i baseVec = _mm256_set1_epi32(-1);
@@ -125,6 +170,40 @@ int bitmap_decode_avx2_turbo(uint64_t * array, size_t sizeinwords, uint32_t *out
 	return out - initout;
 }
 
+int bitmap_decode_avx2_turbo_nopopcnt(uint64_t * array, size_t sizeinwords, uint32_t *out) {
+	uint32_t *initout = out;
+	__m256i baseVec = _mm256_set1_epi32(-1);
+	__m256i incVec = _mm256_set1_epi32(64);
+	__m256i add8 = _mm256_set1_epi32(8);
+
+	for (int i = 0; i < sizeinwords; ++i) {
+		uint64_t w = array[i];
+		if (w == 0) {
+			baseVec = _mm256_add_epi32(baseVec, incVec);
+		} else {
+			for (int k = 0; k < 4; ++k) {
+				uint8_t byteA = (uint8_t) w;
+				uint8_t byteB = (uint8_t)(w >> 8);
+				w >>= 16;
+				__m256i vecA =  _mm256_cvtepu8_epi32(_mm_cvtsi64_si128(*(uint64_t *)(vecDecodeTableByte[byteA])));
+				__m256i vecB =  _mm256_cvtepu8_epi32(_mm_cvtsi64_si128(*(uint64_t *)(vecDecodeTableByte[byteB])));
+                                uint8_t advanceA = lengthTable[byteA];
+                                uint8_t advanceB = lengthTable[byteB];
+			        vecA = _mm256_add_epi32(baseVec, vecA);
+				baseVec = _mm256_add_epi32(baseVec, add8);
+				vecB = _mm256_add_epi32(baseVec, vecB);
+				baseVec = _mm256_add_epi32(baseVec, add8);
+				_mm256_storeu_si256((__m256i *) out, vecA);
+				out += advanceA;
+				_mm256_storeu_si256((__m256i *) out, vecB);
+				out += advanceB;
+			}
+		}
+	}
+	return out - initout;
+}
+
+
 size_t bitmap_count(uint64_t *bitmap, size_t bitmapcount) {
   uint64_t count = 0;
   for (size_t i = 0; i < bitmapcount; ++i) {
@@ -137,19 +216,20 @@ int globalcount = 0;
 void defaultcallback(int x) { globalcount += x; }
 
 void bitmap_decoding() {
-  printf("[bitmap decoding]");
+  printf("[bitmap decoding]\n");
   int repeat = 50;
   size_t N = 1000;
   uint64_t *bitmap = malloc(N * sizeof(uint64_t));
   uint32_t *receiver = malloc((N + 64) * 64 * sizeof(uint32_t));
-
-  for (double ratio = 0.03125; ratio < 2; ratio = ratio * 2) {
+  double ratios[] = {0.03125, 0.125, 0.25, 0.5, 0.9};
+  for (int k = 0 ; k < 5; k++) {
+    double ratio = ratios[k];
     for (size_t k = 0; k < N; ++k) {
       bitmap[k] = 0;
     }
     size_t appbitcount = (size_t)ceil(ratio * N * 64);
-    if (appbitcount > N * 64 / 2)
-      break;
+    //if (appbitcount > N * 64 / 2)
+    //  break;
     size_t ccount = 0;
     while (ccount < appbitcount) {
       int bit = rand() % (N * 64);
@@ -170,6 +250,11 @@ void bitmap_decoding() {
               bitcount, true);
     BEST_TIME(bitmap_decode_avx2_turbo(bitmap, N, receiver), bitcount, , repeat,
               bitcount, true);
+    BEST_TIME(bitmap_decode_avx2_turbo_thin(bitmap, N, receiver), bitcount, , repeat,
+              bitcount, true);
+    BEST_TIME(bitmap_decode_avx2_turbo_nopopcnt(bitmap, N, receiver), bitcount, , repeat,
+              bitcount, true);
+
 
 
 
