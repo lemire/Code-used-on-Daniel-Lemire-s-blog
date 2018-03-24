@@ -28,10 +28,23 @@ public class Shuffle {
         for (int i = size; i > 1; i--)
             swap(arr, i - 1, tlc.nextInt(i));
     }
+    private static void shuffle_java_rev(int arr[]) {
+        ThreadLocalRandom tlc = ThreadLocalRandom.current();
+        int size = arr.length;
+        for (int i = size; i > 1; i--)
+            swap(arr, size - i, tlc.nextInt(i));
+    }
+
     private static void shuffle_precomp(int arr[], int indexes[]) {
         int size = arr.length;
         for (int i = size; i > 1; i--)
             swap(arr, i - 1, indexes[i]);
+    }
+
+    private static void shuffle_precomp_rev(int arr[], int indexes[]) {
+        int size = arr.length;
+        for (int i = size; i > 1; i--)
+             swap(arr, size - i, indexes[i]);
     }
 
     @State(Scope.Benchmark)
@@ -60,6 +73,16 @@ public class Shuffle {
         shuffle_precomp(s.array, s.indexes);
     }
 
+    @Benchmark
+    public void test_shuffle_java_rev(BenchmarkState s) {
+        shuffle_java_rev(s.array);
+    }
+
+    @Benchmark
+    public void test_shuffle_precomp_rev(BenchmarkState s) {
+        shuffle_precomp_rev(s.array, s.indexes);
+    }
+    
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
         .include(Shuffle.class.getSimpleName()).warmupIterations(5)
