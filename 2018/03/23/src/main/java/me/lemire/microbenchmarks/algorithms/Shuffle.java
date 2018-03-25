@@ -32,7 +32,7 @@ public class Shuffle {
     private static void shuffle_java_blocked(int arr[]) {
         ThreadLocalRandom tlc = ThreadLocalRandom.current();
         int size = arr.length;
-        final int block = 8;
+        final int block = 64;
         final int[] buffer = new int[block];
         int i = size;
         for (; i > block +  1; i-=block) {
