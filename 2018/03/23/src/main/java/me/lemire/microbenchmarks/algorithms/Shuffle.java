@@ -28,11 +28,12 @@ public class Shuffle {
         for (int i = size; i > 1; i--)
             swap(arr, i - 1, tlc.nextInt(i));
     }
-
+    
+    // Credit: Richard Starting and Jeff Epler
     private static void shuffle_java_blocked(int arr[]) {
         ThreadLocalRandom tlc = ThreadLocalRandom.current();
         int size = arr.length;
-        final int block = 64;
+        final int block = 64; // Richard getting good results with very large buffers
         final int[] buffer = new int[block];
         int i = size;
         for (; i > block +  1; i-=block) {
