@@ -33,7 +33,7 @@ public class Shuffle {
     private static void shuffle_java_blocked(int arr[]) {
         ThreadLocalRandom tlc = ThreadLocalRandom.current();
         int size = arr.length;
-        final int block = 64; // Richard getting good results with very large buffers
+        final int block = 1024; // Richard getting good results with very large buffers
         final int[] buffer = new int[block];
         int i = size;
         for (; i > block +  1; i-=block) {
