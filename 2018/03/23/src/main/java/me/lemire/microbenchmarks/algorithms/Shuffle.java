@@ -29,7 +29,7 @@ public class Shuffle {
             swap(arr, i - 1, tlc.nextInt(i));
     }
     
-    // Credit: Richard Starting and Jeff Epler
+    // Credit: Richard Startin and Jeff Epler
     private static void shuffle_java_blocked(int arr[]) {
         ThreadLocalRandom tlc = ThreadLocalRandom.current();
         int size = arr.length;
