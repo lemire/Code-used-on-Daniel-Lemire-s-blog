@@ -15,27 +15,19 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class HashFast {
    int smallN = 100;
-   HashSet<Triple> small_hm = new HashSet<Triple>(smallN);
-   HashSet<BufferedTriple> small_bhm = new HashSet<BufferedTriple>(smallN);
+   ArrayList<Triple> small_hm = new ArrayList<Triple>(smallN);
+   ArrayList<BufferedTriple> small_bhm = new ArrayList<BufferedTriple>(smallN);
    int counter = 0;
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
         int N = 10000000;
-        int sN = 100000;
 
 
         HashSet<Triple> hm = new HashSet<Triple>();
         HashSet<BufferedTriple> bhm = new HashSet<BufferedTriple>();
-        HashSet<Triple> shm = new HashSet<Triple>();
-        HashSet<BufferedTriple> sbhm = new HashSet<BufferedTriple>();
-
 
        public BenchmarkState() {
-         for(int k = 0; k < sN; k++) {
-            shm.add(new Triple( - 2, k - 2, 2 * k - 2 ));
-            sbhm.add(new BufferedTriple( - 2, k - 2, 2 * k - 2));
-          }
           for(int k = 0; k < N; k++) {
             hm.add(new Triple( - 2, k - 2, 2 * k - 2 ));
             bhm.add(new BufferedTriple( - 2, k - 2, 2 * k - 2));
@@ -52,34 +44,6 @@ public class HashFast {
             small_bhm.add(new BufferedTriple( - 2 * counter, k * counter - 2, 2 * k * counter - 2));
           }
     }
-
-    @Benchmark
-    public int small_test_contains(BenchmarkState s) {
-        int count = 0;
-        for(Triple st : small_hm) {
-          if(s.shm.contains(st)) count++;
-        }
-        return count;
-    }
-
-    @Benchmark
-    public int small_test_contains_buffered(BenchmarkState s) {
-        int count = 0;
-        for(BufferedTriple st : small_bhm) {
-          if(s.sbhm.contains(st)) count++;
-        }
-        return count;
-    }
-
-    @Benchmark
-    public int justhash(BenchmarkState s) {
-        int count = 0;
-        for(Triple st : small_hm) {
-          count+= st.hashCode();
-        }
-        return count;
-    }
-
     @Benchmark
     public int test_contains(BenchmarkState s) {
         int count = 0;
@@ -100,14 +64,14 @@ public class HashFast {
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
         .include(HashFast.class.getSimpleName()).warmupIterations(5)
-        .measurementIterations(5).forks(1).build();
+        .measurementIterations(10).forks(1).build();
         new Runner(opt).run();
     }
 
 }
 
 
-class Triple {
+final class Triple {
   private int x;
   private int y;
   private int z;
@@ -130,7 +94,8 @@ class Triple {
     return false;
   }
 }
-class BufferedTriple {
+
+final class BufferedTriple {
   private int x;
   private int y;
   private int z;
