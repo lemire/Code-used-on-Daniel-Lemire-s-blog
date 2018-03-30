@@ -1,4 +1,4 @@
-
+// this C code is just meant to benchmark speed. The function selectCoPrimeResev is not randomized. TODO: randomize it.
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
