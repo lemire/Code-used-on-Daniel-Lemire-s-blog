@@ -29,7 +29,7 @@ int sse_findfirst(const char * stream, size_t startindex, size_t length, const c
   size_t i = startindex;
   __m128i targetvec = _mm_set1_epi8(target);
   for(; i + sizeof(__m128i) <=  length; i += sizeof(__m128i)) {
-      __m128i streamvec = _mm_load_si128((const __m128i*)(stream + i));
+      __m128i streamvec = _mm_loadu_si128((const __m128i*)(stream + i));
       __m128i mask = _mm_cmpeq_epi8(targetvec, streamvec);
       if(!_mm_testz_si128(mask,mask)) {
         int m = _mm_movemask_epi8(mask);
@@ -47,7 +47,7 @@ int sse_movemask_findfirst(const char * stream, size_t startindex, size_t length
   int m;
   __m128i targetvec = _mm_set1_epi8(target);
   for(; i + sizeof(__m128i) <=  length; i += sizeof(__m128i)) {
-      __m128i streamvec = _mm_load_si128((const __m128i*)(stream + i));
+      __m128i streamvec = _mm_loadu_si128((const __m128i*)(stream + i));
       __m128i mask = _mm_cmpeq_epi8(targetvec, streamvec);
       if((m = _mm_movemask_epi8(mask))!=0) {
         return _tzcnt_u32(m) + i;
@@ -63,7 +63,7 @@ int avx_findfirst(const char * stream, size_t startindex, size_t length, const c
   size_t i = startindex;
   __m256i targetvec = _mm256_set1_epi8(target);
   for(; i + sizeof(__m256i) <=  length; i += sizeof(__m256i)) {
-      __m256i streamvec = _mm256_load_si256((const __m256i*)(stream + i));
+      __m256i streamvec = _mm256_loadu_si256((const __m256i*)(stream + i));
       __m256i mask = _mm256_cmpeq_epi8(targetvec, streamvec);
       if(!_mm256_testz_si256(mask,mask)) {
         int m = _mm256_movemask_epi8(mask);
@@ -81,7 +81,7 @@ int avx_movemask_findfirst(const char * stream, size_t startindex, size_t length
   int m;
   __m256i targetvec = _mm256_set1_epi8(target);
   for(; i + sizeof(__m256i) <=  length; i += sizeof(__m256i)) {
-      __m256i streamvec = _mm256_load_si256((const __m256i*)(stream + i));
+      __m256i streamvec = _mm256_loadu_si256((const __m256i*)(stream + i));
       __m256i mask = _mm256_cmpeq_epi8(targetvec, streamvec);
       if((m = _mm256_movemask_epi8(mask))!=0) {
         return _tzcnt_u32(m) + i;
