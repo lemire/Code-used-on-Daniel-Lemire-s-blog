@@ -56,12 +56,32 @@ var nano : UInt64
 
 for time in 0...10 {
   print("test \(time + 1)")
+  let N = 100
   var a = [Triple]()
+  a.reserveCapacity(N)
   var ba = [BufferedTriple]()
-  for k in 1...100 {
-    a.append(Triple(x:k,y:2*time*k+1,z:3*time*k+1))
-    ba.append(BufferedTriple(x:k,y:2*time*k+1,z:3*time*k+1))
+  ba.reserveCapacity(N)
+  nano = Swimsuit.nanotime {
+      for k in 1...N {
+         a.append(Triple(x:k,y:2*time*k+1,z:3*time*k+1))
+      }
   }
+  print("Construct triples \(nano) ns, \(counter) ")
+  nano = Swimsuit.nanotime {
+      for k in 1...N {
+          ba.append(BufferedTriple(x:k,y:2*time*k+1,z:3*time*k+1))
+      }
+  }
+  print("Construct buffered triples \(nano) ns, \(counter) ")
+
+
+  nano = Swimsuit.nanotime {
+      for i in a {
+          counter += i.hashValue
+      }
+  }
+  print("Just hash     \(nano) ns, \(counter) ")
+
   nano = Swimsuit.nanotime {
       for i in a {
           if bs.contains(i) {
