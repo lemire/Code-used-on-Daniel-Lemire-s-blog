@@ -19,14 +19,14 @@ uint32_t murmur32(uint32_t h) {
 void populaterandom(uint32_t *indexes, size_t size) {
   assert((size & (size - 1)) == 0); // power of two
   for (size_t k = 0; k < size; ++k) {
-    indexes[k] = murmur32(k) % (size - 1);
+    indexes[k] = murmur32(k) & (size - 1);
   }
 }
 
 uint64_t sumrandom(uint64_t *values, size_t size) {
   uint64_t sum = 0;
   for (size_t k = 0; k < size; ++k) {
-    sum += values[murmur32(k) % (size - 1)];
+    sum += values[murmur32(k) & (size - 1)];
   }
   return sum;
 }
@@ -35,7 +35,7 @@ uint64_t sumrandomandindexes(uint64_t *values, uint32_t *indexes, size_t size) {
   uint64_t sum = 0;
   assert((size & (size - 1)) == 0); // power of two
   for (size_t k = 0; k < size; ++k) {
-    indexes[k] = murmur32(k) % (size - 1);
+    indexes[k] = murmur32(k) & (size - 1);
   }
   for (size_t k = 0; k < size; ++k) {
     sum += values[indexes[k]];
