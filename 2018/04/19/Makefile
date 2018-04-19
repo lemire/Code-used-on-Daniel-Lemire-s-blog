@@ -1,16 +1,16 @@
-all: mandelbrot mandelbrot512
+all: mandelbrot mandelbrot512 mandelbrotheavy512
 
 mandelbrot:
-	gcc -O3 -o mandelbrot mandelbrot.c -DUSEAVX512 -march=native -Wall
+	gcc -O3 -o mandelbrot mandelbrot.c -march=native -Wall -mno-avx512f
 
 mandelbrot512:
-	gcc -O3 -o mandelbrot512 mandelbrot.c  -march=native -Wall
+	gcc -O3 -o mandelbrot512 mandelbrot.c  -DUSEAVX512 -march=native -Wall  
 
-test: mandelbrot mandelbrot512
-	time ./mandelbrot
-	time ./mandelbrot512
+mandelbrotheavy512:
+	gcc -O3 -o mandelbrotheavy512 mandelbrot.c -DUSEHEAVYAVX512 -DUSEAVX512 -march=native -Wall  
+
 
 clean:
-	rm -f mandelbrot512 mandelbrot
+	rm -f mandelbrot512 mandelbrot mandelbrotheavy512
 
 

@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   double x, y, limit = 2.0;
   double Zr, Zi, Cr, Ci, Tr, Ti;
 
-  w = h = argc > 1 ? atoi(argv[1]) : 16000;
+  w = h = argc > 1 ? atoi(argv[1]) : 32000;
 
   printf("P4\n%d %d\n", w, h);
 #ifdef USEAVX512
@@ -29,7 +29,11 @@ int main(int argc, char **argv) {
 #ifdef USEAVX512
     t = a;
     a = b;
+#ifdef USEHEAVYAVX512
     b = _mm512_add_epi32(b, t);
+#else 
+    b = _mm512_mul_epi32(b, t);
+#endif 
 #endif
     for (x = 0; x < w; ++x) {
       Zr = Zi = Tr = Ti = 0.0;
@@ -62,8 +66,9 @@ int main(int argc, char **argv) {
     }
   }
 #ifdef USEAVX512
-  return _mm256_extract_epi32(_mm512_extracti64x4_epi64(b, 1), 7);
-#else
-  return 0;
+  printf("we used avx512 %d \n", _mm256_extract_epi32(_mm512_extracti64x4_epi64(b, 1), 7));
+#else 
+  printf("we did not use avx512\n");
 #endif
+  return 0;
 }
