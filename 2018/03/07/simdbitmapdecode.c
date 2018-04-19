@@ -203,6 +203,61 @@ int bitmap_decode_avx2_turbo_nopopcnt(uint64_t * array, size_t sizeinwords, uint
 	return out - initout;
 }
 
+#ifdef  __AVX512BW__
+size_t bitmap_decode_bmi2_avx512(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
+	size_t pos = 0;
+	uint32_t *initout = out;
+	uint64_t bitset;
+	uint64_t msk_1 = 0xffffffff00000000ULL;
+	uint64_t msk_2 = 0xffff0000ffff0000ULL;
+	uint64_t msk_3 = 0xff00ff00ff00ff00ULL;
+	uint64_t msk_4 = 0xf0f0f0f0f0f0f0f0ULL;
+	uint64_t msk_5 = 0xccccccccccccccccULL;
+	uint64_t msk_6 = 0x9999999999999999ULL;
+	__m512i v1_bit = _mm512_set1_epi8(1);
+	__m512i v2_bit = _mm512_set1_epi8(2);
+	__m512i v4_bit = _mm512_set1_epi8(4);
+	__m512i v8_bit = _mm512_set1_epi8(8);
+	__m512i v16_bit = _mm512_set1_epi8(16);
+	__m512i v32_bit = _mm512_set1_epi8(32);
+	for (size_t k = 0; k < bitmapsize; ++k) {
+		uint64_t v = bitmap[k];
+		bitset = bitmap[k];
+		uint64_t v1 = _pext_u64(msk_1, v);
+		uint64_t v2 = _pext_u64(msk_2, v);
+		uint64_t v3 = _pext_u64(msk_3, v);
+		uint64_t v4 = _pext_u64(msk_4, v);
+		uint64_t v5 = _pext_u64(msk_5, v);
+		uint64_t v6 = _pext_u64(msk_6, v);
+		uint8_t advance = __builtin_popcountll(v);
+		__m512i vec;
+		// a miracle appears
+		vec = _mm512_maskz_add_epi8(v1, v32_bit, _mm512_set1_epi8(0));
+		vec = _mm512_mask_add_epi8(vec, v2, v16_bit, vec);
+		vec = _mm512_mask_add_epi8(vec, v3, v8_bit, vec);
+		vec = _mm512_mask_add_epi8(vec, v4, v4_bit, vec);
+		vec = _mm512_mask_add_epi8(vec, v5, v2_bit, vec);
+		vec = _mm512_mask_add_epi8(vec, v6, v1_bit, vec);
+
+		__m512i base = _mm512_set1_epi32(k*64);
+		__m512i r1 = _mm512_cvtepi8_epi32(_mm512_extracti32x4_epi32(vec,0));
+		__m512i r2 = _mm512_cvtepi8_epi32(_mm512_extracti32x4_epi32(vec,1));
+		__m512i r3 = _mm512_cvtepi8_epi32(_mm512_extracti32x4_epi32(vec,2));
+		__m512i r4 = _mm512_cvtepi8_epi32(_mm512_extracti32x4_epi32(vec,3));
+
+		r1 = _mm512_add_epi32(r1, base);
+		r2 = _mm512_add_epi32(r2, base);
+		r3 = _mm512_add_epi32(r3, base);
+		r4 = _mm512_add_epi32(r4, base);
+		_mm512_storeu_si512((__m512i *)out, r1);
+		_mm512_storeu_si512((__m512i *)(out + 16), r2);
+		_mm512_storeu_si512((__m512i *)(out + 32), r3);
+		_mm512_storeu_si512((__m512i *)(out + 48), r4);
+		out += advance;
+	}
+	return out - initout;
+}
+#endif
 
 size_t bitmap_count(uint64_t *bitmap, size_t bitmapcount) {
   uint64_t count = 0;
@@ -255,8 +310,10 @@ void bitmap_decoding() {
     BEST_TIME(bitmap_decode_avx2_turbo_nopopcnt(bitmap, N, receiver), bitcount, , repeat,
               bitcount, true);
 
-
-
+#ifdef  __AVX512BW__
+    BEST_TIME(bitmap_decode_bmi2_avx512(bitmap, N, receiver), bitcount, , repeat,
+              bitcount, true);
+#endif
 
   }
 
