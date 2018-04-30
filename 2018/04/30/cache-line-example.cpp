@@ -1,6 +1,6 @@
 // originally from
-// https://gist.github.com/simonhf/caaa33ccb87c0bf0775a863c0d6843c2 g++ -O3 -o
-// cache-line-example cache-line-example.cpp
+// https://gist.github.com/simonhf/caaa33ccb87c0bf0775a863c0d6843c2
+// g++ -O3 -o  cache-line-example cache-line-example.cpp
 #include <locale.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -65,7 +65,7 @@ void demo(int inc, int batch_size, bool rewritten = false) {
   double t2 = get_time_in_seconds();
   printf(" seconds: %f \n bogus: ", t2 - t1);
   for (int i = 0; i < batch_size; i++) {
-    printf("%u ", c[i]);
+    printf("%u ", (unsigned int) c[i]);
   }
   printf("\n");
 
