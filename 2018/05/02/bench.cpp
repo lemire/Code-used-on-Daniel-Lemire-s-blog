@@ -6,7 +6,6 @@
 #include "rapidjson/reader.h" // you have to check in the submodule
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
-#include "util.h"
 
 
 using namespace rapidjson;
@@ -63,7 +62,7 @@ int main(int argc, char *argv[]) {
   BEST_TIME(d.ParseInsitu(buffer).HasParseError(), false,
             memcpy(buffer, p.first, p.second), repeat, volume, true);
   size_t strlength = rapidstringme((char*) p.first).size();
-  std::cout << "input length is "<< p.second << " stringified length is " << strlength << std::endl;
+  if(verbose) std::cout << "input length is "<< p.second << " stringified length is " << strlength << std::endl;
   BEST_TIME_NOCHECK(rapidstringme((char*) p.first), , repeat, volume,
                     true);
   free(buffer);
