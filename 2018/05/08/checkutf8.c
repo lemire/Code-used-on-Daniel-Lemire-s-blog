@@ -72,7 +72,7 @@ static const uint8_t utf8d[] = {
     1,   1,   1,   1,   1,   1,   1,   1,   1,   1, // s7..s8
 };
 
-uint32_t inline decode(uint32_t *state, uint32_t *codep, uint32_t byte) {
+static uint32_t inline decode(uint32_t *state, uint32_t *codep, uint32_t byte) {
   uint32_t type = utf8d[byte];
   *codep = (*state != UTF8_ACCEPT) ? (byte & 0x3fu) | (*codep << 6)
                                    : (0xff >> type) & (byte);
@@ -80,19 +80,12 @@ uint32_t inline decode(uint32_t *state, uint32_t *codep, uint32_t byte) {
   return *state;
 }
 
-uint32_t inline updatestate(uint32_t *state, uint32_t byte) {
+static uint32_t inline updatestate(uint32_t *state, uint32_t byte) {
   uint32_t type = utf8d[byte];
   *state = utf8d[256 + 16 * *state + type];
   return *state;
 }
 
-uint32_t decode_utf8(uint32_t *state, uint32_t *codep, uint32_t byte) {
-  uint32_t type = utf8d[byte];
-  *codep = (*state != UTF8_ACCEPT) ? (byte & 0x3fu) | (*codep << 6)
-                                   : (0xff >> type) & (byte);
-  *state = utf8d[256 + *state * 16 + type];
-  return *state;
-}
 
 bool validate_utf8(const char *c, size_t len) {
   const unsigned char *cu = (const unsigned char *)c;
@@ -245,9 +238,8 @@ void populate(char *data, size_t N) {
     data[i] = rand() & 0x7f;
 }
 
-int main() {
-  test();
-  size_t N = 80;
+void demo(size_t N) {
+  printf("string size = %zu \n", N);
   char *data = (char *)malloc(N);
   bool expected = true; // it is all ascii?
   int repeat = 5;
@@ -255,4 +247,13 @@ int main() {
 
   BEST_TIME(validate_utf8(data, N), expected,populate(data,N) , repeat, N, true);
   BEST_TIME(validate_utf8_sse(data, N), expected,populate(data,N) , repeat, N, true);
+  free(data);
+}
+
+int main() {
+  test();
+  demo(32);
+  demo(80);
+  demo(512);
+  printf("We are feeding ascii so it is always going to be ok.\n");
 }
