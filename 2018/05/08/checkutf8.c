@@ -87,6 +87,15 @@ static uint32_t inline updatestate(uint32_t *state, uint32_t byte) {
 }
 
 
+bool is_ascii(const char *c, size_t len) {
+  for (size_t i = 0; i < len; i++) {
+    if(c[i] < 0) return false;
+  }
+  return true;
+}
+
+
+
 bool validate_utf8(const char *c, size_t len) {
   const unsigned char *cu = (const unsigned char *)c;
   uint32_t state = 0;
@@ -358,7 +367,8 @@ void demo(size_t N) {
   bool expected = true; // it is all ascii?
   int repeat = 5;
   printf("We are feeding ascii so it is always going to be ok.\n");
-
+  BEST_TIME(is_ascii(data, N), expected,populate(data,N) , repeat, N, true);
+ 
   BEST_TIME(validate_utf8(data, N), expected,populate(data,N) , repeat, N, true);
   BEST_TIME(validate_utf8_sse_nocheating(data, N), expected,populate(data,N) , repeat, N, true);
   BEST_TIME(validate_utf8_sse(data, N), expected,populate(data,N) , repeat, N, true);

@@ -253,7 +253,7 @@ checkUTF8Bytes(__m128i current_bytes, struct processed_utf_bytes *previous,
 
 static bool validate_utf8_fast(const char *src, size_t len) {
   size_t i = 0;
-  __m128 has_error = _mm_setzero_si128();
+  __m128i has_error = _mm_setzero_si128();
   struct processed_utf_bytes previous = {.rawbytes = _mm_setzero_si128(),
                                          .high_nibbles = _mm_setzero_si128(),
                                          .counts = _mm_setzero_si128()};
