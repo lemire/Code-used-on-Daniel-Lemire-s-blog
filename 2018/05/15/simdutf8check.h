@@ -20,56 +20,7 @@
  * U+100000..U+10FFFF F4       80..8F   80..BF   80..BF
  *
  */
-/*
-void dump( __m128i reg, char * msg ) {
-  printf("%s ", msg);
-  unsigned char c[16];
-  _mm_storeu_si128((__m128i *) c, reg);
-  for( int i = 0; i <16; i++ )
-    printf("%02hhX ", c[i] );
-  printf("\n");
-};
 
-int main() {
-
-  char u[] = "핼로, 유니코드.";
-
-
-[0x00,0x7F] hi 0b0000
-[0xC0,0xDF] hi [0b1100 0b1101] -- 0b1011
-
-[0xE...] -- 3 word
-
-0xF
-
-
-general rule: no control byte can be smaller than 0xC2 or larger than 0xF4
-
-in a signed context, that a bound of [-62,-12]
-
-the byte following a control byte has some constraints
-0xE0 -> min of 0xA0 (min of -96)
-0xED -> max of 0x9F (max of -97)
-0xF0 -> min of 0x90 (min of -112)
-0xF4 -> max of 0x8F (max of -113)
-*/
-/*
-void dump( __m128i reg, char * msg ) {
-  printf("%s ", msg);
-  unsigned char c[16];
-  _mm_storeu_si128((__m128i *) c, reg);
-  for( int i = 0; i <16; i++ )
-    printf("%02hhX ", c[i] );
-  printf("\n");
-};
-void dumpp128( __m128i reg, char * msg ) {
-  printf("%s ", msg);
-  unsigned char c[16];
-  _mm_storeu_si128((__m128i *) c, reg);
-  for( int i = 0; i <16; i++ )
-    printf("%02hhX ", c[i] + 128 );
-  printf("\n");
-};*/
 static inline void checkSmallerThan0xF4(__m128i current_bytes_unsigned,
                                         __m128i *has_error) {
   // the -128  is to compensate for the signed arithmetic (lack of
