@@ -10,7 +10,7 @@ static bool validate_ascii_fast(const char *src, size_t len) {
   __m128i has_error = _mm_setzero_si128();
   __m128i zero = _mm_setzero_si128();
   for (; i + 15 < len; i += 16) {
-    __m128i current_bytes = _mm_loadu_si128((const __m128i *)(src));
+    __m128i current_bytes = _mm_loadu_si128((const __m128i *)(src + i));
     has_error =
       _mm_or_si128(has_error, _mm_cmpgt_epi8(zero,current_bytes));
   }
