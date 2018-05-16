@@ -200,7 +200,7 @@ static bool validate_utf8_fast(const char *src, size_t len) {
                                          .high_nibbles = _mm_setzero_si128(),
                                          .counts = _mm_setzero_si128()};
   for (; i + 15 < len; i += 16) {
-    __m128i current_bytes = _mm_loadu_si128((const __m128i *)(src));
+    __m128i current_bytes = _mm_loadu_si128((const __m128i *)(src + i));
     previous = checkUTF8Bytes(current_bytes, &previous, &has_error);
   }
 
