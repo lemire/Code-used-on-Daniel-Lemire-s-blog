@@ -152,7 +152,6 @@ struct processed_utf_bytes {
 
 static inline void count_nibbles(__m128i bytes,
                                  struct processed_utf_bytes *answer) {
-  __m128i high = _mm_and_si128(_mm_srli_epi16(bytes, 4), _mm_set1_epi8(0x0F));
   answer->rawbytes = bytes;
   __m128i nibble_mask = _mm_set1_epi8(0x0F);
   answer->low_nibbles = _mm_and_si128(bytes, nibble_mask);
