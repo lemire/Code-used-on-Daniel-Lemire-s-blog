@@ -178,16 +178,7 @@ checkUTF8Bytes(__m128i current_bytes, struct processed_utf_bytes *previous,
   __m128i current_bytes_unsigned =
       _mm_sub_epi8(current_bytes, _mm_set1_epi8(-128));
   checkSmallerThan0xF4(current_bytes_unsigned, has_error);
-  /*if( ! _mm_testz_si128(*has_error,*has_error)){
-    printf("fuck!1\n");
-    abort();
-  }*/
   checkLargerThan0xC2(current_bytes_unsigned, pb.high_nibbles, has_error);
-  /*  if( ! _mm_testz_si128(*has_error,*has_error)){
-      printf("fuck!2\n");
-                  abort();
-
-    }*/
   checkContinuation(pb.high_nibbles, pb.counts, previous->counts, has_error);
   __m128i off1_low_nibbles =
       _mm_alignr_epi8(pb.low_nibbles, previous->low_nibbles, 16 - 1);

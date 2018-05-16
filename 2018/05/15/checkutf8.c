@@ -151,8 +151,9 @@ void demo(size_t N) {
 
 int main() {
   test();
-  demo(32);
-  demo(80);
-  demo(512);
+  for(size_t size = 64; size <= 32768; size *= 2) {
+    demo(size);
+  }
+
   printf("We are feeding ascii so it is always going to be ok.\n");
 }
