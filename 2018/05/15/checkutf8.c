@@ -144,6 +144,8 @@ void demo(size_t N) {
 
   BEST_TIME(validate_ascii_fast(data, N), expected, populate(data, N),
             repeat, N, true);
+  BEST_TIME(clauderoux_validate_ascii(data, N), expected, populate(data, N),
+            repeat, N, true);
   printf("\n\n");
 
   free(data);
