@@ -44,7 +44,7 @@ long clauderoux_validate_ascii(unsigned char *src, long len) {
   if (i < len) {
     char buffer[16];
     memset(buffer, 0, 16);
-    memcpy(buffer, src + i, len – i);
+    memcpy(buffer, src + i, len - i);
     current_bytes = _mm_loadu_si128((const __m128i *)buffer);
     if (!_mm_testz_si128(minusbyte, current_bytes))
       return i;
