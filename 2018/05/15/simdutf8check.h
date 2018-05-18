@@ -50,11 +50,11 @@ static inline void checkLargerThan0xC2(__m128i current_bytes_unsigned,
 }
 
 // Code contributed by Kendall Willets
-static inline void checkContinuation(__m128i counts, __m128i previous_counts,
+static inline void checkContinuation(__m128i *counts, __m128i previous_counts,
                                      __m128i *has_error) {
   __m128i right1 = _mm_subs_epu8(
-      _mm_alignr_epi8(counts, previous_counts, 16 - 1), _mm_set1_epi8(1));
-  __m128i sum = _mm_add_epi8(counts, right1);
+      _mm_alignr_epi8(*counts, previous_counts, 16 - 1), _mm_set1_epi8(1));
+  __m128i sum = _mm_add_epi8(*counts, right1);
   __m128i right2 = _mm_subs_epu8(_mm_alignr_epi8(sum, previous_counts, 16 - 2),
                                  _mm_set1_epi8(2));
   sum = _mm_add_epi8(sum, right2);
@@ -62,8 +62,10 @@ static inline void checkContinuation(__m128i counts, __m128i previous_counts,
   // sum > count && count > 0 || !(sum > count) && !(count > 0)
   // (sum > count) == (count > 0)
   __m128i overunder = _mm_cmpeq_epi8(
-      _mm_cmpgt_epi8(sum, counts), _mm_cmpgt_epi8(counts, _mm_setzero_si128()));
+      _mm_cmpgt_epi8(sum, *counts), _mm_cmpgt_epi8(*counts, _mm_setzero_si128()));
   *has_error = _mm_or_si128(*has_error, overunder);
+
+  *counts = sum;
 }
 
 // check that the string is allowed to terminate
@@ -143,7 +145,7 @@ checkUTF8Bytes(__m128i current_bytes, struct processed_utf_bytes *previous,
       _mm_sub_epi8(current_bytes, _mm_set1_epi8(-128));
   checkSmallerThan0xF4(current_bytes_unsigned, has_error);
   checkLargerThan0xC2(current_bytes_unsigned, pb.high_nibbles, has_error);
-  checkContinuation(pb.counts, previous->counts, has_error);
+  checkContinuation(&pb.counts, previous->counts, has_error);
   __m128i off1_current_bytes =
       _mm_alignr_epi8(pb.rawbytes, previous->rawbytes, 16 - 1);
   checkFirstContinuationMax(current_bytes_unsigned, off1_current_bytes,
