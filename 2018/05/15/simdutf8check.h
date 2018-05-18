@@ -52,22 +52,30 @@ static inline void checkLargerThan0xC2(__m128i current_bytes_unsigned,
 // Code contributed by Kendall Willets
 static inline void checkContinuation(__m128i counts, __m128i previous_counts,
                                      __m128i *has_error) {
-
   __m128i right1 = _mm_subs_epu8(
       _mm_alignr_epi8(counts, previous_counts, 16 - 1), _mm_set1_epi8(1));
   __m128i sum = _mm_add_epi8(counts, right1);
-
   __m128i right2 = _mm_subs_epu8(_mm_alignr_epi8(sum, previous_counts, 16 - 2),
                                  _mm_set1_epi8(2));
   sum = _mm_add_epi8(sum, right2);
-
   // overlap || underlap
   // sum > count && count > 0 || !(sum > count) && !(count > 0)
   // (sum > count) == (count > 0)
   __m128i overunder = _mm_cmpeq_epi8(
       _mm_cmpgt_epi8(sum, counts), _mm_cmpgt_epi8(counts, _mm_setzero_si128()));
-
   *has_error = _mm_or_si128(*has_error, overunder);
+}
+
+// check that the string is allowed to terminate
+static inline void checkFinalContinuation(__m128i counts,
+                                     __m128i *has_error) {
+  __m128i right1 = _mm_subs_epu8(
+      _mm_alignr_epi8( _mm_setzero_si128(), counts, 16 - 1), _mm_set1_epi8(1));
+  __m128i sum = right1;
+  __m128i right2 = _mm_subs_epu8(_mm_alignr_epi8(sum, counts, 16 - 2),
+                                 _mm_set1_epi8(2));
+  sum = _mm_add_epi8(sum, right2);
+  *has_error = _mm_or_si128(*has_error, sum);
 }
 
 // when 0xED is found, next byte must be no larger than 0x9F
@@ -92,6 +100,7 @@ static inline void checkFirstContinuationMax(__m128i current_bytes_unsigned,
 static inline void checkFirstContinuationMin(__m128i current_bytes_unsigned,
                                              __m128i off1_current_bytes,
                                              __m128i *has_error) {
+  // could be done by looking for uint16_t instead
   __m128i maskE0 = _mm_cmpeq_epi8(off1_current_bytes, _mm_set1_epi8(0xE0));
   __m128i maskF0 = _mm_cmpeq_epi8(off1_current_bytes, _mm_set1_epi8(0xF0));
   __m128i smallerthanA0 = _mm_cmpgt_epi8(_mm_set1_epi8(0xA0 - 128), current_bytes_unsigned);
@@ -162,8 +171,14 @@ static bool validate_utf8_fast(const char *src, size_t len) {
     memcpy(buffer, src + i, len - i);
     __m128i current_bytes = _mm_loadu_si128((const __m128i *)(buffer));
     previous = checkUTF8Bytes(current_bytes, &previous, &has_error);
+  } else {
+    checkFinalContinuation(previous.counts,
+                                         &has_error);
   }
 
   return _mm_testz_si128(has_error, has_error);
 }
+
+
+
 #endif
