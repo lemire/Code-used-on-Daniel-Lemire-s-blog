@@ -31,41 +31,38 @@ static inline void checkSmallerThan0xF4(__m128i current_bytes_unsigned,
                                               _mm_set1_epi8(0xF4 - 128)));
 }
 
-// except for ASCII, the first byte in a character must be at least 0xC2
-static inline void checkLargerThan0xC2(__m128i current_bytes_unsigned,
-                                       __m128i high_nibbles,
-                                       __m128i *has_error) {
-  // the -128  is to compensate for the signed arithmetic (lack of
-  // _mm_cmpgt_epu8)
-  __m128i thismin = _mm_shuffle_epi8(
-      _mm_setr_epi8(0 - 128, 0 - 128, 0 - 128, 0 - 128, 0 - 128, 0 - 128,
-                    0 - 128, 0 - 128,                   // 0xxx (ASCII)
-                    0 - 128, 0 - 128, 0 - 128, 0 - 128, // 10xx (continuation)
-                    0xC2 - 128, 0 - 128,                // 110x
-                    0 - 128,                            // 1110
-                    0 - 128),                           // 1111,
+static inline __m128i continuationLengths(__m128i high_nibbles) {
+   return  _mm_shuffle_epi8(
+      _mm_setr_epi8(1, 1, 1, 1, 1, 1, 1, 1, // 0xxx (ASCII)
+                    0, 0, 0, 0,             // 10xx (continuation)
+                    2, 2,                   // 110x
+                    3,                      // 1110
+                    4), // 1111, next should be 0 (not checked here)
       high_nibbles);
-  *has_error =
-      _mm_or_si128(*has_error, _mm_cmpgt_epi8(thismin, current_bytes_unsigned));
 }
 
-// Code contributed by Kendall Willets
-static inline void checkContinuation(__m128i counts, __m128i previous_counts,
-                                     __m128i *has_error) {
+static inline __m128i carryContinuations(__m128i initial_lengths,
+					 __m128i previous_carries) {
 
   __m128i right1 = _mm_subs_epu8(
-      _mm_alignr_epi8(counts, previous_counts, 16 - 1), _mm_set1_epi8(1));
-  __m128i sum = _mm_add_epi8(counts, right1);
+      _mm_alignr_epi8(initial_lengths, previous_carries, 16 - 1), _mm_set1_epi8(1));
+  __m128i sum = _mm_add_epi8(initial_lengths, right1);
 
-  __m128i right2 = _mm_subs_epu8(_mm_alignr_epi8(sum, previous_counts, 16 - 2),
+  __m128i right2 = _mm_subs_epu8(_mm_alignr_epi8(sum, previous_carries, 16 - 2),
                                  _mm_set1_epi8(2));
-  sum = _mm_add_epi8(sum, right2);
+  return  _mm_add_epi8(sum, right2);
+}
+
+static inline void checkContinuations(__m128i initial_lengths,
+				     __m128i carries,
+                                     __m128i *has_error) {
 
   // overlap || underlap
-  // sum > count && count > 0 || !(sum > count) && !(count > 0)
-  // (sum > count) == (count > 0)
+  // carry > length && length > 0 || !(carry > length) && !(length > 0)
+  // (carries > length) == (lengths > 0)
   __m128i overunder = _mm_cmpeq_epi8(
-      _mm_cmpgt_epi8(sum, counts), _mm_cmpgt_epi8(counts, _mm_setzero_si128()));
+      _mm_cmpgt_epi8(carries, initial_lengths),
+      _mm_cmpgt_epi8(initial_lengths, _mm_setzero_si128()));
 
   *has_error = _mm_or_si128(*has_error, overunder);
 }
@@ -87,24 +84,41 @@ static inline void checkFirstContinuationMax(__m128i current_bytes_unsigned,
   *has_error = _mm_or_si128(*has_error, _mm_or_si128(badfollowED, badfollowF4));
 }
 
-// we have that E0 must be followed by something no smaller than A0
-// we have that F0 must be followed by something no smaller than 90
-static inline void checkFirstContinuationMin(__m128i current_bytes_unsigned,
-                                             __m128i off1_current_bytes,
-                                             __m128i *has_error) {
-  __m128i maskE0 = _mm_cmpeq_epi8(off1_current_bytes, _mm_set1_epi8(0xE0));
-  __m128i maskF0 = _mm_cmpeq_epi8(off1_current_bytes, _mm_set1_epi8(0xF0));
-  __m128i smallerthanA0 = _mm_cmpgt_epi8(_mm_set1_epi8(0xA0 - 128), current_bytes_unsigned);
-  __m128i smallerthan90 = _mm_cmpgt_epi8(_mm_set1_epi8(0x90 - 128), current_bytes_unsigned);
-  __m128i badfollowE0 = _mm_and_si128(maskE0, smallerthanA0);
-  __m128i badfollowF0 = _mm_and_si128(maskF0, smallerthan90);
-  *has_error = _mm_or_si128(*has_error, _mm_or_si128(badfollowE0, badfollowF0));
+// map off1_hibits => error condition
+// hibits     off1    cur
+// C       => < C2 && true  
+// E       => < E1 && < A0
+// F       => < F1 && < 90
+// else      false && false
+static inline void checkOverlong( __m128i current_bytes,
+				  __m128i off1_current_bytes,
+				  __m128i hibits,
+				  __m128i previous_hibits,
+				  __m128i *has_error) {
+  __m128i off1_hibits = _mm_alignr_epi8(hibits, previous_hibits, 16-1);
+  __m128i initial_mins = _mm_shuffle_epi8(_mm_setr_epi8(-128,-128,-128,-128,-128,-128,-128,-128,
+							-128,-128,-128,-128,  // 10xx => false
+							0xC2, -128, // 110x
+							0xE1, // 1110
+							0xF1),
+					  off1_hibits);
+
+  __m128i initial_under = _mm_cmpgt_epi8(initial_mins, off1_current_bytes);
+
+  __m128i second_mins = _mm_shuffle_epi8(_mm_setr_epi8(-128,-128,-128,-128,-128,-128,-128,-128,
+						       -128,-128,-128,-128,  // 10xx => false
+						       127, 127, // 110x => true
+						       0xA0, // 1110
+						       0x90),
+					 off1_hibits);
+  __m128i second_under = _mm_cmpgt_epi8(second_mins, current_bytes);
+  *has_error = _mm_or_si128(*has_error, _mm_and_si128(initial_under, second_under));
 }
 
 struct processed_utf_bytes {
   __m128i rawbytes;
   __m128i high_nibbles;
-  __m128i counts;
+  __m128i carried_continuations;
 };
 
 static inline void count_nibbles(__m128i bytes,
@@ -113,13 +127,6 @@ static inline void count_nibbles(__m128i bytes,
   __m128i nibble_mask = _mm_set1_epi8(0x0F);
 
   answer->high_nibbles = _mm_and_si128(_mm_srli_epi16(bytes, 4), nibble_mask);
-  answer->counts = _mm_shuffle_epi8(
-      _mm_setr_epi8(1, 1, 1, 1, 1, 1, 1, 1, // 0xxx (ASCII)
-                    0, 0, 0, 0,             // 10xx (continuation)
-                    2, 2,                   // 110x
-                    3,                      // 1110
-                    4), // 1111, next should be 0 (not checked here)
-      answer->high_nibbles);
 }
 
 // check whether the current bytes are valid UTF-8
@@ -133,14 +140,22 @@ checkUTF8Bytes(__m128i current_bytes, struct processed_utf_bytes *previous,
   __m128i current_bytes_unsigned =
       _mm_sub_epi8(current_bytes, _mm_set1_epi8(-128));
   checkSmallerThan0xF4(current_bytes_unsigned, has_error);
-  checkLargerThan0xC2(current_bytes_unsigned, pb.high_nibbles, has_error);
-  checkContinuation(pb.counts, previous->counts, has_error);
+
+  __m128i initial_lengths = continuationLengths(pb.high_nibbles);
+
+  pb.carried_continuations = carryContinuations(
+				initial_lengths,
+				previous->carried_continuations);
+  
+  checkContinuations(initial_lengths, pb.carried_continuations, has_error);
+
   __m128i off1_current_bytes =
       _mm_alignr_epi8(pb.rawbytes, previous->rawbytes, 16 - 1);
   checkFirstContinuationMax(current_bytes_unsigned, off1_current_bytes,
                             has_error);
-  checkFirstContinuationMin(current_bytes_unsigned, off1_current_bytes,
-                            has_error);
+
+  checkOverlong(current_bytes, off1_current_bytes,
+		pb.high_nibbles, previous->high_nibbles, has_error);
   return pb;
 }
 
@@ -149,21 +164,30 @@ static bool validate_utf8_fast(const char *src, size_t len) {
   __m128i has_error = _mm_setzero_si128();
   struct processed_utf_bytes previous = {.rawbytes = _mm_setzero_si128(),
                                          .high_nibbles = _mm_setzero_si128(),
-                                         .counts = _mm_setzero_si128()};
-  for (; i + 15 < len; i += 16) {
-    __m128i current_bytes = _mm_loadu_si128((const __m128i *)(src + i));
-    previous = checkUTF8Bytes(current_bytes, &previous, &has_error);
+                                         .carried_continuations = _mm_setzero_si128()};
+  if(len >= 16) {
+    for (; i <= len - 16; i += 16) {
+      __m128i current_bytes = _mm_loadu_si128((const __m128i *)(src + i));
+      previous = checkUTF8Bytes(current_bytes, &previous, &has_error);
+    }
   }
 
-  // last part
+  //last part
   if (i < len) {
     char buffer[16];
     memset(buffer, 0, 16);
     memcpy(buffer, src + i, len - i);
     __m128i current_bytes = _mm_loadu_si128((const __m128i *)(buffer));
     previous = checkUTF8Bytes(current_bytes, &previous, &has_error);
+  } else {
+    has_error = _mm_or_si128( _mm_cmpgt_epi8( previous.carried_continuations,
+					      _mm_setr_epi8(9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,1)),
+			      has_error);
   }
 
   return _mm_testz_si128(has_error, has_error);
 }
+
+
+
 #endif
