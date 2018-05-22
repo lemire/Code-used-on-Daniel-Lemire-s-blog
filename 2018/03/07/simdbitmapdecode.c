@@ -213,7 +213,7 @@ size_t bitmap_decode_bmi2_avx512(uint64_t *bitmap, size_t bitmapsize, uint32_t *
 	uint64_t msk_3 = 0xff00ff00ff00ff00ULL;
 	uint64_t msk_4 = 0xf0f0f0f0f0f0f0f0ULL;
 	uint64_t msk_5 = 0xccccccccccccccccULL;
-	uint64_t msk_6 = 0x9999999999999999ULL;
+	uint64_t msk_6 = 0xaaaaaaaaaaaaaaaaULL;
 	__m512i v1_bit = _mm512_set1_epi8(1);
 	__m512i v2_bit = _mm512_set1_epi8(2);
 	__m512i v4_bit = _mm512_set1_epi8(4);
