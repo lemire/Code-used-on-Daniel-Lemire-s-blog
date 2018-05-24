@@ -103,7 +103,7 @@ int64_t distance(node_t *biggraph, size_t number_of_nodes, size_t start_node,
     for (size_t i = 0; i < buffer_size; i++) {
       node_t *queued_node = &biggraph[buffer[i]];
       if (prefetching)
-        __builtin_prefetch(biggraph[buffer[i + 4]].adjacent, 1, 3);
+        __builtin_prefetch(biggraph[buffer[i + 2]].adjacent, 1, 3);
       if (unlikely(queue_size + NODE_DEGREE > queue_capacity)) {
         queue_capacity *= 2;
         queue = (size_t *)realloc(queue, queue_capacity * sizeof(size_t));
