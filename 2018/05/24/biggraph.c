@@ -52,7 +52,7 @@ size_t lastvisited(node_t *biggraph, size_t number_of_nodes, size_t start_node,
       }
       for (size_t j = 0; j < NODE_DEGREE; j++) {
         uint32_t potential_new_node = queued_node->adjacent[j];
-        bool visited = bitset[potential_new_node >> 6] &&
+        bool visited = bitset[potential_new_node >> 6] &
                        (((uint64_t)1) << (potential_new_node % 64));
         if (!visited) {
           lastvisited = potential_new_node;
