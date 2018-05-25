@@ -23,9 +23,9 @@ size_t lastvisited(node_t *biggraph, size_t number_of_nodes, size_t start_node,
                      (sizeof(uint64_t) * 8);
   uint64_t *bitset = (uint64_t *)malloc(sizeof(uint64_t) * arraysize);
   assert(bitset != NULL);
-  assert((number_of_nodes >> 6) < arraysize);
+  assert((number_of_nodes / 64) < arraysize);
   memset(bitset, 0, sizeof(uint64_t) * arraysize);
-  bitset[start_node >> 6] |= ((uint64_t)1) << (start_node % 64);
+  bitset[start_node / 64] |= 1UL << (start_node % 64);
   size_t queue_capacity = 262144; // memory is cheap
   size_t *queue = (size_t *)malloc(queue_capacity * sizeof(size_t));
   size_t *buffer = (size_t *)malloc(queue_capacity * sizeof(size_t));
@@ -52,13 +52,12 @@ size_t lastvisited(node_t *biggraph, size_t number_of_nodes, size_t start_node,
       }
       for (size_t j = 0; j < NODE_DEGREE; j++) {
         uint32_t potential_new_node = queued_node->adjacent[j];
-        bool visited = bitset[potential_new_node >> 6] &&
-                       (((uint64_t)1) << (potential_new_node % 64));
+        bool visited = bitset[potential_new_node / 64] &
+                       (1UL << (potential_new_node % 64));
         if (!visited) {
           lastvisited = potential_new_node;
           queue[queue_size++] = potential_new_node;
-          bitset[potential_new_node >> 6] |= ((uint64_t)1)
-                                             << (potential_new_node % 64);
+          bitset[potential_new_node / 64] |= 1UL << (potential_new_node % 64);
         }
       }
     }
@@ -81,10 +80,10 @@ int64_t distance(node_t *biggraph, size_t number_of_nodes, size_t start_node,
   uint64_t *bitset = (uint64_t *)malloc(sizeof(uint64_t) * arraysize);
 
   assert(bitset != NULL);
-  assert((number_of_nodes >> 6) < arraysize);
+  assert((number_of_nodes / 64) < arraysize);
 
   memset(bitset, 0, sizeof(uint64_t) * arraysize);
-  bitset[start_node >> 6] |= ((uint64_t)1) << (start_node % 64);
+  bitset[start_node / 64] |= 1UL << (start_node % 64);
 
   size_t queue_capacity = 262144; // memory is cheap
   size_t *queue = (size_t *)malloc(queue_capacity * sizeof(size_t));
@@ -119,12 +118,11 @@ int64_t distance(node_t *biggraph, size_t number_of_nodes, size_t start_node,
           free(bitset);
           return distance;
         }
-        bool visited = bitset[potential_new_node >> 6] &&
-                       (((uint64_t)1) << (potential_new_node % 64));
+        bool visited = bitset[potential_new_node / 64] &
+                       (1UL << (potential_new_node % 64));
         if (!visited) {
           queue[queue_size++] = potential_new_node;
-          bitset[potential_new_node >> 6] |= ((uint64_t)1)
-                                             << (potential_new_node % 64);
+          bitset[potential_new_node / 64] |= 1UL << (potential_new_node % 64);
         }
       }
     }
@@ -158,7 +156,7 @@ void demo(size_t number_of_nodes) {
   // we seek the distance
   int64_t expected =
       distance(biggraph, number_of_nodes, start_node, final_node, false);
-  printf("distance %lld \n", expected);
+  printf("distance %ld \n", expected);
   int repeat = 5;
   bool USE_PREFETCH = true;
   bool DO_NOT_USE_PREFETCH = false;
