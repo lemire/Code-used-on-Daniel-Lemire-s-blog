@@ -119,13 +119,107 @@ int64_t distance(node_t *biggraph, size_t number_of_nodes, size_t start_node,
           free(bitset);
           return distance;
         }
-        bool visited = bitset[potential_new_node >> 6] &
-                       (((uint64_t)1) << (potential_new_node % 64));
-        if (!visited) {
-          queue[queue_size++] = potential_new_node;
-          bitset[potential_new_node >> 6] |= ((uint64_t)1)
-                                             << (potential_new_node % 64);
+        uint64_t mask = (((uint64_t)1) << (potential_new_node % 64));
+        uint64_t visited = bitset[potential_new_node >> 6] & mask;
+        queue[queue_size] = potential_new_node;
+        queue_size += 1 - (visited >> (potential_new_node % 64));
+        bitset[potential_new_node >> 6] |= mask;
+      }
+    }
+  }
+  free(buffer);
+  free(queue);
+  free(bitset);
+  return -distance;
+}
+
+uint64_t batched_distance(node_t *biggraph, size_t number_of_nodes,
+                          size_t start_node, size_t final_node) {
+  int64_t distance = 0;
+  if (start_node == final_node) {
+    return distance;
+  }
+
+  size_t arraysize = (number_of_nodes * 64 + sizeof(uint64_t) * 8 - 1) /
+                     (sizeof(uint64_t) * 8);
+  uint64_t *bitset = (uint64_t *)malloc(sizeof(uint64_t) * arraysize);
+
+  assert(bitset != NULL);
+  assert((number_of_nodes >> 6) < arraysize);
+
+  memset(bitset, 0, sizeof(uint64_t) * arraysize);
+  bitset[start_node >> 6] |= ((uint64_t)1) << (start_node % 64);
+
+  size_t queue_capacity = 262144; // memory is cheap
+  size_t *queue = (size_t *)malloc(queue_capacity * sizeof(size_t));
+  size_t *buffer = (size_t *)malloc(queue_capacity * sizeof(size_t));
+  assert(queue != NULL);
+  assert(buffer != NULL);
+  size_t queue_size = 1;
+  queue[0] = start_node;
+  while (queue_size > 0) {
+    distance++;
+    size_t buffer_size = queue_size;
+    // we could avoid the memcpy with more complicated code.
+    assert(queue_size <= queue_capacity);
+    memcpy(buffer, queue, queue_size * sizeof(size_t));
+    queue_size = 0;
+#define batch_size 8
+    size_t i = 0;
+    if (buffer_size >= batch_size) {
+      bool found = false;
+      for (; i < buffer_size - batch_size; i += batch_size) {
+        while (
+            unlikely(queue_size + NODE_DEGREE * batch_size > queue_capacity)) {
+          queue_capacity *= 2;
+          queue = (size_t *)realloc(queue, queue_capacity * sizeof(size_t));
+          buffer = (size_t *)realloc(buffer, queue_capacity * sizeof(size_t));
+          assert(queue != NULL);
+          assert(buffer != NULL);
         }
+        for (size_t j = 0; j < NODE_DEGREE; j++) {
+
+          for (int k = 0; k < batch_size; k++) {
+            uint32_t potential_new_node = biggraph[buffer[i + k]].adjacent[j];
+            found = found || (potential_new_node == final_node);
+            uint64_t mask = (((uint64_t)1) << (potential_new_node % 64));
+            uint64_t visited = bitset[potential_new_node >> 6] & mask;
+            queue[queue_size] = potential_new_node;
+            queue_size += 1 - (visited >> (potential_new_node % 64));
+            bitset[potential_new_node >> 6] |= mask;
+          }
+          if (unlikely(found)) {
+            free(buffer);
+            free(queue);
+            free(bitset);
+            return distance;
+          }
+        }
+      }
+    }
+    for (; i < buffer_size; i++) {
+      node_t *queued_node = &biggraph[buffer[i]];
+      if (unlikely(queue_size + NODE_DEGREE > queue_capacity)) {
+        queue_capacity *= 2;
+        queue = (size_t *)realloc(queue, queue_capacity * sizeof(size_t));
+        buffer = (size_t *)realloc(buffer, queue_capacity * sizeof(size_t));
+        assert(queue != NULL);
+        assert(buffer != NULL);
+      }
+      for (size_t j = 0; j < NODE_DEGREE; j++) {
+        uint32_t potential_new_node = queued_node->adjacent[j];
+        if (unlikely(potential_new_node == final_node)) { // success!!!
+          free(buffer);
+          free(queue);
+          free(bitset);
+          return distance;
+        }
+        uint64_t mask = (((uint64_t)1) << (potential_new_node % 64));
+        uint64_t visited = bitset[potential_new_node >> 6] & mask;
+        queue[queue_size] = potential_new_node;
+        queue_size += 1 - (visited >> (potential_new_node % 64));
+
+        bitset[potential_new_node >> 6] |= mask;
       }
     }
   }
@@ -162,13 +256,14 @@ void demo(size_t number_of_nodes) {
   int repeat = 5;
   bool USE_PREFETCH = true;
   bool DO_NOT_USE_PREFETCH = false;
+  BEST_TIME(batched_distance(biggraph, number_of_nodes, start_node, final_node),
+            expected, , repeat, volume, true);
   BEST_TIME(distance(biggraph, number_of_nodes, start_node, final_node,
                      DO_NOT_USE_PREFETCH),
             expected, , repeat, volume, true);
   BEST_TIME(
       distance(biggraph, number_of_nodes, start_node, final_node, USE_PREFETCH),
       expected, , repeat, volume, true);
-
   free(biggraph);
 }
 
