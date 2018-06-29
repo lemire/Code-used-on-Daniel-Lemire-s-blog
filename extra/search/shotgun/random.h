@@ -27,7 +27,9 @@ static inline uint32_t pcg32_random_r(pcg32_random_t *rng) {
 static inline uint32_t pcg32_random() { return pcg32_random_r(&pcg32_global); }
 
 int qsort_compare_uint32_t(const void *a, const void *b) {
-  return (*(uint32_t *)a - *(uint32_t *)b);
+  if (*(uint32_t *)a > *(uint32_t *)b) return 1;
+  if (*(uint32_t *)a < *(uint32_t *)b) return -1;
+  return 0;
 }
 uint32_t *create_sorted_array(size_t length) {
   uint32_t *array = malloc(length * sizeof(uint32_t));

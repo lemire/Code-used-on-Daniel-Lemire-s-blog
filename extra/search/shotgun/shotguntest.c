@@ -23,6 +23,16 @@ void array_cache_prefetch(uint32_t *B, int32_t length) {
     __builtin_prefetch(B + k);
   }
 }
+// linear search
+int32_t __attribute__((noinline))
+linear_search(uint32_t *array, int32_t lenarray, uint32_t ikey) {
+  for (int32_t i = 0; i < lenarray; i++)
+    if (array[i] == ikey)
+      return i;
+    else if (array[i] > ikey)
+      return -(i + 1);
+  return -(lenarray + 1);
+}
 
 // good old bin. search
 int32_t __attribute__((noinline))
@@ -40,6 +50,7 @@ binary_search(uint32_t *array, int32_t lenarray, uint32_t ikey) {
       return middleIndex;
     }
   }
+
   return -(low + 1);
 }
 
@@ -105,7 +116,7 @@ void demo() {
   int32_t bogus = 0;
   printf("# Objective: fast search in large arrays.\n");
   printf("# We report the average number of cycles per query.\n");
-  size_t N = 10000; // 100000000;
+  size_t N = 10000000;
   printf("# Array size = %zu (elements), %f (MB).\n", N,
          N * sizeof(uint32_t) / (1024 * 1024.0));
   printf("# We do  %zu consecutive queries, but we try to flush the cache "
@@ -114,7 +125,8 @@ void demo() {
   printf("# creating sorted random array (takes some time) ");
   fflush(NULL);
   uint32_t *source = create_sorted_array(N);
-  for(size_t tv = 0; tv < nbrtestvalues; tv++) testvalues[tv] = source[testvalues[tv] % N];
+  for (size_t tv = 0; tv < nbrtestvalues; tv++)
+    testvalues[tv] = source[testvalues[tv] % N];
   printf(" Done! \n");
   printf("# Running sanity tests: ");
   fflush(NULL);
@@ -122,25 +134,31 @@ void demo() {
   ASSERT_PRE_ARRAY(source, N, branchless_binary_search, testvalues,
                    nbrtestvalues);
   ASSERT_PRE_ARRAY(source, N, shotgun_binary_search, testvalues, nbrtestvalues);
-  printf(" Done! \n");
-  for (int k = 0; k < 5; k++) {
-    printf("%d %d %d \n", binary_search(source, N, testvalues[k]),
-           branchless_binary_search(source, N, testvalues[k]),
-           shotgun_binary_search(source, N, testvalues[k]));
+  for (int k = 0; k < nbrtestvalues; k++) {
+
+    int32_t v1 = binary_search(source, N, testvalues[k]);
+    int32_t v2 = branchless_binary_search(source, N, testvalues[k]);
+    int32_t v3 = shotgun_binary_search(source, N, testvalues[k]);
+    int32_t v4 = linear_search(source, N, testvalues[k]);
+    assert(source[v1] == testvalues[k]);
+    assert(source[v2] == testvalues[k]);
+    assert(source[v3] == testvalues[k]);
+    assert(source[v4] == testvalues[k]);
   }
-  BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_flush, testvalues,
-                      nbrtestvalues, bogus);
-  BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_flush, testvalues,
-                      nbrtestvalues, bogus);
-  BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_flush,
-                      testvalues, nbrtestvalues, bogus);
-  BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_flush,
-                      testvalues, nbrtestvalues, bogus);
-  BEST_TIME_PRE_ARRAY(source, N, shotgun_binary_search, array_cache_flush,
-                      testvalues, nbrtestvalues, bogus);
-  BEST_TIME_PRE_ARRAY(source, N, shotgun_binary_search, array_cache_flush,
-                      testvalues, nbrtestvalues, bogus);
-  printf("\n With data in cache:\n");
+  printf(" Done! \n");
+
+  int repeats = 3;
+  printf("Running out-of-cache benchmarks (%d times each)\n", repeats);
+  for (int k = 0; k < repeats; k++)
+    BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_flush, testvalues,
+                        nbrtestvalues, bogus);
+  for (int k = 0; k < repeats; k++)
+    BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_flush,
+                        testvalues, nbrtestvalues, bogus);
+  for (int k = 0; k < repeats; k++)
+    BEST_TIME_PRE_ARRAY(source, N, shotgun_binary_search, array_cache_flush,
+                        testvalues, nbrtestvalues, bogus);
+  printf("\n With data in cache as much as possible :\n");
   BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_prefetch,
                       testvalues, nbrtestvalues, bogus);
   BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_prefetch,
