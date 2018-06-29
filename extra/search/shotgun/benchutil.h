@@ -30,13 +30,8 @@
     (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;                           \
   } while (0)
 
-/*
- * This is like BEST_TIME except that ... it runs functions "test" using the
- * first parameter "base" and various parameters from "testvalues" (there
- * are nbrtestvalues), calling pre on base between tests
- */
-#define BEST_TIME_PRE_ARRAY(base, length, test, pre, testvalues,               \
-                            nbrtestvalues, bogus)                              \
+#define BEST_TIME_PRE_ARRAY(base, length, test, pre, testvalue, nbrtestvalues, \
+                            bogus)                                             \
   do {                                                                         \
     fflush(NULL);                                                              \
     uint64_t cycles_start, cycles_final, cycles_diff;                          \
@@ -45,10 +40,9 @@
     printf("[%s %s] ", #test, #pre);                                           \
     for (size_t j = 0; j < nbrtestvalues; j++) {                               \
       pre(base, length);                                                       \
-      pre(base, length);                                                       \
       __asm volatile("" ::: /* pretend to clobber */ "memory");                \
       RDTSC_START(cycles_start);                                               \
-      bogus += test(base, length, testvalues[j]);                              \
+      bogus += test(base, length, testvalue[j]);                                \
       RDTSC_FINAL(cycles_final);                                               \
       cycles_diff = (cycles_final - cycles_start);                             \
       if (cycles_diff < min_diff)                                              \
@@ -95,6 +89,5 @@
     if (error != 0)                                                            \
       printf("[%s error: %d]\n", #test, error);                                \
   } while (0)
-
 
 #endif

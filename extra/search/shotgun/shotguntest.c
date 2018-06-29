@@ -5,9 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "random.h"
 #include "benchutil.h"
-
+#include "random.h"
 
 // flushes the array from cache
 void array_cache_flush(uint32_t *B, int32_t length) {
@@ -101,31 +100,52 @@ branchless_binary_search(uint32_t *source, int32_t n, uint32_t target) {
 }
 
 void demo() {
-  size_t nbrtestvalues = 5;
+  size_t nbrtestvalues = 100;
   uint32_t *testvalues = create_random_array(nbrtestvalues);
   int32_t bogus = 0;
   printf("# Objective: fast search in large arrays.\n");
   printf("# We report the average number of cycles per query.\n");
-  size_t N = 100000000;
-  printf("# Array size = %zu.\n", N);
-  printf("# We do  %zu consecutive queries before flushing the cache.\n", nbrtestvalues);
-
+  size_t N = 10000; // 100000000;
+  printf("# Array size = %zu (elements), %f (MB).\n", N,
+         N * sizeof(uint32_t) / (1024 * 1024.0));
+  printf("# We do  %zu consecutive queries, but we try to flush the cache "
+         "between queries.\n",
+         nbrtestvalues);
   printf("# creating sorted random array (takes some time) ");
   fflush(NULL);
   uint32_t *source = create_sorted_array(N);
+  for(size_t tv = 0; tv < nbrtestvalues; tv++) testvalues[tv] = source[testvalues[tv] % N];
   printf(" Done! \n");
   printf("# Running sanity tests: ");
   fflush(NULL);
   ASSERT_PRE_ARRAY(source, N, binary_search, testvalues, nbrtestvalues);
-  ASSERT_PRE_ARRAY(source, N, branchless_binary_search, testvalues, nbrtestvalues);
+  ASSERT_PRE_ARRAY(source, N, branchless_binary_search, testvalues,
+                   nbrtestvalues);
   ASSERT_PRE_ARRAY(source, N, shotgun_binary_search, testvalues, nbrtestvalues);
   printf(" Done! \n");
-
+  for (int k = 0; k < 5; k++) {
+    printf("%d %d %d \n", binary_search(source, N, testvalues[k]),
+           branchless_binary_search(source, N, testvalues[k]),
+           shotgun_binary_search(source, N, testvalues[k]));
+  }
+  BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_flush, testvalues,
+                      nbrtestvalues, bogus);
   BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_flush, testvalues,
                       nbrtestvalues, bogus);
   BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_flush,
                       testvalues, nbrtestvalues, bogus);
+  BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_flush,
+                      testvalues, nbrtestvalues, bogus);
   BEST_TIME_PRE_ARRAY(source, N, shotgun_binary_search, array_cache_flush,
+                      testvalues, nbrtestvalues, bogus);
+  BEST_TIME_PRE_ARRAY(source, N, shotgun_binary_search, array_cache_flush,
+                      testvalues, nbrtestvalues, bogus);
+  printf("\n With data in cache:\n");
+  BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_prefetch,
+                      testvalues, nbrtestvalues, bogus);
+  BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_prefetch,
+                      testvalues, nbrtestvalues, bogus);
+  BEST_TIME_PRE_ARRAY(source, N, shotgun_binary_search, array_cache_prefetch,
                       testvalues, nbrtestvalues, bogus);
 
   free(source);
@@ -134,9 +154,9 @@ void demo() {
   free(testvalues);
 }
 int main() {
-  for(int t = 0; t < 3; ++t) {
-  demo();
-  printf("=====\n\n");
-}
+  for (int t = 0; t < 3; ++t) {
+    demo();
+    printf("=====\n\n");
+  }
   return 0;
 }

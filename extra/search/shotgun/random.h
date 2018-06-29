@@ -44,4 +44,10 @@ uint32_t *create_random_array(size_t count) {
   return targets;
 }
 
+uint32_t *randomize(uint32_t *targets, size_t count) {
+  for (size_t i = 0; i < count; i++)
+    targets[i] = (uint32_t)pcg32_random();
+  return targets;
+}
+
 #endif
