@@ -158,14 +158,14 @@ void demo() {
   for (int k = 0; k < repeats; k++)
     BEST_TIME_PRE_ARRAY(source, N, shotgun_binary_search, array_cache_flush,
                         testvalues, nbrtestvalues, bogus);
-  printf("\n With data in cache as much as possible :\n");
+  /*printf("\n With data in cache as much as possible :\n");
   BEST_TIME_PRE_ARRAY(source, N, binary_search, array_cache_prefetch,
                       testvalues, nbrtestvalues, bogus);
   BEST_TIME_PRE_ARRAY(source, N, branchless_binary_search, array_cache_prefetch,
                       testvalues, nbrtestvalues, bogus);
   BEST_TIME_PRE_ARRAY(source, N, shotgun_binary_search, array_cache_prefetch,
                       testvalues, nbrtestvalues, bogus);
-
+  */
   free(source);
   printf("\n");
   printf("bogus = %d \n", bogus);
