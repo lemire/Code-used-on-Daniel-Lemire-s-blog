@@ -78,10 +78,9 @@ __m256i popcount_pshufb32b(__m256i v) {
   const __m256i popcnt2 = _mm256_shuffle_epi8(lookup, hi);
 
   __m256i sum8 = _mm256_add_epi8(popcnt1, popcnt2);
-  return _mm256_madd_epi16(_mm256_maddubs_epi16(sum8,_mm256_set1_epi8(1)),_mm256_set1_epi16(1));
+  return _mm256_madd_epi16(_mm256_maddubs_epi16(sum8, _mm256_set1_epi8(1)),
+                           _mm256_set1_epi16(1));
 }
-
-
 
 uint64_t basic(uint64_t *a, size_t N) {
   uint64_t sum = 0;
