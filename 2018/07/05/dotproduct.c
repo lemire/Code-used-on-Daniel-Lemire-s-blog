@@ -167,7 +167,7 @@ void demo(size_t number) {
     x1[i] = i * 1.f / number;
     x2[i] = (10 - i) * 1.f / number;
   }
-  int repeat = 500;
+  int repeat = 50;
   float expected = dot(x1, x2, number);
   BEST_TIME(dot(x1, x2, number), expected, , repeat, number, bytes, true);
   expected = dot128(x1, x2, number);
@@ -200,5 +200,6 @@ int main() {
   demo(8388608);
   demo(16777216);
   demo(33554432);
+  demo(134217728);
   return EXIT_SUCCESS;
 }
