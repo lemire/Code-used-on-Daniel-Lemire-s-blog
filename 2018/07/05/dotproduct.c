@@ -167,26 +167,26 @@ void demo(size_t number) {
     x1[i] = i * 1.f / number;
     x2[i] = (10 - i) * 1.f / number;
   }
-  int repeat = 50;
+  int repeat = 500;
   float expected = dot(x1, x2, number);
-  BEST_TIME(dot(x1, x2, number), expected, , repeat, number, true);
+  BEST_TIME(dot(x1, x2, number), expected, , repeat, number, bytes, true);
   expected = dot128(x1, x2, number);
-  BEST_TIME(dot128(x1, x2, number), expected, , repeat, number, true);
+  BEST_TIME(dot128(x1, x2, number), expected, , repeat, number, bytes, true);
 #ifdef __AVX2__
   expected = dot256(x1, x2, number);
-  BEST_TIME(dot256(x1, x2, number), expected, , repeat, number, true);
+  BEST_TIME(dot256(x1, x2, number), expected, , repeat, number, bytes, true);
 #endif
 #ifdef __AVX512F__
   expected = dot512(x1, x2, number);
-  BEST_TIME(dot512(x1, x2, number), expected, , repeat, number, true);
+  BEST_TIME(dot512(x1, x2, number), expected, , repeat, number, bytes, true);
   expected = dot128fma(x1, x2, number);
-  BEST_TIME(dot128fma(x1, x2, number), expected, , repeat, number, true);
+  BEST_TIME(dot128fma(x1, x2, number), expected, , repeat, number, bytes, true);
   expected = dot256fma(x1, x2, number);
-  BEST_TIME(dot256fma(x1, x2, number), expected, , repeat, number, true);
+  BEST_TIME(dot256fma(x1, x2, number), expected, , repeat, number, bytes, true);
   expected = dot512fma(x1, x2, number);
-  BEST_TIME(dot512fma(x1, x2, number), expected, , repeat, number, true);
+  BEST_TIME(dot512fma(x1, x2, number), expected, , repeat, number, bytes, true);
   expected = dot512fma2(x1, x2, number);
-  BEST_TIME(dot512fma2(x1, x2, number), expected, , repeat, number, true);
+  BEST_TIME(dot512fma2(x1, x2, number), expected, , repeat, number, bytes, true);
 #endif
   printf("\n");
   free(x1);
@@ -194,9 +194,11 @@ void demo(size_t number) {
 }
 
 int main() {
+  demo(1024);
   demo(2097152);
   demo(4194304);
   demo(8388608);
   demo(16777216);
+  demo(33554432);
   return EXIT_SUCCESS;
 }
