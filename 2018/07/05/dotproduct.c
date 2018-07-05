@@ -32,6 +32,21 @@ __attribute__((noinline)) float dot128(float *x1, float *x2, size_t len) {
   _mm_storeu_ps(buffer, sum);
   return buffer[0] + buffer[1] + buffer[2] + buffer[3];
 }
+// wmu insisted
+__attribute__((noinline)) float dot128dt(float *x1, float *x2, size_t len) {
+  assert(len % 4 == 0);
+  float sum = 0;
+  if (len > 3) {
+    size_t limit = len - 3;
+    for (size_t i = 0; i < limit; i += 4) {
+      __m128 v1 = _mm_loadu_ps(x1 + i);
+      __m128 v2 = _mm_loadu_ps(x2 + i);
+      sum += _mm_cvtss_f32(_mm_dp_ps(v1, v2, 0xf1));
+    }
+  }
+  return sum;
+}
+
 
 #ifdef __AVX512F__
 __attribute__((noinline)) float dot128fma(float *x1, float *x2, size_t len) {
@@ -172,6 +187,8 @@ void demo(size_t number) {
   BEST_TIME(dot(x1, x2, number), expected, , repeat, number, bytes, true);
   expected = dot128(x1, x2, number);
   BEST_TIME(dot128(x1, x2, number), expected, , repeat, number, bytes, true);
+  expected = dot128dt(x1, x2, number);
+  BEST_TIME(dot128dt(x1, x2, number), expected, , repeat, number, bytes, true);
 #ifdef __AVX2__
   expected = dot256(x1, x2, number);
   BEST_TIME(dot256(x1, x2, number), expected, , repeat, number, bytes, true);
