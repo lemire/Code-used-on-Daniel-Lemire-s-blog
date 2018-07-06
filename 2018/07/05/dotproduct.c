@@ -48,7 +48,7 @@ __attribute__((noinline)) float dot128dt(float *x1, float *x2, size_t len) {
 }
 
 
-#ifdef __AVX512F__
+#ifdef __FMA__
 __attribute__((noinline)) float dot128fma(float *x1, float *x2, size_t len) {
   assert(len % 4 == 0);
   __m128 sum = _mm_setzero_ps();
@@ -87,8 +87,8 @@ __attribute__((noinline)) float dot256(float *x1, float *x2, size_t len) {
 }
 #endif
 
+#ifdef __FMA__
 
-#ifdef __AVX512F__
 __attribute__((noinline)) float dot256fma(float *x1, float *x2, size_t len) {
   assert(len % 8 == 0);
   __m256 sum = _mm256_setzero_ps();
@@ -105,6 +105,9 @@ __attribute__((noinline)) float dot256fma(float *x1, float *x2, size_t len) {
   return buffer[0] + buffer[1] + buffer[2] + buffer[3] + buffer[4] + buffer[5] +
          buffer[6] + buffer[7];
 }
+#endif
+
+#ifdef __AVX512F__
 
 __attribute__((noinline)) float dot512(float *x1, float *x2, size_t len) {
   assert(len % 16 == 0);
@@ -193,13 +196,15 @@ void demo(size_t number) {
   expected = dot256(x1, x2, number);
   BEST_TIME(dot256(x1, x2, number), expected, , repeat, number, bytes, true);
 #endif
-#ifdef __AVX512F__
-  expected = dot512(x1, x2, number);
-  BEST_TIME(dot512(x1, x2, number), expected, , repeat, number, bytes, true);
+#ifdef __FMA__
   expected = dot128fma(x1, x2, number);
   BEST_TIME(dot128fma(x1, x2, number), expected, , repeat, number, bytes, true);
   expected = dot256fma(x1, x2, number);
   BEST_TIME(dot256fma(x1, x2, number), expected, , repeat, number, bytes, true);
+#endif
+#ifdef __AVX512F__
+  expected = dot512(x1, x2, number);
+  BEST_TIME(dot512(x1, x2, number), expected, , repeat, number, bytes, true);
   expected = dot512fma(x1, x2, number);
   BEST_TIME(dot512fma(x1, x2, number), expected, , repeat, number, bytes, true);
   expected = dot512fma2(x1, x2, number);
