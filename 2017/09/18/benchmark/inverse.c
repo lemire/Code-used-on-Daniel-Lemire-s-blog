@@ -52,7 +52,6 @@ static uint64_t findInverse64(uint64_t x) {
 
 static uint64_t findInverse64b(uint64_t x) {
   uint64_t y = (3 * x) ^ 2;
-  ;
   y = f64(x, y);
   y = f64(x, y);
   y = f64(x, y);
@@ -115,6 +114,7 @@ void demo(size_t N) {
   for (size_t i = 0; i < N; i++) {
     data[i] = (((uint32_t)rand() << 16) ^ (uint32_t)rand()) | 1;
   }
+
   uint32_t expected32 = findInverse32(data[0]);
   int repeat = 5;
   BEST_TIME(arrayinverse32(buffer, N), expected32,
@@ -137,5 +137,25 @@ void demo(size_t N) {
 int main() {
 
   demo(10000000);
+  printf("running checks...\n");
+  for (uint64_t i = 1; i < 4294967295; i += 2) {
+    uint32_t i1 = findInverse32(i);
+    uint32_t i2 = findInverse32b(i);
+    uint32_t i3 = findInverse32c(i);
+    assert((i1 == i2) && (i2 == i3));
+  }
+  for (uint64_t i = 1; i < 4294967295; i += 2) {
+    uint64_t i1 = findInverse64(i);
+    uint64_t i2 = findInverse64b(i);
+    uint64_t i3 = findInverse64c(i);
+    assert((i1 == i2) && (i2 == i3));
+  }
+  for (uint64_t i = 1; i < 4294967295; i += 2) {
+    uint64_t i1 = findInverse64((i << 32) + 1);
+    uint64_t i2 = findInverse64b((i << 32) + 1);
+    uint64_t i3 = findInverse64c((i << 32) + 1);
+    assert((i1 == i2) && (i2 == i3));
+  }
+  printf("code looks good.\n");
   return EXIT_SUCCESS;
 }
