@@ -109,6 +109,70 @@ void shuffle_simdpcg32(uint32_t *storage, uint32_t size,
   }
 }
 
+typedef struct avx512bis_pcg_state_setseq_64 { // Internals are *Private*.
+  __m512i state[2];   // (8x64bits) RNG state.  All values are possible.
+  __m512i inc[2];     // (8x64bits)Controls which RNG sequences (stream) is
+                      // selected. Must *always* be odd. You probably want
+                      // distinct sequences
+  __m512i multiplier; // set to _mm512_set1_epi64(0x5851f42d4c957f2d);
+} avx512bis_pcg32_random_t;
+
+static inline __m512i avx512bis_pcg32_random_r(avx512bis_pcg32_random_t *rng) {
+  __m512i oldstate0 = rng->state[0];
+  __m512i oldstate1 = rng->state[1];
+  __m512i lowstates = _mm512_unpacklo_epi32(oldstate1, oldstate0);
+
+  rng->state[0] = _mm512_add_epi64(
+      _mm512_mullo_epi64(rng->multiplier, rng->state[0]), rng->inc[1]);
+  rng->state[1] = _mm512_add_epi64(
+      _mm512_mullo_epi64(rng->multiplier, rng->state[1]), rng->inc[1]);
+
+  __m512i xorshifted = _mm512_srli_epi64(
+      _mm512_xor_epi64(_mm512_srli_epi64(lowstates, 18), lowstates), 27);
+  __m512i rot = _mm512_srli_epi64(lowstates, 59);
+  return _mm512_rorv_epi32(xorshifted, rot);
+}
+
+void shuffle_simdbispcg32(uint32_t *storage, uint32_t size,
+                          avx512bis_pcg32_random_t *rng) {
+  uint32_t i = size;
+  assert((size % 16) == 0); // simplification
+  uint32_t rndbuffer32[16];
+  // general case
+  for (; i > 0xFFFF; i -= 16) {
+    __m512i nextpos = avx512bis_pcg32_random_r(rng);
+    _mm512_storeu_si512((__m512i *)rndbuffer32, nextpos);
+    for (int j = 0; j < 16; j++) {
+      uint32_t nextpos = (rndbuffer32[j] * (uint64_t)(i - j)) >> 32;
+      uint32_t tmp = storage[i - j - 1];
+      uint32_t val = storage[nextpos];
+      storage[i - j - 1] = val;
+      storage[nextpos] = tmp;
+    }
+  }
+  // switching to 16-bit case
+  uint16_t rndbuffer16[32];
+  // __m512i offsets = _mm512_set_epi16(
+  uint16_t offsetsb[] = {i - 31, i - 30, i - 29, i - 28, i - 27, i - 26, i - 25,
+                         i - 24, i - 23, i - 22, i - 21, i - 20, i - 19, i - 18,
+                         i - 17, i - 16, i - 15, i - 14, i - 13, i - 12, i - 11,
+                         i - 10, i - 9,  i - 8,  i - 7,  i - 6,  i - 5,  i - 4,
+                         i - 3,  i - 2,  i - 1,  i}; //);
+  __m512i offsets = _mm512_loadu_si512((const __m512i *)offsetsb);
+  for (; i >= 32; i -= 32) {
+    __m512i nextpos = avx512bis_pcg32_random_r(rng);
+    nextpos = _mm512_mulhi_epu16(nextpos, offsets);
+    offsets = _mm512_sub_epi16(offsets, _mm512_set1_epi16(16));
+    _mm512_storeu_si512((__m512i *)rndbuffer16, nextpos);
+    for (int j = 0; j < 32; j++) {
+      uint32_t nextpos = rndbuffer16[j];
+      uint32_t tmp = storage[i - j - 1];
+      uint32_t val = storage[nextpos];
+      storage[i - j - 1] = val;
+      storage[nextpos] = tmp;
+    }
+  }
+}
 #endif
 
 void demo(size_t size) {
@@ -129,6 +193,15 @@ void demo(size_t size) {
   key512.multiplier = _mm512_set1_epi64(0x5851f42d4c957f2d);
   BEST_TIME_NOCHECK(shuffle_simdpcg32(testvalues, size, &key512), , repeat,
                     size, verbose);
+
+  avx512bis_pcg32_random_t key512bis = {};
+  key512bis.state[0] = _mm512_set1_epi64(1111);
+  key512bis.state[1] = _mm512_set1_epi64(2222);
+  key512bis.inc[0] = _mm512_set_epi64(15, 13, 11, 9, 7, 5, 3, 1);
+  key512bis.inc[1] = _mm512_set_epi64(15, 13, 11, 9, 7, 5, 3, 1);
+  key512.multiplier = _mm512_set1_epi64(0x5851f42d4c957f2d);
+  BEST_TIME_NOCHECK(shuffle_simdbispcg32(testvalues, size, &key512bis), ,
+                    repeat, size, verbose);
 
 #endif
   BEST_TIME_NOCHECK(shuffle_pcg32(testvalues, size, &key), , repeat, size,
