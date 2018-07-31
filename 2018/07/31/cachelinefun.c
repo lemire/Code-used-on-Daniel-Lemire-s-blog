@@ -42,6 +42,17 @@ uint32_t sumrandom(uint32_t* array, size_t powertwosize, size_t howmany, pcg32_r
 }
 
 // assume array is aligned on 64-byte cache lines
+uint32_t sumrandomscalar(size_t percache,uint32_t* array, size_t powertwosize, size_t howmany, pcg32_random_t *rng) {
+  uint32_t counter = 0;
+  for(size_t i = 0; i < howmany; i++) {
+    size_t idx = pcg32_random_r(rng) & (powertwosize - 1);
+    for(size_t j = 0; j < percache; j++) counter += array[16 * idx + j];
+  }
+  return counter;
+}
+
+
+// assume array is aligned on 64-byte cache lines
 uint32_t sumrandombis(uint32_t* array, size_t powertwosize, size_t howmany, pcg32_random_t *rng) {
   __m256i counter = _mm256_setzero_si256();
   for(size_t i = 0; i < howmany; i++) {
@@ -87,13 +98,26 @@ void demo(size_t level) {
 
   clock_gettime(CLOCK_REALTIME, &time);
   size_t bef = time.tv_sec * 1000000000ULL + time.tv_nsec;
-  uint32_t expected = sumrandom(testvalues,size,width,&key);
+  uint32_t expected;
   clock_gettime(CLOCK_REALTIME, &time);
   size_t aft = time.tv_sec * 1000000000ULL + time.tv_nsec;
   printf("Time per cache line access %3.f ns \n", (aft-bef)*1.0/width);
+  key.state = 333;
+  expected = sumrandomscalar(1,testvalues,size,width,&key);
+  BEST_TIME(sumrandomscalar(1,testvalues,size,width,&key),expected,  key.state = 333, repeat, width,width*64, verbose);
+  key.state = 333;
+  expected = sumrandomscalar(4,testvalues,size,width,&key);
+  BEST_TIME(sumrandomscalar(4,testvalues,size,width,&key),expected,  key.state = 333, repeat, width,width*64, verbose);
+  key.state = 333;
+  expected = sumrandomscalar(8,testvalues,size,width,&key);
+  BEST_TIME(sumrandomscalar(8,testvalues,size,width,&key),expected,  key.state = 333, repeat, width,width*64, verbose);
+  key.state = 333;
+  expected = sumrandomscalar(16,testvalues,size,width,&key);
+  BEST_TIME(sumrandomscalar(16,testvalues,size,width,&key),expected,  key.state = 333, repeat, width,width*64, verbose);
+  key.state = 333;
+  expected = sumrandom(testvalues,size,width,&key);
+  BEST_TIME(sumrandom(testvalues,size,width,&key),expected,  key.state = 333, repeat, width,width*64, verbose);
 
-  BEST_TIME(sumrandom(testvalues,size,width,&key),expected,  key.state = 333
-, repeat, width,width*64, verbose);
   key.state = 333;
   expected = sumrandombis(testvalues,size,width,&key);
   BEST_TIME(sumrandombis(testvalues,size,width,&key),expected,  key.state = 333, repeat, width,width*64 ,verbose);
