@@ -1,3 +1,4 @@
+// gcc -O3 -o bubble bubble.c -march=native -lpthread
 #include <pthread.h>
 #include <stdatomic.h>
 #include <stdint.h>
@@ -32,7 +33,7 @@ void *athread(void *arg) {
   }
 
   while (1) {
-    if (acnt >= 50000000) {
+    if (acnt >= 5000000) {
       return NULL;
     }
     acnt++;
@@ -41,9 +42,9 @@ void *athread(void *arg) {
 
     for (int i = 0; i < size;) {
 #ifdef __AVX512DQ__
-      _mm512_mask_storeu_epi64(
-          &arr[i], 0xff,
-          _mm512_mullo_epi64(_mm512_maskz_loadu_epi64(0xff, &arr[i]),
+      _mm512_storeu_si512(
+          &arr[i],
+          _mm512_mullo_epi64(_mm512_loadu_si512(&arr[i]),
                              _mm512_set1_epi64(factor)));
       i += 8;
 #else
