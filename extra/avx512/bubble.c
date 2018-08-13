@@ -33,7 +33,7 @@ void *athread(void *arg) {
   }
 
   while (1) {
-    if (acnt >= 5000000) {
+    if (acnt >= 50000000) {
       return NULL;
     }
     acnt++;
