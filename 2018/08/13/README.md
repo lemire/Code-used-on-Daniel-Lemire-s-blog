@@ -3,30 +3,30 @@ Execute the ``all.sh`` script on a 2-CPU Xeon gold processor.
 ```
 $ python analysis.py
 results_test1_20.txt
-no avx:  7.61 plus minus 0.03
-avx-512:  7.48 plus minus 0.03
+('no avx: ', '8.42', 'plus minus', '0.02')
+('avx-512: ', '7.21', 'plus minus', '0.02')
 results_test2_20.txt
-no avx:  7.62 plus minus 0.03
-avx-512:  7.43 plus minus 0.03
+('no avx: ', '8.44', 'plus minus', '0.05')
+('avx-512: ', '7.21', 'plus minus', '0.05')
 results_test3_20.txt
-no avx:  7.65 plus minus 0.06
-avx-512:  7.45 plus minus 0.06
+('no avx: ', '8.42', 'plus minus', '0.01')
+('avx-512: ', '7.2', 'plus minus', '0.01')
 results_test1_40.txt
-no avx:  6.24 plus minus 0.3
-avx-512:  5.78 plus minus 0.3
+('no avx: ', '6.12', 'plus minus', '0.02')
+('avx-512: ', '5.03', 'plus minus', '0.02')
 results_test2_40.txt
-no avx:  6.05 plus minus 0.1
-avx-512:  5.81 plus minus 0.1
+('no avx: ', '6.08', 'plus minus', '0.02')
+('avx-512: ', '5.05', 'plus minus', '0.02')
 results_test3_40.txt
-no avx:  6.12 plus minus 0.03
-avx-512:  5.8 plus minus 0.03
+('no avx: ', '6.08', 'plus minus', '0.02')
+('avx-512: ', '5.05', 'plus minus', '0.02')
 results_test1_80.txt
-no avx:  8.55 plus minus 0.4
-avx-512:  10.7 plus minus 0.4
+('no avx: ', '5.69', 'plus minus', '0.005')
+('avx-512: ', '4.71', 'plus minus', '0.005')
 results_test2_80.txt
-no avx:  8.43 plus minus 0.2
-avx-512:  10.7 plus minus 0.2
+('no avx: ', '5.7', 'plus minus', '0.007')
+('avx-512: ', '4.65', 'plus minus', '0.007')
 results_test3_80.txt
-no avx:  8.3 plus minus 0.3
-avx-512:  10.7 plus minus 0.3
+('no avx: ', '5.69', 'plus minus', '0.002')
+('avx-512: ', '4.66', 'plus minus', '0.002')
 ```

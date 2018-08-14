@@ -1,84 +1,84 @@
-++ cat /proc/cpuinfo
-++ grep name
-++ uniq
++++ cat /proc/cpuinfo
++++ grep name
++++ uniq
 model name	: Intel(R) Xeon(R) Gold 5120 CPU @ 2.20GHz
-++ gcc --version
-gcc (Ubuntu 5.4.0-6ubuntu1~16.04.10) 5.4.0 20160609
-Copyright (C) 2015 Free Software Foundation, Inc.
++++ gcc --version
+gcc (Ubuntu 7.3.0-16ubuntu3) 7.3.0
+Copyright (C) 2017 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-++ gcc -O3 -o bubblenoavx512 bubble.c -march=native -mno-avx512dq -lpthread
-++ gcc -O3 -o bubble bubble.c -march=native -lpthread
-+++ seq 1 1 5
-++ for num in '`seq 1 1 5`'
-++ ./bubblenoavx512 20
++++ gcc -O3 -o bubblenoavx512 bubble.c -march=native -mno-avx512dq -mno-avx512f -lpthread
++++ gcc -O3 -o bubble bubble.c -march=native -lpthread
+++++ seq 1 1 5
++++ for num in `seq 1 1 5`
++++ ./bubblenoavx512 20
 not using avx512
 
-real	0m7.642s
-user	2m32.032s
+real	0m8.391s
+user	2m47.777s
 sys	0m0.000s
-++ for num in '`seq 1 1 5`'
-++ ./bubblenoavx512 20
++++ for num in `seq 1 1 5`
++++ ./bubblenoavx512 20
 not using avx512
 
-real	0m7.601s
-user	2m31.780s
+real	0m8.408s
+user	2m48.110s
 sys	0m0.000s
-++ for num in '`seq 1 1 5`'
-++ ./bubblenoavx512 20
++++ for num in `seq 1 1 5`
++++ ./bubblenoavx512 20
 not using avx512
 
-real	0m7.580s
-user	2m31.252s
-sys	0m0.000s
-++ for num in '`seq 1 1 5`'
-++ ./bubblenoavx512 20
+real	0m8.429s
+user	2m48.554s
+sys	0m0.004s
++++ for num in `seq 1 1 5`
++++ ./bubblenoavx512 20
 not using avx512
 
-real	0m7.573s
-user	2m30.832s
+real	0m8.418s
+user	2m48.320s
 sys	0m0.000s
-++ for num in '`seq 1 1 5`'
-++ ./bubblenoavx512 20
++++ for num in `seq 1 1 5`
++++ ./bubblenoavx512 20
 not using avx512
 
-real	0m7.635s
-user	2m31.984s
+real	0m8.446s
+user	2m48.905s
 sys	0m0.000s
-+++ seq 1 1 5
-++ for num in '`seq 1 1 5`'
-++ ./bubble 20
+++++ seq 1 1 5
++++ for num in `seq 1 1 5`
++++ ./bubble 20
 using avx512
 
-real	0m7.645s
-user	2m31.900s
+real	0m7.232s
+user	2m24.624s
 sys	0m0.000s
-++ for num in '`seq 1 1 5`'
-++ ./bubble 20
++++ for num in `seq 1 1 5`
++++ ./bubble 20
 using avx512
 
-real	0m7.424s
-user	2m27.664s
+real	0m7.247s
+user	2m24.929s
 sys	0m0.000s
-++ for num in '`seq 1 1 5`'
-++ ./bubble 20
++++ for num in `seq 1 1 5`
++++ ./bubble 20
 using avx512
 
-real	0m7.436s
-user	2m27.900s
+real	0m7.168s
+user	2m23.350s
 sys	0m0.000s
-++ for num in '`seq 1 1 5`'
-++ ./bubble 20
++++ for num in `seq 1 1 5`
++++ ./bubble 20
 using avx512
 
-real	0m7.423s
-user	2m27.792s
+real	0m7.213s
+user	2m24.238s
 sys	0m0.000s
-++ for num in '`seq 1 1 5`'
-++ ./bubble 20
++++ for num in `seq 1 1 5`
++++ ./bubble 20
 using avx512
 
-real	0m7.450s
-user	2m28.316s
-sys	0m0.000s
+real	0m7.202s
+user	2m23.944s
+sys	0m0.008s
