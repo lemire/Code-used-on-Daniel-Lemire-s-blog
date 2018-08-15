@@ -58,6 +58,18 @@ public class HashFast {
   }
 
   @Benchmark
+  public int murmur_32()   {
+    int answer1 = 0;
+    int answer2 = 0;
+    for(long x = 0; x < 100000; x++) {
+      long h = murmur64(x);
+      answer1 += (int) h;
+      answer2 += (int) (h >>> 32);
+    }
+    return answer1 + answer2;
+  }
+
+  @Benchmark
   public int fast2_32()   {
     int answer1 = 0;
     int answer2 = 0;
