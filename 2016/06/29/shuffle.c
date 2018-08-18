@@ -52,7 +52,7 @@ static inline uint32_t pcg32_random_bounded_divisionless_with_slight_bias(uint32
     return multiresult >> 32; // [0, range)
 }
 
-// map random value to [0,range) with slight bias, redraws to avoid bias if needed
+// map random value to [0,range), redraws to avoid bias if needed
 static inline uint32_t pcg32_random_bounded_divisionless(uint32_t range) {
     uint64_t random32bit, multiresult;
     uint32_t leftover;

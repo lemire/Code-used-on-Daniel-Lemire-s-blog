@@ -77,7 +77,7 @@ uint64_t global_rdtsc_overhead = (uint64_t)UINT64_MAX;
  * test, repeat is the number of times we should repeat and size is the
  * number of operations represented by test.
  */
-#define BEST_TIME(test, expected, pre, repeat, size, verbose)                  \
+#define BEST_TIME(test, expected, pre, repeat, size, bytes, verbose)                  \
   do {                                                                         \
     if (global_rdtsc_overhead == UINT64_MAX) {                                 \
       RDTSC_SET_OVERHEAD(rdtsc_overhead_func(1), repeat);                      \
@@ -104,15 +104,18 @@ uint64_t global_rdtsc_overhead = (uint64_t)UINT64_MAX;
     }                                                                          \
     uint64_t S = size;                                                         \
     float cycle_per_op = (min_diff) / (double)S;                               \
+    float bytes_per_cycle =  (double)bytes / (min_diff);                               \
     float avg_cycle_per_op = (sum_diff) / ((double)S * repeat);                \
     if (verbose)                                                               \
       printf(" %.3f %s per operation (best) ", cycle_per_op, unitname);        \
     if (verbose)                                                               \
+      printf(" %.3f bytes per cycle (best) ", bytes_per_cycle);        \
+     if (verbose)                                                               \
       printf("\t%.3f %s per operation (avg) ", avg_cycle_per_op, unitname);    \
     if (verbose)                                                               \
       printf("\n");                                                            \
     if (!verbose)                                                              \
-      printf(" %.3f ", cycle_per_op);                                          \
+      printf(" %.3f (%.3f) ", cycle_per_op,bytes_per_cycle);                                          \
     fflush(NULL);                                                              \
   } while (0)
 

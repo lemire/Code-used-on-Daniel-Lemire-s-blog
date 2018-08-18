@@ -1,0 +1,8 @@
+Usage:
+
+```
+make 
+./shotguntest
+```
+
+

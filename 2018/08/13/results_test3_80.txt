@@ -1,0 +1,84 @@
++++ cat /proc/cpuinfo
++++ grep name
++++ uniq
+model name	: Intel(R) Xeon(R) Gold 5120 CPU @ 2.20GHz
++++ gcc --version
+gcc (Ubuntu 7.3.0-16ubuntu3) 7.3.0
+Copyright (C) 2017 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
++++ gcc -O3 -o bubblenoavx512 bubble.c -march=native -mno-avx512dq -mno-avx512f -lpthread
++++ gcc -O3 -o bubble bubble.c -march=native -lpthread
+++++ seq 1 1 5
++++ for num in `seq 1 1 5`
++++ ./bubblenoavx512 80
+not using avx512
+
+real	0m5.688s
+user	5m17.968s
+sys	0m0.192s
++++ for num in `seq 1 1 5`
++++ ./bubblenoavx512 80
+not using avx512
+
+real	0m5.690s
+user	5m18.391s
+sys	0m0.000s
++++ for num in `seq 1 1 5`
++++ ./bubblenoavx512 80
+not using avx512
+
+real	0m5.691s
+user	5m17.850s
+sys	0m0.004s
++++ for num in `seq 1 1 5`
++++ ./bubblenoavx512 80
+not using avx512
+
+real	0m5.689s
+user	5m18.333s
+sys	0m0.004s
++++ for num in `seq 1 1 5`
++++ ./bubblenoavx512 80
+not using avx512
+
+real	0m5.693s
+user	5m18.028s
+sys	0m0.180s
+++++ seq 1 1 5
++++ for num in `seq 1 1 5`
++++ ./bubble 80
+using avx512
+
+real	0m4.654s
+user	4m20.352s
+sys	0m0.004s
++++ for num in `seq 1 1 5`
++++ ./bubble 80
+using avx512
+
+real	0m4.749s
+user	4m25.487s
+sys	0m0.004s
++++ for num in `seq 1 1 5`
++++ ./bubble 80
+using avx512
+
+real	0m4.640s
+user	4m19.623s
+sys	0m0.000s
++++ for num in `seq 1 1 5`
++++ ./bubble 80
+using avx512
+
+real	0m4.630s
+user	4m19.053s
+sys	0m0.004s
++++ for num in `seq 1 1 5`
++++ ./bubble 80
+using avx512
+
+real	0m4.640s
+user	4m19.133s
+sys	0m0.000s

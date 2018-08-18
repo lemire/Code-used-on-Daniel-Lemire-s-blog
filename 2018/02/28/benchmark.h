@@ -17,7 +17,7 @@ const char *unitname = "cycles";
                    :                                                           \
                    :                              /* no read only */           \
                    "%rax", "%rbx", "%rcx", "%rdx" /* clobbers */               \
-    );                                                                         \
+                   );                                                          \
     (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;                           \
   } while (0)
 
@@ -31,7 +31,7 @@ const char *unitname = "cycles";
                    : "=r"(cyc_high), "=r"(cyc_low)                             \
                    : /* no read only registers */                              \
                    : "%rax", "%rbx", "%rcx", "%rdx" /* clobbers */             \
-    );                                                                         \
+                   );                                                          \
     (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;                           \
   } while (0)
 
@@ -117,7 +117,7 @@ uint64_t global_rdtsc_overhead = (uint64_t)UINT64_MAX;
   } while (0)
 
 // like BEST_TIME, but no check
-#define BEST_TIME_NOCHECK(test, pre, repeat, size, verbose)                    \
+#define BEST_TIME_NOCHECK(test, pre, repeat, size, timings, verbose)           \
   do {                                                                         \
     if (global_rdtsc_overhead == UINT64_MAX) {                                 \
       RDTSC_SET_OVERHEAD(rdtsc_overhead_func(1), repeat);                      \
@@ -135,6 +135,7 @@ uint64_t global_rdtsc_overhead = (uint64_t)UINT64_MAX;
       test;                                                                    \
       RDTSC_STOP(cycles_final);                                                \
       cycles_diff = (cycles_final - cycles_start - global_rdtsc_overhead);     \
+      timings[i] = cycles_diff;                                                \
       if (cycles_diff < min_diff)                                              \
         min_diff = cycles_diff;                                                \
       sum_diff += cycles_diff;                                                 \
