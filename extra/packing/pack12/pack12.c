@@ -30,15 +30,16 @@ void set(size_t index, uint32_t val, uint8_t *data) {
   size_t offmask = 0xFFF << wp;
   uint32_t word;
   memcpy(&word, data + wordpos, sizeof(uint32_t));
+  // no need for word & ~(offmask) if it's always 0 at the beginning
   word = (word & ~(offmask)) | offval;
   memcpy(data + wordpos, &word, sizeof(uint32_t));
 }
 
 uint32_t getthomas(size_t index, uint8_t *data) {
-  size_t bitPos = index * 12;
-  size_t firstBytePos = (size_t)(bitPos >> 3);
-  uint32_t word = __builtin_bswap32(*((uint32_t *)(data + firstBytePos))) >> 8;
-  return (uint32_t)((word >> (24 - 12 - (bitPos & 7))) & 0xFFF);
+  size_t firstBytePos = (index >> 1) + index;
+  uint32_t word;
+  memcpy(&word, data + firstBytePos, sizeof(uint32_t));
+  return word >> ((index & 1) << 2);
 }
 
 void setthomas(size_t index, uint32_t value, uint8_t *data) {
@@ -98,15 +99,19 @@ void validate(size_t number) {
   for (size_t i = 0; i < number; i++) {
     set(i, 0xFFF, data);
     assert(get(i, data) == 0xFFF);
+    assert((getthomas(i, data) & 0xfff) == 0xFFF);
 
     set(i, 0xFFF, data);
     assert(get(i, data) == 0xFFF);
+    assert((getthomas(i, data) & 0xfff) == 0xFFF);
 
     set(i, 0, data);
     assert(get(i, data) == 0);
+    assert((getthomas(i, data) & 0xfff) == 0);
 
     set(i, 1, data);
     assert(get(i, data) == 1);
+    assert((getthomas(i, data) & 0xfff) == 1);
   }
   free(data);
 }
