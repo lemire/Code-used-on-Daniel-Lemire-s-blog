@@ -98,6 +98,21 @@ uint32_t vectorsum(uint32_t * z, uint32_t N, uint32_t * accesses, uint32_t nmbr)
   return buffer[0] + buffer[1] + buffer[2] + buffer[3];
 }
 
+// credit: Harold Aptroot
+uint32_t maskedvectorsum(uint32_t * z, uint32_t N, uint32_t * accesses,
+     uint32_t nmbr) {
+  __m256i Nvec = _mm256_set1_epi32(N - 1);
+  __m256i sum = _mm256_setzero_si256();
+  for(uint32_t j = 0; j < nmbr ; j += 8) {
+     __m256i indexes = _mm256_loadu_si256((__m256i*)(accesses + j));
+     indexes = _mm256_and_si256(indexes, Nvec);
+     __m256i fi = _mm256_i32gather_epi32((int*)z, indexes, 4);
+     sum = _mm256_add_epi32(sum, fi);
+  }
+  __m128i sum128 = _mm_add_epi32(_mm256_extracti128_si256(sum, 0), _mm256_extracti128_si256(sum, 1));
+  sum128 = _mm_hadd_epi32(sum128, sum128);
+  return _mm_extract_epi32(sum128, 0) + _mm_extract_epi32(sum128, 1);
+}
 #endif
 
 // N is a power of two
@@ -125,6 +140,8 @@ void demo(uint32_t N) {
 #ifdef __AVX2__
   uint32_t expected3 = vectorsum(z,N,accesses,nmbr);
   if(N % 4 == 0) BEST_TIME(vectorsum(z,N,accesses,nmbr), expected3, 1000, nmbr);
+  uint32_t expected4 = maskedvectorsum(z,N,accesses,nmbr);
+  if(N % 8 == 0) BEST_TIME(maskedvectorsum(z,N,accesses,nmbr), expected4, 1000, nmbr);
 #endif
   free(z);
   free(accesses);
@@ -145,6 +162,8 @@ void demopoweroftwo(uint32_t N) {
 #ifdef __AVX2__
   uint32_t expected3 = vectorsum(z,N,accesses,nmbr);
   BEST_TIME(vectorsum(z,N,accesses,nmbr), expected3, 1000, nmbr);
+  uint32_t expected4 = maskedvectorsum(z,N,accesses,nmbr);
+  if(N % 8 == 0) BEST_TIME(maskedvectorsum(z,N,accesses,nmbr), expected4, 1000, nmbr);
 #endif
 
   free(z);
