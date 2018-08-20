@@ -36,7 +36,7 @@ public class HashFast {
       int low = (int)x;
       int high = (int)(x >>> 32);
       return ((a1 * low + b1 * high + c1) >>> 32)
-        | ((a2 * low + b2 * high + c2) & 0xFFFFFFFFL);
+        | ((a2 * low + b2 * high + c2) & 0xFFFFFFFF00000000L);
   }
 
   static long murmur64(long h) {
