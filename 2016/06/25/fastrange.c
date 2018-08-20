@@ -79,6 +79,15 @@ uint32_t fastsum(uint32_t * z, uint32_t N, uint32_t * accesses, uint32_t nmbr) {
   return sum;
 }
 
+// N is a power of two
+uint32_t maskedsum(uint32_t * z, uint32_t N, uint32_t * accesses, uint32_t nmbr) {
+  uint32_t sum = 0;
+  for(uint32_t j = 0; j < nmbr ; ++j ) {
+    sum += z[accesses[j] & (N-1)] ;
+  }
+  return sum;
+}
+
 
 
 void demo(uint32_t N) {
@@ -96,8 +105,29 @@ void demo(uint32_t N) {
   free(accesses);
 }
 
+void demopoweroftwo(uint32_t N) {
+  printf("N = %d\n", N);
+  uint32_t * z = malloc(N * sizeof(uint32_t));
+  for(uint32_t i = 0 ; i < N; ++i) z[i] = rand(); // some rand. number
+  uint32_t nmbr = 500;
+  uint32_t * accesses = malloc(nmbr * sizeof(uint32_t));
+  for(uint32_t i = 0 ; i < nmbr; ++i) accesses[i] = rand(); // some rand. number
+  uint32_t expected1 = modsum(z,N,accesses,nmbr);
+  uint32_t expected2 = fastsum(z,N,accesses,nmbr);
+
+  BEST_TIME(modsum(z,N,accesses,nmbr), expected1, 1000, nmbr);
+  BEST_TIME(fastsum(z,N,accesses,nmbr), expected2, 1000, nmbr);
+  BEST_TIME(maskedsum(z,N,accesses,nmbr), expected1, 1000, nmbr);
+
+  free(z);
+  free(accesses);
+}
+
 int main() {
   demo(31);
   demo(1500);
   demo(15000);
+  demopoweroftwo(32);
+  demopoweroftwo(4096);
+  demopoweroftwo(65536);
 }
