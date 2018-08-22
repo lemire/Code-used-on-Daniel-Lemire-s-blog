@@ -62,7 +62,7 @@ bool memeq20(const char * s1, const char * s2) {
     memcpy(&ww1, s1 + 2 * sizeof(w1), sizeof(ww1));
     memcpy(&ww2, s2 + 2 * sizeof(w1), sizeof(ww2));
     bool answer3 = (ww1 == ww2);
-    return answer1 & answer2 & answer3;
+    return answer1 && answer2 && answer3;
 }
 
 size_t mass_comparison_fast(const char * bigarray1, const char * bigarray2, int * comparisons, size_t N) {
