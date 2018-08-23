@@ -37,7 +37,7 @@ uint32_t *create_random_array(size_t count) {
   return targets;
 }
 
-#define STRINGLENGTH 12
+#define STRINGLENGTH 20
 
 
 size_t mass_comparison(const char * bigarray1, const char * bigarray2, int * comparisons, size_t N) {
@@ -50,6 +50,7 @@ size_t mass_comparison(const char * bigarray1, const char * bigarray2, int * com
 }
 
 
+// 2 * 8 + 4 = 20
 bool memeq20(const char * s1, const char * s2) {
     uint64_t w1, w2;
     memcpy(&w1, s1, sizeof(w1));
@@ -58,7 +59,7 @@ bool memeq20(const char * s1, const char * s2) {
     memcpy(&w1, s1 + sizeof(w1), sizeof(w1));
     memcpy(&w2, s2 + sizeof(w2), sizeof(w2));
     bool answer2 = (w1 == w2);
-    uint64_t ww1, ww2;
+    uint32_t ww1, ww2;
     memcpy(&ww1, s1 + 2 * sizeof(w1), sizeof(ww1));
     memcpy(&ww2, s2 + 2 * sizeof(w1), sizeof(ww2));
     bool answer3 = (ww1 == ww2);
@@ -120,6 +121,24 @@ int hashcmp(const unsigned char *sha1, const unsigned
                return word_cmp_64(obj1.data0, obj2.data0);
 
 }
+bool memeq20struct(const char * s1, const char * s2) {
+               struct object_id_20 obj1;
+               memcpy(&obj1, s1, sizeof(struct object_id_20));
+               struct object_id_20 obj2;
+               memcpy(&obj2, s2, sizeof(struct object_id_20));
+               return (obj1.data0 == obj2.data0) && (obj1.data1 == obj2.data1) && (obj1.data2 == obj2.data2);
+}
+
+size_t mass_comparison_faststruct(const char * bigarray1, const char * bigarray2, int * comparisons, size_t N) {
+  int answer;
+  for(size_t i = 0; i < N; i++) {
+    const char * s1 = bigarray1 + i * STRINGLENGTH;
+    const char * s2 = bigarray2 + i * STRINGLENGTH;
+    comparisons[i] = memeq20struct(s1, s2);
+  }
+  return N;
+}
+
 size_t mass_comparison_hash(const char * bigarray1, const char * bigarray2, int * comparisons, size_t N) {
   int answer;
   for(size_t i = 0; i < N; i++) {
@@ -134,6 +153,7 @@ void demo(size_t N) {
 
   char * bigarray1 = (char *)create_random_array( N  * STRINGLENGTH / 4 + 1);
   char * bigarray2 = (char *)create_random_array( N * STRINGLENGTH / 4 + 1);
+  for(size_t i = 0; i < N; i+=(rand() % 16)) bigarray2[i] = bigarray1[i];
   int * comparisonsA = malloc(N * sizeof(int));
   int * comparisonsB = malloc(N * sizeof(int));
 
@@ -143,6 +163,8 @@ void demo(size_t N) {
   BEST_TIME(mass_comparison(bigarray1, bigarray2,comparisonsA, N), N,
             , repeat, N, N * STRINGLENGTH, verbose);
   BEST_TIME(mass_comparison_fast(bigarray1, bigarray2,comparisonsB, N), N,
+            , repeat, N, N * STRINGLENGTH, verbose);
+  BEST_TIME(mass_comparison_faststruct(bigarray1, bigarray2,comparisonsB, N), N,
             , repeat, N, N * STRINGLENGTH, verbose);
   BEST_TIME(mass_comparison_bcmp(bigarray1, bigarray2,comparisonsB, N), N,
             , repeat, N, N * STRINGLENGTH, verbose);
