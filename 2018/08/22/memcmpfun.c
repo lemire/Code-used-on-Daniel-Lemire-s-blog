@@ -49,6 +49,16 @@ size_t mass_comparison(const char * bigarray1, const char * bigarray2, int * com
   return N;
 }
 
+size_t mass_comparison0(const char * bigarray1, const char * bigarray2, int * comparisons, size_t N) {
+  for(size_t i = 0; i < N; i++) {
+    const char * s1 = bigarray1 + i * STRINGLENGTH;
+    const char * s2 = bigarray2 + i * STRINGLENGTH;
+    comparisons[i] = (memcmp(s1, s2, STRINGLENGTH) == 0);
+  }
+  return N;
+}
+
+
 
 // 2 * 8 + 4 = 20
 bool memeq20(const char * s1, const char * s2) {
@@ -178,13 +188,15 @@ void demo(size_t N) {
 
   char * bigarray1 = (char *)create_random_array( N  * STRINGLENGTH / 4 + 1);
   char * bigarray2 = (char *)create_random_array( N * STRINGLENGTH / 4 + 1);
-  for(size_t i = 0; i < N; i+=(rand() % 16)) bigarray2[i] = bigarray1[i];
+  for(size_t i = 0; i < N; i+=(rand() % 4)) bigarray2[i] = bigarray1[i];
   int * comparisonsA = malloc(N * sizeof(int));
   int * comparisonsB = malloc(N * sizeof(int));
 
   int repeat = 5;
   bool verbose = true;
 
+  BEST_TIME(mass_comparison0(bigarray1, bigarray2,comparisonsA, N), N,
+            , repeat, N, N * STRINGLENGTH, verbose);
   BEST_TIME(mass_comparison(bigarray1, bigarray2,comparisonsA, N), N,
             , repeat, N, N * STRINGLENGTH, verbose);
   BEST_TIME(mass_comparison_fast(bigarray1, bigarray2,comparisonsB, N), N,
