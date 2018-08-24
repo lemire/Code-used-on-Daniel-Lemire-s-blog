@@ -9,13 +9,12 @@
 #include <pthread.h>
 #include <string.h>
 #include <memory.h>
-
+#include <stdint.h>
 #ifdef USEAVX512
 #include <x86intrin.h>
 #endif
 
 void* mandelbrot(int32_t w, int32_t h, uint8_t *output) {
-  printf("mandelbrot start with %d %d \n", w,h);
   int bit_num = 0;
   char byte_acc = 0;
   int i, iter = 50;
@@ -67,9 +66,9 @@ void* mandelbrot(int32_t w, int32_t h, uint8_t *output) {
     }
   }
   *output = byte_acc; // to avoid optimization
-  printf("mandelbrot finish \n");
 #ifdef USEAVX512
-  _mm512_storeu_si512(output + 1, b);
+  int z = _mm256_extract_epi32(_mm512_extracti64x4_epi64(b, 1), 7);
+  memcpy(output + 1, &z, sizeof(z));
 #endif
   return output;
 }
@@ -83,7 +82,8 @@ struct mandelparam {
 
 void* mandelbrotthread(void * data) {
   struct mandelparam  *x = (struct mandelparam  *) data;
-  return mandelbrot(x->w, x->h, x->output);
+  char * s = mandelbrot(x->w, x->h, x->output);
+  return s;
 }
 
 int main(int argc, char **argv) {
@@ -106,31 +106,32 @@ int main(int argc, char **argv) {
   for (int i = 0; i < nthreads; i++) {
     params[i].w = w;
     params[i].h = w;
+    params[i].output[0] = i;
   }
   for (int i = 0; i < nthreads; i++) {
     pthread_create(&threads[i], NULL, mandelbrotthread, &params[i]);
   }
   for (int i = 0; i < nthreads; i++) {
-    pthread_join(threads[i], NULL);
+     pthread_join(threads[i], NULL);
   }
   printf("bogus results: ");
   for (int i = 0; i < nthreads; i++) {
     printf("%d ", (int)params[i].output[0]);
   }
-  printf("\n");
 #ifdef USEAVX512
-  printf("We used avx512 deliberately \n");
+  printf("We used avx512 deliberately.");
 #ifdef USEHEAVYAVX512
-  printf("In fact, we used multiplications!\n");
+  printf("In fact, we used multiplications!.");
 #endif
   printf("bogus avx512: ");
   for (int i = 0; i < nthreads; i++) {
-    __m512i b = _mm512_loadu_si512(params[i].output + 1);
-    printf("%d ", _mm256_extract_epi32(_mm512_extracti64x4_epi64(b, 1), 7));
+    int z;
+    memcpy(&z, params[i].output + 1, sizeof(z));
+    printf("%d ", z);
   }
-  printf("\n");
 #else
-  printf("We did not try to use avx512.\n");
+  printf("We did not try to use avx512.");
 #endif
+  printf("\n");
   return 0;
 }
