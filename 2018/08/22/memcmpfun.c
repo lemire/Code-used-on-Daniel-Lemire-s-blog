@@ -65,6 +65,21 @@ bool memeq20(const char * s1, const char * s2) {
     bool answer3 = (ww1 == ww2);
     return answer1 && answer2 && answer3;
 }
+// 2 * 8 + 4 = 20
+bool branchymemeq20(const char * s1, const char * s2) {
+    uint64_t w1, w2;
+    memcpy(&w1, s1, sizeof(w1));
+    memcpy(&w2, s2, sizeof(w2));
+    if(w1 != w2) return false;
+    memcpy(&w1, s1 + sizeof(w1), sizeof(w1));
+    memcpy(&w2, s2 + sizeof(w2), sizeof(w2));
+    if(w1 != w2) return false;
+    uint32_t ww1, ww2;
+    memcpy(&ww1, s1 + 2 * sizeof(w1), sizeof(ww1));
+    memcpy(&ww2, s2 + 2 * sizeof(w1), sizeof(ww2));
+    return (ww1 == ww2);
+}
+
 
 size_t mass_comparison_fast(const char * bigarray1, const char * bigarray2, int * comparisons, size_t N) {
   int answer;
@@ -75,6 +90,16 @@ size_t mass_comparison_fast(const char * bigarray1, const char * bigarray2, int 
   }
   return N;
 }
+size_t mass_comparison_branchyfast(const char * bigarray1, const char * bigarray2, int * comparisons, size_t N) {
+  int answer;
+  for(size_t i = 0; i < N; i++) {
+    const char * s1 = bigarray1 + i * STRINGLENGTH;
+    const char * s2 = bigarray2 + i * STRINGLENGTH;
+    comparisons[i] = branchymemeq20(s1, s2);
+  }
+  return N;
+}
+
 
 size_t mass_comparison_bcmp(const char * bigarray1, const char * bigarray2, int * comparisons, size_t N) {
   int answer;
@@ -163,6 +188,8 @@ void demo(size_t N) {
   BEST_TIME(mass_comparison(bigarray1, bigarray2,comparisonsA, N), N,
             , repeat, N, N * STRINGLENGTH, verbose);
   BEST_TIME(mass_comparison_fast(bigarray1, bigarray2,comparisonsB, N), N,
+            , repeat, N, N * STRINGLENGTH, verbose);
+  BEST_TIME(mass_comparison_branchyfast(bigarray1, bigarray2,comparisonsB, N), N,
             , repeat, N, N * STRINGLENGTH, verbose);
   BEST_TIME(mass_comparison_faststruct(bigarray1, bigarray2,comparisonsB, N), N,
             , repeat, N, N * STRINGLENGTH, verbose);
