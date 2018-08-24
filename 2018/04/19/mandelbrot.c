@@ -13,6 +13,7 @@
 int main(int argc, char **argv) {
   int w, h, bit_num = 0;
   char byte_acc = 0;
+  long byte_total = 0;
   int i, iter = 50;
   double x, y, limit = 2.0;
   double Zr, Zi, Cr, Ci, Tr, Ti;
@@ -54,11 +55,13 @@ int main(int argc, char **argv) {
       ++bit_num;
 
       if (bit_num == 8) {
+        byte_total += byte_acc;
         // putc(byte_acc,stdout);
         byte_acc = 0;
         bit_num = 0;
       } else if (x == w - 1) {
         byte_acc <<= (8 - w % 8);
+        byte_total += byte_acc;
         // putc(byte_acc,stdout);
         byte_acc = 0;
         bit_num = 0;
@@ -70,5 +73,5 @@ int main(int argc, char **argv) {
 #else
   printf("we did not use avx512\n");
 #endif
-  return 0;
+  return byte_total;
 }

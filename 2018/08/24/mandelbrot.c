@@ -17,6 +17,7 @@
 void* mandelbrot(int32_t w, int32_t h, uint8_t *output) {
   int bit_num = 0;
   char byte_acc = 0;
+  long byte_total = 0;
   int i, iter = 50;
   double x, y, limit = 2.0;
   double Zr, Zi, Cr, Ci, Tr, Ti;
@@ -54,18 +55,20 @@ void* mandelbrot(int32_t w, int32_t h, uint8_t *output) {
       ++bit_num;
 
       if (bit_num == 8) {
+        byte_total += byte_acc;
         // putc(byte_acc,stdout);
         byte_acc = 0;
         bit_num = 0;
       } else if (x == w - 1) {
         byte_acc <<= (8 - w % 8);
+        byte_total += byte_acc;
         // putc(byte_acc,stdout);
         byte_acc = 0;
         bit_num = 0;
       }
     }
   }
-  *output = byte_acc; // to avoid optimization
+  *output = byte_total; // to avoid optimization
 #ifdef USEAVX512
   int z = _mm256_extract_epi32(_mm512_extracti64x4_epi64(b, 1), 7);
   memcpy(output + 1, &z, sizeof(z));
