@@ -1,0 +1,420 @@
+Using 1 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 We did not try to use avx512.
+
+real	0m0.927s
+user	0m0.927s
+sys	0m0.000s
+Using 2 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 We did not try to use avx512.
+
+real	0m0.952s
+user	0m1.877s
+sys	0m0.000s
+Using 3 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 We did not try to use avx512.
+
+real	0m0.950s
+user	0m2.808s
+sys	0m0.000s
+Using 4 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 We did not try to use avx512.
+
+real	0m0.956s
+user	0m3.762s
+sys	0m0.004s
+Using 5 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.003s
+user	0m4.956s
+sys	0m0.000s
+Using 6 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.015s
+user	0m5.998s
+sys	0m0.000s
+Using 7 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.019s
+user	0m7.040s
+sys	0m0.000s
+Using 8 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.011s
+user	0m7.998s
+sys	0m0.004s
+Using 9 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.055s
+user	0m9.362s
+sys	0m0.000s
+Using 10 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.060s
+user	0m10.508s
+sys	0m0.000s
+Using 11 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.099s
+user	0m11.861s
+sys	0m0.000s
+Using 12 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.050s
+user	0m12.485s
+sys	0m0.000s
+Using 13 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.072s
+user	0m13.664s
+sys	0m0.000s
+Using 14 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.146s
+user	0m15.610s
+sys	0m0.004s
+Using 15 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.084s
+user	0m15.820s
+sys	0m0.000s
+Using 16 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.091s
+user	0m16.891s
+sys	0m0.004s
+Using 17 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.237s
+user	0m19.623s
+sys	0m0.000s
+Using 18 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.099s
+user	0m19.741s
+sys	0m0.004s
+Using 19 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.124s
+user	0m20.655s
+sys	0m0.000s
+Using 20 threads with size param = 3200 
+avx512 is unavailable 
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We did not try to use avx512.
+
+real	0m1.277s
+user	0m23.508s
+sys	0m0.000s
+Using 1 threads with size param = 3200 
+avx512 is available
+bogus results: 0 We used avx512 deliberately.bogus avx512: -206165278 
+
+real	0m0.961s
+user	0m0.961s
+sys	0m0.000s
+Using 2 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 
+
+real	0m0.980s
+user	0m1.957s
+sys	0m0.000s
+Using 3 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 
+
+real	0m1.000s
+user	0m2.983s
+sys	0m0.000s
+Using 4 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 
+
+real	0m0.998s
+user	0m3.975s
+sys	0m0.000s
+Using 5 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.028s
+user	0m5.104s
+sys	0m0.004s
+Using 6 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.069s
+user	0m6.287s
+sys	0m0.000s
+Using 7 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.089s
+user	0m7.504s
+sys	0m0.000s
+Using 8 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.192s
+user	0m9.301s
+sys	0m0.000s
+Using 9 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.156s
+user	0m10.194s
+sys	0m0.000s
+Using 10 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.223s
+user	0m11.921s
+sys	0m0.000s
+Using 11 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.237s
+user	0m13.271s
+sys	0m0.000s
+Using 12 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.210s
+user	0m14.077s
+sys	0m0.000s
+Using 13 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.107s
+user	0m14.354s
+sys	0m0.000s
+Using 14 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.196s
+user	0m16.117s
+sys	0m0.004s
+Using 15 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.139s
+user	0m16.804s
+sys	0m0.004s
+Using 16 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.406s
+user	0m21.061s
+sys	0m0.000s
+Using 17 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.296s
+user	0m21.002s
+sys	0m0.000s
+Using 18 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.491s
+user	0m24.323s
+sys	0m0.000s
+Using 19 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.297s
+user	0m24.604s
+sys	0m0.000s
+Using 20 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.bogus avx512: -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 -206165278 
+
+real	0m1.324s
+user	0m25.423s
+sys	0m0.000s
+Using 1 threads with size param = 3200 
+avx512 is available
+bogus results: 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 
+
+real	0m0.962s
+user	0m0.957s
+sys	0m0.004s
+Using 2 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 
+
+real	0m0.969s
+user	0m1.929s
+sys	0m0.000s
+Using 3 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 
+
+real	0m0.997s
+user	0m2.971s
+sys	0m0.000s
+Using 4 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 
+
+real	0m1.004s
+user	0m3.933s
+sys	0m0.000s
+Using 5 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 
+
+real	0m1.056s
+user	0m5.192s
+sys	0m0.000s
+Using 6 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 
+
+real	0m1.079s
+user	0m6.413s
+sys	0m0.000s
+Using 7 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 
+
+real	0m1.100s
+user	0m7.535s
+sys	0m0.000s
+Using 8 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 
+
+real	0m1.107s
+user	0m8.700s
+sys	0m0.000s
+Using 9 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 
+
+real	0m1.189s
+user	0m10.437s
+sys	0m0.000s
+Using 10 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.199s
+user	0m11.700s
+sys	0m0.008s
+Using 11 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.106s
+user	0m12.145s
+sys	0m0.000s
+Using 12 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.122s
+user	0m13.326s
+sys	0m0.004s
+Using 13 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.110s
+user	0m14.399s
+sys	0m0.000s
+Using 14 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.344s
+user	0m18.019s
+sys	0m0.000s
+Using 15 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.247s
+user	0m17.688s
+sys	0m0.000s
+Using 16 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.431s
+user	0m21.357s
+sys	0m0.000s
+Using 17 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.467s
+user	0m23.218s
+sys	0m0.004s
+Using 18 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.372s
+user	0m24.160s
+sys	0m0.000s
+Using 19 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.429s
+user	0m25.834s
+sys	0m0.000s
+Using 20 threads with size param = 3200 
+avx512 is available
+bogus results: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 We used avx512 deliberately.In fact, we used multiplications!.bogus avx512: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+
+real	0m1.506s
+user	0m28.248s
+sys	0m0.000s
