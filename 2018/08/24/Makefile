@@ -1,5 +1,9 @@
 all: mandelbrot mandelbrot512 mandelbrotheavy512
 
+mandelbrotzero:
+	gcc -O3 -o mandelbrotzero mandelbrot.c -march=native -Wall -mno-avx512f -lpthread -DZEROUPPER
+
+
 mandelbrot:
 	gcc -O3 -o mandelbrot mandelbrot.c -march=native -Wall -mno-avx512f -lpthread 
 

@@ -15,6 +15,9 @@
 #endif
 
 void* mandelbrot(int32_t w, int32_t h, uint8_t *output) {
+#ifdef ZEROUPPER
+  __builtin_ia32_vzeroupper();
+#endif
   int bit_num = 0;
   char byte_acc = 0;
   long byte_total = 0;
