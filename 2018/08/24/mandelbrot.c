@@ -1,3 +1,11 @@
+/**
+* This program *intentionally* uses AVX-512 calls that are
+* useless and could be, in theory, pruned by a sufficiently smart compiler.
+* It also, *intentionally*, uses very few AVX-512 calls. The goal is
+* to test out and quantify the hypothesis that very few AVX-512 spread out in a non-AVX-512
+* is enough to slow down the whole program.
+*/
+
 /* The Computer Language Benchmarks Game
 * http://benchmarksgame.alioth.debian.org/
 
