@@ -16,6 +16,8 @@ typedef struct pcg_state_setseq_64 { // Internals are *Private*.
                                      // selected. Must *always* be odd.
 } pcg32_random_t;
 
+pcg32_random_t pcg;
+
 static inline uint32_t pcg32_random_r(pcg32_random_t *rng) {
   uint64_t oldstate = rng->state;
   rng->state = oldstate * 6364136223846793005ULL + rng->inc;
@@ -32,7 +34,7 @@ uint32_t *create_random_array(size_t count) {
     return NULL;
   }
   for (size_t i = 0; i < 16 * count; i++)
-    targets[i] = i;
+    targets[i] = pcg32_random_r(&pcg);
   return targets;
 }
 
@@ -217,7 +219,7 @@ void demo(size_t N) {
       assert(comparisonsA[i] == 0);
   }
 
-  BEST_TIME(mass_comparison_hash(bigarray1, bigarray2, comparisonsB, N), N, ,
+/*  BEST_TIME(mass_comparison_hash(bigarray1, bigarray2, comparisonsB, N), N, ,
             repeat, N, N * STRINGLENGTH, verbose);
   for (size_t i = 0; i < N; i++) {
     if (comparisonsA[i] > 0)
@@ -226,7 +228,7 @@ void demo(size_t N) {
       assert(comparisonsB[i] < 0);
     if (comparisonsA[i] == 0)
       assert(comparisonsB[i] == 0);
-  }
+  }*/
   free(bigarray1);
   free(bigarray2);
 
@@ -237,6 +239,7 @@ void demo(size_t N) {
 }
 
 int main() {
+  pcg.inc = 1;
   demo(27);
   return EXIT_SUCCESS;
 }
