@@ -202,9 +202,8 @@ void demo(size_t N, size_t strlen) {
 
 int main() {
   pcg.inc = 1;
-
-
   demo(1000,1024 * 32);
-
+  for(size_t i = 10; i < 256; i++)
+    demo(1000, i);
   return EXIT_SUCCESS;
 }
