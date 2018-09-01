@@ -1,0 +1,7 @@
+$ ./memcmpfun
+strlen 32768
+Out of 1000 strings, exactly 506 are identical.
+mass_comparison(bigarray1, bigarray2, N, strlen)            	:  15052.677 cycles per operation (best)  2.177 bytes per cycle (best) 	15153.051 cycles per operation (avg)
+simple_mass_comparison(bigarray1, bigarray2, N, strlen)     	:  33623.770 cycles per operation (best)  0.975 bytes per cycle (best) 	33754.434 cycles per operation (avg)
+avx_mass_comparison(bigarray1, bigarray2, N, strlen)        	:  8285.895 cycles per operation (best)  3.955 bytes per cycle (best) 	8307.845 cycles per operation (avg)
+avxmemcmp_mass_comparison(bigarray1, bigarray2, N, strlen)  	:  8422.419 cycles per operation (best)  3.891 bytes per cycle (best) 	8458.700 cycles per operation (avg)
