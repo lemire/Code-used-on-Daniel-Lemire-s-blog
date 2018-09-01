@@ -41,6 +41,42 @@ int avx_memeq(const char * s1, const char *s2, size_t length) {
   return 1;
 }
 
+int avx_memcmp(const char * s1, const char *s2, size_t length) {
+  size_t i = 0;
+  if(length >= 32) {
+    for(; i <= length - 32; i += 32) {
+      __m256i x1 = _mm256_lddqu_si256((const __m256i *)(s1 + i));
+      __m256i x2 = _mm256_lddqu_si256((const __m256i *)(s2 + i));
+      if(_mm256_testc_si256(x1,x2) == 0) {
+         return memcmp(s1 + i, s2 + i, 32);
+      }
+    }
+  }
+  if(length - i >= 16) {
+      __m128i x1 = _mm_lddqu_si128((const __m128i *)(s1 + i));
+      __m128i x2 = _mm_lddqu_si128((const __m128i *)(s2 + i));
+      if(_mm_testc_si128(x1,x2) == 0) {
+         return memcmp(s1 + i, s2 + i, 32);
+      }
+      i += 16;
+  }
+  if(length - i >= 8) {
+    uint64_t x1;
+    uint64_t x2;
+    memcpy(&x1, s1 + i, sizeof(x1));
+    memcpy(&x2, s2 + i, sizeof(x2));
+    if(x1 != x2) {
+       return memcmp(s1 + i, s2 + i, 8);
+    }
+    i += 8;
+  }
+  for(; i < length; i ++) {
+    if(s1[i] != s2[i]) return s1[i] - s2[i];
+  }
+  return 0;
+}
+
+
 int simplememeq(const char * s1, const char *s2, size_t length) {
   size_t i = 0;
   for(; i < length; i ++) {
@@ -92,6 +128,19 @@ size_t mass_comparison(const char * bigarray1, const char * bigarray2,  size_t N
   return count;
 }
 
+
+
+size_t avxmemcmp_mass_comparison(const char * bigarray1, const char * bigarray2,  size_t N, size_t strlen) {
+  _mm256_zeroupper();
+  size_t count = 0;
+  for(size_t i = 0; i < N; i++) {
+    const char * s1 = bigarray1 + i * strlen;
+    const char * s2 = bigarray2 + i * strlen;
+    count += (avx_memcmp(s1, s2, strlen) == 0) ? 1 : 0;
+  }
+  return count;
+}
+
 size_t avx_mass_comparison(const char * bigarray1, const char * bigarray2,  size_t N, size_t strlen) {
   _mm256_zeroupper();
   size_t count = 0;
@@ -102,6 +151,8 @@ size_t avx_mass_comparison(const char * bigarray1, const char * bigarray2,  size
   }
   return count;
 }
+
+
 size_t simple_mass_comparison(const char * bigarray1, const char * bigarray2,  size_t N, size_t strlen) {
   _mm256_zeroupper();
   size_t count = 0;
@@ -138,6 +189,8 @@ void demo(size_t N, size_t strlen) {
   BEST_TIME(simple_mass_comparison(bigarray1, bigarray2, N, strlen), expected,
             , repeat, N, N * strlen, verbose);
   BEST_TIME(avx_mass_comparison(bigarray1, bigarray2, N, strlen), expected,
+            , repeat, N, N * strlen, verbose);
+  BEST_TIME(avxmemcmp_mass_comparison(bigarray1, bigarray2, N, strlen), expected,
             , repeat, N, N * strlen, verbose);
   free(bigarray1);
   free(bigarray2);
