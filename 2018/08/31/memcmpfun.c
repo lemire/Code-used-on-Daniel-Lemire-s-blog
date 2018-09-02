@@ -12,6 +12,7 @@
 #include "benchmark.h"
 
 
+
 int avx_memeq(const char * s1, const char *s2, size_t length) {
   size_t i = 0;
   if(length >= 32) {
@@ -130,13 +131,14 @@ size_t mass_comparison(const char * bigarray1, const char * bigarray2,  size_t N
 
 
 
-size_t avxmemcmp_mass_comparison(const char * bigarray1, const char * bigarray2,  size_t N, size_t strlen) {
+
+size_t bcmp_mass_comparison(const char * bigarray1, const char * bigarray2,  size_t N, size_t strlen) {
   _mm256_zeroupper();
   size_t count = 0;
   for(size_t i = 0; i < N; i++) {
     const char * s1 = bigarray1 + i * strlen;
     const char * s2 = bigarray2 + i * strlen;
-    count += (avx_memcmp(s1, s2, strlen) == 0) ? 1 : 0;
+    count += (bcmp(s1, s2, strlen) == 0) ? 1 : 0;
   }
   return count;
 }
@@ -151,8 +153,16 @@ size_t avx_mass_comparison(const char * bigarray1, const char * bigarray2,  size
   }
   return count;
 }
-
-
+size_t avxmemcmp_mass_comparison(const char * bigarray1, const char * bigarray2,  size_t N, size_t strlen) {
+  _mm256_zeroupper();
+  size_t count = 0;
+  for(size_t i = 0; i < N; i++) {
+    const char * s1 = bigarray1 + i * strlen;
+    const char * s2 = bigarray2 + i * strlen;
+    count += (avx_memcmp(s1, s2, strlen) == 0) ? 1 : 0;
+  }
+  return count;
+}
 size_t simple_mass_comparison(const char * bigarray1, const char * bigarray2,  size_t N, size_t strlen) {
   _mm256_zeroupper();
   size_t count = 0;
@@ -181,10 +191,12 @@ void demo(size_t N, size_t strlen) {
   size_t expected = mass_comparison(bigarray1, bigarray2, N, strlen);
   printf("Out of %zu strings, exactly %zu are identical.\n", N, expected);
 
-  int repeat = 5;
+  int repeat = 50;
   bool verbose = true;
 
   BEST_TIME(mass_comparison(bigarray1, bigarray2, N, strlen), expected,
+            , repeat, N, N * strlen, verbose);
+  BEST_TIME(bcmp_mass_comparison(bigarray1, bigarray2, N, strlen), expected,
             , repeat, N, N * strlen, verbose);
   BEST_TIME(simple_mass_comparison(bigarray1, bigarray2, N, strlen), expected,
             , repeat, N, N * strlen, verbose);
@@ -202,8 +214,6 @@ void demo(size_t N, size_t strlen) {
 
 int main() {
   pcg.inc = 1;
-  demo(1000,1024 * 32);
-  for(size_t i = 10; i < 256; i++)
-    demo(1000, i);
+  demo(10,1024 * 32);
   return EXIT_SUCCESS;
 }
