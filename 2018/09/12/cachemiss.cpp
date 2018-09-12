@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <vector>
+#include <stdlib.h>
 using namespace std;
 
 static uint64_t murmur64(uint64_t h) {
