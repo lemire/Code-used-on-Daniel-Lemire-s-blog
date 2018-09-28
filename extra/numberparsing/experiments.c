@@ -1,3 +1,4 @@
+// gcc -O3 -o experiments experiments.c
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -133,9 +134,13 @@ uint32_t parse_eight_digits_unrolled(const unsigned char  * chars) {
     + 1000 * (chars[4] - '0')
     + 100 * (chars[5] - '0')
     + 10 * (chars[6] - '0')
-    + 1 * (chars[7] - '0');
+    + (chars[7] - '0');
     return x;
 }
+
+
+
+
 
 #include <x86intrin.h>
 
@@ -217,6 +222,8 @@ size_t sum_8_digits_unrolled(unsigned char *  source, size_t length) {
     return s;
 }
 
+
+
 size_t sum_8_digits_ssse3(unsigned char *  source, size_t length) {
     uint32_t s = 0;
     for(size_t i = 0; i + 8 < length; i++) {
@@ -239,12 +246,13 @@ int main() {
     long long saft2 = timeInMilliseconds();
     if(shw1 != shw2) printf("bug\n");
 
+
     printf("ssse3\n");
     long long sbef3 = timeInMilliseconds();
     size_t shw3 = sum_8_digits_unrolled(text, N);
     long long saft3 = timeInMilliseconds();
     if(shw1 != shw3) printf("bug\n");
-    printf("%lld -- %lld -- %lld \n", saft1-sbef1, saft2-sbef2, saft3-sbef3);
+    printf("%lld -- %lld -- %lld \n", saft1-sbef1, saft2-sbef2,  saft3-sbef3);
 
     free(text);
 
