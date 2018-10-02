@@ -140,6 +140,26 @@ uint32_t parse_eight_digits_unrolled(const unsigned char  * chars) {
 
 
 
+uint64_t parse_eight_digits_swar(const unsigned char  * chars) {
+    uint64_t val;
+    memcpy(&val, chars, 8);
+    val = __builtin_bswap64(val);
+    val = val - 0x3030303030303030;
+    uint64_t byte10 = (val * 0x0a0a0a0a0a0a0a0a) >> 8; // multiply each byte by 10
+    uint64_t byte10plus = (byte10 + val) 0x00FF00FF00FF00FF;
+    uint64_t short100 = (byte10plus * 0x00640064)
+    uint32_t x = 
+      10000000 * (chars[0] - '0')
+    + 1000000 * (chars[1] - '0')
+    + 100000 * (chars[2] - '0')
+    + 10000 * (chars[3] - '0')
+    + 1000 * (chars[4] - '0')
+    + 100 * (chars[5] - '0')
+    + 10 * (chars[6] - '0')
+    + (chars[7] - '0');
+    return x;
+}
+
 
 
 #include <x86intrin.h>
@@ -186,18 +206,20 @@ uint64_t parse_ssse3(const char* s) {
     return (uint64_t)(p[0]) * 100000000u + (uint64_t)(p[1]);
 }
 
-uint32_t parse_eight_digits_mula(const unsigned char  * chars) {
-    uint32_t x = 
-      10000000 * (chars[0] - '0')
-    + 1000000 * (chars[1] - '0')
-    + 100000 * (chars[2] - '0')
-    + 10000 * (chars[3] - '0')
-    + 1000 * (chars[4] - '0')
-    + 100 * (chars[5] - '0')
-    + 10 * (chars[6] - '0')
-    + 1 * (chars[7] - '0');
-    return x;
+
+uint32_t parse3(char* s) {
+
+    const uint32_t input = bswap(*reinterpret_cast<uint32_t*>(s));
+
+    const uint32_t t1 = input - (uint32_t)('0' );
+    const uint32_t t2 = (t1 * 10) >> 8;
+
+    const uint32_t t3 = t1 + t2;
+    const uint32_t t4 = t3 & 0x00ff00ff;
+
+    return (t4 * (100 + 65536)) >> 16;
 }
+
 
 unsigned char * buildcollection(size_t length) {
     unsigned char * answer = (unsigned char *) malloc(length);
