@@ -126,16 +126,18 @@ uint32_t parse_eight_digits(const unsigned char  * chars) {
 }
 __attribute__ ((noinline))
 uint32_t parse_eight_digits_unrolled(const unsigned char  * chars) {
-    uint32_t x = 10000000 * chars[0];
-    x += 1000000 * chars[1];
-    x += 100000 * chars[2];
-    x += 10000 * chars[3];
-    x += 1000 * chars[4];
-    x += 100 * chars[5];
-    x += 10 * chars[6];
-    x += chars[7] - '0' *(1 + 10 + 100 + 1000 + 10000 + 100000 + 1000000 + 10000000);
-    return x;
+    uint32_t x =
+      10000000 * (chars[0] )
+    + 1000000 * (chars[1])
+    + 100000 * (chars[2])
+    + 10000 * (chars[3])
+    + 1000 * (chars[4])
+    + 100 * (chars[5])
+    + 10 * (chars[6])
+    + (chars[7]);
+    return x - '0' *(1+10+100+1000+10000+100000+1000000+10000000);
 }
+
 void print8swar(uint64_t x) {
  uint8_t buffer[8];
 memcpy(buffer, &x, 8 );
