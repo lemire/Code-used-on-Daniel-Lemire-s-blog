@@ -137,33 +137,54 @@ uint32_t parse_eight_digits_unrolled(const unsigned char  * chars) {
     + (chars[7] - '0');
     return x;
 }
+void print8swar(uint64_t x) {
+ uint8_t buffer[8];
+memcpy(buffer, &x, 8 );
+printf("[");
+for(int i = 0 ; i < 8; i++) {
+    printf("%llu,", buffer[i]);
+}
+printf("]");
+ }
 
 
+void print16swar(uint64_t x) {
+ uint16_t buffer[4];
+ memcpy(buffer, &x, 8 );
+printf("[");
+for(int i = 0 ; i < 4; i++) {
+    printf("%llu,", buffer[i]);
+}
+printf("]");
+ }
 
-uint64_t parse_eight_digits_swar(const unsigned char  * chars) {
+
+void print32swar(uint64_t x) {
+ uint32_t buffer[2];
+ memcpy(buffer, &x, 8 );
+printf("[");
+for(int i = 0 ; i < 2; i++) {
+    printf("%llu,", buffer[i]);
+}
+printf("]");
+ }
+
+uint32_t parse_eight_digits_swar(const unsigned char  * chars) {
     uint64_t val;
     memcpy(&val, chars, 8);
-    val = __builtin_bswap64(val);
+    val = __builtin_bswap64(val);// because we are under little endian
     val = val - 0x3030303030303030;
-    uint64_t byte10 = (val * 0x0a0a0a0a0a0a0a0a) >> 8; // multiply each byte by 10
-    uint64_t byte10plus = (byte10 + val) 0x00FF00FF00FF00FF;
-    uint64_t short100 = (byte10plus * 0x00640064)
-    uint32_t x = 
-      10000000 * (chars[0] - '0')
-    + 1000000 * (chars[1] - '0')
-    + 100000 * (chars[2] - '0')
-    + 10000 * (chars[3] - '0')
-    + 1000 * (chars[4] - '0')
-    + 100 * (chars[5] - '0')
-    + 10 * (chars[6] - '0')
-    + (chars[7] - '0');
-    return x;
+    uint64_t byte10 = (val * 0xa) >> 8; 
+    uint64_t byte10plus = (byte10 + val) &  0x00FF00FF00FF00FF; 
+    uint64_t short100 = (byte10plus * 0x64)>>16; 
+    uint64_t short100plus = (short100 +byte10plus) & 0x0000FFFF0000FFFF ;
+    return (uint32_t)(10000*(short100plus>>32) + short100plus);
 }
 
 
 
 #include <x86intrin.h>
-
+/*
 uint32_t parse_eight_digits_ssse3(const unsigned char  * chars) {
     const __m128i ascii0      = _mm_set1_epi8('0');
     const __m128i mul_1_10    = _mm_setr_epi8(10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1);
@@ -179,7 +200,68 @@ uint32_t parse_eight_digits_ssse3(const unsigned char  * chars) {
     const __m128i t3      = _mm_packus_epi32(t2, t2);
     const __m128i t4      = _mm_madd_epi16(t3, mul_1_10000);
 
-    return _mm_cvtsi128_si32(input);
+    return _mm_cvtsi128_si32(t4);
+}*/
+
+void print8(__m128i x) {
+ uint8_t buffer[16];
+_mm_storeu_si128((__m128i *)buffer,x);
+printf("[");
+for(int i = 0 ; i < 16; i++) {
+    printf("%d,", buffer[i]);
+}
+printf("]");
+ }
+
+
+void print16(__m128i x) {
+ uint16_t buffer[8];
+_mm_storeu_si128((__m128i *)buffer,x);
+printf("[");
+for(int i = 0 ; i < 8; i++) {
+    printf("%d,", buffer[i]);
+}
+printf("]");
+ }
+
+
+void print32(__m128i x) {
+ uint32_t buffer[4];
+_mm_storeu_si128((__m128i *)buffer,x);
+printf("[");
+for(int i = 0 ; i < 4; i++) {
+    printf("%d,", buffer[i]);
+}
+printf("]");
+ }
+
+
+uint32_t parse_eight_digits_ssse3(const char *chars) {
+  // this actually computes *16* values so we are being wasteful.
+  const __m128i ascii0 = _mm_set1_epi8('0');
+  const __m128i mul_1_10 =
+      _mm_setr_epi8(10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 10, 1);
+  const __m128i mul_1_100 = _mm_setr_epi16(100, 1, 100, 1, 100, 1, 100, 1);
+  const __m128i mul_1_10000 =
+      _mm_setr_epi16(10000, 1, 10000, 1, 10000, 1, 10000, 1);
+  const __m128i input = _mm_sub_epi8(_mm_loadu_si128((__m128i *)chars), ascii0);
+  //printf("\n");
+  //printf("input:");print8(input);printf("\n");
+  const __m128i t1 = _mm_maddubs_epi16(input, mul_1_10);// a0 + 10 * a1,  a2 + 10 * a3,  a4 + 10 * a5,  a6 + 10 * a7,...
+  //printf("multiplies10:");print16(t1);printf("\n");
+  const __m128i t2 = _mm_madd_epi16(t1, mul_1_100);//a0 + 10 * a1 + 100 * a2 + 1000 * a3,  a4 + 10 * a5 + 100*  a6 + 1000 * a7,...
+    //printf("multiplies100:");print32(t2);printf("\n");
+
+  const __m128i t3 = _mm_packus_epi32(t2, t2);
+
+      //printf("packedmultiplies100:");print16(t3);printf("\n");
+
+  const __m128i t4 = _mm_madd_epi16(t3, mul_1_10000);
+        //printf("multiplies10000:");print32(t4);printf("\n");
+        //printf("result = %llu\n", _mm_cvtsi128_si32(t4));
+//printf("\n");
+  return _mm_cvtsi128_si32(
+      t4); // only captures the sum of the first 8 digits, drop the rest
 }
 
 // mula
@@ -196,7 +278,7 @@ uint64_t parse_ssse3(const char* s) {
     const __m128i input   = _mm_sub_epi8(_mm_loadu_si128((__m128i*)s), ascii0);
 
     const __m128i t1      = _mm_maddubs_epi16(input, mul_1_10);
-    const __m128i t2      = _mm_madd_epi16(t1, mul_1_100);
+    const __m128i t2      = _mm_madd_epi16(t1, mul_1_100); 
     const __m128i t3      = _mm_packus_epi32(t2, t2);
     const __m128i t4      = _mm_madd_epi16(t3, mul_1_10000);
 
@@ -206,7 +288,7 @@ uint64_t parse_ssse3(const char* s) {
     return (uint64_t)(p[0]) * 100000000u + (uint64_t)(p[1]);
 }
 
-
+/*
 uint32_t parse3(char* s) {
 
     const uint32_t input = bswap(*reinterpret_cast<uint32_t*>(s));
@@ -218,13 +300,13 @@ uint32_t parse3(char* s) {
     const uint32_t t4 = t3 & 0x00ff00ff;
 
     return (t4 * (100 + 65536)) >> 16;
-}
+}*/
 
 
 unsigned char * buildcollection(size_t length) {
     unsigned char * answer = (unsigned char *) malloc(length);
     for(size_t i = 0; i < length; i++) {
-      answer[i] = (unsigned char) (i + (i >> 4));
+      answer[i] = 0x30 + (rand() % 10);
     } 
     return answer;
 }
@@ -244,7 +326,17 @@ size_t sum_8_digits_unrolled(unsigned char *  source, size_t length) {
     return s;
 }
 
-
+size_t sum_8_digits_swar(unsigned char *  source, size_t length) {
+    uint32_t s = 0;
+    for(size_t i = 0; i + 8 < length; i++) {
+        s += parse_eight_digits_swar(source + i);
+        /*if(parse_eight_digits_swar(source + i) != parse_eight_digits(source + i)) {
+            printf("string: %.8s\n", source + i);
+            printf("%llu swar: %llu \n", parse_eight_digits(source + i), parse_eight_digits_swar(source + i) );
+        }*/
+    } 
+    return s;
+}
 
 size_t sum_8_digits_ssse3(unsigned char *  source, size_t length) {
     uint32_t s = 0;
@@ -262,19 +354,27 @@ int main() {
     size_t shw1 = sum_8_digits(text, N);
     long long saft1 = timeInMilliseconds();
 
-    printf("fast\n");
+    printf("unrolled\n");
     long long sbef2 = timeInMilliseconds();
     size_t shw2 = sum_8_digits_unrolled(text, N);
     long long saft2 = timeInMilliseconds();
     if(shw1 != shw2) printf("bug\n");
 
-
     printf("ssse3\n");
     long long sbef3 = timeInMilliseconds();
-    size_t shw3 = sum_8_digits_unrolled(text, N);
+    size_t shw3 = sum_8_digits_ssse3(text, N);
     long long saft3 = timeInMilliseconds();
     if(shw1 != shw3) printf("bug\n");
-    printf("%lld -- %lld -- %lld \n", saft1-sbef1, saft2-sbef2,  saft3-sbef3);
+
+    printf("swar\n");
+    long long sbef4 = timeInMilliseconds();
+    size_t shw4 = sum_8_digits_swar(text, N);
+    long long saft4 = timeInMilliseconds();
+    if(shw1 != shw4) printf("bug\n");
+
+    //printf("%zu %zu %zu %zu \n", shw1, shw2, shw3, shw4);
+
+    printf("%lld -- %lld -- %lld -- %lld \n", saft1-sbef1, saft2-sbef2,  saft3-sbef3,  saft4-sbef4);
 
     free(text);
 
