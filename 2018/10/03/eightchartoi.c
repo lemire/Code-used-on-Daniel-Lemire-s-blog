@@ -1,4 +1,3 @@
-// gcc -O3 -o experiments experiments.c
 #include "benchmark.h"
 #include <stdbool.h>
 #include <stdint.h>
