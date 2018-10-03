@@ -169,6 +169,7 @@ for(int i = 0 ; i < 2; i++) {
 printf("]");
  }
 
+
 uint32_t parse_eight_digits_swar(const unsigned char  * chars) {
     uint64_t val;
     memcpy(&val, chars, 8);
@@ -178,7 +179,8 @@ uint32_t parse_eight_digits_swar(const unsigned char  * chars) {
     uint64_t byte10plus = (byte10 + val) &  0x00FF00FF00FF00FF; 
     uint64_t short100 = (byte10plus * 0x64)>>16; 
     uint64_t short100plus = (short100 +byte10plus) & 0x0000FFFF0000FFFF ;
-    return (uint32_t)(10000*(short100plus>>32) + short100plus);
+    short100plus *= (10000 + (1ULL<<32));
+    return short100plus >> 32;
 }
 
 
