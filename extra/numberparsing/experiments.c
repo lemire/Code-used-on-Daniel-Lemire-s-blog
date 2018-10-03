@@ -118,23 +118,22 @@ bool unit() {
 
 
 
-
+__attribute__ ((noinline))
 uint32_t parse_eight_digits(const unsigned char  * chars) {
     uint32_t x = chars[0] - '0';
     for(size_t j = 1; j < 8; j++) x = x * 10 + (chars[j] - '0');
     return x;
 }
-
+__attribute__ ((noinline))
 uint32_t parse_eight_digits_unrolled(const unsigned char  * chars) {
-    uint32_t x = 
-      10000000 * (chars[0] - '0')
-    + 1000000 * (chars[1] - '0')
-    + 100000 * (chars[2] - '0')
-    + 10000 * (chars[3] - '0')
-    + 1000 * (chars[4] - '0')
-    + 100 * (chars[5] - '0')
-    + 10 * (chars[6] - '0')
-    + (chars[7] - '0');
+    uint32_t x = 10000000 * chars[0];
+    x += 1000000 * chars[1];
+    x += 100000 * chars[2];
+    x += 10000 * chars[3];
+    x += 1000 * chars[4];
+    x += 100 * chars[5];
+    x += 10 * chars[6];
+    x += chars[7] - '0' *(1 + 10 + 100 + 1000 + 10000 + 100000 + 1000000 + 10000000);
     return x;
 }
 void print8swar(uint64_t x) {
@@ -172,7 +171,7 @@ printf("]");
 
 
 
-
+__attribute__ ((noinline))
 uint32_t parse_eight_digits_swar(const unsigned char  * chars) {
     uint64_t val;
     memcpy(&val, chars, 8);
@@ -240,7 +239,7 @@ for(int i = 0 ; i < 4; i++) {
 printf("]");
  }
 
-
+__attribute__ ((noinline))
 uint32_t parse_eight_digits_ssse3(const char *chars) {
   // this actually computes *16* values so we are being wasteful.
   const __m128i ascii0 = _mm_set1_epi8('0');
@@ -268,7 +267,7 @@ uint32_t parse_eight_digits_ssse3(const char *chars) {
   return _mm_cvtsi128_si32(
       t4); // only captures the sum of the first 8 digits, drop the rest
 }
-
+__attribute__ ((noinline))
 uint32_t parse_eight_digits_ssse3_l64(const char *chars) {
   // this actually computes *16* values so we are being wasteful.
   const __m128i ascii0 = _mm_set1_epi8('0');
@@ -298,6 +297,7 @@ uint32_t parse_eight_digits_ssse3_l64(const char *chars) {
 }
 
 // mula
+__attribute__ ((noinline))
 uint64_t parse_ssse3(const char* s) {
     //assert(strlen(s) >= 16);
 
@@ -319,6 +319,16 @@ uint64_t parse_ssse3(const char* s) {
     _mm_storeu_si128((__m128i*)p, t4);
 
     return (uint64_t)(p[0]) * 100000000u + (uint64_t)(p[1]);
+}
+__attribute__ ((noinline))
+uint64_t parse_eight_digits_avx(const char* s) {
+        __m256i multiplier = _mm256_setr_epi32(10000000,1000000,100000,10000,1000,100,10,1);
+       __m256i x = _mm256_cvtepu8_epi32(_mm_loadl_epi64((__m128i*)s));
+       __m256i xtimesdec = _mm256_mullo_epi32(x,multiplier);
+       __m256i flipped =_mm256_shuffle_epi32(xtimesdec,0b01001110);
+       __m256i sum1 = _mm256_add_epi32(xtimesdec,flipped);
+       __m256i sum2 = _mm256_hadd_epi32(sum1, sum1);
+      return _mm256_extract_epi32(sum2,0) + _mm256_extract_epi32(sum2,4)  - '0' *(1 + 10 + 100 + 1000 + 10000 + 100000 + 1000000 + 10000000);
 }
 
 /*
@@ -383,6 +393,16 @@ size_t sum_8_digits_ssse3_l64(unsigned char *  source, size_t length) {
     return s;
 }
 
+
+size_t sum_8_digits_avx(unsigned char *  source, size_t length) {
+    uint32_t s = 0;
+    for(size_t i = 0; i + 8 < length; i++) {
+        s += parse_eight_digits_avx(source + i);
+    } 
+    return s;
+}
+
+
 int main() {
     size_t N = 1000000000;
     unsigned char * text = buildcollection(N);
@@ -390,24 +410,30 @@ int main() {
     long long sbef1 = timeInMilliseconds();
     size_t shw1 = sum_8_digits(text, N);
     long long saft1 = timeInMilliseconds();
+    printf("%lld  \n", saft1-sbef1);
 
-    printf("swar\n");
-    long long sbef4 = timeInMilliseconds();
-    size_t shw4 = sum_8_digits_swar(text, N);
-    long long saft4 = timeInMilliseconds();
-    if(shw1 != shw4) printf("bug\n");
 
     printf("unrolled\n");
     long long sbef2 = timeInMilliseconds();
     size_t shw2 = sum_8_digits_unrolled(text, N);
     long long saft2 = timeInMilliseconds();
     if(shw1 != shw2) printf("bug\n");
+    printf("%lld  \n", saft2-sbef2);
 
     printf("ssse3\n");
     long long sbef3 = timeInMilliseconds();
     size_t shw3 = sum_8_digits_ssse3(text, N);
     long long saft3 = timeInMilliseconds();
     if(shw1 != shw3) printf("bug\n");
+    printf("%lld  \n", saft3-sbef3);
+
+
+    printf("swar\n");
+    long long sbef4 = timeInMilliseconds();
+    size_t shw4 = sum_8_digits_swar(text, N);
+    long long saft4 = timeInMilliseconds();
+    if(shw1 != shw4) printf("bug\n");
+    printf("%lld  \n", saft4-sbef4);
 
 
     printf("ssse3 l64\n");
@@ -415,10 +441,18 @@ int main() {
     size_t shw5 = sum_8_digits_ssse3_l64(text, N);
     long long saft5 = timeInMilliseconds();
     if(shw1 != shw5) printf("bug\n");
+    printf("%lld  \n", saft5-sbef5);
 
-    //printf("%zu %zu %zu %zu \n", shw1, shw2, shw3, shw4);
+    printf("avx\n");
 
-    printf("%lld -- %lld -- %lld -- %lld-- %lld  \n", saft1-sbef1, saft2-sbef2,  saft3-sbef3,  saft4-sbef4,  saft5-sbef5);
+    long long sbef6 = timeInMilliseconds();
+    size_t shw6 = sum_8_digits_avx(text, N);
+    long long saft6 = timeInMilliseconds();
+    if(shw1 != shw6) printf("bug\n");
+    printf("%lld \n", saft6-sbef6);
+
+
+
 
     free(text);
 
