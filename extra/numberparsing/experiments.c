@@ -175,8 +175,7 @@ uint32_t parse_eight_digits_swar(const unsigned char  * chars) {
     memcpy(&val, chars, 8);
     val = __builtin_bswap64(val);// because we are under little endian
     val = val - 0x3030303030303030;
-    uint64_t byte10 = (val * 0xa) >> 8; 
-    uint64_t byte10plus = (byte10 + val) &  0x00FF00FF00FF00FF; 
+    uint64_t byte10plus = ((val * (0xa + (1<<8))) >> 8)&  0x00FF00FF00FF00FF; 
     uint64_t short100 = (byte10plus * 0x64)>>16; 
     uint64_t short100plus = (short100 +byte10plus) & 0x0000FFFF0000FFFF ;
     short100plus *= (10000 + (1ULL<<32));
