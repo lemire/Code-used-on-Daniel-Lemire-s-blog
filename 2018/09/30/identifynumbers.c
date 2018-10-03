@@ -44,7 +44,7 @@ bool is_made_of_eight_digits_branchless(const unsigned char  * chars) {
     uint64_t val;
     memcpy(&val, chars, 8);
     // simpler version due to Travis Downs.
-    return ( val & (val + 0x0606060606060606) & 0xF0F0F0F0F0F0F0F0 ) == 0x3030303030303030;
+    return ( (val | (val + 0x0606060606060606)) & 0xF0F0F0F0F0F0F0F0 ) == 0x3030303030303030;
     //return ((( val & 0xF0F0F0F0F0F0F0F0 ) 
     //| (( (val + 0x0606060606060606) & 0xF0F0F0F0F0F0F0F0 ) >> 4)) == 0x3333333333333333);
 }
