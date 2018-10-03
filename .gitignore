@@ -1,0 +1,12 @@
+# vscode files
+.vscode
+
+# eclipse files
+.cproject
+.project
+
+*.o
+
+# perf output
+perf.data*
+
