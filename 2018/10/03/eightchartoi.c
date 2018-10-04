@@ -6,7 +6,7 @@
 #include <string.h>
 #include <sys/time.h>
 
-__attribute__((noinline)) uint32_t
+uint32_t
 parse_eight_digits(const unsigned char *chars) {
   uint32_t x = chars[0] - '0';
   for (size_t j = 1; j < 8; j++)
@@ -14,7 +14,7 @@ parse_eight_digits(const unsigned char *chars) {
   return x;
 }
 
-__attribute__((noinline)) uint32_t
+uint32_t
 parse_eight_digits_unrolled(const unsigned char *chars) {
   uint32_t x = 10000000 * (chars[0]) + 1000000 * (chars[1]) +
                100000 * (chars[2]) + 10000 * (chars[3]) + 1000 * (chars[4]) +
@@ -22,7 +22,7 @@ parse_eight_digits_unrolled(const unsigned char *chars) {
   return x - '0' * (1 + 10 + 100 + 1000 + 10000 + 100000 + 1000000 + 10000000);
 }
 
-__attribute__((noinline)) uint32_t
+uint32_t
 parse_eight_digits_swar(const unsigned char *chars) {
   uint64_t val;
   memcpy(&val, chars, 8);
@@ -37,7 +37,7 @@ parse_eight_digits_swar(const unsigned char *chars) {
 
 #include <x86intrin.h>
 
-__attribute__((noinline)) uint32_t
+uint32_t
 parse_eight_digits_ssse3(const unsigned char *chars) {
   const __m128i ascii0 = _mm_set1_epi8('0');
   const __m128i mul_1_10 =
@@ -58,7 +58,7 @@ parse_eight_digits_ssse3(const unsigned char *chars) {
       t4); // only captures the sum of the first 8 digits, drop the rest
 }
 
-__attribute__((noinline)) uint64_t
+uint64_t
 parse_eight_digits_avx(const unsigned char *s) {
   __m256i multiplier =
       _mm256_setr_epi32(10000000, 1000000, 100000, 10000, 1000, 100, 10, 1);
@@ -75,7 +75,7 @@ parse_eight_digits_avx(const unsigned char *s) {
 
 size_t sum_8_digits(unsigned char *source, size_t length) {
   uint32_t s = 0;
-  for (size_t i = 0; i + 7 < length; i++) {
+  for (size_t i = 0; i + 7 < length; i+=8) {
     s += parse_eight_digits(source + i);
   }
   return s;
@@ -83,7 +83,7 @@ size_t sum_8_digits(unsigned char *source, size_t length) {
 
 size_t sum_8_digits_unrolled(unsigned char *source, size_t length) {
   uint32_t s = 0;
-  for (size_t i = 0; i + 7 < length; i++) {
+  for (size_t i = 0; i + 7 < length; i+=8) {
     s += parse_eight_digits_unrolled(source + i);
   }
   return s;
@@ -91,7 +91,7 @@ size_t sum_8_digits_unrolled(unsigned char *source, size_t length) {
 
 size_t sum_8_digits_swar(unsigned char *source, size_t length) {
   uint32_t s = 0;
-  for (size_t i = 0; i + 7 < length; i++) {
+  for (size_t i = 0; i + 7 < length; i+=8) {
     s += parse_eight_digits_swar(source + i);
   }
   return s;
@@ -99,7 +99,7 @@ size_t sum_8_digits_swar(unsigned char *source, size_t length) {
 
 size_t sum_8_digits_ssse3(unsigned char *source, size_t length) {
   uint32_t s = 0;
-  for (size_t i = 0; i + 7 < length; i++) {
+  for (size_t i = 0; i + 7 < length; i+=8) {
     s += parse_eight_digits_ssse3(source + i);
   }
   return s;
@@ -107,7 +107,7 @@ size_t sum_8_digits_ssse3(unsigned char *source, size_t length) {
 
 size_t sum_8_digits_avx(unsigned char *source, size_t length) {
   uint32_t s = 0;
-  for (size_t i = 0; i + 7 < length; i++) {
+  for (size_t i = 0; i + 7 < length; i+=8) {
     s += parse_eight_digits_avx(source + i);
   }
   return s;
@@ -124,7 +124,7 @@ unsigned char *buildcollection(size_t length) {
 bool testparse(size_t N) {
   unsigned char *text = buildcollection(N);
   size_t expected = sum_8_digits(text, N);
-  size_t volume = N - 7;
+  size_t volume = N / 8;
   int repeat = 5;
   BEST_TIME(sum_8_digits(text, N), expected, , repeat, volume, true);
   BEST_TIME(sum_8_digits_unrolled(text, N), expected, , repeat, volume, true);
