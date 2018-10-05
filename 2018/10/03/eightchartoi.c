@@ -33,6 +33,25 @@ uint32_t parse_eight_digits_swar(const unsigned char *chars) {
   return short100plus >> 32;
 }
 
+uint64_t constant0 = 0x3030303030303030;
+uint64_t constant1 = (1 + (0xa  <<  8));
+uint64_t constant2 = 0x00FF00FF00FF00FF;
+uint64_t constant3 = 0x0000FFFF0000FFFF;
+
+uint32_t parse_eight_digits_swarc(const char *chars) {
+  uint64_t val;
+  memcpy(&val, chars, 8);
+  val = val - 0x3030303030303030;
+  uint64_t byte10plus   = ((val        
+      * constant1) >>  8)
+      & constant2;
+  uint64_t short100plus = ((byte10plus 
+       * (1 + (0x64 << 16))) >> 16) 
+       & constant3;
+  short100plus *= (1 + (10000ULL << 32));
+  return short100plus >> 32;
+}
+
 #include <x86intrin.h>
 
 uint32_t
@@ -95,6 +114,15 @@ size_t sum_8_digits_swar(unsigned char *source, size_t length) {
   return s;
 }
 
+size_t sum_8_digits_swarc(unsigned char *source, size_t length) {
+  uint32_t s = 0;
+  for (size_t i = 0; i + 7 < length; i+=8) {
+    s += parse_eight_digits_swarc(source + i);
+  }
+  return s;
+}
+
+
 size_t sum_8_digits_ssse3(unsigned char *source, size_t length) {
   uint32_t s = 0;
   for (size_t i = 0; i + 7 < length; i+=8) {
@@ -127,6 +155,7 @@ bool testparse(size_t N) {
   BEST_TIME(sum_8_digits(text, N), expected, , repeat, volume, true);
   BEST_TIME(sum_8_digits_unrolled(text, N), expected, , repeat, volume, true);
   BEST_TIME(sum_8_digits_swar(text, N), expected, , repeat, volume, true);
+  BEST_TIME(sum_8_digits_swarc(text, N), expected, , repeat, volume, true);
   BEST_TIME(sum_8_digits_ssse3(text, N), expected, , repeat, volume, true);
   BEST_TIME(sum_8_digits_avx(text, N), expected, , repeat, volume, true);
 
