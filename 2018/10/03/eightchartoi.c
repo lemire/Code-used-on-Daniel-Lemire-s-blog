@@ -22,16 +22,14 @@ parse_eight_digits_unrolled(const unsigned char *chars) {
   return x - '0' * (1 + 10 + 100 + 1000 + 10000 + 100000 + 1000000 + 10000000);
 }
 
-uint32_t
-parse_eight_digits_swar(const unsigned char *chars) {
+
+uint32_t parse_eight_digits_swar(const unsigned char *chars) {
   uint64_t val;
   memcpy(&val, chars, 8);
-  val = __builtin_bswap64(val); // because we are under little endian
   val = val - 0x3030303030303030;
-  uint64_t byte10plus = ((val * (0xa + (1 << 8))) >> 8) & 0x00FF00FF00FF00FF;
-  uint64_t short100plus =
-      ((byte10plus * (0x64 + (1 << 16)) >> 16)) & 0x0000FFFF0000FFFF;
-  short100plus *= (10000 + (1ULL << 32));
+  uint64_t byte10plus   = ((val        * (1 + (0xa  <<  8))) >>  8) & 0x00FF00FF00FF00FF;
+  uint64_t short100plus = ((byte10plus * (1 + (0x64 << 16))) >> 16) & 0x0000FFFF0000FFFF;
+  short100plus *= (1 + (10000ULL << 32));
   return short100plus >> 32;
 }
 
