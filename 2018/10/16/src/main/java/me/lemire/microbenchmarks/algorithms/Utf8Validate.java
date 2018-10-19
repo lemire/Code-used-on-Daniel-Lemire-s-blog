@@ -16,7 +16,8 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 public class Utf8Validate {
-
+  @Param({"191", "1910", "19100", "191000"})
+  static int N;
 
   @State(Scope.Thread)
   public static class MyState {
@@ -28,13 +29,18 @@ public class Utf8Validate {
       private static byte[] getUTF8String() {
         Random r = new Random(1234);
         //r.setSeed(1234);
-        String vals[] = {"a", "é","®", "↧", "⿐" ,"😨","😧","😦","😱","😫","😩"};
+        String vals[] = {"a "," working ", "potato", "«hmm?»", "in the garange!", 
+                     "look!","...","" ,  "the ", "dog ", "Daniel ", "éléphant ","®", "↧", "⿐" ,"😨","😧","😦","😱","😫","😩"};
         StringBuilder builder = new StringBuilder();
-        for(int i = 0; i < 322; i++)
+        for(int i = 0; i < N; i++) {
           builder.append(vals[r.nextInt(vals.length)]);
-        return builder.toString()
-        .getBytes​(
-          StandardCharsets.UTF_8);
+        }
+        String answer = builder.toString();
+        // we are going to make sure that the UTF-8 is proper
+        byte[] byteanswer = answer.getBytes(StandardCharsets.UTF_8);
+        if(! new String(byteanswer,StandardCharsets.UTF_8).equals(answer) )
+          throw new RuntimeException("utf8 mismatch.");
+        return byteanswer;
       }
   }
 
@@ -88,7 +94,6 @@ BEGIN COPY-PASTE FROM Guava
           return true;
         }
       } while ((byte1 = bytes[index++]) >= 0);
-
       if (byte1 < (byte) 0xE0) {
         // Two-byte form.
         if (index == end) {
@@ -199,11 +204,13 @@ BEGIN COPY-PASTE FROM Guava
   public boolean testFSM_utf8(MyState state) {
     return isUTF8(state.datautf8);
   }
+
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public boolean testGuava_utf8(MyState state) {
     return isWellFormed(state.datautf8);
   }
+
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public boolean testJava_utf8(MyState state) { 
