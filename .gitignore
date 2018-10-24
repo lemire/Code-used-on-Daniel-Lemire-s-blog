@@ -4,9 +4,14 @@
 # eclipse files
 .cproject
 .project
+.classpath
+.settings
 
 *.o
 
 # perf output
 perf.data*
+
+# maven output
+target
 

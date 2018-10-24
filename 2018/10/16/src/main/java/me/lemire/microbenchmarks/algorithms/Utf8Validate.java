@@ -146,7 +146,7 @@ BEGIN COPY-PASTE FROM Guava
    END COPY-PASTE FROM Guava
  **/
 
-  static final byte utf8d[] = {
+static final byte utf8d_toclass[] = {
   // The first part of the table maps bytes to character classes that
   // to reduce the size of the transition table and create bitmasks.
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -156,8 +156,10 @@ BEGIN COPY-PASTE FROM Guava
   1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,  9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
   7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,  7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
   8,8,2,2,2,2,2,2,2,2,2,2,2,2,2,2,  2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-  10,3,3,3,3,3,3,3,3,3,3,3,3,4,3,3, 11,6,6,6,5,8,8,8,8,8,8,8,8,8,8,8,
+  10,3,3,3,3,3,3,3,3,3,3,3,3,4,3,3, 11,6,6,6,5,8,8,8,8,8,8,8,8,8,8,8
+};
 
+static final byte utf8d_transition[] = {
  // The second part is a transition table that maps a combination
  // of a state of the automaton and a character class to a state.
   0,12,24,36,60,96,84,12,12,12,48,72, 12,12,12,12,12,12,12,12,12,12,12,12,
@@ -194,15 +196,44 @@ BEGIN COPY-PASTE FROM Guava
     int length = b.length;
     int s = 0;
     for (int i = 0; i < length; i++) {
-      s = utf8d[256 + s + (utf8d[b[i] & 0xFF] & 0xFF) ];
+      s = utf8d_transition[(s + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
     }
     return s == 0;
+  }
+  
+  public static final boolean isTrailingByte(byte b) {
+	  // check that the byte is a trailing byte of the form 10xxxxxx
+	  return b <= (byte)0xBF; 
+  }
+  // two stream version of 
+  // http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
+  public static boolean isUTF8_double(byte[] b) {
+    int length = b.length, half = length / 2;
+//    assert(length % 2 == 0);
+    while (b[half] <= (byte)0xBF && half > 0) {
+    	half--;
+    }
+    int s1 = 0, s2 = 0;
+    for (int i = 0, j = half; i < half; i++, j++) {
+      s1 = utf8d_transition[(s1 + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
+      s2 = utf8d_transition[(s2 + (utf8d_toclass[b[j] & 0xFF])) & 0xFF];
+    }
+    for (int i = half * 2; i < b.length; i++) {
+    	s1 = utf8d_transition[(s1 + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
+    }
+    return s1 == 0 && s2 == 0;
   }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public boolean testFSM_utf8(MyState state) {
     return isUTF8(state.datautf8);
+  }
+  
+  @Benchmark @BenchmarkMode(Mode.AverageTime) 
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public boolean testFSMDouble_utf8(MyState state) {
+    return isUTF8_double(state.datautf8);
   }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
@@ -227,12 +258,12 @@ BEGIN COPY-PASTE FROM Guava
 
 
 
-  public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-        .include(Utf8Validate.class.getSimpleName()).warmupIterations(3)
-        .measurementIterations(3).forks(1).build();
-        new Runner(opt).run();
-
-  }
+//  public static void main(String[] args) throws RunnerException {
+//        Options opt = new OptionsBuilder()
+//        .include(Utf8Validate.class.getSimpleName()).warmupIterations(3)
+//        .measurementIterations(3).forks(1).build();
+//        new Runner(opt).run();
+//
+//  }
 
 }
