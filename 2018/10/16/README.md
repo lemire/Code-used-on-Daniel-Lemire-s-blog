@@ -2,5 +2,11 @@
 ```
 
         mvn clean install
-        java -cp target/microbenchmarks-0.0.1-jar-with-dependencies.jar me.lemire.microbenchmarks.algorithms.Utf8Validate
+        java -jar target/microbenchmarks-0.0.1-jar-with-dependencies.jar
 ```
+
+or 
+```
+          java -jar  target/microbenchmarks-0.0.1-jar-with-dependencies.jar -prof perfasm
+```
+
