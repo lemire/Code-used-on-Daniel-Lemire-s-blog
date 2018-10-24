@@ -264,9 +264,8 @@ static final byte utf8d_transition[] = {
 
   public static boolean isASCIIbranch(byte[] b) {
     int length = b.length;
-    int s = 0;
     for (int i = 0; i < length; i++) {
-      if(b[i] < 0) return false;
+      if (b[i] < 0) return false;
     }
     return true;
   }
@@ -285,6 +284,7 @@ static final byte utf8d_transition[] = {
 	  // check that the byte is a trailing byte of the form 10xxxxxx
 	  return b <= (byte)0xBF; 
   }
+  
   // two stream version of 
   // http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
   public static boolean isUTF8_double(byte[] b) {
@@ -302,6 +302,46 @@ static final byte utf8d_transition[] = {
     }
     return s1 == 0 && s2 == 0;
   }
+  
+  //
+  // The three and the four stream versions are incorrect deliberately
+  // Travis wrote:
+  // Note that these functions don't actually return the right result much of the time: 
+  // I left out the code to actually align each stream to a code point boundary and also
+  // the code to stop on a code point boundary. You could do it like I did in the double case, 
+  // but it also occurs to me you can do it for free using the existing DFA: start each stream 
+  // in an special "start" state whose transitions are such that the initial bytes are ignored 
+  // (i.e., they transition to the normal state graph as soon as they see a starting character), 
+  // and as the final check just check at the state is not invalid (s1 != 12) rather than 
+  // "valid end of character" (s0 == 0). Or something like that. I didn't worry about it because 
+  // this is a small one-time cost which doesn't affect the main loop, except if it somehow makes the JIT produce worse code.
+  
+  // three stream version of 
+  // http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
+  public static boolean isUTF8_triple(byte[] b) {
+    int length = b.length, chunk = length / 3;
+    int s1 = 0, s2 = 0, s3 = 0;
+    for (int i = 0, j = chunk, k = 2 * chunk; i < chunk; i++, j++, k++) {
+      s1 = utf8d_transition[(s1 + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
+      s2 = utf8d_transition[(s2 + (utf8d_toclass[b[j] & 0xFF])) & 0xFF];
+      s3 = utf8d_transition[(s3 + (utf8d_toclass[b[k] & 0xFF])) & 0xFF];
+    }
+    return s1 == 0 && s2 == 0 && s3 == 0;
+  }
+  
+ // four stream version of 
+ // http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
+ public static boolean isUTF8_quad(byte[] b) {
+   int length = b.length, chunk = length / 4;
+   int s1 = 0, s2 = 0, s3 = 0, s4 = 0;
+   for (int i = 0, j = chunk, k = 2 * chunk, l = 3 * chunk; i < chunk; i++, j++, k++, l++) {
+     s1 = utf8d_transition[(s1 + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
+     s2 = utf8d_transition[(s2 + (utf8d_toclass[b[j] & 0xFF])) & 0xFF];
+     s3 = utf8d_transition[(s3 + (utf8d_toclass[b[k] & 0xFF])) & 0xFF];
+     s4 = utf8d_transition[(s4 + (utf8d_toclass[b[l] & 0xFF])) & 0xFF];
+   }
+   return s1 == 0 && s2 == 0 && s3 == 0 && s4 == 0;
+ }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -313,9 +353,25 @@ static final byte utf8d_transition[] = {
   
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
-  public boolean testFSMDouble_utf8(MyState state) {
+  public boolean testFSM2_utf8(MyState state) {
     for(byte[] x : state.datautf8)
       if(!isUTF8_double(x)) throw new RuntimeException("not UTF8?");
+    return true;
+  }
+  
+  @Benchmark @BenchmarkMode(Mode.AverageTime) 
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public boolean testFSM3_utf8(MyState state) {
+    for(byte[] x : state.datautf8)
+      if(!isUTF8_triple(x)) throw new RuntimeException("not UTF8?");
+    return true;
+  }
+  
+  @Benchmark @BenchmarkMode(Mode.AverageTime) 
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public boolean testFSM4_utf8(MyState state) {
+    for(byte[] x : state.datautf8)
+      if(!isUTF8_quad(x)) throw new RuntimeException("not UTF8?");
     return true;
   }
 
