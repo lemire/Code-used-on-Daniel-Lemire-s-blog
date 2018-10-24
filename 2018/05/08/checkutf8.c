@@ -55,7 +55,9 @@ static const uint8_t utf8d[] = {
     0xa, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, 0x3,
     0x3, 0x3, 0x4, 0x3, 0x3, // e0..ef
     0xb, 0x6, 0x6, 0x6, 0x5, 0x8, 0x8, 0x8, 0x8, 0x8, 0x8,
-    0x8, 0x8, 0x8, 0x8, 0x8, // f0..ff
+    0x8, 0x8, 0x8, 0x8, 0x8 // f0..ff
+};
+  static const uint8_t utf8d_transition[] = {
     0x0, 0x1, 0x2, 0x3, 0x5, 0x8, 0x7, 0x1, 0x1, 0x1, 0x4,
     0x6, 0x1, 0x1, 0x1, 0x1, // s0..s0
     1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
@@ -76,13 +78,13 @@ static uint32_t inline decode(uint32_t *state, uint32_t *codep, uint32_t byte) {
   uint32_t type = utf8d[byte];
   *codep = (*state != UTF8_ACCEPT) ? (byte & 0x3fu) | (*codep << 6)
                                    : (0xff >> type) & (byte);
-  *state = utf8d[256 + 16 * *state + type];
+  *state = utf8d_transition[16 * *state + type];
   return *state;
 }
 
 static uint32_t inline updatestate(uint32_t *state, uint32_t byte) {
   uint32_t type = utf8d[byte];
-  *state = utf8d[256 + 16 * *state + type];
+  *state = utf8d_transition[16 * *state + type];
   return *state;
 }
 
@@ -95,6 +97,15 @@ bool is_ascii(const char *c, size_t len) {
 }
 
 
+bool validate_utf8_branchless(const char *c, size_t len) {
+  const unsigned char *cu = (const unsigned char *)c;
+  uint32_t state = 0;
+  for (size_t i = 0; i < len; i++) {
+    uint32_t byteval = (uint32_t)cu[i];
+    updatestate(&state, byteval);
+  }
+  return state != UTF8_REJECT;
+}
 
 bool validate_utf8(const char *c, size_t len) {
   const unsigned char *cu = (const unsigned char *)c;
@@ -106,6 +117,24 @@ bool validate_utf8(const char *c, size_t len) {
   }
   return true;
 }
+
+// credit: Travis Downs
+bool validate_utf8_double(const char *c, size_t len) {
+  size_t half = len / 2;
+  while((unsigned char )c[half] <= 0xBF && (unsigned char ) c[half] > 0x80 && half > 0 ) {
+    half --;
+  }  
+  uint32_t s1 = 0, s2 = 0;
+  for (size_t i = 0, j = half; i < half; i++, j++) {
+    updatestate(&s1, c[i]);
+    updatestate(&s2, c[j]);
+  }
+  for (int j = half * 2; j < len; j++) {
+    updatestate(&s2, c[j]);
+  }
+  return (s1 != UTF8_REJECT) && (s2 != UTF8_REJECT);
+}
+
 // can be vectorized: https://woboq.com/blog/utf-8-processing-using-simd.html
 bool validate_utf8_sse_nocheating(const char *src, size_t len) {
   const char *end = src + len;
@@ -370,6 +399,10 @@ void demo(size_t N) {
   BEST_TIME(is_ascii(data, N), expected,populate(data,N) , repeat, N, true);
  
   BEST_TIME(validate_utf8(data, N), expected,populate(data,N) , repeat, N, true);
+  BEST_TIME(validate_utf8_branchless(data, N), expected,populate(data,N) , repeat, N, true);
+  BEST_TIME(validate_utf8_double(data, N), expected,populate(data,N) , repeat, N, true);
+
+  
   BEST_TIME(validate_utf8_sse_nocheating(data, N), expected,populate(data,N) , repeat, N, true);
   BEST_TIME(validate_utf8_sse(data, N), expected,populate(data,N) , repeat, N, true);
   free(data);
