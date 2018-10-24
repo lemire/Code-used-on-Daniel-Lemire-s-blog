@@ -184,9 +184,8 @@ static final byte utf8d_transition[] = {
 
   public static boolean isASCIIbranch(byte[] b) {
     int length = b.length;
-    int s = 0;
     for (int i = 0; i < length; i++) {
-      if(b[i] < 0) return false;
+      if (b[i] < 0) return false;
     }
     return true;
   }
@@ -205,6 +204,7 @@ static final byte utf8d_transition[] = {
 	  // check that the byte is a trailing byte of the form 10xxxxxx
 	  return b <= (byte)0xBF; 
   }
+  
   // two stream version of 
   // http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
   public static boolean isUTF8_double(byte[] b) {
@@ -222,6 +222,33 @@ static final byte utf8d_transition[] = {
     }
     return s1 == 0 && s2 == 0;
   }
+  
+  // three stream version of 
+  // http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
+  public static boolean isUTF8_triple(byte[] b) {
+    int length = b.length, chunk = length / 3;
+    int s1 = 0, s2 = 0, s3 = 0;
+    for (int i = 0, j = chunk, k = 2 * chunk; i < chunk; i++, j++, k++) {
+      s1 = utf8d_transition[(s1 + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
+      s2 = utf8d_transition[(s2 + (utf8d_toclass[b[j] & 0xFF])) & 0xFF];
+      s3 = utf8d_transition[(s3 + (utf8d_toclass[b[k] & 0xFF])) & 0xFF];
+    }
+    return s1 == 0 && s2 == 0 && s3 == 0;
+  }
+  
+ // four stream version of 
+ // http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
+ public static boolean isUTF8_quad(byte[] b) {
+   int length = b.length, chunk = length / 4;
+   int s1 = 0, s2 = 0, s3 = 0, s4 = 0;
+   for (int i = 0, j = chunk, k = 2 * chunk, l = 3 * chunk; i < chunk; i++, j++, k++, l++) {
+     s1 = utf8d_transition[(s1 + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
+     s2 = utf8d_transition[(s2 + (utf8d_toclass[b[j] & 0xFF])) & 0xFF];
+     s3 = utf8d_transition[(s3 + (utf8d_toclass[b[k] & 0xFF])) & 0xFF];
+     s4 = utf8d_transition[(s4 + (utf8d_toclass[b[l] & 0xFF])) & 0xFF];
+   }
+   return s1 == 0 && s2 == 0 && s3 == 0 && s4 == 0;
+ }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -231,8 +258,20 @@ static final byte utf8d_transition[] = {
   
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
-  public boolean testFSMDouble_utf8(MyState state) {
+  public boolean testFSM2_utf8(MyState state) {
     return isUTF8_double(state.datautf8);
+  }
+  
+  @Benchmark @BenchmarkMode(Mode.AverageTime) 
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public boolean testFSM3_utf8(MyState state) {
+    return isUTF8_triple(state.datautf8);
+  }
+  
+  @Benchmark @BenchmarkMode(Mode.AverageTime) 
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public boolean testFSM4_utf8(MyState state) {
+    return isUTF8_quad(state.datautf8);
   }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
