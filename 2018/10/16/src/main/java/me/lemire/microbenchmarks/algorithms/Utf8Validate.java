@@ -15,20 +15,31 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
+@Fork(1)
+@Warmup(iterations = 2, time = 500, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 3, time = 500, timeUnit = TimeUnit.MILLISECONDS)
 public class Utf8Validate {
-  @Param({"191", "1910", "19100", "191000"})
+  
+  
+  @Param({"191"})
   static int N;
 
-  @State(Scope.Thread)
+  @State(Scope.Benchmark)
   public static class MyState {
-      public byte[] datautf8 = getUTF8String();
+      public ArrayList<byte[]> datautf8;// = getUTF8String();
+      static Random r = new Random(1234);
 
       public MyState() {
-        System.out.println("==Size of the input string in  bytes "+datautf8.length);
+        datautf8 = new ArrayList<byte[]>();
+        int total = 0;
+        do {
+          byte[] c = getUTF8String();
+          total += c.length;
+          datautf8.add(c);
+        } while(total < 10000000);
+        System.out.println("==Size of the input string in  bytes "+total);
       }
       private static byte[] getUTF8String() {
-        Random r = new Random(1234);
-        //r.setSeed(1234);
         String vals[] = {"a "," working ", "potato", "«hmm?»", "in the garange!", 
                      "look!","...","" ,  "the ", "dog ", "Daniel ", "éléphant ","®", "↧", "⿐" ,"😨","😧","😦","😱","😫","😩"};
         StringBuilder builder = new StringBuilder();
@@ -140,6 +151,75 @@ BEGIN COPY-PASTE FROM Guava
       }
     }
   }
+  public static boolean isWellFormedSimpler(byte[] bytes) {
+    return isWellFormedSimpler(bytes, 0, bytes.length);
+  }
+  public static boolean isWellFormedSimpler(byte[] bytes, int off, int len) {
+    int end = off + len;
+
+    // Look for the first non-ASCII character.
+    for (int i = off; i < end; i++) {
+      if (bytes[i] < 0) {
+        return isWellFormedSlowPath(bytes, i, end);
+      }
+    }
+    return true;
+  }
+
+  private static boolean isWellFormedSlowPathSimpler(byte[] bytes, int off, int end) {
+    int index = off;
+    while (index < end) {
+      int byte1 = bytes[index++];
+      if(byte1 >= 0) {
+        // ASCII!!!
+      } else if (byte1 < (byte) 0xE0) {
+        // Two-byte form.
+        if (index == end) {
+          return false;
+        }
+        // Simultaneously check for illegal trailing-byte in leading position
+        // and overlong 2-byte form.
+        if (byte1 < (byte) 0xC2 || bytes[index++] > (byte) 0xBF) {
+          return false;
+        }
+      } else if (byte1 < (byte) 0xF0) {
+        // Three-byte form.
+        if (index + 1 >= end) {
+          return false;
+        }
+        int byte2 = bytes[index++];
+        if (byte2 > (byte) 0xBF
+            // Overlong? 5 most significant bits must not all be zero.
+            || (byte1 == (byte) 0xE0 && byte2 < (byte) 0xA0)
+            // Check for illegal surrogate codepoints.
+            || (byte1 == (byte) 0xED && (byte) 0xA0 <= byte2)
+            // Third byte trailing-byte test.
+            || bytes[index++] > (byte) 0xBF) {
+          return false;
+        }
+      } else {
+        // Four-byte form.
+        if (index + 2 >= end) {
+          return false;
+        }
+        int byte2 = bytes[index++];
+        if (byte2 > (byte) 0xBF
+            // Check that 1 <= plane <= 16. Tricky optimized form of:
+            // if (byte1 > (byte) 0xF4
+            //     || byte1 == (byte) 0xF0 && byte2 < (byte) 0x90
+            //     || byte1 == (byte) 0xF4 && byte2 > (byte) 0x8F)
+            || (((byte1 << 28) + (byte2 - (byte) 0x90)) >> 30) != 0
+            // Third byte trailing-byte test
+            || bytes[index++] > (byte) 0xBF
+            // Fourth byte trailing-byte test
+            || bytes[index++] > (byte) 0xBF) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
 
 
 /** 
@@ -209,7 +289,7 @@ static final byte utf8d_transition[] = {
   // http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
   public static boolean isUTF8_double(byte[] b) {
     int length = b.length, half = length / 2;
-    while (b[half] <= (byte)0xBF && half > 0) {
+    while (b[half] <= (byte)0xBF && b[half] >= (byte)0x80 && half > 0) {
     	half--;
     }
     int s1 = 0, s2 = 0;
@@ -226,31 +306,52 @@ static final byte utf8d_transition[] = {
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public boolean testFSM_utf8(MyState state) {
-    return isUTF8(state.datautf8);
+    for(byte[] x : state.datautf8)
+      if(!isUTF8(x)) throw new RuntimeException("not UTF8?");
+    return true;
   }
   
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public boolean testFSMDouble_utf8(MyState state) {
-    return isUTF8_double(state.datautf8);
+    for(byte[] x : state.datautf8)
+      if(!isUTF8_double(x)) throw new RuntimeException("not UTF8?");
+    return true;
   }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public boolean testGuava_utf8(MyState state) {
-    return isWellFormed(state.datautf8);
+    for(byte[] x : state.datautf8)
+      if(!isWellFormed(x)) throw new RuntimeException("not UTF8?");
+    return true;
+
+  }
+
+
+  @Benchmark @BenchmarkMode(Mode.AverageTime) 
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public boolean testGuavaSimpler_utf8(MyState state) {
+    for(byte[] x : state.datautf8) {
+      if(!isWellFormedSimpler(x)) throw new RuntimeException("not UTF8?");
+    }
+    return true;
+
   }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public boolean testJava_utf8(MyState state) { 
     CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
-    try {
-      //CharBuffer b = 
-         decoder.decode(ByteBuffer.wrap(state.datautf8));		           
-    } catch (CharacterCodingException ex) {		        
-      return false;
-    } 
+    for(byte[] x : state.datautf8) {
+      try {
+        //CharBuffer b = 
+         decoder.decode(ByteBuffer.wrap(x));		           
+      } catch (CharacterCodingException ex) {		        
+        //return false;
+         throw new RuntimeException("not UTF8?");
+      } 
+    }
     return true;
   }
 
