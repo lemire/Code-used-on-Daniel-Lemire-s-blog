@@ -209,7 +209,6 @@ static final byte utf8d_transition[] = {
   // http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
   public static boolean isUTF8_double(byte[] b) {
     int length = b.length, half = length / 2;
-//    assert(length % 2 == 0);
     while (b[half] <= (byte)0xBF && half > 0) {
     	half--;
     }
@@ -218,8 +217,8 @@ static final byte utf8d_transition[] = {
       s1 = utf8d_transition[(s1 + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
       s2 = utf8d_transition[(s2 + (utf8d_toclass[b[j] & 0xFF])) & 0xFF];
     }
-    for (int i = half * 2; i < b.length; i++) {
-    	s1 = utf8d_transition[(s1 + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
+    for (int j = half * 2; j < b.length; j++) {
+        s2 = utf8d_transition[(s2 + (utf8d_toclass[b[j] & 0xFF])) & 0xFF];
     }
     return s1 == 0 && s2 == 0;
   }
