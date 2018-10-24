@@ -5,7 +5,7 @@
 <version>0.0.1</version>
 
 <properties>
-<jmh.version>1.15</jmh.version>
+<jmh.version>1.21</jmh.version>
 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 <uberjar.name>benchmarks</uberjar.name>
 </properties>
@@ -17,6 +17,10 @@
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-compiler-plugin</artifactId>
        <version>2.3.2</version>
+       <configuration>
+	       <source>1.8</source>
+	       <target>1.8</target>
+       </configuration>
    </plugin>
  <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -29,6 +33,11 @@
           </execution>
         </executions>
         <configuration>
+          <archive>
+            <manifest>
+              <mainClass>org.openjdk.jmh.Main</mainClass>
+            </manifest>
+          </archive>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
