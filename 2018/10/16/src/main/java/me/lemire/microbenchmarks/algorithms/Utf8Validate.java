@@ -200,11 +200,40 @@ static final byte utf8d_transition[] = {
     }
     return s == 0;
   }
+  
+  public static final boolean isTrailingByte(byte b) {
+	  // check that the byte is a trailing byte of the form 10xxxxxx
+	  return b <= (byte)0xBF; 
+  }
+  // two stream version of 
+  // http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
+  public static boolean isUTF8_double(byte[] b) {
+    int length = b.length, half = length / 2;
+//    assert(length % 2 == 0);
+    while (b[half] <= (byte)0xBF && half > 0) {
+    	half--;
+    }
+    int s1 = 0, s2 = 0;
+    for (int i = 0, j = half; i < half; i++, j++) {
+      s1 = utf8d_transition[(s1 + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
+      s2 = utf8d_transition[(s2 + (utf8d_toclass[b[j] & 0xFF])) & 0xFF];
+    }
+    for (int i = half * 2; i < b.length; i++) {
+    	s1 = utf8d_transition[(s1 + (utf8d_toclass[b[i] & 0xFF])) & 0xFF];
+    }
+    return s1 == 0 && s2 == 0;
+  }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
   @OutputTimeUnit(TimeUnit.NANOSECONDS)
   public boolean testFSM_utf8(MyState state) {
     return isUTF8(state.datautf8);
+  }
+  
+  @Benchmark @BenchmarkMode(Mode.AverageTime) 
+  @OutputTimeUnit(TimeUnit.NANOSECONDS)
+  public boolean testFSMDouble_utf8(MyState state) {
+    return isUTF8_double(state.datautf8);
   }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime) 
