@@ -20,9 +20,13 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Measurement(iterations = 3, time = 500, timeUnit = TimeUnit.MILLISECONDS)
 public class Utf8Validate {
   
-  
+
+  @Param({"ASCII", "UTF8"})
+  static String mode;
+    
   @Param({"191"})
   static int N;
+
 
   @State(Scope.Benchmark)
   public static class MyState {
@@ -40,8 +44,15 @@ public class Utf8Validate {
         System.out.println("==Size of the input string in  bytes "+total);
       }
       private static byte[] getUTF8String() {
-        String vals[] = {"a "," working ", "potato", "«hmm?»", "in the garange!", 
-                     "look!","...","" ,  "the ", "dog ", "Daniel ", "éléphant ","®", "↧", "⿐" ,"😨","😧","😦","😱","😫","😩"};
+        String vals[] = null;
+        String asci[] = {"a "," working ", "potato", "hmm?", "in the garange!", "the dog", "Daniel", "elephant", "cylon "};
+        String utf[] = {"a "," working ", "potato", "«hmm?»", "in the garange!", "look!","...","" ,  "the ", "dog ", "Daniel ", "éléphant ","®", "↧", "⿐" ,"😨","😧","😦","😱","😫","😩"};
+        
+        if(mode.equals("ASCII")) 
+         vals = asci;
+        else if(mode .equals("UTF8"))
+         vals = utf;
+        else System.err.println("mode = "+mode);
         StringBuilder builder = new StringBuilder();
         for(int i = 0; i < N; i++) {
           builder.append(vals[r.nextInt(vals.length)]);
