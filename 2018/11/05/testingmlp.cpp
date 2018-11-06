@@ -1747,7 +1747,7 @@ int measure(size_t length) {
 int naked_measure(size_t length) {
   uint64_t *bigarray = (uint64_t *)malloc(sizeof(uint64_t) * length);
   for (size_t i = 0; i < length; i++)
-    bigarray[i] = ((uint32_t)murmur64(i) * length) >> 32;
+    bigarray[i] = rand() % length; //((uint32_t)murmur64(i) * length) >> 32;
   float time_measure[30];
   size_t howmanyhits = 1 * 4 * 5 * 6 * 7 * 8 * 9 * 11 * 13;
   int repeat = 5;
@@ -1800,6 +1800,6 @@ int naked_measure(size_t length) {
 int main() {
   size_t length = 1 << 25;
   for (size_t i = 0; i < 3; i++) {
-    naked_measure(length);
+    measure(length);
   }
 }
