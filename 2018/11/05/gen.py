@@ -1,7 +1,7 @@
 for i in range(1,30):
     print("uint64_t naked_access_%d(uint64_t *bigarray, size_t howmanyhits) {"%(i))
     for j in range(1,i+1):
-        print("uint64_t val%d = 0;" %(j))
+        print("uint64_t val%d = %d;" %(j,j))
     print ("size_t howmanyhits_perlane = howmanyhits / %d;"%(i))
     print("for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {")
     for j in range(1,i+1):

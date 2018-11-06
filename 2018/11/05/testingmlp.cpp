@@ -31,9 +31,8 @@ uint64_t access(uint64_t *bigarray, size_t length, size_t howmanyhits) {
   // std::cout << howmanylanes << " : " << sum << std::endl;
   return sum;
 }
-
 uint64_t naked_access_1(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
+  uint64_t val1 = 1;
   size_t howmanyhits_perlane = howmanyhits / 1;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -61,8 +60,8 @@ float time_me1(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_2(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
   size_t howmanyhits_perlane = howmanyhits / 2;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -91,9 +90,9 @@ float time_me2(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_3(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
   size_t howmanyhits_perlane = howmanyhits / 3;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -123,10 +122,10 @@ float time_me3(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_4(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
   size_t howmanyhits_perlane = howmanyhits / 4;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -157,11 +156,11 @@ float time_me4(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_5(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
   size_t howmanyhits_perlane = howmanyhits / 5;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -193,12 +192,12 @@ float time_me5(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_6(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
   size_t howmanyhits_perlane = howmanyhits / 6;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -231,13 +230,13 @@ float time_me6(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_7(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
   size_t howmanyhits_perlane = howmanyhits / 7;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -271,14 +270,14 @@ float time_me7(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_8(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
   size_t howmanyhits_perlane = howmanyhits / 8;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -313,15 +312,15 @@ float time_me8(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_9(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
   size_t howmanyhits_perlane = howmanyhits / 9;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -357,16 +356,16 @@ float time_me9(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_10(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
   size_t howmanyhits_perlane = howmanyhits / 10;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -403,17 +402,17 @@ float time_me10(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_11(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
   size_t howmanyhits_perlane = howmanyhits / 11;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -452,18 +451,18 @@ float time_me11(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_12(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
   size_t howmanyhits_perlane = howmanyhits / 12;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -503,19 +502,19 @@ float time_me12(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_13(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
   size_t howmanyhits_perlane = howmanyhits / 13;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -556,20 +555,20 @@ float time_me13(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_14(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
   size_t howmanyhits_perlane = howmanyhits / 14;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -611,21 +610,21 @@ float time_me14(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_15(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
   size_t howmanyhits_perlane = howmanyhits / 15;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -668,22 +667,22 @@ float time_me15(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_16(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
   size_t howmanyhits_perlane = howmanyhits / 16;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -727,23 +726,23 @@ float time_me16(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_17(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
   size_t howmanyhits_perlane = howmanyhits / 17;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -788,24 +787,24 @@ float time_me17(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_18(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
   size_t howmanyhits_perlane = howmanyhits / 18;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -851,25 +850,25 @@ float time_me18(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_19(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
   size_t howmanyhits_perlane = howmanyhits / 19;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -916,26 +915,26 @@ float time_me19(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_20(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
-  uint64_t val20 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
+  uint64_t val20 = 20;
   size_t howmanyhits_perlane = howmanyhits / 20;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -984,27 +983,27 @@ float time_me20(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_21(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
-  uint64_t val20 = 0;
-  uint64_t val21 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
+  uint64_t val20 = 20;
+  uint64_t val21 = 21;
   size_t howmanyhits_perlane = howmanyhits / 21;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -1054,28 +1053,28 @@ float time_me21(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_22(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
-  uint64_t val20 = 0;
-  uint64_t val21 = 0;
-  uint64_t val22 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
+  uint64_t val20 = 20;
+  uint64_t val21 = 21;
+  uint64_t val22 = 22;
   size_t howmanyhits_perlane = howmanyhits / 22;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -1126,29 +1125,29 @@ float time_me22(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_23(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
-  uint64_t val20 = 0;
-  uint64_t val21 = 0;
-  uint64_t val22 = 0;
-  uint64_t val23 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
+  uint64_t val20 = 20;
+  uint64_t val21 = 21;
+  uint64_t val22 = 22;
+  uint64_t val23 = 23;
   size_t howmanyhits_perlane = howmanyhits / 23;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -1200,30 +1199,30 @@ float time_me23(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_24(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
-  uint64_t val20 = 0;
-  uint64_t val21 = 0;
-  uint64_t val22 = 0;
-  uint64_t val23 = 0;
-  uint64_t val24 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
+  uint64_t val20 = 20;
+  uint64_t val21 = 21;
+  uint64_t val22 = 22;
+  uint64_t val23 = 23;
+  uint64_t val24 = 24;
   size_t howmanyhits_perlane = howmanyhits / 24;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -1276,31 +1275,31 @@ float time_me24(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_25(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
-  uint64_t val20 = 0;
-  uint64_t val21 = 0;
-  uint64_t val22 = 0;
-  uint64_t val23 = 0;
-  uint64_t val24 = 0;
-  uint64_t val25 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
+  uint64_t val20 = 20;
+  uint64_t val21 = 21;
+  uint64_t val22 = 22;
+  uint64_t val23 = 23;
+  uint64_t val24 = 24;
+  uint64_t val25 = 25;
   size_t howmanyhits_perlane = howmanyhits / 25;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -1354,32 +1353,32 @@ float time_me25(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_26(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
-  uint64_t val20 = 0;
-  uint64_t val21 = 0;
-  uint64_t val22 = 0;
-  uint64_t val23 = 0;
-  uint64_t val24 = 0;
-  uint64_t val25 = 0;
-  uint64_t val26 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
+  uint64_t val20 = 20;
+  uint64_t val21 = 21;
+  uint64_t val22 = 22;
+  uint64_t val23 = 23;
+  uint64_t val24 = 24;
+  uint64_t val25 = 25;
+  uint64_t val26 = 26;
   size_t howmanyhits_perlane = howmanyhits / 26;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -1434,33 +1433,33 @@ float time_me26(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_27(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
-  uint64_t val20 = 0;
-  uint64_t val21 = 0;
-  uint64_t val22 = 0;
-  uint64_t val23 = 0;
-  uint64_t val24 = 0;
-  uint64_t val25 = 0;
-  uint64_t val26 = 0;
-  uint64_t val27 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
+  uint64_t val20 = 20;
+  uint64_t val21 = 21;
+  uint64_t val22 = 22;
+  uint64_t val23 = 23;
+  uint64_t val24 = 24;
+  uint64_t val25 = 25;
+  uint64_t val26 = 26;
+  uint64_t val27 = 27;
   size_t howmanyhits_perlane = howmanyhits / 27;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -1516,34 +1515,34 @@ float time_me27(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_28(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
-  uint64_t val20 = 0;
-  uint64_t val21 = 0;
-  uint64_t val22 = 0;
-  uint64_t val23 = 0;
-  uint64_t val24 = 0;
-  uint64_t val25 = 0;
-  uint64_t val26 = 0;
-  uint64_t val27 = 0;
-  uint64_t val28 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
+  uint64_t val20 = 20;
+  uint64_t val21 = 21;
+  uint64_t val22 = 22;
+  uint64_t val23 = 23;
+  uint64_t val24 = 24;
+  uint64_t val25 = 25;
+  uint64_t val26 = 26;
+  uint64_t val27 = 27;
+  uint64_t val28 = 28;
   size_t howmanyhits_perlane = howmanyhits / 28;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
@@ -1600,35 +1599,35 @@ float time_me28(uint64_t *bigarray, size_t howmanyhits, size_t repeat) {
 }
 
 uint64_t naked_access_29(uint64_t *bigarray, size_t howmanyhits) {
-  uint64_t val1 = 0;
-  uint64_t val2 = 0;
-  uint64_t val3 = 0;
-  uint64_t val4 = 0;
-  uint64_t val5 = 0;
-  uint64_t val6 = 0;
-  uint64_t val7 = 0;
-  uint64_t val8 = 0;
-  uint64_t val9 = 0;
-  uint64_t val10 = 0;
-  uint64_t val11 = 0;
-  uint64_t val12 = 0;
-  uint64_t val13 = 0;
-  uint64_t val14 = 0;
-  uint64_t val15 = 0;
-  uint64_t val16 = 0;
-  uint64_t val17 = 0;
-  uint64_t val18 = 0;
-  uint64_t val19 = 0;
-  uint64_t val20 = 0;
-  uint64_t val21 = 0;
-  uint64_t val22 = 0;
-  uint64_t val23 = 0;
-  uint64_t val24 = 0;
-  uint64_t val25 = 0;
-  uint64_t val26 = 0;
-  uint64_t val27 = 0;
-  uint64_t val28 = 0;
-  uint64_t val29 = 0;
+  uint64_t val1 = 1;
+  uint64_t val2 = 2;
+  uint64_t val3 = 3;
+  uint64_t val4 = 4;
+  uint64_t val5 = 5;
+  uint64_t val6 = 6;
+  uint64_t val7 = 7;
+  uint64_t val8 = 8;
+  uint64_t val9 = 9;
+  uint64_t val10 = 10;
+  uint64_t val11 = 11;
+  uint64_t val12 = 12;
+  uint64_t val13 = 13;
+  uint64_t val14 = 14;
+  uint64_t val15 = 15;
+  uint64_t val16 = 16;
+  uint64_t val17 = 17;
+  uint64_t val18 = 18;
+  uint64_t val19 = 19;
+  uint64_t val20 = 20;
+  uint64_t val21 = 21;
+  uint64_t val22 = 22;
+  uint64_t val23 = 23;
+  uint64_t val24 = 24;
+  uint64_t val25 = 25;
+  uint64_t val26 = 26;
+  uint64_t val27 = 27;
+  uint64_t val28 = 28;
+  uint64_t val29 = 29;
   size_t howmanyhits_perlane = howmanyhits / 29;
   for (size_t counter = 0; counter < howmanyhits_perlane; counter++) {
     val1 = bigarray[val1];
