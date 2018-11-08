@@ -1,5 +1,7 @@
 #include "common.hpp"
 
+#include <random>
+
 static uint64_t murmur64(uint64_t h) {
   h ^= h >> 33;
   h *= UINT64_C(0xff51afd7ed558ccd);
@@ -89,8 +91,19 @@ int measure(size_t length) {
 
 int naked_measure(size_t length) {
   uint64_t *bigarray = (uint64_t *)malloc(sizeof(uint64_t) * length);
-  for (size_t i = 0; i < length; i++)
-    bigarray[i] = rand() % length; //((uint32_t)murmur64(i) * length) >> 32;
+
+  // create a cycle of maximum length within the bigarray
+  for (size_t i = 0; i < length; i++) {
+    bigarray[i] = i;
+  }
+  // Sattolo
+  std::default_random_engine engine;
+  for (size_t i = 0; i + 1 < length; i++) {
+    std::uniform_int_distribution<size_t> dist{i + 1, length - 1};
+    size_t swapidx = dist(engine);
+    std::swap(bigarray[i], bigarray[swapidx]);
+  }
+
   float time_measure[30];
   size_t howmanyhits = 1 * 4 * 5 * 6 * 7 * 8 * 9 * 11 * 13;
   int repeat = 5;
@@ -115,6 +128,10 @@ int naked_measure(size_t length) {
 int main() {
   size_t length = 1 << 25;
   for (size_t i = 0; i < 3; i++) {
-    measure(length);
+    if (DO_NAKED) {
+      naked_measure(length);
+    } else {
+      measure(length);
+    }
   }
 }
