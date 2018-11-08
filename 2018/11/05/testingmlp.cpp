@@ -1731,7 +1731,7 @@ int measure(size_t length) {
 
   for (size_t i = 2; i <= 14; i++) {
     float ratio = (time_measure[i - 1] - time_measure[i]) / time_measure[i - 1];
-
+    printf("gain in going from %zu lanes to %zu lanes is %.1f %% \n", i-1,i,ratio * 100.);
     if (ratio <
         0.05) // if a new lane does not add at least 5% of performance...
     {
