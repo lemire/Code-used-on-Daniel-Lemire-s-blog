@@ -103,8 +103,8 @@ int naked_measure(size_t length) {
     size_t swapidx = dist(engine);
     std::swap(bigarray[i], bigarray[swapidx]);
   }
-  size_t current_start = 1;
-  size_t current_pointer = NAKED_MAX + 1;//  arbitrary
+  uint64_t current_start = 1;
+  uint64_t current_pointer = NAKED_MAX + 1;//  arbitrary
   uint64_t a = bigarray[current_pointer];
   uint64_t b = bigarray[a];
   bigarray[a] = current_start;
