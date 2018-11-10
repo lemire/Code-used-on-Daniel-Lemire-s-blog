@@ -117,7 +117,6 @@ int naked_measure(size_t length) {
     cdist = 0;
     while(cdist < targetdist) {
       current_pointer = bigarray[current_pointer];
-      if(current_pointer <= NAKED_MAX)  {printf("bug\n");abort();}
       cdist++;
     }
     a = current_pointer;
