@@ -1,4 +1,4 @@
-CXXFLAGS = -O2 -std=c++11
+CXXFLAGS = -O3 -std=c++11 
 
 testingmlp: testingmlp.o generated.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
