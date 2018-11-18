@@ -17,6 +17,16 @@ public class Cardenas {
     return (int)Math.round(product 
          * (1- Math.pow(1 - 1.0/product,n)));
  }
+
+
+ public static int bettercardenas64(long[] cards, int n) {
+  double product = 1;
+  for(int k = 0;  k < cards.length; k++) {
+    product *= cards[k];
+  }
+  return (int)Math.round(product * 
+    -Math.expm1(Math.log1p(-1.0/product) * n));
+}
  // root ** (2^b)
  private static BigDecimal lemirepower2(BigDecimal root, int b) {
    BigDecimal answer = root;
@@ -64,15 +74,23 @@ public class Cardenas {
      int[] ns = {2, 20, 48842, 1_000_000, 10_000_000, 100_000_000, 500_000_000, 1_000_000_000
       , 2_000_000_000};
      boolean unstable64 = false;
+     boolean unstableb64 = false;
+
      boolean unstable128 = false;
      for(int n : ns) {
        System.out.println("n = "+n);
        int ans64 = (int)Math.round(cardenas64(cards,n));
+       int bans64 = (int)Math.round(bettercardenas64(cards,n));
+
        int ans128 = (int)Math.round(cardenas128(cards,n));
        System.out.println("64-bit floats = "+ans64);
+       System.out.println("64-bit floats = "+bans64);
+
        System.out.println("128-bit floats = "+ans128);
        if(( ans64 > n ) || (ans64 == 0)) 
          unstable64 = true;
+        if(( bans64 > n ) || (bans64 == 0)) 
+        unstableb64 = true;
        if((ans128 > n ) || (ans128 == 0))
          unstable128 = true;
 
@@ -80,6 +98,9 @@ public class Cardenas {
      }
      if(unstable64)
        System.err.println("probable numerical instability with 64-bit math.");
+     if(unstableb64)
+       System.err.println("probable numerical instability with better 64-bit math.");
+
      if(unstable128)
        System.err.println("probable numerical instability with 128-bit math.");
        
