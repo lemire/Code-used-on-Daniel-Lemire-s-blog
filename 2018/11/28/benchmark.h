@@ -2,6 +2,7 @@
 #define _BENCHMARK_H_
 #include <stdint.h>
 #include <time.h>
+#include <stdio.h>
 #ifdef __x86_64__
 
 const char *unitname = "cycles";
