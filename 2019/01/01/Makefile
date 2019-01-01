@@ -10,7 +10,8 @@ testingmlp: testingmlp.o generated.o
 
 ifneq ($(GENERATE), 0)
 generated.cpp : gen.py
-	python3 gen.py > generated.cpp
+	echo "python3 should point to Python 3.x"
+	python3 gen.py > generated.cpp 
 endif
 
 %.o : %.cpp
