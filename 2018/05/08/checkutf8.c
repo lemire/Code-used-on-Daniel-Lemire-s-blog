@@ -1,3 +1,4 @@
+//Don't use this code, go to https://github.com/lemire/fastvalidate-utf-8
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
