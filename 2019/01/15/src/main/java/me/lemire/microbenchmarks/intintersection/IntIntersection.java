@@ -112,7 +112,7 @@ public class IntIntersection {
         answer[pos++] = target4;
       }
       idx_s += 4;
-      idx_l = index1;
+      idx_l = index4;
     }
     if ((idx_s < smallSet.length) && (idx_l < largeSet.length)) {
       int val_s = smallSet[idx_s];
