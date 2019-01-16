@@ -65,7 +65,7 @@ public class IntIntersection {
     return -(low + 1);
   }
 
-  int gunshot_search4(final int[] smallSet, final int[] largeSet, int[] answer) {
+  int shotgun_search4(final int[] smallSet, final int[] largeSet, int[] answer) {
     int pos = 0, idx_l = 0, idx_s = 0;
 
     if (0 == smallSet.length) {
@@ -124,7 +124,7 @@ public class IntIntersection {
   }
 
 
-  int gunshot_search1(final int[] smallSet, final int[] largeSet, int[] answer) {
+  int shotgun_search1(final int[] smallSet, final int[] largeSet, int[] answer) {
     int pos = 0, idx_l = 0, idx_s = 0;
 
     if (0 == smallSet.length) {
@@ -160,14 +160,14 @@ public class IntIntersection {
 
 
   @Benchmark
-  public int gunshot1(BenchmarkState s) {
-    int c = gunshot_search1(s.queries, s.array, s.answer);
+  public int shotgun1(BenchmarkState s) {
+    int c = shotgun_search1(s.queries, s.array, s.answer);
     return c;
   }
 
   @Benchmark
-  public int gunshot4(BenchmarkState s) {
-    int c = gunshot_search4(s.queries, s.array, s.answer);
+  public int shotgun4(BenchmarkState s) {
+    int c = shotgun_search4(s.queries, s.array, s.answer);
     return c;
   }
 
