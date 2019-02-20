@@ -4,7 +4,7 @@
 
 #include "benchmark.h"
 
-#define D 21
+#define D 22
 #define M ((uint64_t)(UINT64_C(0xFFFFFFFFFFFFFFFF) / (D) + 1))
 
 #define INITSEED 1234
