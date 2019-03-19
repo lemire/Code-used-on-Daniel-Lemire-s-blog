@@ -18,7 +18,7 @@ public class MyBenchmark {
 
     @State(Scope.Benchmark)
     public static class BenchmarkState {
-        int N = 1777216;
+        int N = 4000000;
         byte[] array = new byte[N];
 
         public BenchmarkState() {
