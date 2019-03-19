@@ -22,6 +22,11 @@ inline unsigned long long lehmer64_2() {
   g_lehmer64_state2 *= 0xda942042e4dd58b5ull;
   return g_lehmer64_state2 >> 64;
 }
+static __uint128_t g_lehmer64_state3;
+inline unsigned long long lehmer64_3() {
+  g_lehmer64_state3 *= 0xda942042e4dd58b5ull;
+  return g_lehmer64_state3 >> 64;
+}
 
 using namespace std;
 int main(void) {
@@ -29,6 +34,8 @@ int main(void) {
   uint64_t recipient[N];
   g_lehmer64_state = (__uint128_t)1232451235;
   g_lehmer64_state2 = (__uint128_t)135432;
+  g_lehmer64_state3 = (__uint128_t)5135432;
+
   wyseed = 3214215;
   timeval beg, end;
   for (size_t ti = 0; ti < 4; ti++) {
@@ -49,12 +56,13 @@ int main(void) {
          << " s" << endl;
     cout << "bogus:" << recipient[312] << endl;
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N; i += 2) {
+    for (size_t i = 0; i < N; i += 3) {
       recipient[i] = lehmer64();
       recipient[i + 1] = lehmer64_2();
+      recipient[i + 3] = lehmer64_3();
     }
     gettimeofday(&end, NULL);
-    cerr << "lehmer64 (2)\t"
+    cerr << "lehmer64 (3)\t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
          << " s" << endl;
     cout << "bogus:" << recipient[312] << endl;
@@ -85,6 +93,15 @@ int main(void) {
       s += lehmer64() + lehmer64_2();
     gettimeofday(&end, NULL);
     cerr << "lehmer64 (2)\t"
+         << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
+         << " s" << endl;
+    cout << "bogus:" << s << endl;
+
+    gettimeofday(&beg, NULL);
+    for (size_t i = 0; i < N / 3; i++)
+      s += lehmer64() + lehmer64_2() + lehmer64_3();
+    gettimeofday(&end, NULL);
+    cerr << "lehmer64 (3)\t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
          << " s" << endl;
     cout << "bogus:" << s << endl;
