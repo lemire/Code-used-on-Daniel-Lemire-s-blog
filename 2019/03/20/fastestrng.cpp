@@ -61,44 +61,69 @@ int main(void) {
   timeval beg, end;
   for (size_t ti = 0; ti < 4; ti++) {
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N; i++)
-      recipient[i] = wyrng();
+    for (size_t i = 0; i < N/6*6;) {
+      recipient[i++] = wyrng();
+      recipient[i++] = wyrng();
+      recipient[i++] = wyrng();
+      recipient[i++] = wyrng();
+      recipient[i++] = wyrng();
+      recipient[i++] = wyrng();
+    }
     gettimeofday(&end, NULL);
     cerr << "wyrng   \t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
          << " s" << endl;
     cout << "bogus:" << recipient[312] << endl;
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N; i++)
-      recipient[i] = splitmix64();
+    for (size_t i = 0; i < N/6*6; i++) {
+      recipient[i++] = splitmix64();
+      recipient[i++] = splitmix64();
+      recipient[i++] = splitmix64();
+      recipient[i++] = splitmix64();
+      recipient[i++] = splitmix64();
+      recipient[i++] = splitmix64();
+    }
     gettimeofday(&end, NULL);
     cerr << "splitmix64   \t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
          << " s" << endl;
     cout << "bogus:" << recipient[312] << endl;
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N; i++)
-      recipient[i] = lehmer64();
+    for (size_t i = 0; i < N/6*6;) {
+      recipient[i++] = lehmer64();
+      recipient[i++] = lehmer64();
+      recipient[i++] = lehmer64();
+      recipient[i++] = lehmer64();
+      recipient[i++] = lehmer64();
+      recipient[i++] = lehmer64();
+    }
     gettimeofday(&end, NULL);
     cerr << "lehmer64\t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
          << " s" << endl;
     cout << "bogus:" << recipient[312] << endl;
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N/2*2; i += 2) {
-      recipient[i] = lehmer64();
-      recipient[i + 1] = lehmer64_2();
+    for (size_t i = 0; i < N/6*6;) {
+      recipient[i++] = lehmer64();
+      recipient[i++] = lehmer64_2();
+      recipient[i++] = lehmer64();
+      recipient[i++] = lehmer64_2();
+      recipient[i++] = lehmer64();
+      recipient[i++] = lehmer64_2();
     }
     gettimeofday(&end, NULL);
-    cerr << "lehmer64 (3)\t"
+    cerr << "lehmer64 (2)\t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
          << " s" << endl;
     cout << "bogus:" << recipient[312] << endl;
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N/3*3; i += 3) {
-      recipient[i] = lehmer64();
-      recipient[i + 1] = lehmer64_2();
-      recipient[i + 2] = lehmer64_3();
+    for (size_t i = 0; i < N/6*6;) {
+      recipient[i++] = lehmer64();
+      recipient[i++] = lehmer64_2();
+      recipient[i++] = lehmer64_3();
+      recipient[i++] = lehmer64();
+      recipient[i++] = lehmer64_2();
+      recipient[i++] = lehmer64_3();
     }
     gettimeofday(&end, NULL);
     cerr << "lehmer64 (3)\t"
@@ -110,8 +135,14 @@ int main(void) {
          << endl;
     uint64_t s = 0;
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N; i++)
+    for (size_t i = 0; i < N/6; i++) {
       s += wyrng();
+      s += wyrng();
+      s += wyrng();
+      s += wyrng();
+      s += wyrng();
+      s += wyrng();
+    }
     gettimeofday(&end, NULL);
     cerr << "wyrng   \t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
@@ -119,8 +150,14 @@ int main(void) {
     cout << "bogus:" << s << endl;
 
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N; i++)
+    for (size_t i = 0; i < N/6; i++) {
       s += splitmix64();
+      s += splitmix64();
+      s += splitmix64();
+      s += splitmix64();
+      s += splitmix64();
+      s += splitmix64();
+    }
     gettimeofday(&end, NULL);
     cerr << "splitmix64   \t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
@@ -128,8 +165,14 @@ int main(void) {
     cout << "bogus:" << s << endl;
 
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N; i++)
+    for (size_t i = 0; i < N/6; i++) {
       s += lehmer64();
+      s += lehmer64();
+      s += lehmer64();
+      s += lehmer64();
+      s += lehmer64();
+      s += lehmer64();
+    }
     gettimeofday(&end, NULL);
     cerr << "lehmer64\t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
@@ -137,8 +180,11 @@ int main(void) {
     cout << "bogus:" << s << endl;
 
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N / 2; i++)
+    for (size_t i = 0; i < N / 6; i++) {
       s += lehmer64() + lehmer64_2();
+      s += lehmer64() + lehmer64_2();
+      s += lehmer64() + lehmer64_2();
+    }
     gettimeofday(&end, NULL);
     cerr << "lehmer64 (2)\t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
@@ -146,8 +192,10 @@ int main(void) {
     cout << "bogus:" << s << endl;
 
     gettimeofday(&beg, NULL);
-    for (size_t i = 0; i < N / 3; i++)
+    for (size_t i = 0; i < N / 6; i++) {
       s += lehmer64() + lehmer64_2() + lehmer64_3();
+      s += lehmer64() + lehmer64_2() + lehmer64_3();
+    }
     gettimeofday(&end, NULL);
     cerr << "lehmer64 (3)\t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
