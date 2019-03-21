@@ -1,1 +1,2 @@
-g++  -std=c++11 -O3 -o fastestrng fastestrng.cpp && ./fastestrng
+g++  -std=c++11 -O2 -fno-tree-vectorize -o fastestrng fastestrng.cpp && ./fastestrng
+
