@@ -251,11 +251,11 @@ void fastavx2mula(uint16_t *array, size_t len, uint32_t *flags) {
   }
 }
 
-int main() {
+void demo(size_t len) {
+  printf("\n Using array size = %zu \n", len);
   uint32_t counter[16];
   uint32_t truecounter[16];
 
-  size_t len = 1000000;
   uint16_t *array = (uint16_t *)malloc(len * sizeof(uint16_t));
   memset(array, 0, len * sizeof(uint16_t));
   for (size_t i = 0; i < len; i++) {
@@ -268,44 +268,76 @@ int main() {
   printf("\n");
   fastavx2(array, len, counter);
   for (size_t i = 0; i < 16; i++) {
-    assert(counter[i] == truecounter[i]);
+    if(counter[i] != truecounter[i]) {
+      printf("fastavx2 is buggy\n");
+      break;
+    }
   }
-
   int repeat = 10;
   BEST_TIME_NOCHECK(scalar_naive(array, len, counter), , repeat, len, true);
   for (size_t i = 0; i < 16; i++) {
-    assert(counter[i] == truecounter[i]);
+    if(counter[i] != truecounter[i]) {
+      printf("scalar_naive is buggy\n");
+      break;
+    }
   }
   BEST_TIME_NOCHECK(scalar_morenaive(array, len, counter), , repeat, len, true);
   for (size_t i = 0; i < 16; i++) {
-    assert(counter[i] == truecounter[i]);
+    if(counter[i] != truecounter[i]) {
+      printf("fastavx2 is buggy\n");
+      break;
+    }
   }
   BEST_TIME_NOCHECK(fastavx2(array, len, counter), , repeat, len, true);
   for (size_t i = 0; i < 16; i++) {
-    assert(counter[i] == truecounter[i]);
+    if(counter[i] != truecounter[i]) {
+      printf("fastavx2 is buggy\n");
+      break;
+    }
   }
   BEST_TIME_NOCHECK(morefastavx2(array, len, counter), , repeat, len, true);
   for (size_t i = 0; i < 16; i++) {
-    assert(counter[i] == truecounter[i]);
+    if(counter[i] != truecounter[i]) {
+      printf("morefastavx2 is buggy\n");
+      break;
+    }
   }
   BEST_TIME_NOCHECK(flag_stats_avx2(array, len, counter), , repeat, len, true);
   for (size_t i = 0; i < 16; i++) {
-    assert(counter[i] == truecounter[i]);
+    if(counter[i] != truecounter[i]) {
+      printf("flag_stats_avx2 is buggy\n");
+      break;
+    }
   }
   BEST_TIME_NOCHECK(flag_stats_avx2_naive_counter(array, len, counter), ,
                     repeat, len, true);
   for (size_t i = 0; i < 16; i++) {
-    assert(counter[i] == truecounter[i]);
+    if(counter[i] != truecounter[i]) {
+      printf("flag_stats_avx2_naive_counter is buggy\n");
+      break;
+    }
   }
   BEST_TIME_NOCHECK(flag_stats_avx2_single(array, len, counter), , repeat, len,
                     true);
   for (size_t i = 0; i < 16; i++) {
-    assert(counter[i] == truecounter[i]);
+    if(counter[i] != truecounter[i]) {
+      printf("flag_stats_avx2_single is buggy\n");
+      break;
+    }
   }
   BEST_TIME_NOCHECK(fastavx2mula(array, len, counter), , repeat, len, true);
   for (size_t i = 0; i < 16; i++) {
-    assert(counter[i] == truecounter[i]);
+    if(counter[i] != truecounter[i]) {
+      printf("fastavx2mula is buggy\n");
+      break;
+    }
   }
   free(array);
+
+}
+
+int main() {
+  demo(1000000);
+  demo(100000000);
   return EXIT_SUCCESS;
 }
