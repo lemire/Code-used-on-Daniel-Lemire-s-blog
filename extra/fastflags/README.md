@@ -192,4 +192,3 @@ flag_stats_avx2_naive_counter(array, len, counter)	:  1.671 cycles per input wor
 flag_stats_avx2_single(array, len, counter)       	:  3.014 cycles per input word (best)  3.029 cycles per input word (avg)
 fastavx2mula(array, len, counter)                 	:  1.536 cycles per input word (best)  1.538 cycles per input word (avg)
 ```
-scalar_naive(array, len, counter)                 	:  13.279 cycles per input word (best)  13.323 cycles per input word (avg)
