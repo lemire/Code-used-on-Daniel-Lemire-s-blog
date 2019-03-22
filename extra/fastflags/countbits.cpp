@@ -7,7 +7,7 @@
 
 void scalar_naive(const uint16_t *data, size_t n, uint32_t *flags) {
   memset(flags, 0, 16 * sizeof(uint32_t));
-  for (int i = 0; i < n; ++i) {
+  for (uint32_t i = 0; i < n; ++i) {
     for (int j = 0; j < 16; ++j) {
       flags[j] += ((data[i] & (1 << j)) >> j);
     }
@@ -16,7 +16,7 @@ void scalar_naive(const uint16_t *data, size_t n, uint32_t *flags) {
 
 void scalar_morenaive(const uint16_t *data, size_t n, uint32_t *flags) {
   memset(flags, 0, 16 * sizeof(uint32_t));
-  for (int i = 0; i < n; ++i) {
+  for (uint32_t i = 0; i < n; ++i) {
     for (int j = 0; j < 16; ++j) {
       flags[j] += (data[i] >> j) & 1;
     }
@@ -43,7 +43,7 @@ void flag_stats_avx2(const uint16_t *data, uint32_t n, uint32_t *flags) {
 #define UPDATE(idx)                                                            \
   counters[idx] = _mm256_add_epi16(                                            \
       counters[idx],                                                           \
-      _mm256_srli_epi16(_mm256_and_si256(data_vectors[pos], masks[idx]), idx))
+      _mm256_srli_epi16(_mm256_and_si256(_mm256_lddqu_si256(data_vectors+pos), masks[idx]), idx))
 #define ITERATION                                                              \
   {                                                                            \
     UPDATE(0);                                                                 \
@@ -66,7 +66,7 @@ void flag_stats_avx2(const uint16_t *data, uint32_t n, uint32_t *flags) {
     ++k;                                                                       \
   }
   uint32_t pos = 0;
-  for (int i = 0; i < n_update_cycles; ++i) { // each block of 2^16 values
+  for (uint32_t i = 0; i < n_update_cycles; ++i) { // each block of 2^16 values
     for (int k = 0; k < 65536;) // max sum of each 16-bit value in a register
       ITERATION                 // unrolled
 
@@ -88,7 +88,7 @@ void flag_stats_avx2(const uint16_t *data, uint32_t n, uint32_t *flags) {
   }
 
   // residual
-  for (int i = pos * 16; i < n; ++i) {
+  for (uint32_t i = pos * 16; i < n; ++i) {
     for (int j = 0; j < 16; ++j)
       out_counters[j] += ((data[i] & (1 << j)) >> j);
   }
@@ -118,10 +118,10 @@ void flag_stats_avx2_naive_counter(const uint16_t *data, uint32_t n,
 #define UPDATE(idx)                                                            \
   counters[idx] = _mm256_add_epi16(                                            \
       counters[idx],                                                           \
-      _mm256_srli_epi16(_mm256_and_si256(data_vectors[pos], masks[idx]), idx))
+      _mm256_srli_epi16(_mm256_and_si256(_mm256_lddqu_si256(data_vectors+pos), masks[idx]), idx))
 
   uint32_t pos = 0;
-  for (int i = 0; i < n_update_cycles; ++i) { // each block of 2^16 values
+  for (uint32_t i = 0; i < n_update_cycles; ++i) { // each block of 2^16 values
     for (int k = 0; k < 65536;
          ++pos, ++k) {             // max sum of each 16-bit value in a register
       for (int p = 0; p < 16; ++p) // Not unrolled
@@ -140,7 +140,7 @@ void flag_stats_avx2_naive_counter(const uint16_t *data, uint32_t n,
   }
 
   // residual
-  for (int i = pos * 16; i < n; ++i) {
+  for (uint32_t i = pos * 16; i < n; ++i) {
     for (int j = 0; j < 16; ++j)
       out_counters[j] += ((data[i] & (1 << j)) >> j);
   }
@@ -170,7 +170,7 @@ void flag_stats_avx2_single(const uint16_t *data, uint32_t n, uint32_t *flags) {
       _mm256_and_si256(                                                        \
           _mm256_cmpeq_epi16(                                                  \
               _mm256_and_si256(_mm256_set1_epi16(_mm256_extract_epi16(         \
-                                   data_vectors[pos], idx)),                   \
+                                   _mm256_lddqu_si256(data_vectors+pos), idx)),                   \
                                masks),                                         \
               masks),                                                          \
           one_mask));
@@ -180,16 +180,30 @@ void flag_stats_avx2_single(const uint16_t *data, uint32_t n, uint32_t *flags) {
            UPDATE(13) UPDATE(14) UPDATE(15)}
 
   uint32_t pos = 0;
-  for (int i = 0; i < n_update_cycles; ++i) { // each block of 65536 values
+  for (uint32_t i = 0; i < n_update_cycles; ++i) { // each block of 65536 values
     for (int k = 0; k < 4096;
          ++k, ++pos) { // max sum of each 16-bit value in a register (65536/16)
       BLOCK
     }
 
     // Compute vector sum
-    for (int k = 0; k < 16; ++k) // each flag register
-      out_counters[k] += _mm256_extract_epi16(counter, k);
-
+// D. Lemire: extract takes immediate
+out_counters[0] += _mm256_extract_epi16(counter, 0);
+out_counters[1] += _mm256_extract_epi16(counter, 1);
+out_counters[2] += _mm256_extract_epi16(counter, 2);
+out_counters[3] += _mm256_extract_epi16(counter, 3);
+out_counters[4] += _mm256_extract_epi16(counter, 4);
+out_counters[5] += _mm256_extract_epi16(counter, 5);
+out_counters[6] += _mm256_extract_epi16(counter, 6);
+out_counters[7] += _mm256_extract_epi16(counter, 7);
+out_counters[8] += _mm256_extract_epi16(counter, 8);
+out_counters[9] += _mm256_extract_epi16(counter, 9);
+out_counters[10] += _mm256_extract_epi16(counter, 10);
+out_counters[11] += _mm256_extract_epi16(counter, 11);
+out_counters[12] += _mm256_extract_epi16(counter, 12);
+out_counters[13] += _mm256_extract_epi16(counter, 13);
+out_counters[14] += _mm256_extract_epi16(counter, 14);
+out_counters[15] += _mm256_extract_epi16(counter, 15);
     counter = _mm256_set1_epi16(0);
   }
 
@@ -197,7 +211,7 @@ void flag_stats_avx2_single(const uint16_t *data, uint32_t n, uint32_t *flags) {
 #undef BLOCK
 
   // residual
-  for (int i = pos * 16; i < n; ++i) {
+  for (uint32_t i = pos * 16; i < n; ++i) {
     for (int j = 0; j < 16; ++j)
       out_counters[j] += ((data[i] & (1 << j)) >> j);
   }
@@ -232,30 +246,7 @@ void fastavx2(uint16_t *array, size_t len, uint32_t *flags) {
       __m256i eq = _mm256_cmpeq_epi16(bits, m);
       count16 = _mm256_sub_epi16(count16, eq);
     }
-  }/*
-  count16 = _mm256_setzero_si256();
-  // handle the end (naively)
-  for (size_t k = 0; k < 16; k++) {
-    printf("count at %d is %d\n", k, buffer[k]);
   }
-  {
-    uint16_t startbuffer[32];
-    memset(startbuffer, 0, 32 * 2);
-    memcpy(startbuffer, array + len - 16, 16 * 2);
-    for (size_t i = 1; i < 16; i++) {
-      printf("processing");
-      for(int k = 0; k < 16;k++)printf("%u ", startbuffer[i+k]);
-      printf("\n");
-      __m256i input = _mm256_loadu_si256((__m256i *)(startbuffer + i));
-      __m256i m = _mm256_and_si256(input, bits);
-      __m256i eq = _mm256_cmpeq_epi16(bits, m);
-      count16 = _mm256_sub_epi16(count16, eq);
-        _mm256_storeu_si256((__m256i *)buffer, count16);
-  for (size_t k = 0; k < 16; k++) {
-    printf("count at %d is %d\n", k, buffer[k]);
-  }
-    }
-  }*/
   _mm256_storeu_si256((__m256i *)buffer, count16);
   for (size_t k = 0; k < 16; k++) {
     flags[k] += buffer[k];
