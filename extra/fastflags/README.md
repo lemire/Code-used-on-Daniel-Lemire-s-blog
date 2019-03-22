@@ -17,7 +17,7 @@ void scalar_naive(const uint16_t *data, size_t n, uint32_t *flags) {
 ```
 
 
-Results:
+Results (Skylake):
 
 ```
 $ make test
@@ -72,4 +72,63 @@ flag_stats_avx2(array, len, counter)              	:  1.285 cycles per input wor
 flag_stats_avx2_naive_counter(array, len, counter)	:  1.121 cycles per input word (best)  1.123 cycles per input word (avg)
 flag_stats_avx2_single(array, len, counter)       	:  2.039 cycles per input word (best)  2.041 cycles per input word (avg)
 fastavx2mula(array, len, counter)                 	:  1.471 cycles per input word (best)  1.472 cycles per input word (avg)
+```
+
+
+Results (cannonlake):
+
+```
+$ make test
+g++-8 -O3 -mavx2 -march=native -o countbits countbits.cpp -Wall -Wextra
+g++-8 --version
+g++-8 (Homebrew GCC 8.2.0) 8.2.0
+Copyright (C) 2018 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+./countbits
+
+ Using array size = 1000000
+500000 500000 500000 500000 500000 500000 499968 499968 499968 499776 499712 499712 499712 499712 492096 491520
+scalar_naive(array, len, counter)                 	:  14.616 cycles per input word (best)  14.674 cycles per input word (avg)
+scalar_morenaive(array, len, counter)             	:  13.521 cycles per input word (best)  13.749 cycles per input word (avg)
+fastavx2(array, len, counter)                     	:  1.484 cycles per input word (best)  1.505 cycles per input word (avg)
+morefastavx2(array, len, counter)                 	:  0.755 cycles per input word (best)  0.772 cycles per input word (avg)
+flag_stats_avx2(array, len, counter)              	:  2.341 cycles per input word (best)  2.372 cycles per input word (avg)
+flag_stats_avx2_naive_counter(array, len, counter)	:  2.377 cycles per input word (best)  2.407 cycles per input word (avg)
+flag_stats_avx2_single(array, len, counter)       	:  2.247 cycles per input word (best)  2.276 cycles per input word (avg)
+fastavx2mula(array, len, counter)                 	:  0.693 cycles per input word (best)  0.725 cycles per input word (avg)
+
+ Using array size = 2000000
+1000000 1000000 1000000 1000000 1000000 1000000 1000000 999936 999936 999936 999552 999424 999424 999424 999424 984192
+scalar_naive(array, len, counter)                 	:  13.682 cycles per input word (best)  13.697 cycles per input word (avg)
+scalar_morenaive(array, len, counter)             	:  13.104 cycles per input word (best)  13.395 cycles per input word (avg)
+fastavx2(array, len, counter)                     	:  1.487 cycles per input word (best)  1.500 cycles per input word (avg)
+morefastavx2(array, len, counter)                 	:  0.772 cycles per input word (best)  0.799 cycles per input word (avg)
+flag_stats_avx2(array, len, counter)              	:  1.498 cycles per input word (best)  1.519 cycles per input word (avg)
+flag_stats_avx2_naive_counter(array, len, counter)	:  1.676 cycles per input word (best)  1.695 cycles per input word (avg)
+flag_stats_avx2_single(array, len, counter)       	:  2.224 cycles per input word (best)  2.256 cycles per input word (avg)
+fastavx2mula(array, len, counter)                 	:  0.715 cycles per input word (best)  0.743 cycles per input word (avg)
+
+ Using array size = 4000000
+2000000 2000000 2000000 2000000 2000000 2000000 2000000 2000000 1999872 1999872 1999872 1999104 1998848 1998848 1998848 1998848
+scalar_naive(array, len, counter)                 	:  13.257 cycles per input word (best)  13.447 cycles per input word (avg)
+scalar_morenaive(array, len, counter)             	:  13.126 cycles per input word (best)  13.262 cycles per input word (avg)
+fastavx2(array, len, counter)                     	:  1.494 cycles per input word (best)  1.502 cycles per input word (avg)
+morefastavx2(array, len, counter)                 	:  0.765 cycles per input word (best)  0.787 cycles per input word (avg)
+flag_stats_avx2(array, len, counter)              	:  1.062 cycles per input word (best)  1.093 cycles per input word (avg)
+flag_stats_avx2_naive_counter(array, len, counter)	:  1.327 cycles per input word (best)  1.341 cycles per input word (avg)
+flag_stats_avx2_single(array, len, counter)       	:  2.224 cycles per input word (best)  2.251 cycles per input word (avg)
+fastavx2mula(array, len, counter)                 	:  0.735 cycles per input word (best)  0.756 cycles per input word (avg)
+
+ Using array size = 100000000
+50000000 50000000 50000000 50000000 50000000 50000000 50000000 50000000 49999872 49999872 49999872 49999872 49999872 49996032 49996032 49996032
+scalar_naive(array, len, counter)                 	:  13.279 cycles per input word (best)  13.323 cycles per input word (avg)
+scalar_morenaive(array, len, counter)             	:  13.125 cycles per input word (best)  13.141 cycles per input word (avg)
+fastavx2(array, len, counter)                     	:  1.496 cycles per input word (best)  1.499 cycles per input word (avg)
+morefastavx2(array, len, counter)                 	:  0.764 cycles per input word (best)  0.767 cycles per input word (avg)
+flag_stats_avx2(array, len, counter)              	:  0.719 cycles per input word (best)  0.720 cycles per input word (avg)
+flag_stats_avx2_naive_counter(array, len, counter)	:  1.037 cycles per input word (best)  1.041 cycles per input word (avg)
+flag_stats_avx2_single(array, len, counter)       	:  1.965 cycles per input word (best)  1.971 cycles per input word (avg)
+fastavx2mula(array, len, counter)                 	:  0.734 cycles per input word (best)  0.736 cycles per input word (avg)
 ```
