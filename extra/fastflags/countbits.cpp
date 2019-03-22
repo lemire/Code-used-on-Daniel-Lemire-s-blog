@@ -1,10 +1,10 @@
 #include "benchmark.h"
+#include "mklarqvist.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <x86intrin.h>
-#include "mklarqvist.h"
 
 void scalar_naive(const uint16_t *data, size_t n, uint32_t *flags) {
   memset(flags, 0, 16 * sizeof(uint32_t));
@@ -23,7 +23,6 @@ void scalar_morenaive(const uint16_t *data, size_t n, uint32_t *flags) {
     }
   }
 }
-
 
 void fastavx2(uint16_t *array, size_t len, uint32_t *flags) {
   for (size_t i = 0; i < 16; i++)
@@ -51,6 +50,17 @@ void fastavx2(uint16_t *array, size_t len, uint32_t *flags) {
       count16 = _mm256_sub_epi16(count16, eq);
     }
   }
+  {
+    uint16_t startbuffer[32];
+    memset(startbuffer, 0, 32 * 2);
+    memcpy(startbuffer, array + len - 16, 16 * 2);
+    for (size_t i = 1; i < 16; i++) {
+      __m256i input = _mm256_loadu_si256((__m256i *)(startbuffer + i));
+      __m256i m = _mm256_and_si256(input, bits);
+      __m256i eq = _mm256_cmpeq_epi16(bits, m);
+      count16 = _mm256_sub_epi16(count16, eq);
+    }
+  }
   _mm256_storeu_si256((__m256i *)buffer, count16);
   for (size_t k = 0; k < 16; k++) {
     flags[k] += buffer[k];
@@ -60,9 +70,12 @@ void fastavx2(uint16_t *array, size_t len, uint32_t *flags) {
   for (size_t i = 0; i + 16 <= len;) {
     count16 = _mm256_setzero_si256();
     size_t j = 0;
-    size_t maxj = i + 65535 + 16 <= len ? 65535 : len - i;
-    if (maxj > 4) {
-      for (; j + 3 < maxj; j += 4) {
+    size_t maxj = 65535;
+    if (maxj + i + 16 >= len)
+      maxj = len - i - 15;
+    // size_t maxj = i + 65535 + 16 <= len ? 65535 : len - i;
+    if (maxj > 3) {
+      for (; j < maxj - 3; j += 4) {
         __m256i input1 = _mm256_loadu_si256((__m256i *)(array + i + j));
         __m256i m1 = _mm256_and_si256(input1, bits);
         __m256i eq1 = _mm256_cmpeq_epi16(bits, m1);
@@ -121,6 +134,17 @@ void morefastavx2(uint16_t *array, size_t len, uint32_t *flags) {
       count16 = _mm256_sub_epi16(count16, eq);
     }
   }
+  {
+    uint16_t startbuffer[32];
+    memset(startbuffer, 0, 32 * 2);
+    memcpy(startbuffer, array + len - 16, 16 * 2);
+    for (size_t i = 1; i < 16; i++) {
+      __m256i input = _mm256_loadu_si256((__m256i *)(startbuffer + i));
+      __m256i m = _mm256_and_si256(input, bits);
+      __m256i eq = _mm256_cmpeq_epi16(bits, m);
+      count16 = _mm256_sub_epi16(count16, eq);
+    }
+  }
   _mm256_storeu_si256((__m256i *)buffer, count16);
   for (size_t k = 0; k < 16; k++) {
     flags[k] += buffer[k];
@@ -130,7 +154,9 @@ void morefastavx2(uint16_t *array, size_t len, uint32_t *flags) {
   for (size_t i = 0; i + 16 <= len;) {
     count16 = _mm256_setzero_si256();
     size_t j = 0;
-    size_t maxj = i + 65535 + 16 <= len ? 65535 : len - i;
+    size_t maxj = 65535;
+    if (maxj + i + 16 >= len)
+      maxj = len - i - 15;
     if (maxj > 8) {
       for (; j + 7 < maxj; j += 8) {
         __m256i input1 = _mm256_loadu_si256((__m256i *)(array + i + j));
@@ -209,24 +235,21 @@ void fastavx2mula(uint16_t *array, size_t len, uint32_t *flags) {
   for (size_t i = 0; i + 32 <= len; i += 32) {
     __m256i v0 = _mm256_loadu_si256((__m256i *)(array + i));
     __m256i v1 = _mm256_loadu_si256((__m256i *)(array + i + 16));
-    
-    __m256i input0 = _mm256_or_si256(
-                        _mm256_and_si256(v0, _mm256_set1_epi16(0x00ff)),
-                        _mm256_slli_epi16(v1, 8)
-                     );
-    __m256i input1 = _mm256_or_si256(
-                        _mm256_and_si256(v0, _mm256_set1_epi16(0xff00)),
-                        _mm256_srli_epi16(v1, 8)
-                     );
+
+    __m256i input0 =
+        _mm256_or_si256(_mm256_and_si256(v0, _mm256_set1_epi16(0x00ff)),
+                        _mm256_slli_epi16(v1, 8));
+    __m256i input1 =
+        _mm256_or_si256(_mm256_and_si256(v0, _mm256_set1_epi16(0xff00)),
+                        _mm256_srli_epi16(v1, 8));
     for (int i = 0; i < 8; i++) {
-      flags[7 - i]  += __builtin_popcount(_mm256_movemask_epi8(input0));
+      flags[7 - i] += __builtin_popcount(_mm256_movemask_epi8(input0));
       flags[15 - i] += __builtin_popcount(_mm256_movemask_epi8(input1));
       input0 = _mm256_add_epi8(input0, input0);
       input1 = _mm256_add_epi8(input1, input1);
     }
   }
 }
-
 
 int main() {
   uint32_t counter[16];
@@ -283,4 +306,6 @@ int main() {
   for (size_t i = 0; i < 16; i++) {
     assert(counter[i] == truecounter[i]);
   }
+  free(array);
+  return EXIT_SUCCESS;
 }
