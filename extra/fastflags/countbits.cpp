@@ -206,14 +206,27 @@ void morefastavx2(uint16_t *array, size_t len, uint32_t *flags) {
 void fastavx2mula(uint16_t *array, size_t len, uint32_t *flags) {
   for (size_t i = 0; i < 16; i++)
     flags[i] = 0;
-  for (size_t i = 0; i + 16 <= len; i += 16) {
-    __m256i input = _mm256_loadu_si256((__m256i *)(array + i));
-    for (int i = 0; i < 16; i++) {
-      flags[15 - i] += __builtin_popcount(_mm256_movemask_epi8(input));
-      input = _mm256_add_epi16(input, input);
+  for (size_t i = 0; i + 32 <= len; i += 32) {
+    __m256i v0 = _mm256_loadu_si256((__m256i *)(array + i));
+    __m256i v1 = _mm256_loadu_si256((__m256i *)(array + i + 16));
+    
+    __m256i input0 = _mm256_or_si256(
+                        _mm256_and_si256(v0, _mm256_set1_epi16(0x00ff)),
+                        _mm256_slli_epi16(v1, 8)
+                     );
+    __m256i input1 = _mm256_or_si256(
+                        _mm256_and_si256(v0, _mm256_set1_epi16(0xff00)),
+                        _mm256_srli_epi16(v1, 8)
+                     );
+    for (int i = 0; i < 8; i++) {
+      flags[7 - i]  += __builtin_popcount(_mm256_movemask_epi8(input0));
+      flags[15 - i] += __builtin_popcount(_mm256_movemask_epi8(input1));
+      input0 = _mm256_add_epi8(input0, input0);
+      input1 = _mm256_add_epi8(input1, input1);
     }
   }
 }
+
 
 int main() {
   uint32_t counter[16];
@@ -267,4 +280,7 @@ int main() {
     assert(counter[i] == truecounter[i]);
   }
   BEST_TIME_NOCHECK(fastavx2mula(array, len, counter), , repeat, len, true);
+  for (size_t i = 0; i < 16; i++) {
+    assert(counter[i] == truecounter[i]);
+  }
 }
