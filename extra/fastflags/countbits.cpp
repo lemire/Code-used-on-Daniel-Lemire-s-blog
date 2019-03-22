@@ -142,7 +142,7 @@ int main() {
   size_t len = 1000000;
   uint16_t *array = (uint16_t *)malloc(len * sizeof(uint16_t));
   memset(array, 0, len * sizeof(uint16_t));
-  for (size_t i = 32; i + 32 < len; i++) {
+  for (size_t i = 100; i + 100 < len; i++) {
     array[i] = i & 0xFFF;
   }
   scalar_naive(array, len, counter);
