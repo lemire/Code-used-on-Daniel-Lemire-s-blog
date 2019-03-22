@@ -7,6 +7,7 @@
 #include <x86intrin.h>
 
 // from https://github.com/mklarqvist/FastFlagStats
+// fixes by D. Lemire
 void flag_stats_avx2(const uint16_t *data, uint32_t n, uint32_t *flags) {
 
   __m256i masks[16];
@@ -21,17 +22,15 @@ void flag_stats_avx2(const uint16_t *data, uint32_t n, uint32_t *flags) {
   const __m256i lo_mask = _mm256_set1_epi32(0x0000FFFF);
   const __m256i *data_vectors = reinterpret_cast<const __m256i *>(data);
   const uint32_t n_cycles = n / 16;
-  const uint32_t n_update_cycles = n_cycles / 65536;
+  const uint32_t n_update_cycles = n_cycles / 65535;
 
 #define UPDATE(idx)                                                            \
   counters[idx] = _mm256_add_epi16(                                            \
       counters[idx],                                                           \
-      _mm256_srli_epi16(                                                       \
-          _mm256_and_si256(_mm256_lddqu_si256(data_vectors + pos),             \
-                           masks[idx]),                                        \
-          idx))
+      _mm256_srli_epi16(_mm256_and_si256(input, masks[idx]), idx))
 #define ITERATION                                                              \
   {                                                                            \
+    __m256i input = _mm256_lddqu_si256(data_vectors + pos);                    \
     UPDATE(0);                                                                 \
     UPDATE(1);                                                                 \
     UPDATE(2);                                                                 \
@@ -53,7 +52,7 @@ void flag_stats_avx2(const uint16_t *data, uint32_t n, uint32_t *flags) {
   }
   uint32_t pos = 0;
   for (uint32_t i = 0; i < n_update_cycles; ++i) { // each block of 2^16 values
-    for (int k = 0; k < 65536;) // max sum of each 16-bit value in a register
+    for (int k = 0; k < 65535;) // max sum of each 16-bit value in a register
       ITERATION                 // unrolled
 
           // Compute vector sum
@@ -87,6 +86,7 @@ void flag_stats_avx2(const uint16_t *data, uint32_t n, uint32_t *flags) {
 }
 
 // from https://github.com/mklarqvist/FastFlagStats
+// fixes by D. Lemire
 void flag_stats_avx2_naive_counter(const uint16_t *data, uint32_t n,
                                    uint32_t *flags) {
   __m256i masks[16];
@@ -99,20 +99,18 @@ void flag_stats_avx2_naive_counter(const uint16_t *data, uint32_t n,
 
   const __m256i *data_vectors = reinterpret_cast<const __m256i *>(data);
   const uint32_t n_cycles = n / 16;
-  const uint32_t n_update_cycles = n_cycles / 65536;
+  const uint32_t n_update_cycles = n_cycles / 65535;
 
 #define UPDATE(idx)                                                            \
   counters[idx] = _mm256_add_epi16(                                            \
       counters[idx],                                                           \
-      _mm256_srli_epi16(                                                       \
-          _mm256_and_si256(_mm256_lddqu_si256(data_vectors + pos),             \
-                           masks[idx]),                                        \
-          idx))
+      _mm256_srli_epi16(_mm256_and_si256(input, masks[idx]), idx))
 
   uint32_t pos = 0;
   for (uint32_t i = 0; i < n_update_cycles; ++i) { // each block of 2^16 values
-    for (int k = 0; k < 65536;
-         ++pos, ++k) {             // max sum of each 16-bit value in a register
+    for (int k = 0; k < 65535;
+         ++pos, ++k) { // max sum of each 16-bit value in a register
+      __m256i input = _mm256_lddqu_si256(data_vectors + pos);
       for (int p = 0; p < 16; ++p) // Not unrolled
         UPDATE(p);
     }
@@ -141,6 +139,7 @@ void flag_stats_avx2_naive_counter(const uint16_t *data, uint32_t n,
 }
 
 // from https://github.com/mklarqvist/FastFlagStats
+// fixes by D. Lemire
 void flag_stats_avx2_single(const uint16_t *data, uint32_t n, uint32_t *flags) {
   __m256i counter = _mm256_set1_epi16(0);
   const __m256i one_mask = _mm256_set1_epi16(1);
@@ -155,26 +154,27 @@ void flag_stats_avx2_single(const uint16_t *data, uint32_t n, uint32_t *flags) {
 
 #define UPDATE(idx)                                                            \
   counter = _mm256_add_epi16(                                                  \
-      counter, _mm256_and_si256(                                               \
-                   _mm256_cmpeq_epi16(                                         \
-                       _mm256_and_si256(                                       \
-                           _mm256_set1_epi16(_mm256_extract_epi16(             \
-                               _mm256_lddqu_si256(data_vectors + pos), idx)),  \
-                           masks),                                             \
-                       masks),                                                 \
-                   one_mask));
+      counter,                                                                 \
+      _mm256_and_si256(                                                        \
+          _mm256_cmpeq_epi16(                                                  \
+              _mm256_and_si256(                                                \
+                  _mm256_set1_epi16(_mm256_extract_epi16(input, idx)), masks), \
+              masks),                                                          \
+          one_mask));
 #define BLOCK                                                                  \
   {                                                                            \
     UPDATE(0)                                                                  \
-    UPDATE(1) UPDATE(2) UPDATE(3) UPDATE(4) UPDATE(5) UPDATE(6) UPDATE(7)      \
-        UPDATE(8) UPDATE(9) UPDATE(10) UPDATE(11) UPDATE(12) UPDATE(13)        \
-            UPDATE(14) UPDATE(15)                                              \
+    UPDATE(1)                                                                  \
+    UPDATE(2)                                                                  \
+    UPDATE(3) UPDATE(4) UPDATE(5) UPDATE(6) UPDATE(7) UPDATE(8) UPDATE(9)      \
+        UPDATE(10) UPDATE(11) UPDATE(12) UPDATE(13) UPDATE(14) UPDATE(15)      \
   }
 
   uint32_t pos = 0;
   for (uint32_t i = 0; i < n_update_cycles; ++i) { // each block of 65536 values
     for (int k = 0; k < 4096;
          ++k, ++pos) { // max sum of each 16-bit value in a register (65536/16)
+      __m256i input = _mm256_lddqu_si256(data_vectors + pos);
       BLOCK
     }
 

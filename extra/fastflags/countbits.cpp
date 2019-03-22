@@ -73,27 +73,6 @@ void fastavx2(uint16_t *array, size_t len, uint32_t *flags) {
     size_t maxj = 65535;
     if (maxj + i + 16 >= len)
       maxj = len - i - 15;
-    // size_t maxj = i + 65535 + 16 <= len ? 65535 : len - i;
-    if (maxj > 3) {
-      for (; j < maxj - 3; j += 4) {
-        __m256i input1 = _mm256_loadu_si256((__m256i *)(array + i + j));
-        __m256i m1 = _mm256_and_si256(input1, bits);
-        __m256i eq1 = _mm256_cmpeq_epi16(bits, m1);
-        count16 = _mm256_sub_epi16(count16, eq1);
-        __m256i input2 = _mm256_loadu_si256((__m256i *)(array + i + j + 1));
-        __m256i m2 = _mm256_and_si256(input2, bits);
-        __m256i eq2 = _mm256_cmpeq_epi16(bits, m2);
-        count16 = _mm256_sub_epi16(count16, eq2);
-        __m256i input3 = _mm256_loadu_si256((__m256i *)(array + i + j + 2));
-        __m256i m3 = _mm256_and_si256(input3, bits);
-        __m256i eq3 = _mm256_cmpeq_epi16(bits, m3);
-        count16 = _mm256_sub_epi16(count16, eq3);
-        __m256i input4 = _mm256_loadu_si256((__m256i *)(array + i + j + 3));
-        __m256i m4 = _mm256_and_si256(input4, bits);
-        __m256i eq4 = _mm256_cmpeq_epi16(bits, m4);
-        count16 = _mm256_sub_epi16(count16, eq4);
-      }
-    }
     for (; j < maxj; j++) {
       __m256i input = _mm256_loadu_si256((__m256i *)(array + i + j));
       __m256i m = _mm256_and_si256(input, bits);
@@ -158,7 +137,7 @@ void morefastavx2(uint16_t *array, size_t len, uint32_t *flags) {
     if (maxj + i + 16 >= len)
       maxj = len - i - 15;
     if (maxj > 8) {
-      for (; j + 7 < maxj; j += 8) {
+      for (; j < maxj - 7; j += 8) {
         __m256i input1 = _mm256_loadu_si256((__m256i *)(array + i + j));
         __m256i m1 = _mm256_and_si256(input1, bits);
         __m256i eq1 = _mm256_cmpeq_epi16(bits, m1);
@@ -338,6 +317,8 @@ void demo(size_t len) {
 
 int main() {
   demo(1000000);
+  demo(2000000);
+  demo(4000000);
   demo(100000000);
   return EXIT_SUCCESS;
 }
