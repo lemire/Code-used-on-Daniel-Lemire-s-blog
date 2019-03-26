@@ -7,12 +7,14 @@
 #define MAXIMUM_LINE_WIDTH 60
 
 #include <stdint.h>
-//#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // intptr_t should be the native integer type on most sane systems.
 typedef intptr_t intnative_t;
+char line[MAXIMUM_LINE_WIDTH + 1];
+
 
 typedef struct {
   char letter;
@@ -38,8 +40,6 @@ repeat_And_Wrap_String(const char string_To_Repeat[],
     extended_String_To_Repeat[column] =
         string_To_Repeat[column % string_To_Repeat_Length];
   intnative_t offset = 0;
-
-  char line[MAXIMUM_LINE_WIDTH + 1];
   line[MAXIMUM_LINE_WIDTH] = '\n';
 
   for (intnative_t current_Number_Of_Characters_To_Create =
@@ -105,7 +105,7 @@ static void generate_And_Wrap_Pseudorandom_DNA_Sequence(
     cumulative_Probabilities[i] = cumulative_Probability * IM;
   }
 
-  char line[MAXIMUM_LINE_WIDTH + 1];
+  //char line[MAXIMUM_LINE_WIDTH + 1];
   line[MAXIMUM_LINE_WIDTH] = '\n';
 
   for (intnative_t current_Number_Of_Characters_To_Create =
@@ -151,7 +151,7 @@ static void generate_And_Wrap_Pseudorandom_DNA_Sequence(
 }
 
 int main(int argc, char **argv) {
-  const intnative_t n = argc > 1 ? atoi(argv[1]): 100000;
+  const intnative_t n = argc > 1 ? atoi(argv[1]): 10000000;
 
   //fputs(">ONE Homo sapiens alu\n", stdout);
   const char homo_Sapiens_Alu[] =
@@ -180,6 +180,6 @@ int main(int argc, char **argv) {
       homo_Sapien_Nucleotides_Information,
       sizeof(homo_Sapien_Nucleotides_Information) / sizeof(nucleotide_info),
       5 * n);
-
+  printf("%s",line);
   return 0;
 }
