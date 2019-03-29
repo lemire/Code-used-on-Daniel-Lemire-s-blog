@@ -1,3 +1,5 @@
+```
+
 time LD_PRELOAD=`jemalloc-config --libdir`/libjemalloc.so.`jemalloc-config --revision`  ./binarytrees
 stretch tree of depth 22	 check: 8388607
 2097152	 trees of depth 4	 check: 65011712
@@ -14,3 +16,4 @@ long lived tree of depth 21	 check: 4194303
 real	0m44.242s
 user	0m44.128s
 sys	0m0.100s
+```
