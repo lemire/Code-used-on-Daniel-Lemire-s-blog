@@ -1,6 +1,7 @@
+#include "linux-perf-events.h"
 #include <cassert>
-#include <cstdint>
 #include <cinttypes>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -11,7 +12,6 @@
 #include <random>
 #include <string>
 #include <vector>
-#include "linux-perf-events.h"
 
 __attribute__((optimize("no-tree-vectorize", "no-unroll-loops"))) uint64_t
 scalar(uint32_t *x, uint32_t *y, size_t length) {
@@ -40,6 +40,38 @@ scalar4(uint32_t *x, uint32_t *y, size_t length) {
     for (; i < length - 3; i += 4)
       sum += (uint64_t)x[i] * y[i] + (uint64_t)x[i + 1] * y[i + 1] +
              (uint64_t)x[i + 2] * y[i + 2] + (uint64_t)x[i + 3] * y[i + 3];
+  for (; i < length; i++)
+    sum += (uint64_t)x[i] * y[i];
+  return sum;
+}
+__attribute__((optimize("no-tree-vectorize", "no-unroll-loops"))) uint64_t
+scalar8(uint32_t *x, uint32_t *y, size_t length) {
+  uint64_t sum = 0;
+  size_t i = 0;
+  if (length > 7)
+    for (; i < length - 7; i += 8)
+      sum += (uint64_t)x[i] * y[i] + (uint64_t)x[i + 1] * y[i + 1] +
+             (uint64_t)x[i + 2] * y[i + 2] + (uint64_t)x[i + 3] * y[i + 3] +
+             (uint64_t)x[i + 4] * y[i + 4] + (uint64_t)x[i + 5] * y[i + 5] +
+             (uint64_t)x[i + 6] * y[i + 6] + (uint64_t)x[i + 7] * y[i + 7];
+  for (; i < length; i++)
+    sum += (uint64_t)x[i] * y[i];
+  return sum;
+}
+__attribute__((optimize("no-tree-vectorize", "no-unroll-loops"))) uint64_t
+scalar16(uint32_t *x, uint32_t *y, size_t length) {
+  uint64_t sum = 0;
+  size_t i = 0;
+  if (length > 15)
+    for (; i < length - 15; i += 16)
+      sum += (uint64_t)x[i] * y[i] + (uint64_t)x[i + 1] * y[i + 1] +
+             (uint64_t)x[i + 2] * y[i + 2] + (uint64_t)x[i + 3] * y[i + 3] +
+             (uint64_t)x[i + 4] * y[i + 4] + (uint64_t)x[i + 5] * y[i + 5] +
+             (uint64_t)x[i + 6] * y[i + 6] + (uint64_t)x[i + 7] * y[i + 7] +
+             (uint64_t)x[i + 8] * y[i + 8] + (uint64_t)x[i + 9] * y[i + 9] +
+             (uint64_t)x[i + 10] * y[i + 10] + (uint64_t)x[i + 11] * y[i + 11] +
+             (uint64_t)x[i + 12] * y[i + 12] + (uint64_t)x[i + 13] * y[i + 13] +
+             (uint64_t)x[i + 14] * y[i + 14] + (uint64_t)x[i + 15] * y[i + 15];
   for (; i < length; i++)
     sum += (uint64_t)x[i] * y[i];
   return sum;
@@ -109,4 +141,8 @@ int main() {
   test(N, &scalar2);
   printf("scalar4\n");
   test(N, &scalar4);
+  printf("scalar8\n");
+  test(N, &scalar8);
+  printf("scalar16\n");
+  test(N, &scalar16);
 }
