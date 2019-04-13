@@ -1,3 +1,4 @@
+```
 $ ./loopunroll
 N= 1000000
 scalar
@@ -15,3 +16,4 @@ instructions per cycle 3.89, cycles per pair of 32-bit words:  1.286, instructio
 min:  1286232 cycles,  5000042 instructions, 	       2 branch mis.,   264035 cache ref.,    22834 cache mis.
 avg: 1298172.8 cycles, 5000042.1 instructions, 	     2.3 branch mis., 266240.3 cache ref.,  24072.1 cache mis.
 sum = 13106436852605896768
+```
