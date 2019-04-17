@@ -44,24 +44,13 @@ uint32_t hex_to_u32_lookup(
   return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
 }
 
-uint32_t hex_to_u32_lookup2(
-    const uint8_t *src) { // strictly speaking, static inline is a C-ism
-  uint32_t input;
-  memcpy(&input, src, 4);
-  uint32_t v1 =
-      digittoval[input &
-                 0xFF]; // uint32_t v1 = -1 becomes uint32_t v1 = 0xFFFFFFFF.
-  uint32_t v2 = digittoval[(input >> 8) && 0xFF];
-  uint32_t v3 = digittoval[(input >> 16) && 0xFF];
-  uint32_t v4 = digittoval[(input >> 24) & 0xFF];
-  return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
-}
 
 static inline uint32_t convertone(uint8_t c) {
   uint32_t v = (c & 0xF) + 9 * (c >> 6);
   return v;
 }
 
+// no error checking
 uint32_t hex_to_u32_math(const uint8_t *src) {
   uint32_t v1 = convertone(src[0]);
   uint32_t v2 = convertone(src[1]);
@@ -70,6 +59,7 @@ uint32_t hex_to_u32_math(const uint8_t *src) {
   return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
 }
 
+// no error checking
 // http://0x80.pl/notesen/2014-10-09-pext-convert-ascii-hex-to-num.html
 uint32_t hex_to_u32_mula(const uint8_t *src) {
     uint32_t val;
@@ -79,7 +69,7 @@ uint32_t hex_to_u32_mula(const uint8_t *src) {
     const uint32_t shift  = letter >> 3 | letter >> 6; // 9 if char ~ [a-fA-F], 0 otherwise
     const uint32_t adjusted   = input + shift;
     // gather lower nibbles of each byte
-    return _pext_u32(adjusted, 0x0f0f0f0f);
+    return _pext_u32(adjusted, 0x0f0f0f0f); // slow on AMD!
 }
 
 template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
