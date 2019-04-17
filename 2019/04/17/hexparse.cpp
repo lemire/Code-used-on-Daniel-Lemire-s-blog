@@ -71,6 +71,15 @@ uint32_t hex_to_u32_mula(const uint8_t *src) {
     // gather lower nibbles of each byte
     return _pext_u32(adjusted, 0x0f0f0f0f); // slow on AMD!
 }
+// no error checking
+// https://johnnylee-sde.github.io/Fast-hex-number-string-to-int/
+uint32_t hex_to_u32_lee(const uint8_t *src) {
+    uint32_t val;
+    memcpy(&val, src, 4);
+    val = (val & 0xf0f0f0f) + 9 * (val >> 6 & 0x1010101);
+    val = (val | val << 12) & 0xff00ff00;
+    return (val>>24 | val) & 0xffff;
+}
 
 template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
   uint8_t *x = (uint8_t *)malloc(sizeof(uint8_t) * (N + 3));
@@ -139,4 +148,6 @@ int main() {
   test<hex_to_u32_math>(N);
   printf("mula:\n");
   test<hex_to_u32_mula>(N);
+  printf("less:\n");
+  test<hex_to_u32_lee>(N);
 }
