@@ -70,6 +70,17 @@ uint32_t hex_to_u32_math(const uint8_t *src) {
   return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
 }
 
+uint32_t hex_to_u32_mula(const uint8_t *src) {
+    uint32_t val;
+    memcpy(&val, src, 4);
+    const uint32_t input  = __builtin_bswap32(val);
+    const uint32_t letter = input & 0x40404040;
+    const uint32_t shift  = letter >> 3 | letter >> 6; // 9 if char ~ [a-fA-F], 0 otherwise
+    const uint32_t adjusted   = input + shift;
+    // gather lower nibbles of each byte
+    return _pext_u32(adjusted, 0x0f0f0f0f);
+}
+
 template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
   uint8_t *x = (uint8_t *)malloc(sizeof(uint8_t) * (N + 3));
   for (size_t i = 0; i < N + 3; i++) {
@@ -135,4 +146,6 @@ int main() {
   test<hex_to_u32_lookup>(N);
   printf("math:\n");
   test<hex_to_u32_math>(N);
+  printf("mula:\n");
+  test<hex_to_u32_mula>(N);
 }
