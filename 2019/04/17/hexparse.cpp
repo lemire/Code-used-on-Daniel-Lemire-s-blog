@@ -70,6 +70,7 @@ uint32_t hex_to_u32_math(const uint8_t *src) {
   return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
 }
 
+// http://0x80.pl/notesen/2014-10-09-pext-convert-ascii-hex-to-num.html
 uint32_t hex_to_u32_mula(const uint8_t *src) {
     uint32_t val;
     memcpy(&val, src, 4);
