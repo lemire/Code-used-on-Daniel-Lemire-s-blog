@@ -81,8 +81,20 @@ uint32_t hex_to_u32_lee(const uint8_t *src) {
     return (val>>24 | val) & 0xffff;
 }
 
+uint32_t hex_to_u32_aqrit(const uint8_t *src) {
+        uint32_t in;
+        uint64_t v, x;
+        const int64_t magic = INT64_C(0x1001001000000000);
+        memcpy(&in, src, 4);
+        v = in;
+        x = (((0x00404040 & v) >> 6) * 9) + (v & 0x000F0F0F); // do 3
+        x = (((uint64_t)((int64_t)x * magic)) >> 48) & ~15; // bswap and pack
+        v = ((v >> 30) * 9) + ((v >> 24) & 0x0F); // do the 4th
+        return (x | v);
+}
 template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
   uint8_t *x = (uint8_t *)malloc(sizeof(uint8_t) * (N + 3));
+  srand(1235);
   for (size_t i = 0; i < N + 3; i++) {
     int digit = (rand() % 16);
     if (digit < 10)
@@ -148,6 +160,8 @@ int main() {
   test<hex_to_u32_math>(N);
   printf("mula:\n");
   test<hex_to_u32_mula>(N);
-  printf("less:\n");
+  printf("lee:\n");
   test<hex_to_u32_lee>(N);
+  printf("aqrit:\n");
+  test<hex_to_u32_aqrit>(N);
 }
