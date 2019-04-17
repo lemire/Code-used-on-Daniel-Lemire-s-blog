@@ -30,21 +30,27 @@ const signed char digittoval[256] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1};
 // returns a value with the high 16 bits set if not valid
-// otherwise returns the conversion of the 4 hex digits at src into the bottom 16 bits of the 32-bit
+// otherwise returns the conversion of the 4 hex digits at src into the bottom
+// 16 bits of the 32-bit
 // return register
-// 
-uint32_t hex_to_u32_lookup(const uint8_t *src) {// strictly speaking, static inline is a C-ism
-  uint32_t v1 = digittoval[src[0]]; // uint32_t v1 = -1 becomes uint32_t v1 = 0xFFFFFFFF.
+//
+uint32_t hex_to_u32_lookup(
+    const uint8_t *src) { // strictly speaking, static inline is a C-ism
+  uint32_t v1 =
+      digittoval[src[0]]; // uint32_t v1 = -1 becomes uint32_t v1 = 0xFFFFFFFF.
   uint32_t v2 = digittoval[src[1]];
   uint32_t v3 = digittoval[src[2]];
   uint32_t v4 = digittoval[src[3]];
   return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
 }
 
-uint32_t hex_to_u32_lookup2(const uint8_t *src) {// strictly speaking, static inline is a C-ism
+uint32_t hex_to_u32_lookup2(
+    const uint8_t *src) { // strictly speaking, static inline is a C-ism
   uint32_t input;
   memcpy(&input, src, 4);
-  uint32_t v1 = digittoval[input & 0xFF]; // uint32_t v1 = -1 becomes uint32_t v1 = 0xFFFFFFFF.
+  uint32_t v1 =
+      digittoval[input &
+                 0xFF]; // uint32_t v1 = -1 becomes uint32_t v1 = 0xFFFFFFFF.
   uint32_t v2 = digittoval[(input >> 8) && 0xFF];
   uint32_t v3 = digittoval[(input >> 16) && 0xFF];
   uint32_t v4 = digittoval[(input >> 24) & 0xFF];
@@ -64,18 +70,17 @@ uint32_t hex_to_u32_math(const uint8_t *src) {
   return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
 }
 
-template <uint32_t (*F)(const uint8_t *src)> 
-void test(size_t N) {
-  uint8_t *x = (uint8_t *)malloc(sizeof(uint8_t) * ( N + 3));
+template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
+  uint8_t *x = (uint8_t *)malloc(sizeof(uint8_t) * (N + 3));
   for (size_t i = 0; i < N + 3; i++) {
     int digit = (rand() % 16);
-    if(digit < 10)
+    if (digit < 10)
       x[i] = 48 + digit;
     else
       x[i] = 65 + digit - 10;
   }
   for (size_t i = 0; i < N; i++) {
-    assert(hex_to_u32_lookup(x + i) == hex_to_u32_math(x +i)  );
+    assert(hex_to_u32_lookup(x + i) == hex_to_u32_math(x + i));
   }
   size_t iterations = 50;
   std::vector<int> evts;
@@ -109,10 +114,9 @@ void test(size_t N) {
   std::vector<unsigned long long> mins = compute_mins(allresults);
   std::vector<double> avg = compute_averages(allresults);
 
-  printf(
-      "instructions per cycle %4.2f, cycles 4-character hex string:  %4.3f, "
-      "instructions per 4-character hex string: %4.3f \n",
-      double(mins[1]) / mins[0], double(mins[0]) / N, double(mins[1]) / N);
+  printf("instructions per cycle %4.2f, cycles 4-character hex string:  %4.3f, "
+         "instructions per 4-character hex string: %4.3f \n",
+         double(mins[1]) / mins[0], double(mins[0]) / N, double(mins[1]) / N);
   // first we display mins
   printf("min: %8llu cycles, %8llu instructions, \t%8llu branch mis., %8llu "
          "cache ref., %8llu cache mis.\n",
