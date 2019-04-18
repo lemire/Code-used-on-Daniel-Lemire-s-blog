@@ -34,6 +34,7 @@ const signed char digittoval[256] = {
 // 16 bits of the 32-bit
 // return register
 //
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
 uint32_t hex_to_u32_lookup(
     const uint8_t *src) { // strictly speaking, static inline is a C-ism
   uint32_t v1 =
@@ -51,6 +52,7 @@ static inline uint32_t convertone(uint8_t c) {
 }
 
 // no error checking
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
 uint32_t hex_to_u32_math(const uint8_t *src) {
   uint32_t v1 = convertone(src[0]);
   uint32_t v2 = convertone(src[1]);
@@ -61,6 +63,7 @@ uint32_t hex_to_u32_math(const uint8_t *src) {
 
 // no error checking
 // http://0x80.pl/notesen/2014-10-09-pext-convert-ascii-hex-to-num.html
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
 uint32_t hex_to_u32_mula(const uint8_t *src) {
     uint32_t val;
     memcpy(&val, src, 4);
@@ -73,6 +76,7 @@ uint32_t hex_to_u32_mula(const uint8_t *src) {
 }
 // no error checking
 // https://johnnylee-sde.github.io/Fast-hex-number-string-to-int/
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
 uint32_t hex_to_u32_lee(const uint8_t *src) {
     uint32_t val;
     memcpy(&val, src, 4);
@@ -81,6 +85,7 @@ uint32_t hex_to_u32_lee(const uint8_t *src) {
     return (val>>24 | val) & 0xffff;
 }
 
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
 uint32_t hex_to_u32_aqrit(const uint8_t *src) {
         uint32_t in;
         uint64_t v, x;
@@ -172,10 +177,50 @@ uint64_t hex_to_u64_sse(const uint8_t* string) {
     return _mm_cvtsi128_si64x(t5);
 }
 
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
 uint32_t hex_to_u64_sse_wrapper(const uint8_t* string) {
     // wrap to fullfil the template constraint
     return hex_to_u64_sse(string);
 }
+
+
+uint32_t lookup2[65536];
+
+void init_lookup2() {
+
+   for (int i = 0; i < 0x10000; i++) {
+     lookup2[i] = (uint32_t) -1;
+   }
+
+   for (int i = 0; i < 256; i++) {
+     char digits[3];
+     sprintf(digits, "%02x", i);
+
+     uint16_t lvalue;
+     memcpy(&lvalue, digits, 2);
+     lookup2[lvalue] = i;
+
+     char digits_upper[3];
+     digits_upper[0] = toupper(digits[0]);
+     digits_upper[1] = toupper(digits[1]);
+     digits_upper[2] = 0;
+
+     if ((digits_upper[0] != digits[0]) ||
+     (digits_upper[1] != digits[1])) {
+
+       memcpy(&lvalue, digits_upper, 2);
+       lookup2[lvalue] = i;
+     }
+   }
+ }
+
+
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
+ uint32_t hex_2bytes_lookup(const uint8_t *src) {
+   uint32_t v1 = lookup2[((uint16_t*) src)[0]];
+   uint32_t v2 = lookup2[((uint16_t*) src)[1]];
+   return v1 << 8 | v2;
+ }
 
 template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
   uint8_t *x = (uint8_t *)malloc(sizeof(uint8_t) * (N + 3));
@@ -237,6 +282,7 @@ template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
 }
 
 int main() {
+  init_lookup2();
   size_t N = 1000 * 1000;
   printf("N= %zu \n", N);
   printf("lookup:\n");
@@ -251,4 +297,6 @@ int main() {
   test<hex_to_u32_aqrit>(N);
   printf("SSE (uint64_t):\n");
   test<hex_to_u64_sse_wrapper>(N);
+  printf("big lookup:\n");
+  test<hex_2bytes_lookup>(N);
 }
