@@ -92,6 +92,91 @@ uint32_t hex_to_u32_aqrit(const uint8_t *src) {
         v = ((v >> 30) * 9) + ((v >> 24) & 0x0F); // do the 4th
         return (x | v);
 }
+
+uint64_t hex_to_u64_sse(const uint8_t* string) {
+    
+    /*
+        '0' .. '9' = 0x30 .. 0x39
+        'a' .. 'f' = 0x61 .. 0x66
+        'A' .. 'F' = 0x41 .. 0x46
+    */
+
+    __m128i input = _mm_loadu_si128((const __m128i*)string);
+    const __m128i mask  = _mm_set1_epi8(0x0f);
+    const __m128i hi_nibbles = _mm_and_si128(_mm_srli_epi32(input, 4), mask);
+    const __m128i lo_nibbles = _mm_and_si128(input, mask);
+
+    const int digits  = 0x80;
+    const int letters = 0x40;
+    const int error1  = 0x10;
+    const int error2  = 0x20;
+
+    // pretend that input & 0xf0 == 0x30
+    const __m128i lo_ascii_09 = _mm_shuffle_epi8(_mm_setr_epi8(
+                                   0 + digits,
+                                   1 + digits,
+                                   2 + digits,
+                                   3 + digits,
+                                   4 + digits,
+                                   5 + digits,
+                                   6 + digits,
+                                   7 + digits,
+                                   8 + digits,
+                                   9 + digits,
+                                   error1, error1, error1, error1, error1, error1), lo_nibbles);
+
+    // pretend that input & 0xf0 == 0x40 or 0x60
+    const __m128i lo_ascii_af = _mm_shuffle_epi8(_mm_setr_epi8(
+                                   error1,
+                                   10 + letters,
+                                   11 + letters,
+                                   12 + letters,
+                                   13 + letters,
+                                   14 + letters,
+                                   15 + letters,
+                                   error1,
+                                   error1,
+                                   error1,
+                                   error1, error1, error1, error1, error1, error1), lo_nibbles);
+    
+    // check value of higher nibble 
+    const __m128i hi_class = _mm_shuffle_epi8(_mm_setr_epi8(
+                                            error2, error2, error2, digits /* 0x30 */,
+                                            letters /* 0x40 */, error2, letters /* 0x60 */, error2,
+                                            error2, error2, error2, error2,
+                                            error2, error2, error2, error2), hi_nibbles);
+
+    // and find out which preposition was true
+    const __m128i ascii_09_mask = _mm_cmpeq_epi8(_mm_and_si128(hi_class, lo_ascii_09), hi_class);
+    const __m128i ascii_af_mask = _mm_cmpeq_epi8(_mm_and_si128(hi_class, lo_ascii_af), hi_class);
+    const __m128i ascii_09 = _mm_and_si128(ascii_09_mask, lo_ascii_09);
+    const __m128i ascii_af = _mm_and_si128(ascii_af_mask, lo_ascii_af);
+
+#if 0
+    // MSBs of error vector indicates invalid characters
+    const __m128i errorvec = _mm_xor_si128(ascii_09_mask | ascii_af_mask, _mm_set1_epi8(-1));
+    if (_mm_movemask_epi8(errorvec))
+        abort();
+#endif
+
+    const __m128i result = _mm_and_si128(_mm_or_si128(ascii_09, ascii_af), mask);
+
+    // now each byte of result have value 0 .. 15, we're going to merge nibbles:
+
+    const __m128i t0 = result;
+    const __m128i t1 = _mm_srli_epi32(result, 4);
+    const __m128i t3 = _mm_or_si128(t0, t1);
+    const __m128i t4 = _mm_and_si128(t3, _mm_set1_epi16(0x00ff)); // keep just lower bytes in words
+    const __m128i t5 = _mm_packus_epi16(t4, t4); // now lower part of the reg has 8-byte value
+
+    return _mm_cvtsi128_si64x(t5);
+}
+
+uint32_t hex_to_u64_sse_wrapper(const uint8_t* string) {
+    // wrap to fullfil the template constraint
+    return hex_to_u64_sse(string);
+}
+
 template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
   uint8_t *x = (uint8_t *)malloc(sizeof(uint8_t) * (N + 3));
   srand(1235);
@@ -164,4 +249,6 @@ int main() {
   test<hex_to_u32_lee>(N);
   printf("aqrit:\n");
   test<hex_to_u32_aqrit>(N);
+  printf("SSE (uint64_t):\n");
+  test<hex_to_u64_sse_wrapper>(N);
 }
