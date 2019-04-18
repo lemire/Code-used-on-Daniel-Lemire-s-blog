@@ -45,6 +45,33 @@ uint32_t hex_to_u32_lookup(
   return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
 }
 
+uint32_t hex_to_u32_lookup_inline(
+    const uint8_t *src) { // strictly speaking, static inline is a C-ism
+  uint32_t v1 =
+      digittoval[src[0]]; // uint32_t v1 = -1 becomes uint32_t v1 = 0xFFFFFFFF.
+  uint32_t v2 = digittoval[src[1]];
+  uint32_t v3 = digittoval[src[2]];
+  uint32_t v4 = digittoval[src[3]];
+  return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
+}
+
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
+uint32_t hex_to_u32_lookup_alt(
+    const uint8_t *src) { // strictly speaking, static inline is a C-ism
+  uint32_t v1 =
+      digittoval[src[0]]; // uint32_t v1 = -1 becomes uint32_t v1 = 0xFFFFFFFF.
+  uint32_t v2 = digittoval[src[1]];
+  uint32_t v3 = digittoval[src[2]];
+  uint32_t v4 = digittoval[src[3]];
+  return v1 *16*16*16 + v2 *16*16 + v3 *16 + v4;
+}
+
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
+uint32_t bogus(const uint8_t *src) {
+  return 0;
+}
+
+
 
 static inline uint32_t convertone(uint8_t c) {
   uint32_t v = (c & 0xF) + 9 * (c >> 6);
@@ -60,7 +87,7 @@ uint32_t hex_to_u32_math(const uint8_t *src) {
   uint32_t v4 = convertone(src[3]);
   return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
 }
-
+#ifdef __BMI2__
 // no error checking
 // http://0x80.pl/notesen/2014-10-09-pext-convert-ascii-hex-to-num.html
 __attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
@@ -74,6 +101,7 @@ uint32_t hex_to_u32_mula(const uint8_t *src) {
     // gather lower nibbles of each byte
     return _pext_u32(adjusted, 0x0f0f0f0f); // slow on AMD!
 }
+#endif
 // no error checking
 // https://johnnylee-sde.github.io/Fast-hex-number-string-to-int/
 __attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
@@ -98,6 +126,7 @@ uint32_t hex_to_u32_aqrit(const uint8_t *src) {
         return (x | v);
 }
 
+#ifdef __SSE2__
 uint64_t hex_to_u64_sse(const uint8_t* string) {
     
     /*
@@ -182,7 +211,7 @@ uint32_t hex_to_u64_sse_wrapper(const uint8_t* string) {
     // wrap to fullfil the template constraint
     return hex_to_u64_sse(string);
 }
-
+#endif
 
 uint32_t lookup2[65536];
 
@@ -221,6 +250,12 @@ __attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
    uint32_t v2 = lookup2[((uint16_t*) src)[1]];
    return v1 << 8 | v2;
  }
+ uint32_t hex_2bytes_lookup_inline(const uint8_t *src) {
+   uint32_t v1 = lookup2[((uint16_t*) src)[0]];
+   uint32_t v2 = lookup2[((uint16_t*) src)[1]];
+   return v1 << 8 | v2;
+ }
+
 
 template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
   uint8_t *x = (uint8_t *)malloc(sizeof(uint8_t) * (N + 3));
@@ -285,18 +320,30 @@ int main() {
   init_lookup2();
   size_t N = 1000 * 1000;
   printf("N= %zu \n", N);
+  printf("empty function (overhead):\n");
+  test<bogus>(N);
   printf("lookup:\n");
   test<hex_to_u32_lookup>(N);
-  printf("math:\n");
+  printf("lookup (inline):\n");
+  test<hex_to_u32_lookup_inline>(N);
+  printf("lookup (alt):\n");
+  test<hex_to_u32_lookup_alt>(N);
+   printf("math:\n");
   test<hex_to_u32_math>(N);
+#ifdef __BMI2__
   printf("mula:\n");
   test<hex_to_u32_mula>(N);
+#endif
   printf("lee:\n");
   test<hex_to_u32_lee>(N);
   printf("aqrit:\n");
   test<hex_to_u32_aqrit>(N);
+#ifdef __SSE2__
   printf("SSE (uint64_t):\n");
   test<hex_to_u64_sse_wrapper>(N);
+#endif
   printf("big lookup:\n");
   test<hex_2bytes_lookup>(N);
+  printf("big lookup (inline):\n");
+  test<hex_2bytes_lookup_inline>(N);
 }
