@@ -222,7 +222,7 @@ template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
   std::vector<unsigned long long> mins = compute_mins(allresults);
   std::vector<double> avg = compute_averages(allresults);
 
-  printf("instructions per cycle %4.2f, cycles 4-character hex string:  %4.3f, "
+  printf("instructions per cycle %4.2f, cycles per 4-character hex string:  %4.3f, "
          "instructions per 4-character hex string: %4.3f \n",
          double(mins[1]) / mins[0], double(mins[0]) / N, double(mins[1]) / N);
   // first we display mins
