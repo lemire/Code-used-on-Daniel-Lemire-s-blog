@@ -1,4 +1,8 @@
+#ifndef __linux__
+#warning "We require Linux."
+#else
 #include "linux-perf-events.h"
+#endif
 #include <cassert>
 #include <cinttypes>
 #include <cstdint>
@@ -13,6 +17,8 @@
 #include <string>
 #include <vector>
 #include <x86intrin.h>
+#include <frozen/map.h>
+#include <frozen/unordered_map.h>
 
 const signed char digittoval[256] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -257,6 +263,75 @@ __attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
  }
 
 
+alignas ( 64 ) constexpr frozen::map<char, char, 22> map_lookup {
+    { '0',  0 },
+    { '1',  1 },
+    { '2',  2 },
+    { '3',  3 },
+    { '4',  4 },
+    { '5',  5 },
+    { '6',  6 },
+    { '7',  7 },
+    { '8',  8 },
+    { '9',  9 },
+    { 'a', 10 },
+    { 'b', 11 },
+    { 'c', 12 },
+    { 'd', 13 },
+    { 'e', 14 },
+    { 'f', 15 },
+    { 'A', 10 },
+    { 'B', 11 },
+    { 'C', 12 },
+    { 'D', 13 },
+    { 'E', 14 },
+    { 'F', 15 }
+};
+
+constexpr frozen::unordered_map<char, char, 22> unordered_map_lookup {
+    { '0',  0 },
+    { '1',  1 },
+    { '2',  2 },
+    { '3',  3 },
+    { '4',  4 },
+    { '5',  5 },
+    { '6',  6 },
+    { '7',  7 },
+    { '8',  8 },
+    { '9',  9 },
+    { 'a', 10 },
+    { 'b', 11 },
+    { 'c', 12 },
+    { 'd', 13 },
+    { 'e', 14 },
+    { 'f', 15 },
+    { 'A', 10 },
+    { 'B', 11 },
+    { 'C', 12 },
+    { 'D', 13 },
+    { 'E', 14 },
+    { 'F', 15 }
+};
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
+ uint32_t hex_frozen_map(const uint8_t *src) {
+   uint32_t v1 = map_lookup.at(src[0]);
+   uint32_t v2 = map_lookup.at(src[1]);
+   uint32_t v3 = map_lookup.at(src[2]);
+   uint32_t v4 = map_lookup.at(src[3]);
+   return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);;
+ }
+__attribute__ ((noinline)) // we do not want the compiler to rewrite the problem
+ uint32_t hex_unordered_frozen_map(const uint8_t *src) {
+   uint32_t v1 = unordered_map_lookup.at(src[0]);
+   uint32_t v2 = unordered_map_lookup.at(src[1]);
+   uint32_t v3 = unordered_map_lookup.at(src[2]);
+   uint32_t v4 = unordered_map_lookup.at(src[3]);
+   return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);;
+ }
+
+
+
+
 template <uint32_t (*F)(const uint8_t *src)> void test(size_t N) {
   uint8_t *x = (uint8_t *)malloc(sizeof(uint8_t) * (N + 3));
   srand(1235);
@@ -346,4 +421,8 @@ int main() {
   test<hex_2bytes_lookup>(N);
   printf("big lookup (inline):\n");
   test<hex_2bytes_lookup_inline>(N);
+printf("frozen_map:\n");
+test<hex_frozen_map>(N);
+printf("unfrozen_frozen_map:\n");
+test<hex_unordered_frozen_map>(N);
 }
