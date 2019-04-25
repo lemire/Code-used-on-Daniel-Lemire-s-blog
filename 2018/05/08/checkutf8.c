@@ -165,11 +165,11 @@ bool validate_utf8_double(const char *c, size_t len) {
   }
   uint32_t s1 = 0, s2 = 0;
   for (size_t i = 0, j = half; i < half; i++, j++) {
-    updatestate(&s1, c[i]);
-    updatestate(&s2, c[j]);
+    updatestate(&s1, (unsigned char )c[i]);
+    updatestate(&s2, (unsigned char )c[j]);
   }
   for (int j = half * 2; j < len; j++) {
-    updatestate(&s2, c[j]);
+    updatestate(&s2, (unsigned char )c[j]);
   }
   return (s1 != UTF8_REJECT) && (s2 != UTF8_REJECT);
 }
@@ -183,11 +183,11 @@ bool shiftless_validate_utf8_double(const char *c, size_t len) {
   }
   uint32_t s1 = 0, s2 = 0;
   for (size_t i = 0, j = half; i < half; i++, j++) {
-    shiftless_updatestate(&s1, c[i]);
-    shiftless_updatestate(&s2, c[j]);
+    shiftless_updatestate(&s1, (unsigned char )c[i]);
+    shiftless_updatestate(&s2, (unsigned char )c[j]);
   }
   for (int j = half * 2; j < len; j++) {
-    shiftless_updatestate(&s2, c[j]);
+    shiftless_updatestate(&s2, (unsigned char )c[j]);
   }
   return (s1 != SHIFTLESS_UTF8_REJECT) && (s2 != SHIFTLESS_UTF8_REJECT);
 }
