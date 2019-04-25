@@ -397,15 +397,6 @@ __attribute__((noinline)) uint32_t hex_to_u32_lookup4x32(const uint8_t *src) {
   return static_cast<uint32_t>(v1 | v2 | v3 | v4);
 }
 
-uint32_t hex_to_u32_lookup_inline(
-    const uint8_t *src) { // strictly speaking, static inline is a C-ism
-  uint32_t v1 =
-      digittoval[src[0]]; // uint32_t v1 = -1 becomes uint32_t v1 = 0xFFFFFFFF.
-  uint32_t v2 = digittoval[src[1]];
-  uint32_t v3 = digittoval[src[2]];
-  uint32_t v4 = digittoval[src[3]];
-  return static_cast<uint32_t>(v1 << 12 | v2 << 8 | v3 << 4 | v4);
-}
 
 __attribute__((noinline)) // we do not want the compiler to rewrite the problem
 uint32_t
@@ -688,15 +679,6 @@ hex_2bytes_lookup(const uint8_t *src) {
   uint32_t v2 = lookup2[s34];
   return v1 << 8 | v2;
 }
-uint32_t hex_2bytes_lookup_inline(const uint8_t *src) {
-  uint16_t s12;
-  memcpy(&s12, src, sizeof(uint16_t));
-  uint32_t v1 = lookup2[s12];
-  uint16_t s34;
-  memcpy(&s34, src + 2, sizeof(uint16_t));
-  uint32_t v2 = lookup2[s34];
-  return v1 << 8 | v2;
-}
 
 alignas(64) constexpr frozen::map<char, char, 22> map_lookup{
     {'0', 0},  {'1', 1},  {'2', 2},  {'3', 3},  {'4', 4},  {'5', 5},
@@ -798,8 +780,6 @@ int main() {
   test<bogus>(N);
   printf("lookup:\n");
   test<hex_to_u32_lookup>(N);
-  printf("lookup (inline):\n");
-  test<hex_to_u32_lookup_inline>(N);
   printf("lookup (alt):\n");
   test<hex_to_u32_lookup_alt>(N);
   printf("math:\n");
@@ -824,8 +804,6 @@ int main() {
 #endif
   printf("big lookup:\n");
   test<hex_2bytes_lookup>(N);
-  printf("big lookup (inline):\n");
-  test<hex_2bytes_lookup_inline>(N);
   printf("frozen_map:\n");
   test<hex_frozen_map>(N);
   printf("unfrozen_frozen_map:\n");
