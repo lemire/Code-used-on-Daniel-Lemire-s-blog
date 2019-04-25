@@ -3,6 +3,10 @@
 #else
 #include "linux-perf-events.h"
 #endif
+
+#ifndef GCC_VERSION
+#warning "We assume a GCC compiler."
+#endif
 #include <cassert>
 #include <cinttypes>
 #include <cstdint>
