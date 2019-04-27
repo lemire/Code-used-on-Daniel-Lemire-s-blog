@@ -31,6 +31,25 @@ void fillarray(uint64_t *bigarray, size_t size_p2, size_t N) {
   }
 }
 
+void fillarray_unrolled(uint64_t *bigarray, size_t size_p2, size_t N) {
+  uint64_t i = 0;
+  if(N>4)
+  for (; i < N - 4; i+=4) {
+    uint64_t random1 = murmur64(i);
+    uint64_t random2 = murmur64(i+1);
+    uint64_t random3 = murmur64(i+2);
+    uint64_t random4 = murmur64(i+3);
+       bigarray[random1 & (size_p2 - 1)] = i;
+       bigarray[random2 & (size_p2 - 1)] = i+1;
+       bigarray[random3 & (size_p2 - 1)] = i+2;
+       bigarray[random4 & (size_p2 - 1)] = i+3;
+     }
+  for (; i < N; i++) {
+    uint64_t random = murmur64(i);
+    bigarray[random & (size_p2 - 1)] = i;
+  }
+}
+
 typedef struct indexval_s {
   uint64_t index;
   uint64_t random;
@@ -120,7 +139,7 @@ template <void (*F)(uint64_t *, size_t, size_t)> void test(size_t N, size_t M) {
 }
 
 int main() {
-  size_t N = 1 << 28;
+  size_t N = 1 << 29;
   size_t M = N;
   printf("N= %zu M = %zu \n", N, M);
   for (size_t i = 0; i < 3; i++) {
@@ -128,6 +147,8 @@ int main() {
     test<buffered_fillarray>(N, M);
     printf("standard:\n");
     test<fillarray>(N, M);
+    printf("unrolled:\n");
+    test<fillarray_unrolled>(N, M);
     printf("\n");
   }
 }
