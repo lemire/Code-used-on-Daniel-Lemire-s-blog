@@ -243,7 +243,8 @@ void test(const char *filename, char target) {
          double(mins[1]) / matches, double(mins[0]) / wordcount,
          double(mins[1]) / wordcount);
   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
-         double(mins[0]) / (64 * wordcount), double(mins[1]) / (64 * wordcount));
+         double(mins[0]) / (64 * wordcount),
+         double(mins[1]) / (64 * wordcount));
   // first we display mins
   printf("min: %8llu cycles, %8llu instructions, \t%8llu branch mis., %8llu "
          "cache ref., %8llu cache mis.\n",
@@ -256,14 +257,60 @@ void test(const char *filename, char target) {
   delete[] bigarray;
 }
 
+template <void (*F)(uint32_t *, uint32_t &, uint32_t, uint64_t)> bool unit() {
+  uint32_t refdecoded[64];
+  uint32_t decoded[64];
+  for (size_t i = 0; i < 64; i++) {
+    uint64_t x = 1;
+    x <<= i;
+    uint32_t matches = 0;
+    faster_decoder(decoded, matches, 0, x);
+    uint32_t refmatches = 0;
+    basic_decoder(refdecoded, refmatches, 0, x);
+    if (refmatches != matches) {
+      printf("bug\n");
+      return false;
+    }
+    for (size_t k = 0; k < matches; k++)
+      if (decoded[k] != refdecoded[k]) {
+        printf("bug\n");
+        return false;
+      }
+  }
+  for (size_t i = 0; i < 1000000; i++) {
+    uint64_t x = rand();
+    x <<= 32;
+    x |= rand();
+    uint32_t matches = 0;
+    faster_decoder(decoded, matches, 0, x);
+    uint32_t refmatches = 0;
+    basic_decoder(refdecoded, refmatches, 0, x);
+    if (refmatches != matches) {
+      printf("bug\n");
+      return false;
+    }
+    for (size_t k = 0; k < matches; k++) {
+      if (decoded[k] != refdecoded[k]) {
+        printf("bug\n");
+        return false;
+      }
+    }
+  }
+  printf("Tests passed.\n");
+  return true;
+}
 int main() {
   printf("fast_decoder:\n");
+  unit<fast_decoder>();
   test<fast_decoder>("nfl.csv", ',');
   printf("simdjson_decoder:\n");
+  unit<simdjson_decoder>();
   test<simdjson_decoder>("nfl.csv", ',');
   printf("basic_decoder:\n");
+  unit<basic_decoder>();
   test<basic_decoder>("nfl.csv", ',');
   printf("faster_decoder:\n");
+  unit<faster_decoder>();
   test<faster_decoder>("nfl.csv", ',');
   printf("\n");
 }
