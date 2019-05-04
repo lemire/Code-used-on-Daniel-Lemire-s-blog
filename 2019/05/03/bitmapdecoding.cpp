@@ -563,8 +563,8 @@ void fasttest(const char *filename, char target) {
 end of insanity
 ***/
 
-int main() {
-  fasttest("nfl.csv", ',');
+int main(int argc, char** argv) {
+  if(argc>1)fasttest("nfl.csv", ',');
   printf("fast_decoder:\n");
   unit<fast_decoder>();
   test<fast_decoder>("nfl.csv", ',');
