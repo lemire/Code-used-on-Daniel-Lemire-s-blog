@@ -91,7 +91,7 @@ void demo(size_t N, uint64_t range_min, uint64_t range_max) {
     size_t c2 = fast_pick_N(range_min, range_max, N, array);
          clock_t aft2 = clock();
     printf("timings: %f s %f s \n",(double)(aft1-bef1)/CLOCKS_PER_SEC, (double)(aft2-bef2)/CLOCKS_PER_SEC);
-    printf("timings per value: %f ns %f ns \n",(double)(aft1-bef1 )* 1000  * 1000  * 1000/(volume * CLOCKS_PER_SEC), (double)(aft2-bef2)* 1000 * 1000 * 1000/(volume * CLOCKS_PER_SEC));
+    printf("timings per value: %f ns %f ns \n",(double)(aft1-bef1 )* 1000  * 1000  * 1000/(N * CLOCKS_PER_SEC), (double)(aft2-bef2)* 1000 * 1000 * 1000/(N * CLOCKS_PER_SEC));
 
     printf("actual counts: %zu %zu \n",c1, c2);
     free(array);
