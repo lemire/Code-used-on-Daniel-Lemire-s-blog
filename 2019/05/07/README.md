@@ -1,3 +1,4 @@
+```
 Generating 1000000 values in [0, 40000000000), density: 0.002500 %
 timings: 0.129007 s 0.082164 s
 timings per value: 0.003225 ns 0.002054 ns
@@ -12,3 +13,4 @@ Generating 100000000 values in [0, 40000000000), density: 0.250000 %
 timings: 16.959050 s 8.212026 s
 timings per value: 0.423976 ns 0.205301 ns
 actual counts: 99875113 100000000
+```
