@@ -5,7 +5,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <string.h>
 #include "wyhash.h"
 
 uint64_t random_range(uint64_t range) {
@@ -19,7 +19,9 @@ double random_double() {
 }
 
 int uint64_comparison(const void * a, const void * b) {
-     return (*(uint64_t *) a) - (*(uint64_t *) b);// let us live dangerously
+     if ( (*(uint64_t *) a) < (*(uint64_t *) b)) return -1;
+     if ( (*(uint64_t *) a) > (*(uint64_t *) b)) return 1;
+     return 0;
 }
 
 // this starts at 0 with proba. p, then 1 with proba. (1-p) *p
@@ -38,15 +40,15 @@ uint64_t random_geometric(double p) { // p in (0,1)
 size_t pick_N(uint64_t range_min, uint64_t range_max, size_t N, uint64_t *out) {
     uint64_t range_size = range_max - range_min;
     for(size_t i = 0; i < N; i++) {
-      out[i] = random_range(range_size);
+      out[i] = random_range(range_size) + range_min;
     }
     qsort(out, N, sizeof(uint64_t), uint64_comparison);
-    size_t pos = N;
+    size_t pos = 0;
     out[pos++] = out[0];
     for(size_t i = 1; i < N; i++) {
         if(out[i] > out[i-1]) {
             out[pos++] = out[i];
-        }
+        } 
     }
     return pos;
 }
@@ -78,7 +80,7 @@ size_t fast_pick_N(uint64_t range_min, uint64_t range_max, size_t N, uint64_t *o
 
 void demo(size_t N, uint64_t range_min, uint64_t range_max) {
     size_t volume = range_max - range_min;
-    printf("Generating %zu values in [%zu, %zu), density: %f %%\n", N, range_min, range_max, N*1.0 / (range_max-range_min));
+    printf("Generating %zu values in [%zu, %zu), density: %f %%\n", N, range_min, range_max, N*100.0 / (range_max-range_min));
     uint64_t * array = (uint64_t *) malloc(sizeof(uint64_t) * N);
     if(array == NULL) return;
      clock_t bef1 = clock();
@@ -114,15 +116,15 @@ void test_geometric(double p) {
     for(size_t i = 0; i < 20;i++) {
       counters[i] /= hits;
       sum += counters[i];
-      printf("%d : %f (%f)... cumul %f\n", i, counters[i], pow(1-p,i) * p, sum);
+      printf("%zu : %f (%f)... cumul %f\n", i, counters[i], pow(1-p,i) * p, sum);
     } 
     free(counters);
 }
 
 int main () {
   wyhash64_seed(1243);
-  for(size_t i = 0 ; i < 3; i++) {
-    demo(10000000, 0, UINT64_C(4000000000));
+  for(size_t N = 1000000 ; N <= 100000000; N*=10) {
+    demo(N, 0, UINT64_C(40000000000));
     printf("\n");
   }
 }
