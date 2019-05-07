@@ -3,6 +3,8 @@
 
 #include <stdexcept>
 
+#include <stdlib.h>
+
 template <typename T>
 void reservoirsampling(T *output, uint32_t howmany, const T *source,
                        uint32_t sourcelength) {
