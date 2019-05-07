@@ -30,6 +30,8 @@
 
 #define UTF8_ACCEPT 0
 #define UTF8_REJECT 1
+#define SHIFTLESS_UTF8_REJECT 16
+
 
 static const uint8_t utf8d[] = {
     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -74,7 +76,8 @@ static const uint8_t utf8d[] = {
     1,   1,   1,   1,   1,   1,   3,   1,   1,   1,   1,
     1,   1,   1,   1,   1,   1,   1,   1,   1,   1, // s7..s8
 };
-
+static const uint8_t shifted_utf8d_transition[] = {0x0, 0x10, 0x20, 0x30, 0x50, 0x80, 0x70, 0x10, 0x10, 0x10, 0x40, 0x60, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x0, 0x10, 0x10, 0x10, 0x10, 0x10, 0x0, 0x10, 0x0, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x20, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x30, 0x10, 0x30, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x30, 0x10, 0x10, 0x10, 0x10, 0x10, 0x30, 0x10, 0x30, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x30, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10
+};
 static uint32_t inline decode(uint32_t *state, uint32_t *codep, uint32_t byte) {
   uint32_t type = utf8d[byte];
   *codep = (*state != UTF8_ACCEPT) ? (byte & 0x3fu) | (*codep << 6)
@@ -83,9 +86,23 @@ static uint32_t inline decode(uint32_t *state, uint32_t *codep, uint32_t byte) {
   return *state;
 }
 
+static uint32_t inline shiftless_decode(uint32_t *state, uint32_t *codep, uint32_t byte) {
+  uint32_t type = utf8d[byte];
+  *codep = (*state != UTF8_ACCEPT) ? (byte & 0x3fu) | (*codep << 6)
+                                   : (0xff >> type) & (byte);
+  *state = shifted_utf8d_transition[*state + type];
+  return *state;
+}
+
 static uint32_t inline updatestate(uint32_t *state, uint32_t byte) {
   uint32_t type = utf8d[byte];
   *state = utf8d_transition[16 * *state + type];
+  return *state;
+}
+
+static uint32_t inline shiftless_updatestate(uint32_t *state, uint32_t byte) {
+  uint32_t type = utf8d[byte];
+  *state = shifted_utf8d_transition[*state + type];
   return *state;
 }
 
@@ -108,6 +125,16 @@ bool validate_utf8_branchless(const char *c, size_t len) {
   return state != UTF8_REJECT;
 }
 
+bool shiftless_validate_utf8_branchless(const char *c, size_t len) {
+  const unsigned char *cu = (const unsigned char *)c;
+  uint32_t state = 0;
+  for (size_t i = 0; i < len; i++) {
+    uint32_t byteval = (uint32_t)cu[i];
+    shiftless_updatestate(&state, byteval);
+  }
+  return state != SHIFTLESS_UTF8_REJECT;
+}
+
 bool validate_utf8(const char *c, size_t len) {
   const unsigned char *cu = (const unsigned char *)c;
   uint32_t state = 0;
@@ -119,23 +146,51 @@ bool validate_utf8(const char *c, size_t len) {
   return true;
 }
 
+bool shiftless_validate_utf8(const char *c, size_t len) {
+  const unsigned char *cu = (const unsigned char *)c;
+  uint32_t state = 0;
+  for (size_t i = 0; i < len; i++) {
+    uint32_t byteval = (uint32_t)cu[i];
+    if (shiftless_updatestate(&state, byteval) == SHIFTLESS_UTF8_REJECT)
+      return false;
+  }
+  return true;
+}
+
 // credit: Travis Downs
 bool validate_utf8_double(const char *c, size_t len) {
   size_t half = len / 2;
   while((unsigned char )c[half] <= 0xBF && (unsigned char ) c[half] > 0x80 && half > 0 ) {
     half --;
-  }  
+  }
   uint32_t s1 = 0, s2 = 0;
   for (size_t i = 0, j = half; i < half; i++, j++) {
-    updatestate(&s1, c[i]);
-    updatestate(&s2, c[j]);
+    updatestate(&s1, (unsigned char )c[i]);
+    updatestate(&s2, (unsigned char )c[j]);
   }
   for (int j = half * 2; j < len; j++) {
-    updatestate(&s2, c[j]);
+    updatestate(&s2, (unsigned char )c[j]);
   }
   return (s1 != UTF8_REJECT) && (s2 != UTF8_REJECT);
 }
 
+
+// credit: Travis Downs
+bool shiftless_validate_utf8_double(const char *c, size_t len) {
+  size_t half = len / 2;
+  while((unsigned char )c[half] <= 0xBF && (unsigned char ) c[half] > 0x80 && half > 0 ) {
+    half --;
+  }
+  uint32_t s1 = 0, s2 = 0;
+  for (size_t i = 0, j = half; i < half; i++, j++) {
+    shiftless_updatestate(&s1, (unsigned char )c[i]);
+    shiftless_updatestate(&s2, (unsigned char )c[j]);
+  }
+  for (int j = half * 2; j < len; j++) {
+    shiftless_updatestate(&s2, (unsigned char )c[j]);
+  }
+  return (s1 != SHIFTLESS_UTF8_REJECT) && (s2 != SHIFTLESS_UTF8_REJECT);
+}
 // can be vectorized: https://woboq.com/blog/utf-8-processing-using-simd.html
 bool validate_utf8_sse_nocheating(const char *src, size_t len) {
   const char *end = src + len;
@@ -398,12 +453,16 @@ void demo(size_t N) {
   int repeat = 5;
   printf("We are feeding ascii so it is always going to be ok.\n");
   BEST_TIME(is_ascii(data, N), expected,populate(data,N) , repeat, N, true);
- 
+
   BEST_TIME(validate_utf8(data, N), expected,populate(data,N) , repeat, N, true);
   BEST_TIME(validate_utf8_branchless(data, N), expected,populate(data,N) , repeat, N, true);
   BEST_TIME(validate_utf8_double(data, N), expected,populate(data,N) , repeat, N, true);
 
-  
+  BEST_TIME(shiftless_validate_utf8(data, N), expected,populate(data,N) , repeat, N, true);
+  BEST_TIME(shiftless_validate_utf8_branchless(data, N), expected,populate(data,N) , repeat, N, true);
+  BEST_TIME(shiftless_validate_utf8_double(data, N), expected,populate(data,N) , repeat, N, true);
+
+
   BEST_TIME(validate_utf8_sse_nocheating(data, N), expected,populate(data,N) , repeat, N, true);
   BEST_TIME(validate_utf8_sse(data, N), expected,populate(data,N) , repeat, N, true);
   free(data);
