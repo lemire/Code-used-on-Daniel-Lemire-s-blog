@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <algorithm>
 #include "wyhash.h"
 
 uint64_t random_range(uint64_t range) {
@@ -37,12 +38,13 @@ uint64_t random_geometric(double p) { // p in (0,1)
  * Assume N << sizeof [range_min, range_max).
  * If N is close to [range_min, range_max), then 
  **/
-size_t pick_N(uint64_t range_min, uint64_t range_max, size_t N, uint64_t *out) {
+template <typename SORT>
+size_t pick_N(uint64_t range_min, uint64_t range_max, size_t N, uint64_t *out, SORT s) {
     uint64_t range_size = range_max - range_min;
     for(size_t i = 0; i < N; i++) {
       out[i] = random_range(range_size) + range_min;
     }
-    qsort(out, N, sizeof(uint64_t), uint64_comparison);
+    s(out, N);
     size_t pos = 0;
     out[pos++] = out[0];
     for(size_t i = 1; i < N; i++) {
@@ -83,17 +85,33 @@ void demo(size_t N, uint64_t range_min, uint64_t range_max) {
     printf("Generating %zu values in [%zu, %zu), density: %f %%\n", N, range_min, range_max, N*100.0 / (range_max-range_min));
     uint64_t * array = (uint64_t *) malloc(sizeof(uint64_t) * N);
     if(array == NULL) return;
-     clock_t bef1 = clock();
-    size_t c1 = pick_N(range_min, range_max, N, array);
-         clock_t aft1 = clock();
-     clock_t bef2 = clock();
 
-    size_t c2 = fast_pick_N(range_min, range_max, N, array);
-         clock_t aft2 = clock();
-    printf("timings: %f s %f s \n",(double)(aft1-bef1)/CLOCKS_PER_SEC, (double)(aft2-bef2)/CLOCKS_PER_SEC);
-    printf("timings per value: %f ns %f ns \n",(double)(aft1-bef1 )* 1000  * 1000  * 1000/(N * CLOCKS_PER_SEC), (double)(aft2-bef2)* 1000 * 1000 * 1000/(N * CLOCKS_PER_SEC));
+    clock_t bef1 = clock();
+    size_t c1 = pick_N(range_min, range_max, N, array, [](uint64_t *array, size_t n) {
+      qsort(array, n, sizeof(uint64_t), uint64_comparison);
+    });
+    clock_t aft1 = clock();
 
-    printf("actual counts: %zu %zu \n",c1, c2);
+    clock_t bef2 = clock();
+    size_t c2 = pick_N(range_min, range_max, N, array, [](uint64_t *array, size_t n) {
+      std::sort(array, array + n);
+    });
+    clock_t aft2 = clock();
+
+    clock_t bef3 = clock();
+    size_t c3 = fast_pick_N(range_min, range_max, N, array);
+    clock_t aft3 = clock();
+
+    printf("timings: %f s %f s %f s \n",
+        (double)(aft1-bef1)/CLOCKS_PER_SEC,
+        (double)(aft2-bef2)/CLOCKS_PER_SEC,
+        (double)(aft3-bef3)/CLOCKS_PER_SEC);
+    printf("timings per value: %f ns %f ns %f ns \n",
+        (double)(aft1-bef1)* 1000  * 1000  * 1000/(N * CLOCKS_PER_SEC),
+        (double)(aft2-bef2)* 1000  * 1000  * 1000/(N * CLOCKS_PER_SEC),
+        (double)(aft3-bef3)* 1000 * 1000 * 1000/(N * CLOCKS_PER_SEC));
+
+    printf("actual counts: %zu %zu %zu\n",c1, c2, c3);
     free(array);
 }
 
