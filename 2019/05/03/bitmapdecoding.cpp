@@ -14,7 +14,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstring>
+#ifdef  __x86_64__
 #include <x86intrin.h> // assume GCC/clang
+#endif
 
 /* result might be undefined when input_num is zero */
 static inline int trailingzeroes(uint64_t input_num) {
@@ -213,7 +215,6 @@ void test(const char *filename, char target) {
   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
-  evts.push_back(PERF_COUNT_HW_REF_CPU_CYCLES);
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
   std::vector<unsigned long long> results;
   std::vector<std::vector<unsigned long long>> allresults;
