@@ -510,7 +510,6 @@ void fasttest(const char *filename, char target) {
   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
-  evts.push_back(PERF_COUNT_HW_REF_CPU_CYCLES);
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
   std::vector<unsigned long long> results;
   std::vector<std::vector<unsigned long long>> allresults;
