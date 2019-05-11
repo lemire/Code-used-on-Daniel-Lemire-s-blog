@@ -81,7 +81,7 @@ uint64_t *build_bitmap(const char *filename, char target, size_t *wordcount) {
   return data;
 }
 
-static inline void basic_decoder(uint32_t *base_ptr, uint32_t &base,
+void basic_decoder(uint32_t *base_ptr, uint32_t &base,
                                  uint32_t idx, uint64_t bits) {
   while (bits != 0) {
     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
