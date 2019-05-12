@@ -1,5 +1,5 @@
 CLANG8:
-``
+```
 fast_decoder:
 Tests passed.
 matches = 129996 words = 21322 1-bit density 9.526 %
