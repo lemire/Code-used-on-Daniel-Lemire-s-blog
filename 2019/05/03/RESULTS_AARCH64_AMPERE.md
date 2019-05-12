@@ -40,7 +40,7 @@ avg: 1565331.1 cycles, 1964493.0 instructions,    9391.9 branch mis., 484726.4 c
 
 GCC-8
 
-``
+```
 fast_decoder:
 Tests passed.
 matches = 129996 words = 21322 1-bit density 9.526 %
