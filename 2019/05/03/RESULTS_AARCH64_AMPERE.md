@@ -38,7 +38,46 @@ avg: 1565331.1 cycles, 1964493.0 instructions,    9391.9 branch mis., 484726.4 c
 
 ```
 
+GCC-8
 
+``
+fast_decoder:
+Tests passed.
+matches = 129996 words = 21322 1-bit density 9.526 %
+bytes per index = 10.497
+instructions per cycle 1.17, cycles per value set:  8.808, instructions per value set: 10.262, cycles per word: 53.702, instructions per word: 62.564
+ cycles per input byte 0.84 instructions per input byte 0.98
+min:  1145041 cycles,  1333980 instructions,       14116 branch mis.,   168759 cache ref.,     2668 cache mis.
+avg: 1149696.5 cycles, 1333980.0 instructions,   14246.7 branch mis., 168905.0 cache ref.,   2670.9 cache mis.
+
+simdjson_decoder:
+Tests passed.
+matches = 129996 words = 21322 1-bit density 9.526 %
+bytes per index = 10.497
+instructions per cycle 1.29, cycles per value set:  12.555, instructions per value set: 16.154, cycles per word: 76.544, instructions per word: 98.487
+ cycles per input byte 1.20 instructions per input byte 1.54
+min:  1632075 cycles,  2099946 instructions,        9757 branch mis.,   542084 cache ref.,     2675 cache mis.
+avg: 1668175.3 cycles, 2099946.0 instructions,    9799.5 branch mis., 543010.1 cache ref.,   2677.8 cache mis.
+
+basic_decoder:
+Tests passed.
+matches = 129996 words = 21322 1-bit density 9.526 %
+bytes per index = 10.497
+instructions per cycle 1.07, cycles per value set:  8.516, instructions per value set: 9.119, cycles per word: 51.921, instructions per word: 55.599
+ cycles per input byte 0.81 instructions per input byte 0.87
+min:  1107068 cycles,  1185475 instructions,       20354 branch mis.,   161100 cache ref.,     2668 cache mis.
+avg: 1109260.0 cycles, 1185475.0 instructions,   20468.0 branch mis., 161285.9 cache ref.,   2670.5 cache mis.
+
+faster_decoder:
+Tests passed.
+matches = 129996 words = 21322 1-bit density 9.526 %
+bytes per index = 10.497
+instructions per cycle 1.40, cycles per value set:  10.980, instructions per value set: 15.363, cycles per word: 66.941, instructions per word: 93.665
+ cycles per input byte 1.05 instructions per input byte 1.46
+min:  1427308 cycles,  1997117 instructions,        9241 branch mis.,   486966 cache ref.,     2671 cache mis.
+avg: 1442093.6 cycles, 1997117.0 instructions,    9279.1 branch mis., 487102.2 cache ref.,   2672.9 cache mis.
+
+```
 
 GCC-9
 

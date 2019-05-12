@@ -16397,6 +16397,305 @@ _Z6unpackILj64EEvP6lead_sS1_Pj:
 	.cfi_endproc
 .LFE2365:
 	.size	_Z6unpackILj64EEvP6lead_sS1_Pj, .-_Z6unpackILj64EEvP6lead_sS1_Pj
+	.align	2
+	.p2align 3,,7
+	.type	_Z14faster_decoderPjRjjm.part.0, %function
+_Z14faster_decoderPjRjjm.part.0:
+.LFB3110:
+	.cfi_startproc
+// bitmapdecoding.cpp:123:     uint32_t next_base = base + cnt;
+	ldr	w6, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x5, x3	// tmp254, bits
+// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
+	sub	x4, x3, #1	// _15, bits,
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x5, x5	// tmp254, tmp254
+// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
+	and	x4, x3, x4	// bits, bits, _15
+// bitmapdecoding.cpp:124:     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w2, w5	// tmp257, idx, tmp254
+// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
+	sub	x7, x4, #1	// _25, bits,
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x8, x4	// tmp258, bits
+// bitmapdecoding.cpp:124:     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w5, [x0, w6, uxtw 2]	// tmp257, *_12
+// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
+	and	x4, x4, x7	// bits, bits, _25
+// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
+	sub	x9, x4, #1	// _35, bits,
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x8, x8	// tmp258, tmp258
+// bitmapdecoding.cpp:126:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w7, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:126:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w8, w2, w8	// tmp263, idx, tmp258
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x5, x4	// tmp264, bits
+// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
+	and	x4, x4, x9	// bits, bits, _35
+// bitmapdecoding.cpp:126:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w7, w7, 1	// tmp261, *base_4(D),
+// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
+	sub	x9, x4, #1	// _45, bits,
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x11, x4	// tmp270, bits
+// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
+	fmov	d0, x3	// tmp358, bits
+// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
+	and	x3, x4, x9	// bits, bits, _45
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x5, x5	// tmp264, tmp264
+// bitmapdecoding.cpp:126:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w8, [x0, x7, lsl 2]	// tmp263, *_23
+// bitmapdecoding.cpp:128:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w2, w5	// tmp269, idx, tmp264
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x11, x11	// tmp270, tmp270
+	rbit	x10, x3	// tmp276, bits
+// bitmapdecoding.cpp:128:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w11, w2, w11	// tmp275, idx, tmp270
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x10, x10	// tmp276, tmp276
+// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
+	sub	x7, x3, #1	// _55, bits,
+// bitmapdecoding.cpp:128:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 2	// tmp267, *base_4(D),
+// bitmapdecoding.cpp:132:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w10, w2, w10	// tmp281, idx, tmp276
+// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
+	and	x3, x3, x7	// bits, bits, _55
+// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
+	cnt	v0.8b, v0.8b	// tmp251, tmp358
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x9, x3	// tmp282, bits
+// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
+	sub	x7, x3, #1	// _65, bits,
+// bitmapdecoding.cpp:128:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w5, [x0, x4, lsl 2]	// tmp269, *_33
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x9, x9	// tmp282, tmp282
+// bitmapdecoding.cpp:134:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w9, w2, w9	// tmp287, idx, tmp282
+// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
+	and	x3, x3, x7	// bits, bits, _65
+// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w5, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x8, x3	// tmp288, bits
+	clz	x8, x8	// tmp288, tmp288
+// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
+	addv	b0, v0.8b	// tmp253, tmp251
+// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w5, 3	// tmp273, *base_4(D),
+// bitmapdecoding.cpp:136:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w8, w2, w8	// tmp293, idx, tmp288
+// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
+	sub	x4, x3, #1	// _75, bits,
+// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
+	and	x3, x3, x4	// bits, bits, _75
+// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w11, [x0, x5, lsl 2]	// tmp275, *_43
+// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
+	umov	w4, v0.b[0]	// tmp249, tmp253,
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x7, x3	// tmp294, bits
+// bitmapdecoding.cpp:132:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w5, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x7, x7	// tmp294, tmp294
+// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w7, w2, w7	// tmp299, idx, tmp294
+// bitmapdecoding.cpp:132:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w5, 4	// tmp279, *base_4(D),
+// bitmapdecoding.cpp:123:     uint32_t next_base = base + cnt;
+	add	w6, w6, w4	// next_base, _5, tmp249
+// bitmapdecoding.cpp:140:     if (cnt > 8) {
+	cmp	w4, 8	// tmp249,
+// bitmapdecoding.cpp:132:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w10, [x0, x5, lsl 2]	// tmp281, *_53
+// bitmapdecoding.cpp:134:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w5, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:134:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w5, 5	// tmp285, *base_4(D),
+// bitmapdecoding.cpp:134:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w9, [x0, x5, lsl 2]	// tmp287, *_63
+// bitmapdecoding.cpp:136:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w5, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:136:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w5, 6	// tmp291, *base_4(D),
+// bitmapdecoding.cpp:136:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w8, [x0, x5, lsl 2]	// tmp293, *_73
+// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w5, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w5, 7	// tmp297, *base_4(D),
+// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w7, [x0, x5, lsl 2]	// tmp299, *_83
+// bitmapdecoding.cpp:140:     if (cnt > 8) {
+	ble	.L2114		//,
+// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w5, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
+	sub	x7, x3, #1	// _85, bits,
+// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
+	and	x3, x3, x7	// bits, bits, _85
+// bitmapdecoding.cpp:158:     if (cnt > 16) {
+	cmp	w4, 16	// tmp249,
+// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w5, 8	// tmp303, *base_4(D),
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x8, x3	// tmp300, bits
+	clz	x8, x8	// tmp300, tmp300
+// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
+	sub	x7, x3, #1	// _95, bits,
+// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w8, w2, w8	// tmp305, idx, tmp300
+// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
+	and	x3, x3, x7	// bits, bits, _95
+// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w8, [x0, x5, lsl 2]	// tmp305, *_93
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x7, x3	// tmp306, bits
+	clz	x7, x7	// tmp306, tmp306
+// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
+	sub	x5, x3, #1	// _105, bits,
+// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w7, w2, w7	// tmp311, idx, tmp306
+// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
+	and	x3, x3, x5	// bits, bits, _105
+// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 9	// tmp309, *base_4(D),
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x5, x3	// tmp312, bits
+	clz	x5, x5	// tmp312, tmp312
+// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
+	sub	x8, x3, #1	// _115, bits,
+// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w2, w5	// tmp317, idx, tmp312
+// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
+	and	x3, x3, x8	// bits, bits, _115
+// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w7, [x0, x4, lsl 2]	// tmp311, *_103
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x10, x3	// tmp318, bits
+	clz	x10, x10	// tmp318, tmp318
+// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
+	sub	x8, x3, #1	// _125, bits,
+// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w10, w2, w10	// tmp323, idx, tmp318
+// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
+	and	x3, x3, x8	// bits, bits, _125
+// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 10	// tmp315, *base_4(D),
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x9, x3	// tmp324, bits
+	clz	x9, x9	// tmp324, tmp324
+// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
+	sub	x7, x3, #1	// _135, bits,
+// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w9, w2, w9	// tmp329, idx, tmp324
+// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
+	and	x3, x3, x7	// bits, bits, _135
+// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w5, [x0, x4, lsl 2]	// tmp317, *_113
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x8, x3	// tmp330, bits
+	clz	x8, x8	// tmp330, tmp330
+// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
+	sub	x7, x3, #1	// _145, bits,
+// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w8, w2, w8	// tmp335, idx, tmp330
+// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
+	and	x3, x3, x7	// bits, bits, _145
+// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 11	// tmp321, *base_4(D),
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x7, x3	// tmp336, bits
+	clz	x7, x7	// tmp336, tmp336
+// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
+	sub	x5, x3, #1	// _155, bits,
+// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w7, w2, w7	// tmp341, idx, tmp336
+// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
+	and	x3, x3, x5	// bits, bits, _155
+// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w10, [x0, x4, lsl 2]	// tmp323, *_123
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x5, x3	// tmp342, bits
+	clz	x5, x5	// tmp342, tmp342
+// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
+	sub	x11, x3, #1	// _165, bits,
+// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w2, w5	// tmp347, idx, tmp342
+// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
+	and	x3, x3, x11	// bits, bits, _165
+// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 12	// tmp327, *base_4(D),
+// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w9, [x0, x4, lsl 2]	// tmp329, *_133
+// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 13	// tmp333, *base_4(D),
+// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w8, [x0, x4, lsl 2]	// tmp335, *_143
+// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 14	// tmp339, *base_4(D),
+// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w7, [x0, x4, lsl 2]	// tmp341, *_153
+// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_4(D)
+// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 15	// tmp345, *base_4(D),
+// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w5, [x0, x4, lsl 2]	// tmp347, *_163
+// bitmapdecoding.cpp:158:     if (cnt > 16) {
+	ble	.L2114		//,
+// bitmapdecoding.cpp:159:       base += 16;
+	ldr	w4, [x1]	//, *base_4(D)
+	add	w4, w4, 16	// _180, *base_4(D),
+	str	w4, [x1]	// _180, *base_4(D)
+	.p2align 3,,7
+.L2115:
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x5, x3	// tmp349, bits
+	clz	x5, x5	// tmp349, tmp349
+// bitmapdecoding.cpp:161:         base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w2, w5	// tmp352, idx, tmp349
+// bitmapdecoding.cpp:161:         base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w5, [x0, w4, uxtw 2]	// tmp352, *_175
+// bitmapdecoding.cpp:162:         bits = bits & (bits - 1);
+	sub	x4, x3, #1	// _177, bits,
+// bitmapdecoding.cpp:164:       } while (bits != 0);
+	ands	x3, x3, x4	// bits, bits, _177
+// bitmapdecoding.cpp:163:         base++;
+	ldr	w4, [x1]	//, *base_4(D)
+	add	w4, w4, 1	// _180, *base_4(D),
+	str	w4, [x1]	// _180, *base_4(D)
+// bitmapdecoding.cpp:164:       } while (bits != 0);
+	bne	.L2115		//,
+.L2114:
+// bitmapdecoding.cpp:166:     base = next_base;
+	str	w6, [x1]	// next_base, *base_4(D)
+// bitmapdecoding.cpp:168: }
+	ret	
+	.cfi_endproc
+.LFE3110:
+	.size	_Z14faster_decoderPjRjjm.part.0, .-_Z14faster_decoderPjRjjm.part.0
 	.section	.rodata.str1.8,"aMS",@progbits,1
 	.align	3
 .LC0:
@@ -16411,538 +16710,193 @@ _Z6unpackILj64EEvP6lead_sS1_Pj:
 _Z4unitIXadL_ZL12fast_decoderPjRjjmEEEbv:
 .LFB2418:
 	.cfi_startproc
-	sub	sp, sp, #544	//,,
-	.cfi_def_cfa_offset 544
-	mov	w0, 64	// _197,
-	mov	w11, w0	// _188, _197
-	mov	w10, w0	// _179, _197
-	mov	w9, w0	// _174, _197
-	mov	w8, w0	// _165, _197
-	mov	w7, w0	// _155, _197
-	mov	w2, w0	// _145, _197
-	mov	w1, 0	// _206,
-	mov	x6, 1	//,
+	sub	sp, sp, #560	//,,
+	.cfi_def_cfa_offset 560
+	mov	w12, 0	// prephitmp_86,
 // bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
-	mov	x3, 0	// i,
+	mov	x14, 0	// i,
 // bitmapdecoding.cpp:266:     x <<= i;
-	mov	x4, 1	// tmp291,
+	mov	x13, 1	// tmp138,
 // bitmapdecoding.cpp:261: template <void (*F)(uint32_t *, uint32_t &, uint32_t, uint64_t)> bool unit() {
 	stp	x29, x30, [sp]	//,,
-	.cfi_offset 29, -544
-	.cfi_offset 30, -536
+	.cfi_offset 29, -560
+	.cfi_offset 30, -552
 	mov	x29, sp	//,
-.L2123:
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	x12, sp, 296	//,,
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	x13, sp, 312	//,,
-// bitmapdecoding.cpp:140:     if (cnt > 8) {
-	cmp	w6, 8	// _2,
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w1, w2, [x12, -8]	// _206, _145, MEM[(uint32_t *)&decoded]
+.L2128:
 // bitmapdecoding.cpp:266:     x <<= i;
-	lsl	x2, x4, x3	// x, tmp291, i
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w9, w10, [x13, -8]	// _174, _179, MEM[(uint32_t *)&decoded + 16B]
-// bitmapdecoding.cpp:266:     x <<= i;
-	fmov	d0, x2	// x, x
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w7, w8, [x12]	// _155, _165, MEM[(uint32_t *)&decoded + 8B]
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w11, w0, [x13]	// _188, _197, MEM[(uint32_t *)&decoded + 24B]
-// bitmapdecoding.cpp:140:     if (cnt > 8) {
-	ble	.L2115		//,
-// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
-	sub	x0, x2, #1	// tmp292, x,
-// bitmapdecoding.cpp:158:     if (cnt > 16) {
-	cmp	w6, 16	// _2,
-// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, tmp292, x
-// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _100, bits,
-// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _100
-// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _110, bits,
-// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _110
-// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _120, bits,
-// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _120
-// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _130, bits,
-// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _130
-// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _140, bits,
-// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _140
-// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _150, bits,
-// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _150
-// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _160, bits,
-// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _160
-// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _170, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp293, bits
-// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _170
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp293, tmp293
-// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _180, bits,
-// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 320]	// tmp293, MEM[(uint32_t *)&decoded + 32B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp294, bits
-// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _180
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp294, tmp294
-// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _190, bits,
-// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 324]	// tmp294, MEM[(uint32_t *)&decoded + 36B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp295, bits
-// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _190
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp295, tmp295
-// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _200, bits,
-// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 328]	// tmp295, MEM[(uint32_t *)&decoded + 40B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp296, bits
-// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _200
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp296, tmp296
-// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _210, bits,
-// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 332]	// tmp296, MEM[(uint32_t *)&decoded + 44B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp297, bits
-// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _210
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp297, tmp297
-// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _220, bits,
-// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 336]	// tmp297, MEM[(uint32_t *)&decoded + 48B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp298, bits
-// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _220
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp298, tmp298
-// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _230, bits,
-// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 340]	// tmp298, MEM[(uint32_t *)&decoded + 52B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp299, bits
-// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _230
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp299, tmp299
-	rbit	x2, x0	// tmp300, bits
-// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 344]	// tmp299, MEM[(uint32_t *)&decoded + 56B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp300, tmp300
-// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [sp, 348]	// tmp300, MEM[(uint32_t *)&decoded + 60B]
-// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _240, bits,
-// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _240
-// bitmapdecoding.cpp:158:     if (cnt > 16) {
-	ble	.L2115		//,
-	add	x2, sp, 288	// ivtmp.1703,,
+	lsl	x0, x13, x14	// x, tmp138, i
+	fmov	d1, x0	// x, x
+	mov	x3, x0	//, x
+	add	x0, sp, 304	// tmp195,,
+	mov	w2, 0	//,
+	add	x1, sp, 44	// tmp194,,
+// bitmapdecoding.cpp:267:     uint32_t matches = 0;
+	str	wzr, [sp, 44]	//, matches
+	bl	_Z14faster_decoderPjRjjm.part.0		//
+	fmov	x0, d1	// bits, x
+	add	x2, sp, 48	// tmp196,,
 	.p2align 3,,7
-.L2116:
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp301, bits
-	add	x2, x2, 4	// ivtmp.1703, ivtmp.1703,
-	clz	x5, x5	// tmp301, tmp301
-// bitmapdecoding.cpp:161:         base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [x2, 60]	// tmp301, MEM[base: _77, offset: 64B]
-// bitmapdecoding.cpp:162:         bits = bits & (bits - 1);
-	sub	x5, x0, #1	// _252, bits,
-// bitmapdecoding.cpp:164:       } while (bits != 0);
-	ands	x0, x0, x5	// bits, bits, _252
-	bne	.L2116		//,
-.L2115:
-// bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
-	fmov	x0, d0	// bits, x
-	add	x2, sp, 32	// tmp397,,
-	.p2align 3,,7
-.L2114:
-// bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w1, [x2], 4	// _206, MEM[base: _87, offset: 0B]
+.L2122:
 // bitmapdecoding.cpp:88:     bits = bits & (bits - 1);
 	sub	x1, x0, #1	// _55, bits,
+// bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w12, [x2], 4	// prephitmp_86, MEM[base: _80, offset: 0B]
 // bitmapdecoding.cpp:86:   while (bits != 0) {
 	ands	x0, x0, x1	// bits, bits, _55
-	rbit	x1, x0	// _206, bits
-	clz	x1, x1	// _206, _206
-	bne	.L2114		//,
-	cnt	v0.8b, v0.8b	// tmp305, x
-	addv	b0, v0.8b	// tmp307, tmp305
+	rbit	x12, x0	// prephitmp_86, bits
+	clz	x12, x12	// prephitmp_86, prephitmp_86
+	bne	.L2122		//,
+	cnt	v1.8b, v1.8b	// tmp144, x
 // bitmapdecoding.cpp:271:     if (refmatches != matches) {
-	umov	w0, v0.b[0]	// tmp310, tmp307,
-	cmp	w0, w6	// tmp310, _2
-	bne	.L2120		//,
+	ldr	w4, [sp, 44]	//, matches
+	addv	b1, v1.8b	// tmp146, tmp144
+// bitmapdecoding.cpp:271:     if (refmatches != matches) {
+	umov	w0, v1.b[0]	// tmp149, tmp146,
+	cmp	w4, w0	// matches.99_2, tmp149
+	bne	.L2125		//,
 // bitmapdecoding.cpp:275:     for (size_t k = 0; k < matches; k++)
-	mov	x1, 1	// ivtmp.1686,
-	b	.L2121		//
+	uxtw	x4, w4	// _95, matches.99_2
+	mov	x1, 1	// ivtmp.1681,
+	b	.L2126		//
 	.p2align 2,,3
-.L2147:
+.L2143:
 // bitmapdecoding.cpp:275:     for (size_t k = 0; k < matches; k++)
-	cmp	x6, x1	// _95, ivtmp.1686
-	mov	x1, x5	// ivtmp.1686, ivtmp.1686
-	beq	.L2146		//,
-.L2121:
+	cmp	x1, x4	// ivtmp.1681, _95
+	mov	x1, x3	// ivtmp.1681, ivtmp.1681
+	bcs	.L2142		//,
+.L2126:
 // bitmapdecoding.cpp:276:       if (decoded[k] != refdecoded[k]) {
-	lsl	x0, x1, 2	// tmp315, ivtmp.1686,
-	add	x2, sp, 288	// tmp400,,
-	add	x7, sp, 32	// tmp401,,
-	add	x2, x2, x0	// tmp314, tmp400, tmp315
-	add	x0, x7, x0	// tmp317, tmp401, tmp315
-	add	x5, x1, 1	// ivtmp.1686, ivtmp.1686,
+	lsl	x0, x1, 2	// tmp154, ivtmp.1681,
+	add	x2, sp, 304	// tmp197,,
+	add	x5, sp, 48	// tmp198,,
+	add	x2, x2, x0	// tmp153, tmp197, tmp154
+	add	x0, x5, x0	// tmp156, tmp198, tmp154
+	add	x3, x1, 1	// ivtmp.1681, ivtmp.1681,
 // bitmapdecoding.cpp:276:       if (decoded[k] != refdecoded[k]) {
-	ldr	w2, [x2, -4]	//, MEM[symbol: decoded, index: ivtmp.1686_109, step: 4, offset: -4B]
-	ldr	w0, [x0, -4]	//, MEM[symbol: refdecoded, index: ivtmp.1686_109, step: 4, offset: -4B]
-	cmp	w2, w0	// MEM[symbol: decoded, index: ivtmp.1686_109, step: 4, offset: -4B], MEM[symbol: refdecoded, index: ivtmp.1686_109, step: 4, offset: -4B]
-	beq	.L2147		//,
-.L2120:
+	ldr	w2, [x2, -4]	//, MEM[symbol: decoded, index: ivtmp.1681_26, step: 4, offset: -4B]
+	ldr	w0, [x0, -4]	//, MEM[symbol: refdecoded, index: ivtmp.1681_26, step: 4, offset: -4B]
+	cmp	w2, w0	// MEM[symbol: decoded, index: ivtmp.1681_26, step: 4, offset: -4B], MEM[symbol: refdecoded, index: ivtmp.1681_26, step: 4, offset: -4B]
+	beq	.L2143		//,
+.L2125:
 // bitmapdecoding.cpp:272:       printf("bug\n");
-	adrp	x0, .LC0	// tmp312,
-	add	x0, x0, :lo12:.LC0	//, tmp312,
+	adrp	x0, .LC0	// tmp151,
+	add	x0, x0, :lo12:.LC0	//, tmp151,
 	bl	puts		//
 // bitmapdecoding.cpp:273:       return false;
 	mov	w0, 0	// _16,
-.L2119:
+.L2124:
 // bitmapdecoding.cpp:302: }
 	ldp	x29, x30, [sp]	//,,
-	add	sp, sp, 544	//,,
+	add	sp, sp, 560	//,,
 	.cfi_remember_state
 	.cfi_restore 29
 	.cfi_restore 30
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2146:
+.L2142:
 	.cfi_restore_state
 // bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
-	add	x3, x3, 1	// i, i,
+	add	x14, x14, 1	// i, i,
 // bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
-	cmp	x3, 64	// i,
-	beq	.L2131		//,
-	lsl	x0, x4, x3	// _485, tmp291, i
-	sub	x2, x0, #1	// tmp329, _485,
-	and	x2, x2, x0	// _144, tmp329, _485
-	rbit	x1, x0	// _206, _485
-	sub	x5, x2, #1	// tmp331, _144,
-	fmov	d0, x0	// tmp402, _485
-	and	x5, x5, x2	// _154, tmp331, _144
-	rbit	x2, x2	// _145, _144
-	sub	x0, x5, #1	// tmp333, _154,
-	rbit	x7, x5	// _155, _154
-	and	x0, x0, x5	// _164, tmp333, _154
-	cnt	v0.8b, v0.8b	// tmp325, tmp402
-	sub	x5, x0, #1	// tmp335, _164,
-	rbit	x8, x0	// _165, _164
-	and	x0, x5, x0	// _169, tmp335, _164
-	clz	x1, x1	// _206, _206
-	sub	x5, x0, #1	// tmp337, _169,
-	rbit	x9, x0	// _174, _169
-	and	x5, x5, x0	// _178, tmp337, _169
-	addv	b0, v0.8b	// tmp327, tmp325
-	sub	x0, x5, #1	// tmp339, _178,
-	rbit	x10, x5	// _179, _178
-	and	x5, x0, x5	// _187, tmp339, _178
-	clz	x2, x2	// _145, _145
-	sub	x0, x5, #1	// tmp341, _187,
-	rbit	x11, x5	// _188, _187
-	and	x0, x0, x5	// tmp342, tmp341, _187
-	umov	w6, v0.b[0]	//, tmp327,
-	rbit	x0, x0	// _197, tmp342
-	clz	x7, x7	// _155, _155
-	clz	x8, x8	// _165, _165
-	clz	x9, x9	// _174, _174
-	clz	x10, x10	// _179, _179
-	clz	x11, x11	// _188, _188
-	clz	x0, x0	// _197, _197
-	b	.L2123		//
-.L2131:
+	cmp	x14, 64	// i,
+	beq	.L2134		//,
+	lsl	x12, x13, x14	// tmp161, tmp138, i
+	rbit	x12, x12	// prephitmp_86, tmp161
+	clz	x12, x12	// prephitmp_86, prephitmp_86
+	b	.L2128		//
+.L2134:
 	stp	x19, x20, [sp, 16]	//,,
-	.cfi_offset 20, -520
-	.cfi_offset 19, -528
-	mov	x19, 16960	// ivtmp_159,
-	movk	x19, 0xf, lsl 16	// ivtmp_159,,
-.L2122:
+	.cfi_offset 20, -536
+	.cfi_offset 19, -544
+	mov	x19, 16960	// ivtmp_59,
+	movk	x19, 0xf, lsl 16	// ivtmp_59,,
+.L2127:
 // bitmapdecoding.cpp:282:     uint64_t x = rand();
 	bl	rand		//
 // bitmapdecoding.cpp:283:     x <<= 32;
-	lsl	x20, x0, 32	// x, tmp390,
+	lsl	x20, x0, 32	// x, tmp190,
 // bitmapdecoding.cpp:284:     x |= rand();
 	bl	rand		//
+// bitmapdecoding.cpp:285:     uint32_t matches = 0;
+	str	wzr, [sp, 44]	//, matches
 // bitmapdecoding.cpp:284:     x |= rand();
-	sxtw	x0, w0	// _35, tmp391
+	sxtw	x12, w0	// _35, tmp191
 // bitmapdecoding.cpp:284:     x |= rand();
-	orr	x0, x0, x20	// x, _35, x
+	orr	x12, x12, x20	// x, _35, x
 // bitmapdecoding.cpp:121:   if (bits != 0u) {
-	cbz	x0, .L2124	// x,
-// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
-	sub	x1, x0, #1	// tmp351, x,
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	fmov	d0, x0	// tmp403, x
-// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
-	and	x1, x1, x0	// bits, tmp351, x
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	x6, sp, 296	//,,
-// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _277, bits,
+	cbz	x12, .L2129	// x,
+	add	x0, sp, 304	// tmp200,,
+	mov	w2, 0	//,
+	mov	x3, x12	//, x
+	add	x1, sp, 44	// tmp199,,
+	bl	_Z14faster_decoderPjRjjm.part.0		//
+	mov	x0, x12	// k, x
+	add	x2, sp, 48	// tmp201,,
+.L2130:
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x4, x1	// tmp352, bits
-// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _277
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	cnt	v0.8b, v0.8b	// tmp387, tmp403
-// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _287, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x8, x1	// tmp353, bits
-// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _287
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x0	// tmp350, x
-// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _297, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp350, tmp350
-	rbit	x7, x1	// tmp354, bits
-// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _297
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x4, x4	// tmp352, tmp352
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	addv	b1, v0.8b	// tmp349, tmp387
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w2, w4, [x6, -8]	// tmp350, tmp352, MEM[(uint32_t *)&decoded]
-// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _307, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x3, x1	// tmp355, bits
-// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _307
-// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _317, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x8, x8	// tmp353, tmp353
-	clz	x7, x7	// tmp354, tmp354
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w8, w7, [x6]	// tmp353, tmp354, MEM[(uint32_t *)&decoded + 8B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x6, x1	// tmp356, bits
-// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _317
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	umov	w5, v1.b[0]	// tmp345, tmp349,
-// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _327, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x4, x1	// tmp357, bits
-// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _327
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x1	// tmp358, bits
-	clz	x3, x3	// tmp355, tmp355
-	clz	x6, x6	// tmp356, tmp356
-	clz	x4, x4	// tmp357, tmp357
-	clz	x2, x2	// tmp358, tmp358
-// bitmapdecoding.cpp:132:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w3, [sp, 304]	// tmp355, MEM[(uint32_t *)&decoded + 16B]
-// bitmapdecoding.cpp:134:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w6, [sp, 308]	// tmp356, MEM[(uint32_t *)&decoded + 20B]
-// bitmapdecoding.cpp:140:     if (cnt > 8) {
-	cmp	w5, 8	// tmp345,
-// bitmapdecoding.cpp:136:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w4, [sp, 312]	// tmp357, MEM[(uint32_t *)&decoded + 24B]
-// bitmapdecoding.cpp:122:     uint32_t cnt = hamming(bits);
-	uxtw	x3, w5	//, tmp345
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [sp, 316]	// tmp358, MEM[(uint32_t *)&decoded + 28B]
-// bitmapdecoding.cpp:140:     if (cnt > 8) {
-	ble	.L2127		//,
-// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _337, bits,
-// bitmapdecoding.cpp:158:     if (cnt > 16) {
-	cmp	w5, 16	// tmp345,
-// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _337
-// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _347, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x4, x1	// tmp359, bits
-// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _347
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x4, x4	// tmp359, tmp359
-// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _357, bits,
-// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w4, [sp, 320]	// tmp359, MEM[(uint32_t *)&decoded + 32B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x4, x1	// tmp360, bits
-// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _357
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x4, x4	// tmp360, tmp360
-// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _367, bits,
-// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w4, [sp, 324]	// tmp360, MEM[(uint32_t *)&decoded + 36B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x4, x1	// tmp361, bits
-// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _367
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x4, x4	// tmp361, tmp361
-// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _377, bits,
-// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w4, [sp, 328]	// tmp361, MEM[(uint32_t *)&decoded + 40B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x4, x1	// tmp362, bits
-// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _377
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x4, x4	// tmp362, tmp362
-// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _387, bits,
-// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w4, [sp, 332]	// tmp362, MEM[(uint32_t *)&decoded + 44B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x4, x1	// tmp363, bits
-// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _387
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x4, x4	// tmp363, tmp363
-// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _397, bits,
-// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w4, [sp, 336]	// tmp363, MEM[(uint32_t *)&decoded + 48B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x4, x1	// tmp364, bits
-// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _397
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x4, x4	// tmp364, tmp364
-// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _407, bits,
-// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w4, [sp, 340]	// tmp364, MEM[(uint32_t *)&decoded + 52B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x4, x1	// tmp365, bits
-// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _407
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x4, x4	// tmp365, tmp365
-	rbit	x2, x1	// tmp366, bits
-// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w4, [sp, 344]	// tmp365, MEM[(uint32_t *)&decoded + 56B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp366, tmp366
-// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [sp, 348]	// tmp366, MEM[(uint32_t *)&decoded + 60B]
-// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _417, bits,
-// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _417
-// bitmapdecoding.cpp:158:     if (cnt > 16) {
-	ble	.L2127		//,
-	add	x2, sp, 288	// tmp405,,
-.L2128:
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x4, x1	// tmp367, bits
-	add	x2, x2, 4	// ivtmp.1676, ivtmp.1676,
-	clz	x4, x4	// tmp367, tmp367
-// bitmapdecoding.cpp:161:         base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w4, [x2, 60]	// tmp367, MEM[base: _114, offset: 64B]
-// bitmapdecoding.cpp:162:         bits = bits & (bits - 1);
-	sub	x4, x1, #1	// _429, bits,
-// bitmapdecoding.cpp:164:       } while (bits != 0);
-	ands	x1, x1, x4	// bits, bits, _429
-	bne	.L2128		//,
-.L2127:
-	add	x2, sp, 32	// tmp404,,
-.L2126:
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x1, x0	// tmp368, k
-	clz	x1, x1	// tmp368, tmp368
+	rbit	x1, x0	// tmp167, k
+	clz	x1, x1	// tmp167, tmp167
 // bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w1, [x2], 4	// tmp368, MEM[base: _128, offset: 0B]
+	str	w1, [x2], 4	// tmp167, MEM[base: _3, offset: 0B]
 // bitmapdecoding.cpp:88:     bits = bits & (bits - 1);
 	sub	x1, x0, #1	// _65, k,
 // bitmapdecoding.cpp:86:   while (bits != 0) {
 	ands	x0, x0, x1	// k, k, _65
-	bne	.L2126		//,
-	addv	b0, v0.8b	// tmp373, tmp387
+	bne	.L2130		//,
+	fmov	d0, x12	// tmp202, x
 // bitmapdecoding.cpp:289:     if (refmatches != matches) {
-	umov	w1, v0.b[0]	// tmp376, tmp373,
-	cmp	w5, w1	// tmp345, tmp376
-	bne	.L2145		//,
-.L2129:
+	ldr	w3, [sp, 44]	//, matches
+	cnt	v0.8b, v0.8b	// tmp170, tmp202
+	addv	b0, v0.8b	// tmp172, tmp170
+	umov	w1, v0.b[0]	// _18, tmp172,
+	cmp	w3, w1	// matches, _18
+	bne	.L2132		//,
+	uxtw	x3, w3	// _18, matches
+.L2131:
 // bitmapdecoding.cpp:293:     for (size_t k = 0; k < matches; k++) {
-	cmp	x3, x0	// cnt, k
-	bls	.L2124		//,
+	cmp	x3, x0	// _18, k
+	bls	.L2129		//,
 // bitmapdecoding.cpp:294:       if (decoded[k] != refdecoded[k]) {
-	add	x1, sp, 288	// tmp406,,
+	add	x1, sp, 304	// tmp203,,
 	ldr	w2, [x1, x0, lsl 2]	//, MEM[symbol: decoded, index: k_15, step: 4, offset: 0B]
-	add	x1, sp, 32	// tmp407,,
+	add	x1, sp, 48	// tmp204,,
 	ldr	w1, [x1, x0, lsl 2]	//, MEM[symbol: refdecoded, index: k_15, step: 4, offset: 0B]
 // bitmapdecoding.cpp:293:     for (size_t k = 0; k < matches; k++) {
 	add	x0, x0, 1	// k, k,
 // bitmapdecoding.cpp:294:       if (decoded[k] != refdecoded[k]) {
 	cmp	w2, w1	// MEM[symbol: decoded, index: k_15, step: 4, offset: 0B], MEM[symbol: refdecoded, index: k_15, step: 4, offset: 0B]
-	beq	.L2129		//,
-.L2145:
+	beq	.L2131		//,
+.L2132:
+// bitmapdecoding.cpp:290:       printf("bug\n");
+	adrp	x0, .LC0	// tmp177,
+	add	x0, x0, :lo12:.LC0	//, tmp177,
+	bl	puts		//
+// bitmapdecoding.cpp:291:       return false;
+	mov	w0, 0	// _16,
 	ldp	x19, x20, [sp, 16]	//,,
 	.cfi_remember_state
 	.cfi_restore 20
 	.cfi_restore 19
-	b	.L2120		//
-.L2124:
+	b	.L2124		//
+.L2129:
 	.cfi_restore_state
 // bitmapdecoding.cpp:281:   for (size_t i = 0; i < 1000000; i++) {
-	subs	x19, x19, #1	// ivtmp_159, ivtmp_159,
-	bne	.L2122		//,
+	subs	x19, x19, #1	// ivtmp_59, ivtmp_59,
+	bne	.L2127		//,
 // bitmapdecoding.cpp:300:   printf("Tests passed.\n");
-	adrp	x0, .LC1	// tmp383,
-	add	x0, x0, :lo12:.LC1	//, tmp383,
+	adrp	x0, .LC1	// tmp184,
+	add	x0, x0, :lo12:.LC1	//, tmp184,
 	bl	puts		//
 // bitmapdecoding.cpp:301:   return true;
 	mov	w0, 1	// _16,
 	ldp	x19, x20, [sp, 16]	//,,
 	.cfi_restore 20
 	.cfi_restore 19
-	b	.L2119		//
+	b	.L2124		//
 	.cfi_endproc
 .LFE2418:
 	.size	_Z4unitIXadL_ZL12fast_decoderPjRjjmEEEbv, .-_Z4unitIXadL_ZL12fast_decoderPjRjjmEEEbv
-	.set	_Z4unitIXadL_ZL14faster_decoderPjRjjmEEEbv,_Z4unitIXadL_ZL12fast_decoderPjRjjmEEEbv
-	.set	_Z4unitIXadL_ZL16simdjson_decoderPjRjjmEEEbv,_Z4unitIXadL_ZL12fast_decoderPjRjjmEEEbv
 	.align	2
 	.p2align 3,,7
 	.global	_Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE
@@ -16966,7 +16920,7 @@ _Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE:
 	ldp	x20, x21, [x0]	// pretmp_83, pretmp_85, MEM[(struct vector * *)allresults_10(D)]
 // linux-perf-events.h:96:   if (allresults.size() == 0)
 	cmp	x20, x21	// pretmp_83, pretmp_85
-	beq	.L2166		//,
+	beq	.L2162		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:552: 	_Alloc_traits::_S_select_on_copy(__x._M_get_Tp_allocator()))
 	ldr	x1, [x20]	// pretmp_30, MEM[(long long unsigned int * *)_20]
 	str	x23, [sp, 48]	//,
@@ -16981,11 +16935,11 @@ _Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x2, x19, 3	// tmp117, _79,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L2167		//,
+	beq	.L2163		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x0, 1152921504606846975	// tmp118,
 	cmp	x2, x0	// tmp117, tmp118
-	bhi	.L2168		//,
+	bhi	.L2164		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x19	//, _79
 	bl	_Znwm		//
@@ -16994,18 +16948,18 @@ _Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE:
 	ldp	x1, x0, [x20]	// pretmp_30, pretmp_24, MEM[(long long unsigned int * *)_20]
 	ldp	x20, x21, [x23]	// pretmp_83, pretmp_85, MEM[(struct vector * *)allresults_10(D)]
 	sub	x19, x0, x1	// _79, pretmp_24, pretmp_30
-.L2152:
+.L2148:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x23, x4, x2	// _51, _59, _58
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
 	cmp	x1, x0	// pretmp_30, pretmp_24
-	beq	.L2154		//,
+	beq	.L2150		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	mov	x0, x4	//, _59
 	mov	x2, x19	//, _79
 	bl	memmove		//
 	mov	x4, x0	// _59,
-.L2154:
+.L2150:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	sub	x9, x21, x20	// tmp120, pretmp_85, pretmp_83
 	mov	x1, -6148914691236517206	// tmp123,
@@ -17014,7 +16968,7 @@ _Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE:
 	mov	x7, 1	// k,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x9, x9, 3	// tmp121, tmp120,
-	add	x6, x20, 24	// ivtmp.1733, pretmp_83,
+	add	x6, x20, 24	// ivtmp.1721, pretmp_83,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
 	add	x8, x4, x19	// _57, _59, _79
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
@@ -17022,39 +16976,39 @@ _Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE:
 	mul	x9, x9, x1	// _74, tmp121, tmp123
 // linux-perf-events.h:101:   for (size_t k = 1; k < allresults.size(); k++) {
 	cmp	x9, x7	// _74,
-	bls	.L2158		//,
+	bls	.L2154		//,
 	.p2align 3,,7
-.L2157:
+.L2153:
 // linux-perf-events.h:102:     for (size_t z = 0; z < answer.size(); z++) {
-	cbz	x0, .L2161	// _40,
+	cbz	x0, .L2157	// _40,
 // linux-perf-events.h:103:       if (allresults[k][z] < answer[z])
 	ldr	x5, [x6]	// _26, MEM[base: _29, offset: 0B]
 // linux-perf-events.h:102:     for (size_t z = 0; z < answer.size(); z++) {
 	mov	x1, 0	// z,
 	.p2align 3,,7
-.L2160:
+.L2156:
 // linux-perf-events.h:103:       if (allresults[k][z] < answer[z])
 	ldr	x2, [x5, x1, lsl 3]	// _1, MEM[base: _26, index: z_77, step: 8, offset: 0]
 // linux-perf-events.h:103:       if (allresults[k][z] < answer[z])
 	ldr	x3, [x4, x1, lsl 3]	// MEM[base: iftmp.4_60, index: z_77, step: 8, offset: 0], MEM[base: iftmp.4_60, index: z_77, step: 8, offset: 0]
 	cmp	x2, x3	// _1, MEM[base: iftmp.4_60, index: z_77, step: 8, offset: 0]
-	bcs	.L2159		//,
+	bcs	.L2155		//,
 // linux-perf-events.h:104:         answer[z] = allresults[k][z];
 	str	x2, [x4, x1, lsl 3]	// _1, MEM[base: iftmp.4_60, index: z_77, step: 8, offset: 0]
-.L2159:
+.L2155:
 // linux-perf-events.h:102:     for (size_t z = 0; z < answer.size(); z++) {
 	add	x1, x1, 1	// z, z,
 // linux-perf-events.h:102:     for (size_t z = 0; z < answer.size(); z++) {
 	cmp	x1, x0	// z, _40
-	bne	.L2160		//,
-.L2161:
+	bne	.L2156		//,
+.L2157:
 // linux-perf-events.h:101:   for (size_t k = 1; k < allresults.size(); k++) {
 	add	x7, x7, 1	// k, k,
-	add	x6, x6, 24	// ivtmp.1733, ivtmp.1733,
+	add	x6, x6, 24	// ivtmp.1721, ivtmp.1721,
 // linux-perf-events.h:101:   for (size_t k = 1; k < allresults.size(); k++) {
 	cmp	x7, x9	// k, _74
-	bne	.L2157		//,
-.L2158:
+	bne	.L2153		//,
+.L2154:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:101: 	  _M_end_of_storage(__x._M_end_of_storage)
 	stp	x4, x8, [x22]	// _59, _57, MEM[(struct _Vector_impl_data *)_12(D)]._M_start
 // linux-perf-events.h:108: }
@@ -17078,7 +17032,7 @@ _Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2166:
+.L2162:
 	.cfi_def_cfa_offset 64
 	.cfi_offset 19, -48
 	.cfi_offset 20, -40
@@ -17104,7 +17058,7 @@ _Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE:
 	.cfi_restore 20
 	.cfi_def_cfa_offset 0
 	ret	
-.L2167:
+.L2163:
 	.cfi_def_cfa_offset 64
 	.cfi_offset 19, -48
 	.cfi_offset 20, -40
@@ -17116,8 +17070,8 @@ _Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE:
 	mov	x2, x19	// _58, _79
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
 	mov	x4, 0	// _59,
-	b	.L2152		//
-.L2168:
+	b	.L2148		//
+.L2164:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
 	bl	_ZSt17__throw_bad_allocv		//
 	.cfi_endproc
@@ -17149,7 +17103,7 @@ _Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE:
 	mov	x21, x8	// <retval>, tmp154
 // linux-perf-events.h:112:   if (allresults.size() == 0)
 	cmp	x3, x1	// pretmp_110, _33
-	beq	.L2191		//,
+	beq	.L2187		//,
 	stp	x19, x20, [sp, 16]	//,,
 	.cfi_offset 20, -24
 	.cfi_offset 19, -32
@@ -17158,9 +17112,9 @@ _Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE:
 	sub	x20, x6, x20	// _23, MEM[(long long unsigned int * *)_32 + 8B], MEM[(long long unsigned int * *)_32]
 	asr	x19, x20, 3	// prephitmp_118, _23,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1766: 	if (__n > _S_max_size(_Tp_alloc_type(__a)))
-	tbnz	x20, #63, .L2192	// _23,
+	tbnz	x20, #63, .L2188	// _23,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cbz	x19, .L2173	// prephitmp_118,
+	cbz	x19, .L2169	// prephitmp_118,
 	mov	x22, x0	// allresults, tmp155
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x20	//, _23
@@ -17170,12 +17124,12 @@ _Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE:
 	mov	x1, x0	// __first, iftmp.14_43
 	mov	x7, x6	// __first, _16
 	.p2align 3,,7
-.L2174:
+.L2170:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:772: 	*__first = __tmp;
 	str	xzr, [x1], 8	//, MEM[base: __first_104, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:771: 	   __niter > 0; --__niter, (void) ++__first)
 	cmp	x6, x1	// _16, __first
-	bne	.L2174		//,
+	bne	.L2170		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x3, x4, [x22]	// pretmp_110, MEM[(struct vector * *)allresults_15(D) + 8B], MEM[(struct vector * *)allresults_15(D)]
 	mov	x1, -6148914691236517206	// tmp140,
@@ -17184,19 +17138,19 @@ _Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE:
 	asr	x4, x4, 3	// tmp138, tmp136,
 	mul	x4, x4, x1	// _10, tmp138, tmp140
 // linux-perf-events.h:117:   for (size_t k = 0; k < allresults.size(); k++) {
-	cbz	x4, .L2176	// _10,
+	cbz	x4, .L2172	// _10,
 // linux-perf-events.h:117:   for (size_t k = 0; k < allresults.size(); k++) {
 	mov	x5, 0	// k,
 	.p2align 3,,7
-.L2179:
+.L2175:
 // linux-perf-events.h:118:     for (size_t z = 0; z < answer.size(); z++) {
-	cbz	x19, .L2182	// prephitmp_118,
+	cbz	x19, .L2178	// prephitmp_118,
 // linux-perf-events.h:119:       answer[z] += allresults[k][z];
 	ldr	x2, [x3]	// _39, MEM[base: _55, offset: 0B]
 // linux-perf-events.h:118:     for (size_t z = 0; z < answer.size(); z++) {
 	mov	x1, 0	// z,
 	.p2align 3,,7
-.L2181:
+.L2177:
 // linux-perf-events.h:119:       answer[z] += allresults[k][z];
 	ldr	d1, [x2, x1, lsl 3]	// MEM[base: _39, index: z_65, step: 8, offset: 0], MEM[base: _39, index: z_65, step: 8, offset: 0]
 	ldr	d0, [x0, x1, lsl 3]	// MEM[base: iftmp.14_45, index: z_65, step: 8, offset: 0], MEM[base: iftmp.14_45, index: z_65, step: 8, offset: 0]
@@ -17207,30 +17161,30 @@ _Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE:
 	add	x1, x1, 1	// z, z,
 // linux-perf-events.h:118:     for (size_t z = 0; z < answer.size(); z++) {
 	cmp	x1, x19	// z, prephitmp_118
-	bne	.L2181		//,
-.L2182:
+	bne	.L2177		//,
+.L2178:
 // linux-perf-events.h:117:   for (size_t k = 0; k < allresults.size(); k++) {
 	add	x5, x5, 1	// k, k,
-	add	x3, x3, 24	// ivtmp.1755, ivtmp.1755,
+	add	x3, x3, 24	// ivtmp.1743, ivtmp.1743,
 // linux-perf-events.h:117:   for (size_t k = 0; k < allresults.size(); k++) {
 	cmp	x4, x5	// _10, k
-	bne	.L2179		//,
-.L2176:
+	bne	.L2175		//,
+.L2172:
 // linux-perf-events.h:123:   for (size_t z = 0; z < answer.size(); z++) {
-	cbz	x19, .L2184	// prephitmp_118,
+	cbz	x19, .L2180	// prephitmp_118,
 	ucvtf	d1, x4	// _121, _10
 	add	x19, x0, x19, lsl 3	// _68, iftmp.14_43, prephitmp_118,
-	mov	x1, x0	// ivtmp.1745, iftmp.14_43
+	mov	x1, x0	// ivtmp.1733, iftmp.14_43
 	.p2align 3,,7
-.L2183:
+.L2179:
 // linux-perf-events.h:124:     answer[z] /= allresults.size();
 	ldr	d0, [x1]	// MEM[base: _78, offset: 0], MEM[base: _78, offset: 0]
 	fdiv	d0, d0, d1	// tmp146, MEM[base: _78, offset: 0], _121
 	str	d0, [x1], 8	// tmp146, MEM[base: _78, offset: 0]
 // linux-perf-events.h:123:   for (size_t z = 0; z < answer.size(); z++) {
-	cmp	x19, x1	// _68, ivtmp.1745
-	bne	.L2183		//,
-.L2184:
+	cmp	x19, x1	// _68, ivtmp.1733
+	bne	.L2179		//,
+.L2180:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:680:       }
 	ldp	x19, x20, [sp, 16]	//,,
 	.cfi_restore 20
@@ -17251,7 +17205,7 @@ _Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2191:
+.L2187:
 	.cfi_def_cfa_offset 48
 	.cfi_offset 21, -16
 	.cfi_offset 22, -8
@@ -17272,7 +17226,7 @@ _Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE:
 	.cfi_restore 22
 	.cfi_def_cfa_offset 0
 	ret	
-.L2173:
+.L2169:
 	.cfi_def_cfa_offset 48
 	.cfi_offset 19, -32
 	.cfi_offset 20, -24
@@ -17294,11 +17248,11 @@ _Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	mul	x4, x4, x1	// _10, tmp150, tmp152
 // linux-perf-events.h:117:   for (size_t k = 0; k < allresults.size(); k++) {
-	cbz	x4, .L2184	// _10,
+	cbz	x4, .L2180	// _10,
 // linux-perf-events.h:117:   for (size_t k = 0; k < allresults.size(); k++) {
 	mov	x5, 0	// k,
-	b	.L2179		//
-.L2192:
+	b	.L2175		//
+.L2188:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1767: 	  __throw_length_error(
 	adrp	x0, .LC2	// tmp133,
 	add	x0, x0, :lo12:.LC2	//, tmp133,
@@ -17348,7 +17302,7 @@ _Z14load_text_filePKcPm:
 // bitmapdecoding.cpp:49:   std::FILE *fp = std::fopen(filename, "rb");
 	bl	fopen		//
 // bitmapdecoding.cpp:50:   if (fp != nullptr) {
-	cbz	x0, .L2194	// _9,
+	cbz	x0, .L2190	// _9,
 // bitmapdecoding.cpp:51:     std::fseek(fp, 0, SEEK_END);
 	mov	w2, 2	//,
 	mov	x1, 0	//,
@@ -17378,7 +17332,7 @@ _Z14load_text_filePKcPm:
 // bitmapdecoding.cpp:57:     if (readb != *len) {
 	ldr	x0, [x20]	// *len_15(D), *len_15(D)
 	cmp	x0, x22	// *len_15(D), _22
-	bne	.L2205		//,
+	bne	.L2201		//,
 // bitmapdecoding.cpp:65: }
 	mov	x0, x21	//, <retval>
 	ldp	x19, x20, [sp, 16]	//,,
@@ -17394,7 +17348,7 @@ _Z14load_text_filePKcPm:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2194:
+.L2190:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/ostream:570: 	__ostream_insert(__out, __s,
 	adrp	x20, _ZSt4cout	// tmp166,
@@ -17405,7 +17359,7 @@ _Z14load_text_filePKcPm:
 	mov	x2, 11	//,
 	bl	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l		//
 // /usr/local/include/c++/9.1.0/ostream:567:       if (!__s)
-	cbz	x21, .L2206	// filename,
+	cbz	x21, .L2202	// filename,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:335: 	return __builtin_strlen(__s);
 	mov	x0, x21	//, filename
 	bl	strlen		//
@@ -17414,20 +17368,20 @@ _Z14load_text_filePKcPm:
 	mov	x2, x0	//, tmp174
 	mov	x0, x19	//, tmp165
 	bl	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l		//
-.L2197:
+.L2193:
 // /usr/local/include/c++/9.1.0/ostream:600:     { return flush(__os.put(__os.widen('\n'))); }
 	ldr	x0, [x20, #:lo12:_ZSt4cout]	// cout._vptr.basic_ostream, cout._vptr.basic_ostream
 	ldr	x0, [x0, -24]	// MEM[(long int *)_31 + -24B], MEM[(long int *)_31 + -24B]
 	add	x0, x19, x0	// tmp153, tmp165, MEM[(long int *)_31 + -24B]
 	ldr	x20, [x0, 240]	// _35, MEM[(const struct __ctype_type * *)_34 + 240B]
 // /usr/local/include/c++/9.1.0/bits/basic_ios.h:49:       if (!__f)
-	cbz	x20, .L2207	// _35,
+	cbz	x20, .L2203	// _35,
 // /usr/local/include/c++/9.1.0/bits/locale_facets.h:874: 	if (_M_widen_ok)
 	ldrb	w0, [x20, 56]	// MEM[(const struct ctype *)_35]._M_widen_ok, MEM[(const struct ctype *)_35]._M_widen_ok
-	cbz	w0, .L2199	// MEM[(const struct ctype *)_35]._M_widen_ok,
+	cbz	w0, .L2195	// MEM[(const struct ctype *)_35]._M_widen_ok,
 // /usr/local/include/c++/9.1.0/bits/locale_facets.h:875: 	  return _M_widen[static_cast<unsigned char>(__c)];
 	ldrb	w1, [x20, 67]	// _50, MEM[(const struct ctype *)_35]._M_widen
-.L2200:
+.L2196:
 // /usr/local/include/c++/9.1.0/ostream:600:     { return flush(__os.put(__os.widen('\n'))); }
 	mov	x0, x19	//, tmp165
 // bitmapdecoding.cpp:63:     return nullptr;
@@ -17451,7 +17405,7 @@ _Z14load_text_filePKcPm:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2199:
+.L2195:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/locale_facets.h:876: 	this->_M_widen_init();
 	mov	x0, x20	//, _35
@@ -17463,14 +17417,14 @@ _Z14load_text_filePKcPm:
 	mov	w1, 10	// _50,
 	ldr	x2, [x2, 48]	// _54, MEM[(int (*) () *)_53 + 48B]
 	cmp	x2, x0	// _54, tmp158
-	beq	.L2200		//,
+	beq	.L2196		//,
 // /usr/local/include/c++/9.1.0/bits/locale_facets.h:877: 	return this->do_widen(__c);
 	mov	x0, x20	//, _35
 	blr	x2		// _54
 	and	w1, w0, 255	// _50, tmp175
-	b	.L2200		//
+	b	.L2196		//
 	.p2align 2,,3
-.L2206:
+.L2202:
 // /usr/local/include/c++/9.1.0/ostream:568: 	__out.setstate(ios_base::badbit);
 	ldr	x0, [x20, #:lo12:_ZSt4cout]	// cout._vptr.basic_ostream, cout._vptr.basic_ostream
 	ldr	x0, [x0, -24]	// MEM[(long int *)_41 + -24B], MEM[(long int *)_41 + -24B]
@@ -17480,12 +17434,12 @@ _Z14load_text_filePKcPm:
 // /usr/local/include/c++/9.1.0/bits/basic_ios.h:158:       { this->clear(this->rdstate() | __state); }
 	orr	w1, w1, 1	//, MEM[(_Ios_Iostate *)_44 + 32B],
 	bl	_ZNSt9basic_iosIcSt11char_traitsIcEE5clearESt12_Ios_Iostate		//
-	b	.L2197		//
-.L2207:
+	b	.L2193		//
+.L2203:
 // /usr/local/include/c++/9.1.0/bits/basic_ios.h:50: 	__throw_bad_cast();
 	bl	_ZSt16__throw_bad_castv		//
 .LEHE0:
-.L2205:
+.L2201:
 // bitmapdecoding.cpp:58:       throw std::runtime_error("could not read the data");
 	mov	x0, 16	//,
 	bl	__cxa_allocate_exception		//
@@ -17503,7 +17457,7 @@ _Z14load_text_filePKcPm:
 	add	x1, x1, :lo12:_ZTISt13runtime_error	//, tmp133,
 .LEHB2:
 	bl	__cxa_throw		//
-.L2203:
+.L2199:
 	mov	x1, x0	// tmp176,
 // bitmapdecoding.cpp:58:       throw std::runtime_error("could not read the data");
 	mov	x0, x19	//, _25
@@ -17528,7 +17482,7 @@ _Z14load_text_filePKcPm:
 	.uleb128 0
 	.uleb128 .LEHB1-.LFB1983
 	.uleb128 .LEHE1-.LEHB1
-	.uleb128 .L2203-.LFB1983
+	.uleb128 .L2199-.LFB1983
 	.uleb128 0
 	.uleb128 .LEHB2-.LFB1983
 	.uleb128 .LEHE2-.LEHB2
@@ -17562,7 +17516,7 @@ _Z12build_bitmapPKccPm:
 	add	x1, sp, 56	//,,
 	bl	_Z14load_text_filePKcPm		//
 // bitmapdecoding.cpp:70:   if (filedata == nullptr)
-	cbz	x0, .L2213	// _23,
+	cbz	x0, .L2209	// _23,
 	mov	x20, x0	// _23, tmp135
 // bitmapdecoding.cpp:72:   *wordcount = len / 64;
 	ldr	x0, [sp, 56]	// len, len
@@ -17585,13 +17539,13 @@ _Z12build_bitmapPKccPm:
 // bitmapdecoding.cpp:75:   for (size_t i = 0; i < *wordcount * 64; i++) {
 	lsl	x4, x21, 6	// _39, _3,
 // bitmapdecoding.cpp:75:   for (size_t i = 0; i < *wordcount * 64; i++) {
-	beq	.L2210		//,
+	beq	.L2206		//,
 // bitmapdecoding.cpp:75:   for (size_t i = 0; i < *wordcount * 64; i++) {
 	mov	x1, 0	// i,
 // bitmapdecoding.cpp:77:       data[i / 64] |= (UINT64_C(1) << (i % 64));
 	mov	x5, 1	// tmp133,
 	.p2align 3,,7
-.L2212:
+.L2208:
 // bitmapdecoding.cpp:76:     if ((filedata[i] == target) || ((unsigned char)filedata[i] < 0x20)) {
 	ldrb	w2, [x20, x1]	// _7, MEM[base: _23, index: i_42, offset: 0B]
 // bitmapdecoding.cpp:77:       data[i / 64] |= (UINT64_C(1) << (i % 64));
@@ -17603,16 +17557,16 @@ _Z12build_bitmapPKccPm:
 // bitmapdecoding.cpp:76:     if ((filedata[i] == target) || ((unsigned char)filedata[i] < 0x20)) {
 	cmp	w2, w22	// _7, target
 	ccmp	w2, 31, 0, ne	// _7,,,
-	bhi	.L2211		//,
+	bhi	.L2207		//,
 // bitmapdecoding.cpp:77:       data[i / 64] |= (UINT64_C(1) << (i % 64));
 	ldr	x2, [x19, x3, lsl 3]	// *_9, *_9
 	orr	x2, x2, x0	// tmp130, *_9, tmp128
 	str	x2, [x19, x3, lsl 3]	// tmp130, *_9
-.L2211:
+.L2207:
 // bitmapdecoding.cpp:75:   for (size_t i = 0; i < *wordcount * 64; i++) {
 	cmp	x1, x4	// i, _39
-	bne	.L2212		//,
-.L2210:
+	bne	.L2208		//,
+.L2206:
 // bitmapdecoding.cpp:80:   delete[] filedata;
 	mov	x0, x20	//, _23
 	bl	_ZdaPv		//
@@ -17631,7 +17585,7 @@ _Z12build_bitmapPKccPm:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2213:
+.L2209:
 	.cfi_restore_state
 // bitmapdecoding.cpp:71:     return nullptr;
 	mov	x19, 0	// <retval>,
@@ -17659,10 +17613,10 @@ _Z13basic_decoderPjRjjm:
 .LFB1985:
 	.cfi_startproc
 // bitmapdecoding.cpp:86:   while (bits != 0) {
-	cbz	x3, .L2222	// bits,
+	cbz	x3, .L2218	// bits,
 	ldr	w4, [x1]	//, *base_15(D)
 	.p2align 3,,7
-.L2225:
+.L2221:
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
 	rbit	x5, x3	// tmp102, bits
 	clz	x5, x5	// tmp102, tmp102
@@ -17679,13 +17633,187 @@ _Z13basic_decoderPjRjjm:
 	add	w4, w4, 1	// _9, *base_15(D),
 	str	w4, [x1]	// _9, *base_15(D)
 // bitmapdecoding.cpp:86:   while (bits != 0) {
-	bne	.L2225		//,
-.L2222:
+	bne	.L2221		//,
+.L2218:
 // bitmapdecoding.cpp:91: }
 	ret	
 	.cfi_endproc
 .LFE1985:
 	.size	_Z13basic_decoderPjRjjm, .-_Z13basic_decoderPjRjjm
+	.align	2
+	.p2align 3,,7
+	.global	_Z16simdjson_decoderPjRjjm
+	.type	_Z16simdjson_decoderPjRjjm, %function
+_Z16simdjson_decoderPjRjjm:
+.LFB1986:
+	.cfi_startproc
+// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
+	fmov	d0, x3	// tmp224, bits
+// bitmapdecoding.cpp:96:   uint32_t next_base = base + cnt;
+	ldr	w4, [x1]	//, *base_73(D)
+// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
+	cnt	v0.8b, v0.8b	// tmp170, tmp224
+	addv	b0, v0.8b	// tmp172, tmp170
+	umov	w7, v0.b[0]	// tmp168, tmp172,
+// bitmapdecoding.cpp:96:   uint32_t next_base = base + cnt;
+	add	w7, w4, w7	// next_base, _66, tmp168
+// bitmapdecoding.cpp:97:   while (bits != 0u) {
+	cbz	x3, .L2227	// bits,
+	.p2align 3,,7
+.L2226:
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x5, x3	// tmp173, bits
+	clz	x5, x5	// tmp173, tmp173
+// bitmapdecoding.cpp:98:     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w2, w5	// tmp176, idx, tmp173
+// bitmapdecoding.cpp:98:     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w5, [x0, w4, uxtw 2]	// tmp176, *_6
+// bitmapdecoding.cpp:99:     bits = bits & (bits - 1);
+	sub	x4, x3, #1	// _8, bits,
+// bitmapdecoding.cpp:100:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w5, [x1]	//, *base_73(D)
+// bitmapdecoding.cpp:99:     bits = bits & (bits - 1);
+	and	x3, x4, x3	// bits, _8, bits
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x8, x3	// tmp177, bits
+// bitmapdecoding.cpp:101:     bits = bits & (bits - 1);
+	sub	x4, x3, #1	// _16, bits,
+// bitmapdecoding.cpp:100:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w5, 1	// tmp180, *base_73(D),
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x8, x8	// tmp177, tmp177
+// bitmapdecoding.cpp:100:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w8, w2, w8	// tmp182, idx, tmp177
+// bitmapdecoding.cpp:101:     bits = bits & (bits - 1);
+	and	x4, x4, x3	// bits, _16, bits
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x6, x4	// tmp183, bits
+// bitmapdecoding.cpp:103:     bits = bits & (bits - 1);
+	sub	x3, x4, #1	// _24, bits,
+// bitmapdecoding.cpp:100:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w8, [x0, x5, lsl 2]	// tmp182, *_14
+// bitmapdecoding.cpp:103:     bits = bits & (bits - 1);
+	and	x4, x3, x4	// bits, _24, bits
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x6, x6	// tmp183, tmp183
+// bitmapdecoding.cpp:105:     bits = bits & (bits - 1);
+	sub	x3, x4, #1	// _32, bits,
+// bitmapdecoding.cpp:102:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w5, [x1]	//, *base_73(D)
+// bitmapdecoding.cpp:102:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w6, w2, w6	// tmp188, idx, tmp183
+// bitmapdecoding.cpp:105:     bits = bits & (bits - 1);
+	and	x3, x3, x4	// bits, _32, bits
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x11, x4	// tmp189, bits
+// bitmapdecoding.cpp:102:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w5, 2	// tmp186, *base_73(D),
+// bitmapdecoding.cpp:107:     bits = bits & (bits - 1);
+	sub	x4, x3, #1	// _40, bits,
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x9, x3	// tmp195, bits
+// bitmapdecoding.cpp:107:     bits = bits & (bits - 1);
+	and	x3, x4, x3	// bits, _40, bits
+// bitmapdecoding.cpp:109:     bits = bits & (bits - 1);
+	sub	x4, x3, #1	// _48, bits,
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x8, x3	// tmp201, bits
+// bitmapdecoding.cpp:102:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w6, [x0, x5, lsl 2]	// tmp188, *_22
+// bitmapdecoding.cpp:109:     bits = bits & (bits - 1);
+	and	x4, x4, x3	// bits, _48, bits
+// bitmapdecoding.cpp:111:     bits = bits & (bits - 1);
+	sub	x3, x4, #1	// _56, bits,
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x11, x11	// tmp189, tmp189
+// bitmapdecoding.cpp:104:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w10, [x1]	//, *base_73(D)
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x6, x4	// tmp207, bits
+// bitmapdecoding.cpp:104:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w11, w2, w11	// tmp194, idx, tmp189
+// bitmapdecoding.cpp:111:     bits = bits & (bits - 1);
+	and	x4, x3, x4	// bits, _56, bits
+// bitmapdecoding.cpp:104:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w10, w10, 3	// tmp192, *base_73(D),
+// bitmapdecoding.cpp:113:     bits = bits & (bits - 1);
+	sub	x3, x4, #1	// _64, bits,
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x5, x4	// tmp213, bits
+// bitmapdecoding.cpp:97:   while (bits != 0u) {
+	ands	x3, x3, x4	// bits, _64, bits
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x9, x9	// tmp195, tmp195
+	clz	x8, x8	// tmp201, tmp201
+// bitmapdecoding.cpp:104:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w11, [x0, x10, lsl 2]	// tmp194, *_30
+// bitmapdecoding.cpp:106:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w9, w2, w9	// tmp200, idx, tmp195
+// bitmapdecoding.cpp:108:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w8, w2, w8	// tmp206, idx, tmp201
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x6, x6	// tmp207, tmp207
+// bitmapdecoding.cpp:106:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_73(D)
+// bitmapdecoding.cpp:110:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w6, w2, w6	// tmp212, idx, tmp207
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	clz	x5, x5	// tmp213, tmp213
+// bitmapdecoding.cpp:106:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 4	// tmp198, *base_73(D),
+// bitmapdecoding.cpp:112:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w5, w2, w5	// tmp218, idx, tmp213
+// bitmapdecoding.cpp:106:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w9, [x0, x4, lsl 2]	// tmp200, *_38
+// bitmapdecoding.cpp:108:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_73(D)
+// bitmapdecoding.cpp:108:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 5	// tmp204, *base_73(D),
+// bitmapdecoding.cpp:108:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w8, [x0, x4, lsl 2]	// tmp206, *_46
+// bitmapdecoding.cpp:110:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_73(D)
+// bitmapdecoding.cpp:110:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 6	// tmp210, *base_73(D),
+// bitmapdecoding.cpp:110:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w6, [x0, x4, lsl 2]	// tmp212, *_54
+// bitmapdecoding.cpp:112:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	ldr	w4, [x1]	//, *base_73(D)
+// bitmapdecoding.cpp:112:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	add	w4, w4, 7	// tmp216, *base_73(D),
+// bitmapdecoding.cpp:112:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w5, [x0, x4, lsl 2]	// tmp218, *_62
+// bitmapdecoding.cpp:114:     base += 8;
+	ldr	w4, [x1]	//, *base_73(D)
+	add	w4, w4, 8	// _66, *base_73(D),
+	str	w4, [x1]	// _66, *base_73(D)
+// bitmapdecoding.cpp:97:   while (bits != 0u) {
+	bne	.L2226		//,
+.L2227:
+// bitmapdecoding.cpp:116:   base = next_base;
+	str	w7, [x1]	// next_base, *base_73(D)
+// bitmapdecoding.cpp:117: }
+	ret	
+	.cfi_endproc
+.LFE1986:
+	.size	_Z16simdjson_decoderPjRjjm, .-_Z16simdjson_decoderPjRjjm
+	.align	2
+	.p2align 3,,7
+	.global	_Z14faster_decoderPjRjjm
+	.type	_Z14faster_decoderPjRjjm, %function
+_Z14faster_decoderPjRjjm:
+.LFB1987:
+	.cfi_startproc
+// bitmapdecoding.cpp:121:   if (bits != 0u) {
+	cbz	x3, .L2233	// tmp94,
+	b	_Z14faster_decoderPjRjjm.part.0		//
+	.p2align 2,,3
+.L2233:
+// bitmapdecoding.cpp:168: }
+	ret	
+	.cfi_endproc
+.LFE1987:
+	.size	_Z14faster_decoderPjRjjm, .-_Z14faster_decoderPjRjjm
 	.align	2
 	.p2align 3,,7
 	.global	_Z8init_bufP5buf_sm
@@ -17710,7 +17838,7 @@ _Z8init_bufP5buf_sm:
 	.cfi_offset 22, -24
 	mov	x22, x1	// capacity, tmp112
 // bitmapdecoding.cpp:337:     b->buffer[i] = new lead_t[capacity];
-	mov	x19, 8	// ivtmp.1785,
+	mov	x19, 8	// ivtmp.1778,
 // bitmapdecoding.cpp:332: void init_buf(buf_t *b, size_t capacity) {
 	stp	x23, x24, [sp, 48]	//,,
 	.cfi_offset 23, -16
@@ -17730,10 +17858,10 @@ _Z8init_bufP5buf_sm:
 // bitmapdecoding.cpp:335:   b->initbuffer = new lead_t *[65];
 	str	x0, [x20, 16]	// tmp114, b_13(D)->initbuffer
 	.p2align 3,,7
-.L2232:
+.L2238:
 // bitmapdecoding.cpp:337:     b->buffer[i] = new lead_t[capacity];
 	cmp	x22, x23	// capacity, tmp106
-	bhi	.L2230		//,
+	bhi	.L2236		//,
 // bitmapdecoding.cpp:337:     b->buffer[i] = new lead_t[capacity];
 	ldr	x21, [x20, 8]	// b_13(D)->buffer, b_13(D)->buffer
 // bitmapdecoding.cpp:337:     b->buffer[i] = new lead_t[capacity];
@@ -17749,10 +17877,10 @@ _Z8init_bufP5buf_sm:
 	ldr	x2, [x2, x19]	// _9, *_6
 // bitmapdecoding.cpp:338:     b->initbuffer[i] = b->buffer[i];
 	str	x2, [x0, x19]	// _9, *_8
-	add	x19, x19, 8	// ivtmp.1785, ivtmp.1785,
+	add	x19, x19, 8	// ivtmp.1778, ivtmp.1778,
 // bitmapdecoding.cpp:336:   for (int i = 1; i <= 64; i++) {
-	cmp	x19, 520	// ivtmp.1785,
-	bne	.L2232		//,
+	cmp	x19, 520	// ivtmp.1778,
+	bne	.L2238		//,
 // bitmapdecoding.cpp:340: }
 	ldp	x19, x20, [sp, 16]	//,,
 	ldp	x21, x22, [sp, 32]	//,,
@@ -17769,7 +17897,7 @@ _Z8init_bufP5buf_sm:
 	.cfi_restore 20
 	.cfi_def_cfa_offset 0
 	ret	
-.L2230:
+.L2236:
 	.cfi_restore_state
 // bitmapdecoding.cpp:337:     b->buffer[i] = new lead_t[capacity];
 	bl	__cxa_throw_bad_array_new_length		//
@@ -17786,19 +17914,19 @@ _Z9reset_bufP5buf_s:
 // bitmapdecoding.cpp:344:     b->buffer[i] = b->initbuffer[i];
 	ldp	x3, x2, [x0, 8]	// _5, _1, b_11(D)->buffer
 // bitmapdecoding.cpp:344:     b->buffer[i] = b->initbuffer[i];
-	mov	x1, 8	// ivtmp.1801,
+	mov	x1, 8	// ivtmp.1794,
 // bitmapdecoding.cpp:342:   b->matches = 0;
 	str	wzr, [x0]	//, b_11(D)->matches
 	.p2align 3,,7
-.L2235:
+.L2241:
 // bitmapdecoding.cpp:344:     b->buffer[i] = b->initbuffer[i];
-	ldr	x0, [x2, x1]	// _7, MEM[base: _1, index: ivtmp.1801_9, offset: 0B]
+	ldr	x0, [x2, x1]	// _7, MEM[base: _1, index: ivtmp.1794_9, offset: 0B]
 // bitmapdecoding.cpp:344:     b->buffer[i] = b->initbuffer[i];
-	str	x0, [x3, x1]	// _7, MEM[base: _5, index: ivtmp.1801_9, offset: 0B]
-	add	x1, x1, 8	// ivtmp.1801, ivtmp.1801,
+	str	x0, [x3, x1]	// _7, MEM[base: _5, index: ivtmp.1794_9, offset: 0B]
+	add	x1, x1, 8	// ivtmp.1794, ivtmp.1794,
 // bitmapdecoding.cpp:343:   for (int i = 1; i <= 64; i++) {
-	cmp	x1, 520	// ivtmp.1801,
-	bne	.L2235		//,
+	cmp	x1, 520	// ivtmp.1794,
+	bne	.L2241		//,
 // bitmapdecoding.cpp:346: }
 	ret	
 	.cfi_endproc
@@ -17821,32 +17949,32 @@ _Z11destroy_bufP5buf_s:
 	.cfi_offset 20, -8
 // bitmapdecoding.cpp:348: void destroy_buf(buf_t *b) {
 	mov	x20, x0	// b, tmp98
-	mov	x19, 8	// ivtmp.1811,
+	mov	x19, 8	// ivtmp.1804,
 	.p2align 3,,7
-.L2239:
+.L2245:
 // bitmapdecoding.cpp:350:     delete[] b->initbuffer[i];
 	ldr	x1, [x20, 16]	// b_14(D)->initbuffer, b_14(D)->initbuffer
 	ldr	x0, [x1, x19]	// _5, *_4
-	add	x19, x19, 8	// ivtmp.1811, ivtmp.1811,
+	add	x19, x19, 8	// ivtmp.1804, ivtmp.1804,
 // bitmapdecoding.cpp:350:     delete[] b->initbuffer[i];
-	cbz	x0, .L2238	// _5,
+	cbz	x0, .L2244	// _5,
 // bitmapdecoding.cpp:350:     delete[] b->initbuffer[i];
 	bl	_ZdaPv		//
-.L2238:
+.L2244:
 // bitmapdecoding.cpp:349:   for (int i = 1; i <= 64; i++) {
-	cmp	x19, 520	// ivtmp.1811,
-	bne	.L2239		//,
+	cmp	x19, 520	// ivtmp.1804,
+	bne	.L2245		//,
 // bitmapdecoding.cpp:352:   delete[] b->buffer;
 	ldr	x0, [x20, 8]	// _6, b_14(D)->buffer
 // bitmapdecoding.cpp:352:   delete[] b->buffer;
-	cbz	x0, .L2240	// _6,
+	cbz	x0, .L2246	// _6,
 // bitmapdecoding.cpp:352:   delete[] b->buffer;
 	bl	_ZdaPv		//
-.L2240:
+.L2246:
 // bitmapdecoding.cpp:353:   delete[] b->initbuffer;
 	ldr	x0, [x20, 16]	// _7, b_14(D)->initbuffer
 // bitmapdecoding.cpp:353:   delete[] b->initbuffer;
-	cbz	x0, .L2237	// _7,
+	cbz	x0, .L2243	// _7,
 // bitmapdecoding.cpp:354: }
 	ldp	x19, x20, [sp, 16]	//,,
 	ldp	x29, x30, [sp], 32	//,,,
@@ -17858,7 +17986,7 @@ _Z11destroy_bufP5buf_s:
 	.cfi_def_cfa_offset 0
 // bitmapdecoding.cpp:353:   delete[] b->initbuffer;
 	b	_ZdaPv		//
-.L2237:
+.L2243:
 	.cfi_restore_state
 // bitmapdecoding.cpp:354: }
 	ldp	x19, x20, [sp, 16]	//,,
@@ -17872,98 +18000,6 @@ _Z11destroy_bufP5buf_s:
 	.cfi_endproc
 .LFE1994:
 	.size	_Z11destroy_bufP5buf_s, .-_Z11destroy_bufP5buf_s
-	.section	.text._ZNSt6vectorIiSaIiEEC2ERKS1_,"axG",@progbits,_ZNSt6vectorIiSaIiEEC5ERKS1_,comdat
-	.align	2
-	.p2align 3,,7
-	.weak	_ZNSt6vectorIiSaIiEEC2ERKS1_
-	.type	_ZNSt6vectorIiSaIiEEC2ERKS1_, %function
-_ZNSt6vectorIiSaIiEEC2ERKS1_:
-.LFB2381:
-	.cfi_startproc
-	stp	x29, x30, [sp, -48]!	//,,,
-	.cfi_def_cfa_offset 48
-	.cfi_offset 29, -48
-	.cfi_offset 30, -40
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	mov	x3, 0	// _30,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:550:       vector(const vector& __x)
-	mov	x29, sp	//,
-	stp	x19, x20, [sp, 16]	//,,
-	.cfi_offset 19, -32
-	.cfi_offset 20, -24
-	mov	x19, x0	// this, tmp112
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x0, x20, [x1]	// MEM[(int * *)__x_3(D)], MEM[(int * *)__x_3(D) + 8B], MEM[(int * *)__x_3(D)]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:550:       vector(const vector& __x)
-	str	x21, [sp, 32]	//,
-	.cfi_offset 21, -16
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	stp	xzr, xzr, [x19]	//,, MEM[(struct _Vector_impl_data *)this_2(D)]._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:550:       vector(const vector& __x)
-	mov	x21, x1	// __x, tmp113
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	str	xzr, [x19, 16]	//, MEM[(struct _Vector_impl_data *)this_2(D)]._M_end_of_storage
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	sub	x20, x20, x0	// _12, MEM[(int * *)__x_3(D) + 8B], MEM[(int * *)__x_3(D)]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cmp	xzr, x20, asr 2	//, _12,
-	beq	.L2252		//,
-	asr	x0, x20, 2	// tmp107, _12,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
-	mov	x1, 2305843009213693951	// tmp108,
-	cmp	x0, x1	// tmp107, tmp108
-	bhi	.L2257		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
-	mov	x0, x20	//, _12
-	bl	_Znwm		//
-	mov	x3, x0	// _30, tmp114
-.L2252:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
-	add	x20, x3, x20	// tmp110, _30, _12
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
-	stp	x3, x3, [x19]	// _30, _30, MEM[(struct _Vector_base *)this_2(D)]._M_impl.D.43606._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
-	str	x20, [x19, 16]	// tmp110, MEM[(struct _Vector_base *)this_2(D)]._M_impl.D.43606._M_end_of_storage
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:555: 	  std::__uninitialized_copy_a(__x.begin(), __x.end(),
-	ldp	x1, x2, [x21]	// _10, _11, MEM[(int * *)__x_3(D)]
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	cmp	x1, x2	// _10, _11
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
-	sub	x20, x2, x1	// _15, _11, _10
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L2255		//,
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
-	mov	x0, x3	//, _30
-	mov	x2, x20	//, _15
-	bl	memmove		//
-	mov	x3, x0	// _30,
-.L2255:
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
-	add	x3, x3, x20	// tmp111, _30, _15
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:558:       }
-	ldr	x21, [sp, 32]	//,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
-	str	x3, [x19, 8]	// tmp111, *this_2(D).D.44271._M_impl.D.43606._M_finish
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:558:       }
-	ldp	x19, x20, [sp, 16]	//,,
-	ldp	x29, x30, [sp], 48	//,,,
-	.cfi_remember_state
-	.cfi_restore 30
-	.cfi_restore 29
-	.cfi_restore 21
-	.cfi_restore 19
-	.cfi_restore 20
-	.cfi_def_cfa_offset 0
-	ret	
-.L2257:
-	.cfi_restore_state
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
-	bl	_ZSt17__throw_bad_allocv		//
-	.cfi_endproc
-.LFE2381:
-	.size	_ZNSt6vectorIiSaIiEEC2ERKS1_, .-_ZNSt6vectorIiSaIiEEC2ERKS1_
-	.weak	_ZNSt6vectorIiSaIiEEC1ERKS1_
-	.set	_ZNSt6vectorIiSaIiEEC1ERKS1_,_ZNSt6vectorIiSaIiEEC2ERKS1_
 	.section	.text._ZN11LinuxEventsILi0EED2Ev,"axG",@progbits,_ZN11LinuxEventsILi0EED5Ev,comdat
 	.align	2
 	.p2align 3,,7
@@ -17989,14 +18025,14 @@ _ZN11LinuxEventsILi0EED2Ev:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x19, 152]	// _7, MEM[(struct vector *)this_3(D) + 152B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2259	// _7,
+	cbz	x0, .L2257	// _7,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2259:
+.L2257:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x19, 128]	// _6, MEM[(struct vector *)this_3(D) + 128B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2258	// _6,
+	cbz	x0, .L2256	// _6,
 // linux-perf-events.h:59:   ~LinuxEvents() { close(fd); }
 	ldr	x19, [sp, 16]	//,
 	ldp	x29, x30, [sp], 32	//,,,
@@ -18008,7 +18044,7 @@ _ZN11LinuxEventsILi0EED2Ev:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	b	_ZdlPv		//
 	.p2align 2,,3
-.L2258:
+.L2256:
 	.cfi_restore_state
 // linux-perf-events.h:59:   ~LinuxEvents() { close(fd); }
 	ldr	x19, [sp, 16]	//,
@@ -18052,30 +18088,30 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EED2Ev:
 	ldp	x19, x20, [x0]	// __first, prephitmp_7, this_4(D)->D.46492._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x19, x20	// __first, prephitmp_7
-	beq	.L2266		//,
+	beq	.L2264		//,
 	str	x21, [sp, 32]	//,
 	.cfi_offset 21, -16
 	mov	x21, x0	// this, tmp94
 	.p2align 3,,7
-.L2268:
+.L2266:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x19]	// _8, MEM[base: __first_19, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x19, x19, 24	// __first, __first,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2267	// _8,
+	cbz	x0, .L2265	// _8,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2267:
+.L2265:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x20, x19	// prephitmp_7, __first
-	bne	.L2268		//,
+	bne	.L2266		//,
 	ldr	x20, [x21]	// prephitmp_7, MEM[(struct _Vector_base *)this_4(D)]._M_impl.D.45827._M_start
 	ldr	x21, [sp, 32]	//,
 	.cfi_restore 21
-.L2266:
+.L2264:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x20, .L2265	// prephitmp_7,
+	cbz	x20, .L2263	// prephitmp_7,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x20	//, prephitmp_7
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:680:       }
@@ -18090,7 +18126,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EED2Ev:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	b	_ZdlPv		//
 	.p2align 2,,3
-.L2265:
+.L2263:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:680:       }
 	ldp	x19, x20, [sp, 16]	//,,
@@ -18147,19 +18183,19 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 	asr	x0, x19, 3	// tmp125, _12,
 	mul	x0, x0, x1	// tmp126, tmp125, tmp127
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cbz	x0, .L2277	// tmp126,
+	cbz	x0, .L2275	// tmp126,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x1, 6148914691236517205	// tmp128,
 	movk	x1, 0x555, lsl 48	// tmp128,,
 	cmp	x0, x1	// tmp126, tmp128
-	bhi	.L2304		//,
+	bhi	.L2302		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x19	//, _12
 .LEHB3:
 	bl	_Znwm		//
 .LEHE3:
 	mov	x23, x0	// __first, tmp147
-.L2277:
+.L2275:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x19, x23, x19	// tmp130, __first, _12
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -18170,7 +18206,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 	ldp	x20, x24, [x22]	// _10, _11, MEM[(struct vector * *)__x_3(D)]
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
 	cmp	x20, x24	// _10, _11
-	beq	.L2292		//,
+	beq	.L2290		//,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:79: 	  _ForwardIterator __cur = __result;
 	mov	x19, x23	// __cur, __first
 	str	x25, [sp, 64]	//,
@@ -18178,7 +18214,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x25, 1152921504606846975	// tmp143,
 	.p2align 3,,7
-.L2285:
+.L2283:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x0, x22, [x20]	// MEM[base: _28, offset: 0B], MEM[base: _28, offset: 8B], MEM[base: _28, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
@@ -18194,16 +18230,16 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x0, x22, 3	// tmp133, _52,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L2281		//,
+	beq	.L2279		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	cmp	x0, x25	// tmp133, tmp143
-	bhi	.L2305		//,
+	bhi	.L2303		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x22	//, _52
 .LEHB4:
 	bl	_Znwm		//
 	mov	x3, x0	// _65, tmp148
-.L2281:
+.L2279:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x22, x3, x22	// tmp136, _65, _52
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -18217,23 +18253,23 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
 	sub	x22, x22, x1	// _60, _59, _58
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L2284		//,
+	beq	.L2282		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	mov	x0, x3	//, _65
 	mov	x2, x22	//, _60
 	bl	memmove		//
 	mov	x3, x0	// _65,
-.L2284:
+.L2282:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
 	add	x3, x3, x22	// tmp137, _65, _60
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
 	str	x3, [x19, 8]	// tmp137, MEM[base: __cur_27, offset: 8B]
-	add	x20, x20, 24	// ivtmp.1835, ivtmp.1835,
+	add	x20, x20, 24	// ivtmp.1826, ivtmp.1826,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
 	add	x19, x19, 24	// __cur, __cur,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
-	cmp	x24, x20	// _11, ivtmp.1835
-	bne	.L2285		//,
+	cmp	x24, x20	// _11, ivtmp.1826
+	bne	.L2283		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:558:       }
 	ldp	x23, x24, [sp, 48]	//,,
 	ldr	x25, [sp, 64]	//,
@@ -18255,7 +18291,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2292:
+.L2290:
 	.cfi_def_cfa_offset 80
 	.cfi_offset 19, -64
 	.cfi_offset 20, -56
@@ -18285,7 +18321,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 	.cfi_restore 20
 	.cfi_def_cfa_offset 0
 	ret	
-.L2305:
+.L2303:
 	.cfi_def_cfa_offset 80
 	.cfi_offset 19, -64
 	.cfi_offset 20, -56
@@ -18299,7 +18335,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
 	bl	_ZSt17__throw_bad_allocv		//
 .LEHE4:
-.L2304:
+.L2302:
 	.cfi_restore 25
 	str	x25, [sp, 64]	//,
 	.cfi_offset 25, -16
@@ -18307,39 +18343,39 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
 	bl	_ZSt17__throw_bad_allocv		//
 .LEHE5:
-.L2294:
+.L2292:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
 	bl	__cxa_begin_catch		//
-.L2289:
+.L2287:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x19, x23	// __cur, __first
-	bne	.L2306		//,
+	bne	.L2304		//,
 .LEHB6:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:89: 	      __throw_exception_again;
 	bl	__cxa_rethrow		//
 .LEHE6:
-.L2306:
+.L2304:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x23]	// _45, MEM[base: __first_44, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2288	// _45,
+	cbz	x0, .L2286	// _45,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2288:
+.L2286:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x23, x23, 24	// __first, __first,
-	b	.L2289		//
-.L2293:
+	b	.L2287		//
+.L2291:
 	mov	x19, x0	// tmp140, tmp149
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
 	bl	__cxa_end_catch		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:332: 	_M_deallocate(_M_impl._M_start,
 	ldr	x0, [x21]	// _16, MEM[(struct _Vector_base *)this_2(D)]._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2291	// _16,
+	cbz	x0, .L2289	// _16,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2291:
+.L2289:
 	mov	x0, x19	//, tmp140
 .LEHB7:
 	bl	_Unwind_Resume		//
@@ -18362,7 +18398,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 	.uleb128 0
 	.uleb128 .LEHB4-.LFB2416
 	.uleb128 .LEHE4-.LEHB4
-	.uleb128 .L2294-.LFB2416
+	.uleb128 .L2292-.LFB2416
 	.uleb128 0x1
 	.uleb128 .LEHB5-.LFB2416
 	.uleb128 .LEHE5-.LEHB5
@@ -18370,7 +18406,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 	.uleb128 0
 	.uleb128 .LEHB6-.LFB2416
 	.uleb128 .LEHE6-.LEHB6
-	.uleb128 .L2293-.LFB2416
+	.uleb128 .L2291-.LFB2416
 	.uleb128 0
 	.uleb128 .LEHB7-.LFB2416
 	.uleb128 .LEHE7-.LEHB7
@@ -18387,6 +18423,210 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 	.size	_ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_, .-_ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_
 	.weak	_ZNSt6vectorIS_IySaIyEESaIS1_EEC1ERKS3_
 	.set	_ZNSt6vectorIS_IySaIyEESaIS1_EEC1ERKS3_,_ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_
+	.section	.text._Z4unitIXadL_Z16simdjson_decoderPjRjjmEEEbv,"axG",@progbits,_Z4unitIXadL_Z16simdjson_decoderPjRjjmEEEbv,comdat
+	.align	2
+	.p2align 3,,7
+	.weak	_Z4unitIXadL_Z16simdjson_decoderPjRjjmEEEbv
+	.type	_Z4unitIXadL_Z16simdjson_decoderPjRjjmEEEbv, %function
+_Z4unitIXadL_Z16simdjson_decoderPjRjjmEEEbv:
+.LFB2420:
+	.cfi_startproc
+	sub	sp, sp, #560	//,,
+	.cfi_def_cfa_offset 560
+	mov	w12, 0	// prephitmp_86,
+// bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
+	mov	x14, 0	// i,
+// bitmapdecoding.cpp:266:     x <<= i;
+	mov	x13, 1	// tmp140,
+// bitmapdecoding.cpp:261: template <void (*F)(uint32_t *, uint32_t &, uint32_t, uint64_t)> bool unit() {
+	stp	x29, x30, [sp]	//,,
+	.cfi_offset 29, -560
+	.cfi_offset 30, -552
+	mov	x29, sp	//,
+.L2313:
+// bitmapdecoding.cpp:266:     x <<= i;
+	lsl	x0, x13, x14	// x, tmp140, i
+	fmov	d1, x0	// x, x
+	mov	x3, x0	//, x
+	add	x0, sp, 304	// tmp201,,
+	mov	w2, 0	//,
+	add	x1, sp, 44	// tmp200,,
+// bitmapdecoding.cpp:267:     uint32_t matches = 0;
+	str	wzr, [sp, 44]	//, matches
+	bl	_Z14faster_decoderPjRjjm.part.0		//
+	fmov	x0, d1	// bits, x
+	add	x2, sp, 48	// tmp202,,
+	.p2align 3,,7
+.L2307:
+// bitmapdecoding.cpp:88:     bits = bits & (bits - 1);
+	sub	x1, x0, #1	// _55, bits,
+// bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w12, [x2], 4	// prephitmp_86, MEM[base: _70, offset: 0B]
+// bitmapdecoding.cpp:86:   while (bits != 0) {
+	ands	x0, x0, x1	// bits, bits, _55
+	rbit	x12, x0	// prephitmp_86, bits
+	clz	x12, x12	// prephitmp_86, prephitmp_86
+	bne	.L2307		//,
+	cnt	v1.8b, v1.8b	// tmp146, x
+// bitmapdecoding.cpp:271:     if (refmatches != matches) {
+	ldr	w4, [sp, 44]	//, matches
+	addv	b1, v1.8b	// tmp148, tmp146
+// bitmapdecoding.cpp:271:     if (refmatches != matches) {
+	umov	w0, v1.b[0]	// tmp151, tmp148,
+	cmp	w4, w0	// matches.120_2, tmp151
+	bne	.L2310		//,
+// bitmapdecoding.cpp:275:     for (size_t k = 0; k < matches; k++)
+	uxtw	x4, w4	// _98, matches.120_2
+	mov	x1, 1	// ivtmp.1855,
+	b	.L2311		//
+	.p2align 2,,3
+.L2330:
+// bitmapdecoding.cpp:275:     for (size_t k = 0; k < matches; k++)
+	cmp	x1, x4	// ivtmp.1855, _98
+	mov	x1, x3	// ivtmp.1855, ivtmp.1855
+	bcs	.L2329		//,
+.L2311:
+// bitmapdecoding.cpp:276:       if (decoded[k] != refdecoded[k]) {
+	lsl	x0, x1, 2	// tmp156, ivtmp.1855,
+	add	x2, sp, 304	// tmp203,,
+	add	x5, sp, 48	// tmp204,,
+	add	x2, x2, x0	// tmp155, tmp203, tmp156
+	add	x0, x5, x0	// tmp158, tmp204, tmp156
+	add	x3, x1, 1	// ivtmp.1855, ivtmp.1855,
+// bitmapdecoding.cpp:276:       if (decoded[k] != refdecoded[k]) {
+	ldr	w2, [x2, -4]	//, MEM[symbol: decoded, index: ivtmp.1855_85, step: 4, offset: -4B]
+	ldr	w0, [x0, -4]	//, MEM[symbol: refdecoded, index: ivtmp.1855_85, step: 4, offset: -4B]
+	cmp	w2, w0	// MEM[symbol: decoded, index: ivtmp.1855_85, step: 4, offset: -4B], MEM[symbol: refdecoded, index: ivtmp.1855_85, step: 4, offset: -4B]
+	beq	.L2330		//,
+.L2310:
+// bitmapdecoding.cpp:272:       printf("bug\n");
+	adrp	x0, .LC0	// tmp153,
+	add	x0, x0, :lo12:.LC0	//, tmp153,
+	bl	puts		//
+// bitmapdecoding.cpp:273:       return false;
+	mov	w0, 0	// _16,
+.L2327:
+// bitmapdecoding.cpp:302: }
+	ldp	x29, x30, [sp]	//,,
+	add	sp, sp, 560	//,,
+	.cfi_remember_state
+	.cfi_restore 29
+	.cfi_restore 30
+	.cfi_def_cfa_offset 0
+	ret	
+	.p2align 2,,3
+.L2329:
+	.cfi_restore_state
+// bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
+	add	x14, x14, 1	// i, i,
+// bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
+	cmp	x14, 64	// i,
+	beq	.L2320		//,
+	lsl	x12, x13, x14	// tmp163, tmp140, i
+	rbit	x12, x12	// prephitmp_86, tmp163
+	clz	x12, x12	// prephitmp_86, prephitmp_86
+	b	.L2313		//
+.L2320:
+	stp	x19, x20, [sp, 16]	//,,
+	.cfi_offset 20, -536
+	.cfi_offset 19, -544
+	mov	x19, 16960	// ivtmp_50,
+	movk	x19, 0xf, lsl 16	// ivtmp_50,,
+.L2312:
+// bitmapdecoding.cpp:282:     uint64_t x = rand();
+	bl	rand		//
+// bitmapdecoding.cpp:283:     x <<= 32;
+	lsl	x20, x0, 32	// x, tmp195,
+// bitmapdecoding.cpp:284:     x |= rand();
+	bl	rand		//
+// bitmapdecoding.cpp:285:     uint32_t matches = 0;
+	str	wzr, [sp, 44]	//, matches
+// bitmapdecoding.cpp:284:     x |= rand();
+	sxtw	x12, w0	// _35, tmp196
+// bitmapdecoding.cpp:284:     x |= rand();
+	orr	x12, x12, x20	// x, _35, x
+// bitmapdecoding.cpp:121:   if (bits != 0u) {
+	cbz	x12, .L2314	// x,
+	add	x0, sp, 304	// tmp206,,
+	mov	w2, 0	//,
+	mov	x3, x12	//, x
+	add	x1, sp, 44	// tmp205,,
+	bl	_Z14faster_decoderPjRjjm.part.0		//
+	mov	x0, x12	// bits, x
+	add	x2, sp, 48	// tmp207,,
+	.p2align 3,,7
+.L2315:
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x1, x0	// tmp169, bits
+	clz	x1, x1	// tmp169, tmp169
+// bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w1, [x2], 4	// tmp169, MEM[base: _87, offset: 0B]
+// bitmapdecoding.cpp:88:     bits = bits & (bits - 1);
+	sub	x1, x0, #1	// _65, bits,
+// bitmapdecoding.cpp:86:   while (bits != 0) {
+	ands	x0, x0, x1	// bits, bits, _65
+	bne	.L2315		//,
+	fmov	d0, x12	// tmp208, x
+// bitmapdecoding.cpp:289:     if (refmatches != matches) {
+	ldr	w4, [sp, 44]	//, matches
+	cnt	v0.8b, v0.8b	// tmp172, tmp208
+	addv	b0, v0.8b	// tmp174, tmp172
+	umov	w0, v0.b[0]	// _18, tmp174,
+	cmp	w4, w0	// matches, _18
+	bne	.L2317		//,
+// bitmapdecoding.cpp:293:     for (size_t k = 0; k < matches; k++) {
+	uxtw	x4, w4	// _52, matches
+	mov	x1, 1	// ivtmp.1839,
+	b	.L2318		//
+	.p2align 2,,3
+.L2331:
+// bitmapdecoding.cpp:293:     for (size_t k = 0; k < matches; k++) {
+	cmp	x1, x4	// ivtmp.1839, _52
+	mov	x1, x3	// ivtmp.1839, ivtmp.1839
+	beq	.L2314		//,
+.L2318:
+// bitmapdecoding.cpp:294:       if (decoded[k] != refdecoded[k]) {
+	lsl	x0, x1, 2	// tmp182, ivtmp.1839,
+	add	x2, sp, 304	// tmp209,,
+	add	x5, sp, 48	// tmp210,,
+	add	x2, x2, x0	// tmp181, tmp209, tmp182
+	add	x0, x5, x0	// tmp184, tmp210, tmp182
+	add	x3, x1, 1	// ivtmp.1839, ivtmp.1839,
+// bitmapdecoding.cpp:294:       if (decoded[k] != refdecoded[k]) {
+	ldr	w2, [x2, -4]	//, MEM[symbol: decoded, index: ivtmp.1839_14, step: 4, offset: -4B]
+	ldr	w0, [x0, -4]	//, MEM[symbol: refdecoded, index: ivtmp.1839_14, step: 4, offset: -4B]
+	cmp	w2, w0	// MEM[symbol: decoded, index: ivtmp.1839_14, step: 4, offset: -4B], MEM[symbol: refdecoded, index: ivtmp.1839_14, step: 4, offset: -4B]
+	beq	.L2331		//,
+.L2317:
+// bitmapdecoding.cpp:290:       printf("bug\n");
+	adrp	x0, .LC0	// tmp179,
+	add	x0, x0, :lo12:.LC0	//, tmp179,
+	bl	puts		//
+// bitmapdecoding.cpp:291:       return false;
+	mov	w0, 0	// _16,
+	ldp	x19, x20, [sp, 16]	//,,
+	.cfi_remember_state
+	.cfi_restore 20
+	.cfi_restore 19
+	b	.L2327		//
+.L2314:
+	.cfi_restore_state
+// bitmapdecoding.cpp:281:   for (size_t i = 0; i < 1000000; i++) {
+	subs	x19, x19, #1	// ivtmp_50, ivtmp_50,
+	bne	.L2312		//,
+// bitmapdecoding.cpp:300:   printf("Tests passed.\n");
+	adrp	x0, .LC1	// tmp189,
+	add	x0, x0, :lo12:.LC1	//, tmp189,
+	bl	puts		//
+// bitmapdecoding.cpp:301:   return true;
+	mov	w0, 1	// _16,
+	ldp	x19, x20, [sp, 16]	//,,
+	.cfi_restore 20
+	.cfi_restore 19
+	b	.L2327		//
+	.cfi_endproc
+.LFE2420:
+	.size	_Z4unitIXadL_Z16simdjson_decoderPjRjjmEEEbv, .-_Z4unitIXadL_Z16simdjson_decoderPjRjjmEEEbv
 	.section	.text._Z4unitIXadL_Z13basic_decoderPjRjjmEEEbv,"axG",@progbits,_Z4unitIXadL_Z13basic_decoderPjRjjmEEEbv,comdat
 	.align	2
 	.p2align 3,,7
@@ -18395,543 +18635,406 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EEC2ERKS3_:
 _Z4unitIXadL_Z13basic_decoderPjRjjmEEEbv:
 .LFB2422:
 	.cfi_startproc
-	sub	sp, sp, #544	//,,
-	.cfi_def_cfa_offset 544
-	mov	w0, 64	// _196,
-	mov	w11, w0	// _187, _196
-	mov	w10, w0	// _178, _196
-	mov	w9, w0	// _169, _196
-	mov	w8, w0	// _164, _196
-	mov	w7, w0	// _154, _196
-	mov	w2, w0	// _144, _196
-	mov	w1, 0	// _205,
-	mov	x6, 1	//,
+	sub	sp, sp, #560	//,,
+	.cfi_def_cfa_offset 560
+	mov	w12, 0	// prephitmp_86,
 // bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
-	mov	x3, 0	// i,
+	mov	x14, 0	// i,
 // bitmapdecoding.cpp:266:     x <<= i;
-	mov	x4, 1	// tmp292,
+	mov	x13, 1	// tmp140,
 // bitmapdecoding.cpp:261: template <void (*F)(uint32_t *, uint32_t &, uint32_t, uint64_t)> bool unit() {
 	stp	x29, x30, [sp]	//,,
-	.cfi_offset 29, -544
-	.cfi_offset 30, -536
+	.cfi_offset 29, -560
+	.cfi_offset 30, -552
 	mov	x29, sp	//,
-.L2318:
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	x12, sp, 296	//,,
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	x13, sp, 312	//,,
-// bitmapdecoding.cpp:140:     if (cnt > 8) {
-	cmp	w6, 8	// prephitmp_2,
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w1, w2, [x12, -8]	// _205, _144, MEM[(uint32_t *)&decoded]
+.L2340:
 // bitmapdecoding.cpp:266:     x <<= i;
-	lsl	x2, x4, x3	// x, tmp292, i
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w9, w10, [x13, -8]	// _169, _178, MEM[(uint32_t *)&decoded + 16B]
-// bitmapdecoding.cpp:266:     x <<= i;
-	fmov	d0, x2	// x, x
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w7, w8, [x12]	// _154, _164, MEM[(uint32_t *)&decoded + 8B]
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w11, w0, [x13]	// _187, _196, MEM[(uint32_t *)&decoded + 24B]
-// bitmapdecoding.cpp:140:     if (cnt > 8) {
-	ble	.L2310		//,
-// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
-	sub	x0, x2, #1	// tmp293, x,
-// bitmapdecoding.cpp:158:     if (cnt > 16) {
-	cmp	w6, 16	// prephitmp_2,
-// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, tmp293, x
-// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _100, bits,
-// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _100
-// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _110, bits,
-// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _110
-// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _120, bits,
-// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _120
-// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _130, bits,
-// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _130
-// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _140, bits,
-// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _140
-// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _150, bits,
-// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _150
-// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _160, bits,
-// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _160
-// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _170, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp294, bits
-// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _170
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp294, tmp294
-// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _180, bits,
-// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 320]	// tmp294, MEM[(uint32_t *)&decoded + 32B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp295, bits
-// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _180
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp295, tmp295
-// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _190, bits,
-// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 324]	// tmp295, MEM[(uint32_t *)&decoded + 36B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp296, bits
-// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _190
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp296, tmp296
-// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _200, bits,
-// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 328]	// tmp296, MEM[(uint32_t *)&decoded + 40B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp297, bits
-// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _200
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp297, tmp297
-// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _210, bits,
-// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 332]	// tmp297, MEM[(uint32_t *)&decoded + 44B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp298, bits
-// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _210
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp298, tmp298
-// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _220, bits,
-// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 336]	// tmp298, MEM[(uint32_t *)&decoded + 48B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp299, bits
-// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _220
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp299, tmp299
-// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _230, bits,
-// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 340]	// tmp299, MEM[(uint32_t *)&decoded + 52B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp300, bits
-// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _230
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp300, tmp300
-	rbit	x2, x0	// tmp301, bits
-// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 344]	// tmp300, MEM[(uint32_t *)&decoded + 56B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp301, tmp301
-// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [sp, 348]	// tmp301, MEM[(uint32_t *)&decoded + 60B]
-// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _240, bits,
-// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _240
-// bitmapdecoding.cpp:158:     if (cnt > 16) {
-	ble	.L2310		//,
-	add	x2, sp, 288	// ivtmp.1892,,
+	lsl	x0, x13, x14	// x, tmp140, i
+	fmov	d1, x0	// x, x
+	mov	x3, x0	//, x
+	add	x0, sp, 304	// tmp201,,
+	mov	w2, 0	//,
+	add	x1, sp, 44	// tmp200,,
+// bitmapdecoding.cpp:267:     uint32_t matches = 0;
+	str	wzr, [sp, 44]	//, matches
+	bl	_Z14faster_decoderPjRjjm.part.0		//
+	fmov	x0, d1	// bits, x
+	add	x2, sp, 48	// tmp202,,
 	.p2align 3,,7
-.L2311:
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x0	// tmp302, bits
-	add	x2, x2, 4	// ivtmp.1892, ivtmp.1892,
-	clz	x5, x5	// tmp302, tmp302
-// bitmapdecoding.cpp:161:         base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [x2, 60]	// tmp302, MEM[base: _15, offset: 64B]
-// bitmapdecoding.cpp:162:         bits = bits & (bits - 1);
-	sub	x5, x0, #1	// _252, bits,
-// bitmapdecoding.cpp:164:       } while (bits != 0);
-	ands	x0, x0, x5	// bits, bits, _252
-	bne	.L2311		//,
-.L2310:
-// bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
-	fmov	x0, d0	// bits, x
-	add	x2, sp, 32	// tmp402,,
-	.p2align 3,,7
-.L2309:
-// bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w1, [x2], 4	// _205, MEM[base: _54, offset: 0B]
+.L2334:
 // bitmapdecoding.cpp:88:     bits = bits & (bits - 1);
 	sub	x1, x0, #1	// _55, bits,
+// bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w12, [x2], 4	// prephitmp_86, MEM[base: _70, offset: 0B]
 // bitmapdecoding.cpp:86:   while (bits != 0) {
 	ands	x0, x0, x1	// bits, bits, _55
-	rbit	x1, x0	// _205, bits
-	clz	x1, x1	// _205, _205
-	bne	.L2309		//,
-	cnt	v0.8b, v0.8b	// tmp306, x
-	addv	b0, v0.8b	// tmp308, tmp306
+	rbit	x12, x0	// prephitmp_86, bits
+	clz	x12, x12	// prephitmp_86, prephitmp_86
+	bne	.L2334		//,
+	cnt	v1.8b, v1.8b	// tmp146, x
 // bitmapdecoding.cpp:271:     if (refmatches != matches) {
-	umov	w0, v0.b[0]	// tmp311, tmp308,
-	cmp	w0, w6	// tmp311, prephitmp_2
-	bne	.L2315		//,
+	ldr	w4, [sp, 44]	//, matches
+	addv	b1, v1.8b	// tmp148, tmp146
+// bitmapdecoding.cpp:271:     if (refmatches != matches) {
+	umov	w0, v1.b[0]	// tmp151, tmp148,
+	cmp	w4, w0	// matches.141_2, tmp151
+	bne	.L2337		//,
 // bitmapdecoding.cpp:275:     for (size_t k = 0; k < matches; k++)
-	mov	x1, 1	// ivtmp.1875,
-	b	.L2316		//
+	uxtw	x4, w4	// _98, matches.141_2
+	mov	x1, 1	// ivtmp.1904,
+	b	.L2338		//
 	.p2align 2,,3
-.L2344:
+.L2357:
 // bitmapdecoding.cpp:275:     for (size_t k = 0; k < matches; k++)
-	cmp	x6, x1	// _94, ivtmp.1875
-	mov	x1, x5	// ivtmp.1875, ivtmp.1875
-	beq	.L2343		//,
-.L2316:
+	cmp	x1, x4	// ivtmp.1904, _98
+	mov	x1, x3	// ivtmp.1904, ivtmp.1904
+	bcs	.L2356		//,
+.L2338:
 // bitmapdecoding.cpp:276:       if (decoded[k] != refdecoded[k]) {
-	lsl	x0, x1, 2	// tmp316, ivtmp.1875,
-	add	x2, sp, 288	// tmp405,,
-	add	x7, sp, 32	// tmp406,,
-	add	x2, x2, x0	// tmp315, tmp405, tmp316
-	add	x0, x7, x0	// tmp318, tmp406, tmp316
-	add	x5, x1, 1	// ivtmp.1875, ivtmp.1875,
+	lsl	x0, x1, 2	// tmp156, ivtmp.1904,
+	add	x2, sp, 304	// tmp203,,
+	add	x5, sp, 48	// tmp204,,
+	add	x2, x2, x0	// tmp155, tmp203, tmp156
+	add	x0, x5, x0	// tmp158, tmp204, tmp156
+	add	x3, x1, 1	// ivtmp.1904, ivtmp.1904,
 // bitmapdecoding.cpp:276:       if (decoded[k] != refdecoded[k]) {
-	ldr	w2, [x2, -4]	//, MEM[symbol: decoded, index: ivtmp.1875_99, step: 4, offset: -4B]
-	ldr	w0, [x0, -4]	//, MEM[symbol: refdecoded, index: ivtmp.1875_99, step: 4, offset: -4B]
-	cmp	w2, w0	// MEM[symbol: decoded, index: ivtmp.1875_99, step: 4, offset: -4B], MEM[symbol: refdecoded, index: ivtmp.1875_99, step: 4, offset: -4B]
-	beq	.L2344		//,
-.L2315:
+	ldr	w2, [x2, -4]	//, MEM[symbol: decoded, index: ivtmp.1904_85, step: 4, offset: -4B]
+	ldr	w0, [x0, -4]	//, MEM[symbol: refdecoded, index: ivtmp.1904_85, step: 4, offset: -4B]
+	cmp	w2, w0	// MEM[symbol: decoded, index: ivtmp.1904_85, step: 4, offset: -4B], MEM[symbol: refdecoded, index: ivtmp.1904_85, step: 4, offset: -4B]
+	beq	.L2357		//,
+.L2337:
 // bitmapdecoding.cpp:272:       printf("bug\n");
-	adrp	x0, .LC0	// tmp313,
-	add	x0, x0, :lo12:.LC0	//, tmp313,
+	adrp	x0, .LC0	// tmp153,
+	add	x0, x0, :lo12:.LC0	//, tmp153,
 	bl	puts		//
 // bitmapdecoding.cpp:273:       return false;
 	mov	w0, 0	// _16,
-.L2338:
+.L2354:
 // bitmapdecoding.cpp:302: }
 	ldp	x29, x30, [sp]	//,,
-	add	sp, sp, 544	//,,
+	add	sp, sp, 560	//,,
 	.cfi_remember_state
 	.cfi_restore 29
 	.cfi_restore 30
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2343:
+.L2356:
 	.cfi_restore_state
 // bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
-	add	x3, x3, 1	// i, i,
+	add	x14, x14, 1	// i, i,
 // bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
-	cmp	x3, 64	// i,
-	beq	.L2331		//,
-	lsl	x0, x4, x3	// _149, tmp292, i
-	sub	x2, x0, #1	// tmp330, _149,
-	and	x2, x2, x0	// _138, tmp330, _149
-	rbit	x1, x0	// _205, _149
-	sub	x5, x2, #1	// tmp332, _138,
-	fmov	d0, x0	// tmp407, _149
-	and	x5, x5, x2	// _148, tmp332, _138
-	rbit	x2, x2	// _144, _138
-	sub	x0, x5, #1	// tmp334, _148,
-	rbit	x7, x5	// _154, _148
-	and	x0, x0, x5	// _158, tmp334, _148
-	cnt	v0.8b, v0.8b	// tmp326, tmp407
-	sub	x5, x0, #1	// tmp336, _158,
-	rbit	x8, x0	// _164, _158
-	and	x0, x5, x0	// _168, tmp336, _158
-	clz	x1, x1	// _205, _205
-	sub	x5, x0, #1	// tmp338, _168,
-	rbit	x9, x0	// _169, _168
-	and	x5, x5, x0	// _177, tmp338, _168
-	addv	b0, v0.8b	// tmp328, tmp326
-	sub	x0, x5, #1	// tmp340, _177,
-	rbit	x10, x5	// _178, _177
-	and	x5, x0, x5	// _186, tmp340, _177
-	clz	x2, x2	// _144, _144
-	sub	x0, x5, #1	// tmp342, _186,
-	rbit	x11, x5	// _187, _186
-	and	x0, x0, x5	// tmp343, tmp342, _186
-	umov	w6, v0.b[0]	//, tmp328,
-	rbit	x0, x0	// _196, tmp343
-	clz	x7, x7	// _154, _154
-	clz	x8, x8	// _164, _164
-	clz	x9, x9	// _169, _169
-	clz	x10, x10	// _178, _178
-	clz	x11, x11	// _187, _187
-	clz	x0, x0	// _196, _196
-	b	.L2318		//
-.L2331:
+	cmp	x14, 64	// i,
+	beq	.L2347		//,
+	lsl	x12, x13, x14	// tmp163, tmp140, i
+	rbit	x12, x12	// prephitmp_86, tmp163
+	clz	x12, x12	// prephitmp_86, prephitmp_86
+	b	.L2340		//
+.L2347:
 	stp	x19, x20, [sp, 16]	//,,
-	.cfi_offset 20, -520
-	.cfi_offset 19, -528
-	mov	x19, 16960	// ivtmp_256,
-	movk	x19, 0xf, lsl 16	// ivtmp_256,,
-.L2317:
+	.cfi_offset 20, -536
+	.cfi_offset 19, -544
+	mov	x19, 16960	// ivtmp_50,
+	movk	x19, 0xf, lsl 16	// ivtmp_50,,
+.L2339:
 // bitmapdecoding.cpp:282:     uint64_t x = rand();
 	bl	rand		//
 // bitmapdecoding.cpp:283:     x <<= 32;
-	lsl	x20, x0, 32	// x, tmp394,
+	lsl	x20, x0, 32	// x, tmp195,
 // bitmapdecoding.cpp:284:     x |= rand();
 	bl	rand		//
+// bitmapdecoding.cpp:285:     uint32_t matches = 0;
+	str	wzr, [sp, 44]	//, matches
 // bitmapdecoding.cpp:284:     x |= rand();
-	sxtw	x0, w0	// _35, tmp395
+	sxtw	x12, w0	// _35, tmp196
 // bitmapdecoding.cpp:284:     x |= rand();
-	orr	x0, x0, x20	// x, _35, x
+	orr	x12, x12, x20	// x, _35, x
 // bitmapdecoding.cpp:121:   if (bits != 0u) {
-	cbz	x0, .L2327	// x,
-// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
-	sub	x1, x0, #1	// tmp352, x,
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	fmov	d0, x0	// tmp408, x
-// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
-	and	x1, x1, x0	// bits, tmp352, x
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	x10, sp, 296	//,,
-// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _277, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x1	// tmp353, bits
-// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _277
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	cnt	v0.8b, v0.8b	// tmp390, tmp408
-// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _287, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x9, x1	// tmp354, bits
-// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _287
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp353, tmp353
-// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _297, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x8, x1	// tmp355, bits
-// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _297
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	addv	b1, v0.8b	// tmp350, tmp390
-// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _307, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x7, x1	// tmp356, bits
-// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _307
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x0	// tmp351, x
-// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _317, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x6, x1	// tmp357, bits
-// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _317
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	umov	w4, v1.b[0]	// tmp346, tmp350,
-// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _327, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp351, tmp351
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w2, w5, [x10, -8]	// tmp351, tmp353, MEM[(uint32_t *)&decoded]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x1	// tmp358, bits
-// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _327
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x9, x9	// tmp354, tmp354
-	rbit	x3, x1	// tmp359, bits
-	clz	x8, x8	// tmp355, tmp355
-	clz	x7, x7	// tmp356, tmp356
-	clz	x6, x6	// tmp357, tmp357
-	clz	x5, x5	// tmp358, tmp358
-	clz	x3, x3	// tmp359, tmp359
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	stp	w9, w8, [x10]	// tmp354, tmp355, MEM[(uint32_t *)&decoded + 8B]
-// bitmapdecoding.cpp:140:     if (cnt > 8) {
-	cmp	w4, 8	// tmp346,
-// bitmapdecoding.cpp:132:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w7, [sp, 304]	// tmp356, MEM[(uint32_t *)&decoded + 16B]
-// bitmapdecoding.cpp:134:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w6, [sp, 308]	// tmp357, MEM[(uint32_t *)&decoded + 20B]
-// bitmapdecoding.cpp:136:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 312]	// tmp358, MEM[(uint32_t *)&decoded + 24B]
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w3, [sp, 316]	// tmp359, MEM[(uint32_t *)&decoded + 28B]
-// bitmapdecoding.cpp:140:     if (cnt > 8) {
-	ble	.L2323		//,
-// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _337, bits,
-// bitmapdecoding.cpp:158:     if (cnt > 16) {
-	cmp	w4, 16	// tmp346,
-// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _337
-// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _347, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x1	// tmp360, bits
-// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _347
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp360, tmp360
-// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _357, bits,
-// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 320]	// tmp360, MEM[(uint32_t *)&decoded + 32B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x1	// tmp361, bits
-// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _357
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp361, tmp361
-// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _367, bits,
-// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 324]	// tmp361, MEM[(uint32_t *)&decoded + 36B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x1	// tmp362, bits
-// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _367
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp362, tmp362
-// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _377, bits,
-// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 328]	// tmp362, MEM[(uint32_t *)&decoded + 40B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x1	// tmp363, bits
-// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _377
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp363, tmp363
-// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _387, bits,
-// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 332]	// tmp363, MEM[(uint32_t *)&decoded + 44B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x1	// tmp364, bits
-// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _387
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp364, tmp364
-// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _397, bits,
-// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 336]	// tmp364, MEM[(uint32_t *)&decoded + 48B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x1	// tmp365, bits
-// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _397
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp365, tmp365
-// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _407, bits,
-// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 340]	// tmp365, MEM[(uint32_t *)&decoded + 52B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x1	// tmp366, bits
-// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _407
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp366, tmp366
-	rbit	x3, x1	// tmp367, bits
-// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [sp, 344]	// tmp366, MEM[(uint32_t *)&decoded + 56B]
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x3, x3	// tmp367, tmp367
-// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w3, [sp, 348]	// tmp367, MEM[(uint32_t *)&decoded + 60B]
-// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _417, bits,
-// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _417
-// bitmapdecoding.cpp:158:     if (cnt > 16) {
-	ble	.L2323		//,
-	add	x3, sp, 288	// tmp410,,
-.L2324:
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x1	// tmp368, bits
-	add	x3, x3, 4	// ivtmp.1865, ivtmp.1865,
-	clz	x5, x5	// tmp368, tmp368
-// bitmapdecoding.cpp:161:         base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [x3, 60]	// tmp368, MEM[base: _104, offset: 64B]
-// bitmapdecoding.cpp:162:         bits = bits & (bits - 1);
-	sub	x5, x1, #1	// _429, bits,
-// bitmapdecoding.cpp:164:       } while (bits != 0);
-	ands	x1, x1, x5	// bits, bits, _429
-	bne	.L2324		//,
-.L2323:
-	add	x3, sp, 32	// tmp409,,
+	cbz	x12, .L2341	// x,
+	add	x0, sp, 304	// tmp206,,
+	mov	w2, 0	//,
+	mov	x3, x12	//, x
+	add	x1, sp, 44	// tmp205,,
+	bl	_Z14faster_decoderPjRjjm.part.0		//
+	mov	x0, x12	// bits, x
+	add	x2, sp, 48	// tmp207,,
 	.p2align 3,,7
-.L2322:
+.L2342:
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x1, x0	// tmp169, bits
+	clz	x1, x1	// tmp169, tmp169
+// bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w1, [x2], 4	// tmp169, MEM[base: _87, offset: 0B]
 // bitmapdecoding.cpp:88:     bits = bits & (bits - 1);
 	sub	x1, x0, #1	// _65, bits,
-// bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x3], 4	// _225, MEM[base: _108, offset: 0B]
 // bitmapdecoding.cpp:86:   while (bits != 0) {
 	ands	x0, x0, x1	// bits, bits, _65
-	rbit	x2, x0	// _225, bits
-	clz	x2, x2	// _225, _225
-	bne	.L2322		//,
-	addv	b0, v0.8b	// tmp385, tmp390
-// bitmapdecoding.cpp:289:     if (refmatches != matches) {
-	umov	w0, v0.b[0]	// tmp388, tmp385,
-	cmp	w0, w4	// tmp388, tmp346
 	bne	.L2342		//,
+	fmov	d0, x12	// tmp208, x
+// bitmapdecoding.cpp:289:     if (refmatches != matches) {
+	ldr	w4, [sp, 44]	//, matches
+	cnt	v0.8b, v0.8b	// tmp172, tmp208
+	addv	b0, v0.8b	// tmp174, tmp172
+	umov	w0, v0.b[0]	// _18, tmp174,
+	cmp	w4, w0	// matches, _18
+	bne	.L2344		//,
 // bitmapdecoding.cpp:293:     for (size_t k = 0; k < matches; k++) {
-	uxtw	x4, w4	// _59, tmp346
-	mov	x1, 1	// ivtmp.1848,
-	b	.L2328		//
+	uxtw	x4, w4	// _52, matches
+	mov	x1, 1	// ivtmp.1888,
+	b	.L2345		//
 	.p2align 2,,3
-.L2345:
+.L2358:
 // bitmapdecoding.cpp:293:     for (size_t k = 0; k < matches; k++) {
-	cmp	x4, x1	// _59, ivtmp.1848
-	beq	.L2327		//,
-	mov	x1, x3	// ivtmp.1848, ivtmp.1848
-.L2328:
+	cmp	x1, x4	// ivtmp.1888, _52
+	mov	x1, x3	// ivtmp.1888, ivtmp.1888
+	beq	.L2341		//,
+.L2345:
 // bitmapdecoding.cpp:294:       if (decoded[k] != refdecoded[k]) {
-	lsl	x0, x1, 2	// tmp372, ivtmp.1848,
-	add	x2, sp, 288	// tmp411,,
-	add	x5, sp, 32	// tmp412,,
-	add	x2, x2, x0	// tmp371, tmp411, tmp372
-	add	x0, x5, x0	// tmp374, tmp412, tmp372
-	add	x3, x1, 1	// ivtmp.1848, ivtmp.1848,
+	lsl	x0, x1, 2	// tmp182, ivtmp.1888,
+	add	x2, sp, 304	// tmp209,,
+	add	x5, sp, 48	// tmp210,,
+	add	x2, x2, x0	// tmp181, tmp209, tmp182
+	add	x0, x5, x0	// tmp184, tmp210, tmp182
+	add	x3, x1, 1	// ivtmp.1888, ivtmp.1888,
 // bitmapdecoding.cpp:294:       if (decoded[k] != refdecoded[k]) {
-	ldr	w2, [x2, -4]	//, MEM[symbol: decoded, index: ivtmp.1848_137, step: 4, offset: -4B]
-	ldr	w0, [x0, -4]	//, MEM[symbol: refdecoded, index: ivtmp.1848_137, step: 4, offset: -4B]
-	cmp	w2, w0	// MEM[symbol: decoded, index: ivtmp.1848_137, step: 4, offset: -4B], MEM[symbol: refdecoded, index: ivtmp.1848_137, step: 4, offset: -4B]
-	beq	.L2345		//,
-.L2342:
+	ldr	w2, [x2, -4]	//, MEM[symbol: decoded, index: ivtmp.1888_14, step: 4, offset: -4B]
+	ldr	w0, [x0, -4]	//, MEM[symbol: refdecoded, index: ivtmp.1888_14, step: 4, offset: -4B]
+	cmp	w2, w0	// MEM[symbol: decoded, index: ivtmp.1888_14, step: 4, offset: -4B], MEM[symbol: refdecoded, index: ivtmp.1888_14, step: 4, offset: -4B]
+	beq	.L2358		//,
+.L2344:
+// bitmapdecoding.cpp:290:       printf("bug\n");
+	adrp	x0, .LC0	// tmp179,
+	add	x0, x0, :lo12:.LC0	//, tmp179,
+	bl	puts		//
+// bitmapdecoding.cpp:291:       return false;
+	mov	w0, 0	// _16,
 	ldp	x19, x20, [sp, 16]	//,,
 	.cfi_remember_state
 	.cfi_restore 20
 	.cfi_restore 19
-	b	.L2315		//
-.L2327:
+	b	.L2354		//
+.L2341:
 	.cfi_restore_state
 // bitmapdecoding.cpp:281:   for (size_t i = 0; i < 1000000; i++) {
-	subs	x19, x19, #1	// ivtmp_256, ivtmp_256,
-	bne	.L2317		//,
+	subs	x19, x19, #1	// ivtmp_50, ivtmp_50,
+	bne	.L2339		//,
 // bitmapdecoding.cpp:300:   printf("Tests passed.\n");
-	adrp	x0, .LC1	// tmp379,
-	add	x0, x0, :lo12:.LC1	//, tmp379,
+	adrp	x0, .LC1	// tmp189,
+	add	x0, x0, :lo12:.LC1	//, tmp189,
 	bl	puts		//
 // bitmapdecoding.cpp:301:   return true;
 	mov	w0, 1	// _16,
 	ldp	x19, x20, [sp, 16]	//,,
 	.cfi_restore 20
 	.cfi_restore 19
-	b	.L2338		//
+	b	.L2354		//
 	.cfi_endproc
 .LFE2422:
 	.size	_Z4unitIXadL_Z13basic_decoderPjRjjmEEEbv, .-_Z4unitIXadL_Z13basic_decoderPjRjjmEEEbv
+	.section	.text._Z4unitIXadL_Z14faster_decoderPjRjjmEEEbv,"axG",@progbits,_Z4unitIXadL_Z14faster_decoderPjRjjmEEEbv,comdat
+	.align	2
+	.p2align 3,,7
+	.weak	_Z4unitIXadL_Z14faster_decoderPjRjjmEEEbv
+	.type	_Z4unitIXadL_Z14faster_decoderPjRjjmEEEbv, %function
+_Z4unitIXadL_Z14faster_decoderPjRjjmEEEbv:
+.LFB2424:
+	.cfi_startproc
+	sub	sp, sp, #560	//,,
+	.cfi_def_cfa_offset 560
+	mov	w12, 0	// prephitmp_86,
+// bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
+	mov	x14, 0	// i,
+// bitmapdecoding.cpp:266:     x <<= i;
+	mov	x13, 1	// tmp140,
+// bitmapdecoding.cpp:261: template <void (*F)(uint32_t *, uint32_t &, uint32_t, uint64_t)> bool unit() {
+	stp	x29, x30, [sp]	//,,
+	.cfi_offset 29, -560
+	.cfi_offset 30, -552
+	mov	x29, sp	//,
+.L2367:
+// bitmapdecoding.cpp:266:     x <<= i;
+	lsl	x0, x13, x14	// x, tmp140, i
+	fmov	d1, x0	// x, x
+	mov	x3, x0	//, x
+	add	x0, sp, 304	// tmp201,,
+	mov	w2, 0	//,
+	add	x1, sp, 44	// tmp200,,
+// bitmapdecoding.cpp:267:     uint32_t matches = 0;
+	str	wzr, [sp, 44]	//, matches
+	bl	_Z14faster_decoderPjRjjm.part.0		//
+	fmov	x0, d1	// bits, x
+	add	x2, sp, 48	// tmp202,,
+	.p2align 3,,7
+.L2361:
+// bitmapdecoding.cpp:88:     bits = bits & (bits - 1);
+	sub	x1, x0, #1	// _55, bits,
+// bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w12, [x2], 4	// prephitmp_86, MEM[base: _70, offset: 0B]
+// bitmapdecoding.cpp:86:   while (bits != 0) {
+	ands	x0, x0, x1	// bits, bits, _55
+	rbit	x12, x0	// prephitmp_86, bits
+	clz	x12, x12	// prephitmp_86, prephitmp_86
+	bne	.L2361		//,
+	cnt	v1.8b, v1.8b	// tmp146, x
+// bitmapdecoding.cpp:271:     if (refmatches != matches) {
+	ldr	w4, [sp, 44]	//, matches
+	addv	b1, v1.8b	// tmp148, tmp146
+// bitmapdecoding.cpp:271:     if (refmatches != matches) {
+	umov	w0, v1.b[0]	// tmp151, tmp148,
+	cmp	w4, w0	// matches.162_2, tmp151
+	bne	.L2364		//,
+// bitmapdecoding.cpp:275:     for (size_t k = 0; k < matches; k++)
+	uxtw	x4, w4	// _98, matches.162_2
+	mov	x1, 1	// ivtmp.1953,
+	b	.L2365		//
+	.p2align 2,,3
+.L2384:
+// bitmapdecoding.cpp:275:     for (size_t k = 0; k < matches; k++)
+	cmp	x1, x4	// ivtmp.1953, _98
+	mov	x1, x3	// ivtmp.1953, ivtmp.1953
+	bcs	.L2383		//,
+.L2365:
+// bitmapdecoding.cpp:276:       if (decoded[k] != refdecoded[k]) {
+	lsl	x0, x1, 2	// tmp156, ivtmp.1953,
+	add	x2, sp, 304	// tmp203,,
+	add	x5, sp, 48	// tmp204,,
+	add	x2, x2, x0	// tmp155, tmp203, tmp156
+	add	x0, x5, x0	// tmp158, tmp204, tmp156
+	add	x3, x1, 1	// ivtmp.1953, ivtmp.1953,
+// bitmapdecoding.cpp:276:       if (decoded[k] != refdecoded[k]) {
+	ldr	w2, [x2, -4]	//, MEM[symbol: decoded, index: ivtmp.1953_85, step: 4, offset: -4B]
+	ldr	w0, [x0, -4]	//, MEM[symbol: refdecoded, index: ivtmp.1953_85, step: 4, offset: -4B]
+	cmp	w2, w0	// MEM[symbol: decoded, index: ivtmp.1953_85, step: 4, offset: -4B], MEM[symbol: refdecoded, index: ivtmp.1953_85, step: 4, offset: -4B]
+	beq	.L2384		//,
+.L2364:
+// bitmapdecoding.cpp:272:       printf("bug\n");
+	adrp	x0, .LC0	// tmp153,
+	add	x0, x0, :lo12:.LC0	//, tmp153,
+	bl	puts		//
+// bitmapdecoding.cpp:273:       return false;
+	mov	w0, 0	// _16,
+.L2381:
+// bitmapdecoding.cpp:302: }
+	ldp	x29, x30, [sp]	//,,
+	add	sp, sp, 560	//,,
+	.cfi_remember_state
+	.cfi_restore 29
+	.cfi_restore 30
+	.cfi_def_cfa_offset 0
+	ret	
+	.p2align 2,,3
+.L2383:
+	.cfi_restore_state
+// bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
+	add	x14, x14, 1	// i, i,
+// bitmapdecoding.cpp:264:   for (size_t i = 0; i < 64; i++) {
+	cmp	x14, 64	// i,
+	beq	.L2374		//,
+	lsl	x12, x13, x14	// tmp163, tmp140, i
+	rbit	x12, x12	// prephitmp_86, tmp163
+	clz	x12, x12	// prephitmp_86, prephitmp_86
+	b	.L2367		//
+.L2374:
+	stp	x19, x20, [sp, 16]	//,,
+	.cfi_offset 20, -536
+	.cfi_offset 19, -544
+	mov	x19, 16960	// ivtmp_50,
+	movk	x19, 0xf, lsl 16	// ivtmp_50,,
+.L2366:
+// bitmapdecoding.cpp:282:     uint64_t x = rand();
+	bl	rand		//
+// bitmapdecoding.cpp:283:     x <<= 32;
+	lsl	x20, x0, 32	// x, tmp195,
+// bitmapdecoding.cpp:284:     x |= rand();
+	bl	rand		//
+// bitmapdecoding.cpp:285:     uint32_t matches = 0;
+	str	wzr, [sp, 44]	//, matches
+// bitmapdecoding.cpp:284:     x |= rand();
+	sxtw	x12, w0	// _35, tmp196
+// bitmapdecoding.cpp:284:     x |= rand();
+	orr	x12, x12, x20	// x, _35, x
+// bitmapdecoding.cpp:121:   if (bits != 0u) {
+	cbz	x12, .L2368	// x,
+	add	x0, sp, 304	// tmp206,,
+	mov	w2, 0	//,
+	mov	x3, x12	//, x
+	add	x1, sp, 44	// tmp205,,
+	bl	_Z14faster_decoderPjRjjm.part.0		//
+	mov	x0, x12	// bits, x
+	add	x2, sp, 48	// tmp207,,
+	.p2align 3,,7
+.L2369:
+// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
+	rbit	x1, x0	// tmp169, bits
+	clz	x1, x1	// tmp169, tmp169
+// bitmapdecoding.cpp:87:     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+	str	w1, [x2], 4	// tmp169, MEM[base: _87, offset: 0B]
+// bitmapdecoding.cpp:88:     bits = bits & (bits - 1);
+	sub	x1, x0, #1	// _65, bits,
+// bitmapdecoding.cpp:86:   while (bits != 0) {
+	ands	x0, x0, x1	// bits, bits, _65
+	bne	.L2369		//,
+	fmov	d0, x12	// tmp208, x
+// bitmapdecoding.cpp:289:     if (refmatches != matches) {
+	ldr	w4, [sp, 44]	//, matches
+	cnt	v0.8b, v0.8b	// tmp172, tmp208
+	addv	b0, v0.8b	// tmp174, tmp172
+	umov	w0, v0.b[0]	// _18, tmp174,
+	cmp	w4, w0	// matches, _18
+	bne	.L2371		//,
+// bitmapdecoding.cpp:293:     for (size_t k = 0; k < matches; k++) {
+	uxtw	x4, w4	// _52, matches
+	mov	x1, 1	// ivtmp.1937,
+	b	.L2372		//
+	.p2align 2,,3
+.L2385:
+// bitmapdecoding.cpp:293:     for (size_t k = 0; k < matches; k++) {
+	cmp	x1, x4	// ivtmp.1937, _52
+	mov	x1, x3	// ivtmp.1937, ivtmp.1937
+	beq	.L2368		//,
+.L2372:
+// bitmapdecoding.cpp:294:       if (decoded[k] != refdecoded[k]) {
+	lsl	x0, x1, 2	// tmp182, ivtmp.1937,
+	add	x2, sp, 304	// tmp209,,
+	add	x5, sp, 48	// tmp210,,
+	add	x2, x2, x0	// tmp181, tmp209, tmp182
+	add	x0, x5, x0	// tmp184, tmp210, tmp182
+	add	x3, x1, 1	// ivtmp.1937, ivtmp.1937,
+// bitmapdecoding.cpp:294:       if (decoded[k] != refdecoded[k]) {
+	ldr	w2, [x2, -4]	//, MEM[symbol: decoded, index: ivtmp.1937_14, step: 4, offset: -4B]
+	ldr	w0, [x0, -4]	//, MEM[symbol: refdecoded, index: ivtmp.1937_14, step: 4, offset: -4B]
+	cmp	w2, w0	// MEM[symbol: decoded, index: ivtmp.1937_14, step: 4, offset: -4B], MEM[symbol: refdecoded, index: ivtmp.1937_14, step: 4, offset: -4B]
+	beq	.L2385		//,
+.L2371:
+// bitmapdecoding.cpp:290:       printf("bug\n");
+	adrp	x0, .LC0	// tmp179,
+	add	x0, x0, :lo12:.LC0	//, tmp179,
+	bl	puts		//
+// bitmapdecoding.cpp:291:       return false;
+	mov	w0, 0	// _16,
+	ldp	x19, x20, [sp, 16]	//,,
+	.cfi_remember_state
+	.cfi_restore 20
+	.cfi_restore 19
+	b	.L2381		//
+.L2368:
+	.cfi_restore_state
+// bitmapdecoding.cpp:281:   for (size_t i = 0; i < 1000000; i++) {
+	subs	x19, x19, #1	// ivtmp_50, ivtmp_50,
+	bne	.L2366		//,
+// bitmapdecoding.cpp:300:   printf("Tests passed.\n");
+	adrp	x0, .LC1	// tmp189,
+	add	x0, x0, :lo12:.LC1	//, tmp189,
+	bl	puts		//
+// bitmapdecoding.cpp:301:   return true;
+	mov	w0, 1	// _16,
+	ldp	x19, x20, [sp, 16]	//,,
+	.cfi_restore 20
+	.cfi_restore 19
+	b	.L2381		//
+	.cfi_endproc
+.LFE2424:
+	.size	_Z4unitIXadL_Z14faster_decoderPjRjjmEEEbv, .-_Z4unitIXadL_Z14faster_decoderPjRjjmEEEbv
 	.section	.rodata._ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE.str1.8,"aMS",@progbits,1
 	.align	3
 .LC6:
@@ -18963,7 +19066,7 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	mov	x19, x0	// this, tmp248
 // linux-perf-events.h:88:     if (working)
 	ldrb	w0, [x0, 4]	// this_10(D)->working, this_10(D)->working
-	cbnz	w0, .L2397	// this_10(D)->working,
+	cbnz	w0, .L2437	// this_10(D)->working,
 // linux-perf-events.h:90:     working = false;
 	strb	wzr, [x19, 4]	//, this_10(D)->working
 // linux-perf-events.h:91:   }
@@ -18977,7 +19080,7 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2397:
+.L2437:
 	.cfi_restore_state
 	stp	x21, x22, [sp, 32]	//,,
 	.cfi_offset 22, -104
@@ -18991,22 +19094,22 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:211: 	if (__gnu_cxx::__is_null_pointer(__beg) && __beg != __end)
 	cmn	x21, x20	// _51, _52
 	ccmp	x21, 0, 0, ne	// _51,,,
-	beq	.L2398		//,
+	beq	.L2438		//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	str	x20, [sp, 112]	// _52, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:217: 	if (__dnew > size_type(_S_local_capacity))
 	cmp	x20, 15	// _52,
-	bhi	.L2399		//,
+	bhi	.L2439		//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:348: 	if (__n == 1)
 	cmp	x20, 1	// _52,
-	bne	.L2351		//,
+	bne	.L2391		//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:349: 	  traits_type::assign(*__d, *__s);
 	ldrb	w2, [x21]	// _64, MEM[(const char_type &)_51]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
 	mov	x1, x0	// prephitmp_130, tmp160
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
 	strb	w2, [sp, 64]	// _64, MEM[(char_type &)&D.52948 + 16]
-.L2352:
+.L2392:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
 	str	x20, [sp, 56]	// _52, MEM[(size_type *)&D.52948 + 8B]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:322: 	if (this->max_size() - (this->size() - __n1) < __n2)
@@ -19017,7 +19120,7 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	ldr	x1, [sp, 56]	// MEM[(long unsigned int *)&D.52948 + 8B], MEM[(long unsigned int *)&D.52948 + 8B]
 	sub	x0, x0, x1	// tmp177, tmp178, MEM[(long unsigned int *)&D.52948 + 8B]
 	cmp	x0, 1	// tmp177,
-	bls	.L2400		//,
+	bls	.L2440		//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:1268: 	return _M_append(__s, __n);
 	adrp	x1, .LC8	// tmp183,
 	add	x0, sp, 48	// tmp266,,
@@ -19039,7 +19142,7 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 // linux-perf-events.h:89:       std::cerr << (context + ": " + std::string(strerror(errno))) << std::endl;
 	mov	x21, x0	// _4, tmp252
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:527:       { _M_construct(__s, __s ? __s + traits_type::length(__s) : __s+npos); }
-	cbz	x0, .L2401	// _4,
+	cbz	x0, .L2441	// _4,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:335: 	return __builtin_strlen(__s);
 	bl	strlen		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
@@ -19048,17 +19151,17 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	mov	x20, x0	// _47, tmp254
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:217: 	if (__dnew > size_type(_S_local_capacity))
 	cmp	x0, 15	// _47,
-	bhi	.L2402		//,
+	bhi	.L2442		//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:348: 	if (__n == 1)
 	cmp	x0, 1	// _47,
-	bne	.L2359		//,
+	bne	.L2399		//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:349: 	  traits_type::assign(*__d, *__s);
 	ldrb	w1, [x21]	// _73, MEM[(const char_type &)_4]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
 	mov	x0, x22	// pretmp_153, tmp187
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
 	strb	w1, [sp, 96]	// _73, MEM[(char_type &)&D.52950 + 16]
-.L2360:
+.L2400:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
 	str	x20, [sp, 88]	// _47, MEM[(size_type *)&D.52950 + 8B]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:995: 	return _M_is_local() ? size_type(_S_local_capacity)
@@ -19079,7 +19182,7 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	csel	x0, x0, x6, ne	// iftmp.61_82, D.52948.D.21624._M_allocated_capacity, tmp245,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:6102: 			   && __size <= __rhs.capacity());
 	cmp	x5, x0	// __size, iftmp.61_82
-	bls	.L2362		//,
+	bls	.L2402		//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:995: 	return _M_is_local() ? size_type(_S_local_capacity)
 	ldr	x0, [sp, 96]	// D.52950.D.21624._M_allocated_capacity, D.52950.D.21624._M_allocated_capacity
 	add	x7, sp, 96	// tmp206,,
@@ -19087,14 +19190,14 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	csel	x0, x0, x6, ne	// iftmp.61_86, D.52950.D.21624._M_allocated_capacity, tmp245,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:6102: 			   && __size <= __rhs.capacity());
 	cmp	x5, x0	// __size, iftmp.61_86
-	bls	.L2403		//,
-.L2362:
+	bls	.L2443		//,
+.L2402:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:1222:       { return _M_append(__str._M_data(), __str.size()); }
 	add	x0, sp, 48	// tmp273,,
 .LEHB9:
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_appendEPKcm		//
 .LEHE9:
-.L2396:
+.L2436:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:160: 	: allocator_type(std::move(__a)), _M_p(__dat) { }
 	add	x2, sp, 128	// tmp210,,
 	str	x2, [sp, 112]	// tmp210, MEM[(struct _Alloc_hider *)&D.52951]._M_p
@@ -19104,14 +19207,14 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	ldr	x2, [x0], 16	// _93, MEM[(char * *)iftmp.60_92]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:555: 	if (__str._M_is_local())
 	cmp	x2, x0	// _93, _94
-	beq	.L2404		//,
+	beq	.L2444		//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
 	str	x2, [sp, 112]	// _93, MEM[(char * *)&D.52951]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:563: 	    _M_capacity(__str._M_allocated_capacity);
 	ldr	x2, [x1, 16]	// _96, MEM[(struct basic_string &)iftmp.60_92].D.21624._M_allocated_capacity
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	str	x2, [sp, 128]	// _96, MEM[(size_type *)&D.52951 + 16B]
-.L2366:
+.L2406:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:569: 	_M_length(__str.length());
 	ldr	x2, [x1, 8]	// _97, MEM[(long unsigned int *)iftmp.60_92 + 8B]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
@@ -19133,13 +19236,13 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	add	x0, x20, x0	// tmp217, _25, MEM[(long int *)_102 + -24B]
 	ldr	x21, [x0, 240]	// _106, MEM[(const struct __ctype_type * *)_105 + 240B]
 // /usr/local/include/c++/9.1.0/bits/basic_ios.h:49:       if (!__f)
-	cbz	x21, .L2405	// _106,
+	cbz	x21, .L2445	// _106,
 // /usr/local/include/c++/9.1.0/bits/locale_facets.h:874: 	if (_M_widen_ok)
 	ldrb	w0, [x21, 56]	// MEM[(const struct ctype *)_106]._M_widen_ok, MEM[(const struct ctype *)_106]._M_widen_ok
-	cbz	w0, .L2368	// MEM[(const struct ctype *)_106]._M_widen_ok,
+	cbz	w0, .L2408	// MEM[(const struct ctype *)_106]._M_widen_ok,
 // /usr/local/include/c++/9.1.0/bits/locale_facets.h:875: 	  return _M_widen[static_cast<unsigned char>(__c)];
 	ldrb	w1, [x21, 67]	// _113, MEM[(const struct ctype *)_106]._M_widen
-.L2369:
+.L2409:
 // /usr/local/include/c++/9.1.0/ostream:600:     { return flush(__os.put(__os.widen('\n'))); }
 	mov	x0, x20	//, _25
 	bl	_ZNSo3putEc		//
@@ -19150,25 +19253,25 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x1, sp, 128	// tmp224,,
 	cmp	x0, x1	// _28, tmp224
-	beq	.L2370		//,
+	beq	.L2410		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2370:
+.L2410:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
 	ldr	x0, [sp, 80]	// _27, MEM[(char * *)&D.52950]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x1, sp, 96	// tmp226,,
 	cmp	x0, x1	// _27, tmp226
-	beq	.L2371		//,
+	beq	.L2411		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2371:
+.L2411:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
 	ldr	x0, [sp, 48]	// _26, MEM[(char * *)&D.52948]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x1, sp, 64	// tmp228,,
 	cmp	x0, x1	// _26, tmp228
-	beq	.L2395		//,
+	beq	.L2435		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 	ldp	x21, x22, [sp, 32]	//,,
@@ -19187,14 +19290,14 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2351:
+.L2391:
 	.cfi_restore_state
 	mov	x1, x0	// prephitmp_130, tmp160
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:363: 	if (__n == 0)
-	cbz	x20, .L2352	// _52,
-	b	.L2350		//
+	cbz	x20, .L2392	// _52,
+	b	.L2390		//
 	.p2align 2,,3
-.L2368:
+.L2408:
 // /usr/local/include/c++/9.1.0/bits/locale_facets.h:876: 	this->_M_widen_init();
 	mov	x0, x21	//, _106
 	bl	_ZNKSt5ctypeIcE13_M_widen_initEv		//
@@ -19205,16 +19308,16 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	mov	w1, 10	// _113,
 	ldr	x2, [x2, 48]	// _117, MEM[(int (*) () *)_116 + 48B]
 	cmp	x2, x0	// _117, tmp220
-	beq	.L2369		//,
+	beq	.L2409		//,
 // /usr/local/include/c++/9.1.0/bits/locale_facets.h:877: 	return this->do_widen(__c);
 	mov	x0, x21	//, _106
 	blr	x2		// _117
 .LEHE10:
 	and	w1, w0, 255	// _113, tmp259
 // /usr/local/include/c++/9.1.0/bits/locale_facets.h:877: 	return this->do_widen(__c);
-	b	.L2369		//
+	b	.L2409		//
 	.p2align 2,,3
-.L2395:
+.L2435:
 	ldp	x21, x22, [sp, 32]	//,,
 	.cfi_remember_state
 	.cfi_restore 22
@@ -19231,14 +19334,14 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2359:
+.L2399:
 	.cfi_restore_state
 	mov	x0, x22	// pretmp_153, tmp187
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:363: 	if (__n == 0)
-	cbz	x20, .L2360	// _47,
-	b	.L2358		//
+	cbz	x20, .L2400	// _47,
+	b	.L2398		//
 	.p2align 2,,3
-.L2399:
+.L2439:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	add	x1, sp, 112	//,,
 	add	x0, sp, 48	// tmp265,,
@@ -19252,7 +19355,7 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	str	x0, [sp, 48]	// _61, MEM[(char * *)&D.52948]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	str	x1, [sp, 64]	// __dnew, MEM[(size_type *)&D.52948 + 16B]
-.L2350:
+.L2390:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	mov	x2, x20	//, _52
 	mov	x1, x21	//, _51
@@ -19260,9 +19363,9 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	ldr	x1, [sp, 48]	// prephitmp_130, MEM[(char * *)&D.52948]
 	ldr	x20, [sp, 112]	// _52, __dnew
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	b	.L2352		//
+	b	.L2392		//
 	.p2align 2,,3
-.L2402:
+.L2442:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	add	x1, sp, 112	//,,
 	add	x0, sp, 80	// tmp269,,
@@ -19275,7 +19378,7 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	str	x0, [sp, 80]	// _59, MEM[(char * *)&D.52950]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	str	x1, [sp, 96]	// __dnew, MEM[(size_type *)&D.52950 + 16B]
-.L2358:
+.L2398:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	mov	x2, x20	//, _47
 	mov	x1, x21	//, _4
@@ -19283,21 +19386,21 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	ldr	x0, [sp, 80]	// pretmp_153, MEM[(char * *)&D.52950]
 	ldr	x20, [sp, 112]	// _47, __dnew
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	b	.L2360		//
+	b	.L2400		//
 	.p2align 2,,3
-.L2401:
+.L2441:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:212: 	  std::__throw_logic_error(__N("basic_string::"
 	adrp	x0, .LC6	// tmp189,
 	add	x0, x0, :lo12:.LC6	//, tmp189,
 	bl	_ZSt19__throw_logic_errorPKc		//
 .LEHE12:
 	.p2align 2,,3
-.L2404:
+.L2444:
 	ldp	x2, x3, [x1, 16]	// _95, MEM[(char * {ref-all})iftmp.60_92 + 16B]
 	stp	x2, x3, [sp, 128]	// _95, MEM[(char * {ref-all})&D.52951 + 16B]
-	b	.L2366		//
+	b	.L2406		//
 	.p2align 2,,3
-.L2403:
+.L2443:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:1941: 			  _M_limit(__pos, __n1), __s, __n2);
 	add	x0, sp, 80	// tmp272,,
 	mov	x2, 0	//,
@@ -19305,77 +19408,77 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 .LEHB13:
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_replaceEmmPKcm		//
 .LEHE13:
-	b	.L2396		//
-.L2405:
+	b	.L2436		//
+.L2445:
 .LEHB14:
 // /usr/local/include/c++/9.1.0/bits/basic_ios.h:50: 	__throw_bad_cast();
 	bl	_ZSt16__throw_bad_castv		//
 .LEHE14:
-.L2400:
+.L2440:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:323: 	  __throw_length_error(__N(__s));
 	adrp	x0, .LC7	// tmp181,
 	add	x0, x0, :lo12:.LC7	//, tmp181,
 .LEHB15:
 	bl	_ZSt20__throw_length_errorPKc		//
 .LEHE15:
-.L2398:
+.L2438:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:212: 	  std::__throw_logic_error(__N("basic_string::"
 	adrp	x0, .LC6	// tmp167,
 	add	x0, x0, :lo12:.LC6	//, tmp167,
 .LEHB16:
 	bl	_ZSt19__throw_logic_errorPKc		//
-.L2387:
+.L2427:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
 	ldr	x1, [sp, 48]	// _54, MEM[(char * *)&D.52948]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x2, sp, 64	// tmp191,,
 	mov	x19, x0	// tmp192, tmp253
 	cmp	x1, x2	// _54, tmp191
-	beq	.L2378		//,
+	beq	.L2418		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x1	//, _54
 	bl	_ZdlPv		//
-.L2378:
+.L2418:
 	mov	x0, x19	//, tmp237
 	bl	_Unwind_Resume		//
 .LEHE16:
-.L2384:
+.L2424:
 	mov	x19, x0	// tmp237, tmp262
-	b	.L2377		//
-.L2386:
+	b	.L2417		//
+.L2426:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
 	ldr	x2, [sp, 112]	// _29, MEM[(char * *)&D.52951]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x1, sp, 128	// tmp230,,
 	mov	x19, x0	// tmp232, tmp260
 	cmp	x2, x1	// _29, tmp230
-	beq	.L2375		//,
+	beq	.L2415		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x2	//, _29
 	bl	_ZdlPv		//
-.L2375:
+.L2415:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
 	ldr	x0, [sp, 80]	// _30, MEM[(char * *)&D.52950]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x1, sp, 96	// tmp236,,
 	cmp	x0, x1	// _30, tmp236
-	beq	.L2377		//,
+	beq	.L2417		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2377:
+.L2417:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
 	ldr	x0, [sp, 48]	// _31, MEM[(char * *)&D.52948]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x1, sp, 64	// tmp240,,
 	cmp	x0, x1	// _31, tmp240
-	beq	.L2378		//,
+	beq	.L2418		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2378		//
-.L2385:
+	b	.L2418		//
+.L2425:
 	mov	x19, x0	// tmp231, tmp261
-	b	.L2375		//
+	b	.L2415		//
 	.cfi_endproc
 .LFE2626:
 	.section	.gcc_except_table
@@ -19387,15 +19490,15 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 .LLSDACSB2626:
 	.uleb128 .LEHB8-.LFB2626
 	.uleb128 .LEHE8-.LEHB8
-	.uleb128 .L2387-.LFB2626
+	.uleb128 .L2427-.LFB2626
 	.uleb128 0
 	.uleb128 .LEHB9-.LFB2626
 	.uleb128 .LEHE9-.LEHB9
-	.uleb128 .L2385-.LFB2626
+	.uleb128 .L2425-.LFB2626
 	.uleb128 0
 	.uleb128 .LEHB10-.LFB2626
 	.uleb128 .LEHE10-.LEHB10
-	.uleb128 .L2386-.LFB2626
+	.uleb128 .L2426-.LFB2626
 	.uleb128 0
 	.uleb128 .LEHB11-.LFB2626
 	.uleb128 .LEHE11-.LEHB11
@@ -19403,19 +19506,19 @@ _ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_trait
 	.uleb128 0
 	.uleb128 .LEHB12-.LFB2626
 	.uleb128 .LEHE12-.LEHB12
-	.uleb128 .L2384-.LFB2626
+	.uleb128 .L2424-.LFB2626
 	.uleb128 0
 	.uleb128 .LEHB13-.LFB2626
 	.uleb128 .LEHE13-.LEHB13
-	.uleb128 .L2385-.LFB2626
+	.uleb128 .L2425-.LFB2626
 	.uleb128 0
 	.uleb128 .LEHB14-.LFB2626
 	.uleb128 .LEHE14-.LEHB14
-	.uleb128 .L2386-.LFB2626
+	.uleb128 .L2426-.LFB2626
 	.uleb128 0
 	.uleb128 .LEHB15-.LFB2626
 	.uleb128 .LEHE15-.LEHB15
-	.uleb128 .L2387-.LFB2626
+	.uleb128 .L2427-.LFB2626
 	.uleb128 0
 	.uleb128 .LEHB16-.LFB2626
 	.uleb128 .LEHE16-.LEHB16
@@ -19437,7 +19540,7 @@ _ZNSt6vectorIySaIyEE17_M_default_appendEm:
 .LFB2643:
 	.cfi_startproc
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:614:       if (__n != 0)
-	cbz	x1, .L2427	// __n,
+	cbz	x1, .L2467	// __n,
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:611:     vector<_Tp, _Alloc>::
 	stp	x29, x30, [sp, -80]!	//,,,
 	.cfi_def_cfa_offset 80
@@ -19474,16 +19577,16 @@ _ZNSt6vectorIySaIyEE17_M_default_appendEm:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:620: 	  if (__size > max_size() || __navail > max_size() - __size)
 	sub	x2, x3, x23	// _5, tmp126, _20
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:623: 	  if (__navail >= __n)
-	bhi	.L2408		//,
-	mov	x2, 0	// ivtmp.1913,
+	bhi	.L2448		//,
+	mov	x2, 0	// ivtmp.1984,
 	.p2align 3,,7
-.L2409:
+.L2449:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:772: 	*__first = __tmp;
-	str	xzr, [x0, x2, lsl 3]	//, MEM[base: _33, index: ivtmp.1913_25, step: 8, offset: 0B]
-	add	x2, x2, 1	// ivtmp.1913, ivtmp.1913,
+	str	xzr, [x0, x2, lsl 3]	//, MEM[base: _33, index: ivtmp.1984_25, step: 8, offset: 0B]
+	add	x2, x2, 1	// ivtmp.1984, ivtmp.1984,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:771: 	   __niter > 0; --__niter, (void) ++__first)
-	cmp	x19, x2	// __n, ivtmp.1913
-	bne	.L2409		//,
+	cmp	x19, x2	// __n, ivtmp.1984
+	bne	.L2449		//,
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:626: 	      this->_M_impl._M_finish =
 	add	x19, x0, x19, lsl 3	// __first, _33, __n,
 	str	x19, [x21, 8]	// __first, this_18(D)->D.45414._M_impl.D.44749._M_finish
@@ -19503,10 +19606,10 @@ _ZNSt6vectorIySaIyEE17_M_default_appendEm:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2427:
+.L2467:
 	ret	
 	.p2align 2,,3
-.L2408:
+.L2448:
 	.cfi_def_cfa_offset 80
 	.cfi_offset 19, -64
 	.cfi_offset 20, -56
@@ -19520,10 +19623,10 @@ _ZNSt6vectorIySaIyEE17_M_default_appendEm:
 	.cfi_offset 25, -16
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1755: 	if (max_size() - size() < __n)
 	cmp	x2, x19	// _5, __n
-	bcc	.L2430		//,
+	bcc	.L2470		//,
 	cmp	x19, x23	// __n, _20
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:640: 		      std::__uninitialized_default_n_a(__new_start + __size,
-	mov	x20, 0	// ivtmp.1921,
+	mov	x20, 0	// ivtmp.1992,
 	csel	x24, x19, x23, cs	// tmp135, __n, _20,
 	add	x24, x23, x24	// tmp136, _20, tmp135
 	cmp	x24, x3	// tmp136, tmp126
@@ -19536,24 +19639,24 @@ _ZNSt6vectorIySaIyEE17_M_default_appendEm:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:640: 		      std::__uninitialized_default_n_a(__new_start + __size,
 	add	x1, x0, x22	// _7, _52, _30
 	.p2align 3,,7
-.L2413:
+.L2453:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:772: 	*__first = __tmp;
-	str	xzr, [x1, x20, lsl 3]	//, MEM[base: _7, index: ivtmp.1921_97, step: 8, offset: 0B]
-	add	x20, x20, 1	// ivtmp.1921, ivtmp.1921,
+	str	xzr, [x1, x20, lsl 3]	//, MEM[base: _7, index: ivtmp.1992_97, step: 8, offset: 0B]
+	add	x20, x20, 1	// ivtmp.1992, ivtmp.1992,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:771: 	   __niter > 0; --__niter, (void) ++__first)
-	cmp	x19, x20	// __n, ivtmp.1921
-	bne	.L2413		//,
+	cmp	x19, x20	// __n, ivtmp.1992
+	bne	.L2453		//,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:909:       ptrdiff_t __count = __last - __first;
 	ldp	x19, x2, [x21]	// _8, this_18(D)->D.45414._M_impl.D.44749._M_finish, this_18(D)->D.45414._M_impl.D.44749._M_start
 	sub	x2, x2, x19	// _37, this_18(D)->D.45414._M_impl.D.44749._M_finish, _8
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:910:       if (__count > 0)
 	cmp	x2, 0	// _37,
-	bgt	.L2431		//,
+	bgt	.L2471		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbnz	x19, .L2415	// _8,
-.L2416:
+	cbnz	x19, .L2455	// _8,
+.L2456:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:679: 	      this->_M_impl._M_finish = __new_start + __size + __n;
-	add	x20, x23, x20	// tmp138, _20, ivtmp.1921
+	add	x20, x23, x20	// tmp138, _20, ivtmp.1992
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:680: 	      this->_M_impl._M_end_of_storage = __new_start + __len;
 	add	x24, x25, x24	// tmp141, _52, _99
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:680: 	      this->_M_impl._M_end_of_storage = __new_start + __len;
@@ -19583,19 +19686,19 @@ _ZNSt6vectorIySaIyEE17_M_default_appendEm:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2431:
+.L2471:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:911: 	__builtin_memmove(__result, __first, __count * sizeof(_Tp));
 	mov	x1, x19	//, _8
 	mov	x0, x25	//, _52
 	bl	memmove		//
-.L2415:
+.L2455:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x19	//, _8
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2416		//
-.L2430:
+	b	.L2456		//
+.L2470:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1756: 	  __throw_length_error(__N(__s));
 	adrp	x0, .LC9	// tmp134,
 	add	x0, x0, :lo12:.LC9	//, tmp134,
@@ -19603,42 +19706,6 @@ _ZNSt6vectorIySaIyEE17_M_default_appendEm:
 	.cfi_endproc
 .LFE2643:
 	.size	_ZNSt6vectorIySaIyEE17_M_default_appendEm, .-_ZNSt6vectorIySaIyEE17_M_default_appendEm
-	.section	.text._ZNSt6vectorIySaIyEE6resizeEm,"axG",@progbits,_ZNSt6vectorIySaIyEE6resizeEm,comdat
-	.align	2
-	.p2align 3,,7
-	.weak	_ZNSt6vectorIySaIyEE6resizeEm
-	.type	_ZNSt6vectorIySaIyEE6resizeEm, %function
-_ZNSt6vectorIySaIyEE6resizeEm:
-.LFB2411:
-	.cfi_startproc
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
-	ldp	x5, x4, [x0]	// _10, _11, MEM[(long long unsigned int * *)this_6(D)]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	sub	x3, x4, x5	// tmp100, _11, _10
-	asr	x3, x3, 3	// tmp101, tmp100,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
-	cmp	x1, x3	// __new_size, tmp101
-	bhi	.L2435		//,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:938: 	else if (__new_size < size())
-	bcs	.L2432		//,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:939: 	  _M_erase_at_end(this->_M_impl._M_start + __new_size);
-	add	x1, x5, x1, lsl 3	// _3, _10, __new_size,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1791: 	if (size_type __n = this->_M_impl._M_finish - __pos)
-	cmp	x1, x4	// _3, _11
-	beq	.L2432		//,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1795: 	    this->_M_impl._M_finish = __pos;
-	str	x1, [x0, 8]	// _3, MEM[(long long unsigned int * *)this_6(D) + 8B]
-.L2432:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:940:       }
-	ret	
-	.p2align 2,,3
-.L2435:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:937: 	  _M_default_append(__new_size - size());
-	sub	x1, x1, x3	//, __new_size, tmp101
-	b	_ZNSt6vectorIySaIyEE17_M_default_appendEm		//
-	.cfi_endproc
-.LFE2411:
-	.size	_ZNSt6vectorIySaIyEE6resizeEm, .-_ZNSt6vectorIySaIyEE6resizeEm
 	.section	.rodata._ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_.str1.8,"aMS",@progbits,1
 	.align	3
 .LC10:
@@ -19691,21 +19758,21 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 	mul	x19, x19, x3	// tmp153, tmp152, tmp154
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1755: 	if (max_size() - size() < __n)
 	cmp	x19, x0	// tmp153, tmp155
-	beq	.L2470		//,
+	beq	.L2506		//,
 	mov	x23, x1	// __position, tmp201
 	mov	x25, x2	// __args#0, tmp202
 	sub	x27, x1, x22	// _86, __position, _79
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:227:       if (__a < __b)
-	cbz	x19, .L2455	// tmp153,
+	cbz	x19, .L2491	// tmp153,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1759: 	return (__len < size() || __len > max_size()) ? max_size() : __len;
 	cmp	x19, x19, lsl 1	// tmp153, tmp153,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1758: 	const size_type __len = size() + (std::max)(size(), __n);
 	lsl	x19, x19, 1	// __len, tmp153,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1759: 	return (__len < size() || __len > max_size()) ? max_size() : __len;
-	bls	.L2471		//,
+	bls	.L2507		//,
 	mov	x19, x0	// __len, tmp155
 	mov	x0, 9223372036854775800	// prephitmp_90,
-.L2438:
+.L2474:
 .LEHB17:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	bl	_Znwm		//
@@ -19725,12 +19792,12 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x2, x27, 3	// tmp158, _64,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L2472		//,
-.L2440:
+	beq	.L2508		//,
+.L2476:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x0, 1152921504606846975	// tmp159,
 	cmp	x2, x0	// tmp158, tmp159
-	bhi	.L2473		//,
+	bhi	.L2509		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x27	//, _64
 .LEHB18:
@@ -19738,7 +19805,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 	mov	x3, x0	// _92, tmp203
 	ldp	x1, x0, [x25]	// pretmp_130, prephitmp_47, MEM[(long long unsigned int * *)__args#0_18(D)]
 	sub	x25, x0, x1	// prephitmp_128, prephitmp_47, pretmp_130
-.L2441:
+.L2477:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x27, x3, x27	// tmp161, _92, _64
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -19748,24 +19815,24 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	str	x27, [x26, 16]	// tmp161, MEM[(struct _Vector_base *)_2]._M_impl.D.44749._M_end_of_storage
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L2443		//,
+	beq	.L2479		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	mov	x0, x3	//, _92
 	mov	x2, x25	//, prephitmp_128
 	bl	memmove		//
 	mov	x3, x0	// _92,
-.L2443:
+.L2479:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
 	add	x3, x3, x25	// tmp162, _92, prephitmp_128
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
 	str	x3, [x26, 8]	// tmp162, *_2.D.45414._M_impl.D.44749._M_finish
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:931:       for (; __first != __last; ++__first, (void)++__cur)
 	cmp	x23, x22	// __position, _79
-	beq	.L2457		//,
+	beq	.L2493		//,
 	mov	x2, x20	// __cur, _77
 	mov	x0, x22	// __first, _79
 	.p2align 3,,7
-.L2445:
+.L2481:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:100: 	: _M_start(__x._M_start), _M_finish(__x._M_finish),
 	ldr	x1, [x0]	// _36, MEM[base: __first_12, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:101: 	  _M_end_of_storage(__x._M_end_of_storage)
@@ -19783,7 +19850,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 	str	x1, [x2, -8]	// _38, MEM[base: __cur_5, offset: 16B]
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:931:       for (; __first != __last; ++__first, (void)++__cur)
 	cmp	x23, x0	// __position, __first
-	bne	.L2445		//,
+	bne	.L2481		//,
 	sub	x25, x23, #24	// tmp163, __position,
 	mov	x0, 43691	// tmp167,
 	sub	x25, x25, x22	// tmp164, tmp163, _79
@@ -19796,17 +19863,17 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 	add	x25, x25, 1	// tmp169, tmp168,
 	add	x25, x25, x25, lsl 1	// tmp172, tmp169, tmp169,
 	add	x25, x20, x25, lsl 3	// __cur, _77, tmp172,
-.L2444:
+.L2480:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:464: 	      ++__new_finish;
 	add	x25, x25, 24	// __new_finish, __cur,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:931:       for (; __first != __last; ++__first, (void)++__cur)
 	cmp	x23, x24	// __position, _80
-	beq	.L2446		//,
+	beq	.L2482		//,
 	mov	x2, x23	// __first, __position
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:930:       _ForwardIterator __cur = __result;
 	mov	x0, x25	// __cur, __new_finish
 	.p2align 3,,7
-.L2447:
+.L2483:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:101: 	  _M_end_of_storage(__x._M_end_of_storage)
 	ldr	x1, [x2]	// MEM[base: __first_105, offset: 0B], MEM[base: __first_105, offset: 0B]
 	str	x1, [x0]	// MEM[base: __first_105, offset: 0B], MEM[base: __cur_139, offset: 0B]
@@ -19819,7 +19886,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 	add	x0, x0, 24	// __cur, __cur,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:931:       for (; __first != __last; ++__first, (void)++__cur)
 	cmp	x2, x24	// __first, _80
-	bne	.L2447		//,
+	bne	.L2483		//,
 	sub	x1, x2, x23	// tmp177, __first, __position
 	mov	x0, 43691	// tmp182,
 	sub	x1, x1, #24	// tmp179, tmp177,
@@ -19832,13 +19899,13 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 	add	x1, x1, 1	// tmp184, tmp183,
 	add	x1, x1, x1, lsl 1	// tmp187, tmp184, tmp184,
 	add	x25, x25, x1, lsl 3	// __new_finish, __new_finish, tmp187,
-.L2446:
+.L2482:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x22, .L2448	// _79,
+	cbz	x22, .L2484	// _79,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x22	//, _79
 	bl	_ZdlPv		//
-.L2448:
+.L2484:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:504:       this->_M_impl._M_end_of_storage = __new_start + __len;
 	add	x19, x19, x19, lsl 1	// tmp191, __len, __len,
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:505:     }
@@ -19871,10 +19938,10 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2471:
+.L2507:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cbnz	x19, .L2439	// __len,
+	cbnz	x19, .L2475	// __len,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:552: 	_Alloc_traits::_S_select_on_copy(__x._M_get_Tp_allocator()))
 	ldp	x1, x0, [x25]	// pretmp_130, prephitmp_47, MEM[(long long unsigned int * *)__args#0_18(D)]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
@@ -19891,61 +19958,61 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x2, x27, 3	// tmp158, _64,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	bne	.L2440		//,
-.L2472:
+	bne	.L2476		//,
+.L2508:
 	mov	x25, x27	// prephitmp_128, _64
 	mov	x3, 0	// _92,
-	b	.L2441		//
+	b	.L2477		//
 	.p2align 2,,3
-.L2455:
+.L2491:
 	mov	x0, 24	// prephitmp_90,
 	mov	x19, 1	// __len,
-	b	.L2438		//
+	b	.L2474		//
 	.p2align 2,,3
-.L2457:
+.L2493:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:931:       for (; __first != __last; ++__first, (void)++__cur)
 	mov	x25, x20	// __cur, _77
-	b	.L2444		//
-.L2473:
+	b	.L2480		//
+.L2509:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
 	bl	_ZSt17__throw_bad_allocv		//
 .LEHE18:
-.L2439:
+.L2475:
 	cmp	x19, x0	// __len, tmp155
 	mov	x1, 24	// tmp198,
 	csel	x19, x19, x0, ls	// __len, __len, tmp155,
 	mul	x0, x19, x1	// prephitmp_90, __len, tmp198
-	b	.L2438		//
-.L2470:
+	b	.L2474		//
+.L2506:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1756: 	  __throw_length_error(__N(__s));
 	adrp	x0, .LC10	// tmp157,
 	add	x0, x0, :lo12:.LC10	//, tmp157,
 .LEHB19:
 	bl	_ZSt20__throw_length_errorPKc		//
 .LEHE19:
-.L2458:
+.L2494:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:485:       __catch(...)
 	bl	__cxa_begin_catch		//
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:487: 	  if (!__new_finish)
-	cbnz	x20, .L2450	// _77,
+	cbnz	x20, .L2486	// _77,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x26]	// _41, _2->D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2453	// _41,
+	cbz	x0, .L2489	// _41,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2453:
+.L2489:
 .LEHB20:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:493: 	  __throw_exception_again;
 	bl	__cxa_rethrow		//
-.L2450:
+.L2486:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x20	//, _77
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:493: 	  __throw_exception_again;
 	bl	__cxa_rethrow		//
 .LEHE20:
-.L2459:
+.L2495:
 	mov	x19, x0	// tmp195, tmp204
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:485:       __catch(...)
 	bl	__cxa_end_catch		//
@@ -19971,7 +20038,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 	.uleb128 0
 	.uleb128 .LEHB18-.LFB2652
 	.uleb128 .LEHE18-.LEHB18
-	.uleb128 .L2458-.LFB2652
+	.uleb128 .L2494-.LFB2652
 	.uleb128 0x1
 	.uleb128 .LEHB19-.LFB2652
 	.uleb128 .LEHE19-.LEHB19
@@ -19979,7 +20046,7 @@ _ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__norm
 	.uleb128 0
 	.uleb128 .LEHB20-.LFB2652
 	.uleb128 .LEHE20-.LEHB20
-	.uleb128 .L2459-.LFB2652
+	.uleb128 .L2495-.LFB2652
 	.uleb128 0
 	.uleb128 .LEHB21-.LFB2652
 	.uleb128 .LEHE21-.LEHB21
@@ -20032,27 +20099,27 @@ _ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS
 	sub	x1, x21, x24	// tmp113, _37, _36
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1755: 	if (max_size() - size() < __n)
 	cmp	x3, x1, asr 2	// tmp115, tmp113,
-	beq	.L2488		//,
+	beq	.L2524		//,
 	mov	x19, x0	// this, tmp129
 	mov	x22, x2	// __args#0, tmp131
 	asr	x0, x1, 2	// tmp114, tmp113,
 	sub	x26, x23, x24	// _74, __position, _36
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:227:       if (__a < __b)
-	cbz	x0, .L2484	// tmp114,
+	cbz	x0, .L2520	// tmp114,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1759: 	return (__len < size() || __len > max_size()) ? max_size() : __len;
 	cmp	x0, x0, lsl 1	// tmp114, tmp114,
 	mov	x25, 9223372036854775804	// prephitmp_12,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1758: 	const size_type __len = size() + (std::max)(size(), __n);
 	lsl	x0, x0, 1	// __len, tmp114,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1759: 	return (__len < size() || __len > max_size()) ? max_size() : __len;
-	bls	.L2489		//,
-.L2476:
+	bls	.L2525		//,
+.L2512:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x25	//, prephitmp_12
 	bl	_Znwm		//
 	mov	x20, x0	// _34, tmp132
 	add	x25, x0, x25	// _71, _34, prephitmp_12
-.L2483:
+.L2519:
 	ldr	w0, [x22]	//, *__args#0_4(D)
 	add	x22, x26, 4	// tmp119, _74,
 	str	w0, [x20, x26]	// *__args#0_4(D), *_2
@@ -20061,12 +20128,12 @@ _ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:910:       if (__count > 0)
 	cmp	x26, 0	// _74,
 	add	x27, x22, x21	// _81, _65, _80
-	bgt	.L2490		//,
+	bgt	.L2526		//,
 	cmp	x21, 0	// _80,
-	bgt	.L2479		//,
+	bgt	.L2515		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbnz	x24, .L2482	// _36,
-.L2480:
+	cbnz	x24, .L2518	// _36,
+.L2516:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:505:     }
 	ldp	x21, x22, [sp, 32]	//,,
 	ldp	x23, x24, [sp, 48]	//,,
@@ -20094,7 +20161,7 @@ _ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2490:
+.L2526:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:911: 	__builtin_memmove(__result, __first, __count * sizeof(_Tp));
 	mov	x2, x26	//, _74
@@ -20103,44 +20170,44 @@ _ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS
 	bl	memmove		//
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:910:       if (__count > 0)
 	cmp	x21, 0	// _80,
-	bgt	.L2479		//,
-.L2482:
+	bgt	.L2515		//,
+.L2518:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x24	//, _36
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2480		//
+	b	.L2516		//
 	.p2align 2,,3
-.L2489:
+.L2525:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cbnz	x0, .L2477	// __len,
+	cbnz	x0, .L2513	// __len,
 	mov	x25, 0	// _71,
 	mov	x20, 0	// _34,
-	b	.L2483		//
+	b	.L2519		//
 	.p2align 2,,3
-.L2479:
+.L2515:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:911: 	__builtin_memmove(__result, __first, __count * sizeof(_Tp));
 	mov	x2, x21	//, _80
 	mov	x1, x23	//, __position
 	mov	x0, x22	//, _65
 	bl	memcpy		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x24, .L2480	// _36,
-	b	.L2482		//
+	cbz	x24, .L2516	// _36,
+	b	.L2518		//
 	.p2align 2,,3
-.L2484:
+.L2520:
 	mov	x25, 4	// prephitmp_12,
-	b	.L2476		//
-.L2488:
+	b	.L2512		//
+.L2524:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1756: 	  __throw_length_error(__N(__s));
 	adrp	x0, .LC10	// tmp117,
 	add	x0, x0, :lo12:.LC10	//, tmp117,
 	bl	_ZSt20__throw_length_errorPKc		//
-.L2477:
+.L2513:
 	cmp	x0, x3	// __len, tmp115
 	csel	x0, x0, x3, ls	// tmp125, __len, tmp115,
 	lsl	x25, x0, 2	// prephitmp_12, tmp125,
-	b	.L2476		//
+	b	.L2512		//
 	.cfi_endproc
 .LFE2734:
 	.size	_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_, .-_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_
@@ -20158,7 +20225,7 @@ _ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_:
 	mov	x4, x0	// this, tmp99
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:112: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
 	cmp	x3, x2	// _1, this_6(D)->D.44271._M_impl.D.43606._M_end_of_storage
-	beq	.L2492		//,
+	beq	.L2528		//,
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:115: 	    _Alloc_traits::construct(this->_M_impl, this->_M_impl._M_finish,
 	ldr	w0, [x1]	//, *__args#0_7(D)
 	str	w0, [x3], 4	// _10, *_1
@@ -20167,7 +20234,7 @@ _ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:125:       }
 	ret	
 	.p2align 2,,3
-.L2492:
+.L2528:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:121: 	  _M_realloc_insert(end(), std::forward<_Args>(__args)...);
 	mov	x2, x1	//, __args#0
 	mov	x1, x3	//, _1
@@ -20184,7 +20251,7 @@ _ZNSt6vectorImSaImEE17_M_default_appendEm:
 .LFB2761:
 	.cfi_startproc
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:614:       if (__n != 0)
-	cbz	x1, .L2516	// __n,
+	cbz	x1, .L2552	// __n,
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:611:     vector<_Tp, _Alloc>::
 	stp	x29, x30, [sp, -80]!	//,,,
 	.cfi_def_cfa_offset 80
@@ -20221,16 +20288,16 @@ _ZNSt6vectorImSaImEE17_M_default_appendEm:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:620: 	  if (__size > max_size() || __navail > max_size() - __size)
 	sub	x2, x3, x23	// _5, tmp126, _20
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:623: 	  if (__navail >= __n)
-	bhi	.L2497		//,
-	mov	x2, 0	// ivtmp.1957,
+	bhi	.L2533		//,
+	mov	x2, 0	// ivtmp.2026,
 	.p2align 3,,7
-.L2498:
+.L2534:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:772: 	*__first = __tmp;
-	str	xzr, [x0, x2, lsl 3]	//, MEM[base: _33, index: ivtmp.1957_25, step: 8, offset: 0B]
-	add	x2, x2, 1	// ivtmp.1957, ivtmp.1957,
+	str	xzr, [x0, x2, lsl 3]	//, MEM[base: _33, index: ivtmp.2026_25, step: 8, offset: 0B]
+	add	x2, x2, 1	// ivtmp.2026, ivtmp.2026,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:771: 	   __niter > 0; --__niter, (void) ++__first)
-	cmp	x19, x2	// __n, ivtmp.1957
-	bne	.L2498		//,
+	cmp	x19, x2	// __n, ivtmp.2026
+	bne	.L2534		//,
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:626: 	      this->_M_impl._M_finish =
 	add	x19, x0, x19, lsl 3	// __first, _33, __n,
 	str	x19, [x21, 8]	// __first, this_18(D)->D.43213._M_impl.D.42516._M_finish
@@ -20250,10 +20317,10 @@ _ZNSt6vectorImSaImEE17_M_default_appendEm:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2516:
+.L2552:
 	ret	
 	.p2align 2,,3
-.L2497:
+.L2533:
 	.cfi_def_cfa_offset 80
 	.cfi_offset 19, -64
 	.cfi_offset 20, -56
@@ -20267,10 +20334,10 @@ _ZNSt6vectorImSaImEE17_M_default_appendEm:
 	.cfi_offset 25, -16
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1755: 	if (max_size() - size() < __n)
 	cmp	x2, x19	// _5, __n
-	bcc	.L2519		//,
+	bcc	.L2555		//,
 	cmp	x19, x23	// __n, _20
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:640: 		      std::__uninitialized_default_n_a(__new_start + __size,
-	mov	x20, 0	// ivtmp.1965,
+	mov	x20, 0	// ivtmp.2034,
 	csel	x24, x19, x23, cs	// tmp135, __n, _20,
 	add	x24, x23, x24	// tmp136, _20, tmp135
 	cmp	x24, x3	// tmp136, tmp126
@@ -20283,24 +20350,24 @@ _ZNSt6vectorImSaImEE17_M_default_appendEm:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:640: 		      std::__uninitialized_default_n_a(__new_start + __size,
 	add	x1, x0, x22	// _7, _52, _30
 	.p2align 3,,7
-.L2502:
+.L2538:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:772: 	*__first = __tmp;
-	str	xzr, [x1, x20, lsl 3]	//, MEM[base: _7, index: ivtmp.1965_97, step: 8, offset: 0B]
-	add	x20, x20, 1	// ivtmp.1965, ivtmp.1965,
+	str	xzr, [x1, x20, lsl 3]	//, MEM[base: _7, index: ivtmp.2034_97, step: 8, offset: 0B]
+	add	x20, x20, 1	// ivtmp.2034, ivtmp.2034,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:771: 	   __niter > 0; --__niter, (void) ++__first)
-	cmp	x19, x20	// __n, ivtmp.1965
-	bne	.L2502		//,
+	cmp	x19, x20	// __n, ivtmp.2034
+	bne	.L2538		//,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:909:       ptrdiff_t __count = __last - __first;
 	ldp	x19, x2, [x21]	// _8, this_18(D)->D.43213._M_impl.D.42516._M_finish, this_18(D)->D.43213._M_impl.D.42516._M_start
 	sub	x2, x2, x19	// _37, this_18(D)->D.43213._M_impl.D.42516._M_finish, _8
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:910:       if (__count > 0)
 	cmp	x2, 0	// _37,
-	bgt	.L2520		//,
+	bgt	.L2556		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbnz	x19, .L2504	// _8,
-.L2505:
+	cbnz	x19, .L2540	// _8,
+.L2541:
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:679: 	      this->_M_impl._M_finish = __new_start + __size + __n;
-	add	x20, x23, x20	// tmp138, _20, ivtmp.1965
+	add	x20, x23, x20	// tmp138, _20, ivtmp.2034
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:680: 	      this->_M_impl._M_end_of_storage = __new_start + __len;
 	add	x24, x25, x24	// tmp141, _52, _99
 // /usr/local/include/c++/9.1.0/bits/vector.tcc:680: 	      this->_M_impl._M_end_of_storage = __new_start + __len;
@@ -20330,19 +20397,19 @@ _ZNSt6vectorImSaImEE17_M_default_appendEm:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2520:
+.L2556:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:911: 	__builtin_memmove(__result, __first, __count * sizeof(_Tp));
 	mov	x1, x19	//, _8
 	mov	x0, x25	//, _52
 	bl	memmove		//
-.L2504:
+.L2540:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x19	//, _8
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2505		//
-.L2519:
+	b	.L2541		//
+.L2555:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1756: 	  __throw_length_error(__N(__s));
 	adrp	x0, .LC9	// tmp134,
 	add	x0, x0, :lo12:.LC9	//, tmp134,
@@ -20438,16 +20505,16 @@ _ZN11LinuxEventsILi0EEC2ESt6vectorIiSaIiEE:
 // linux-perf-events.h:41:     num_events = config_vec.size();
 	str	w1, [x19, 120]	// tmp157, *this_24(D).num_events
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
-	cbnz	x1, .L2553	// tmp157,
-.L2522:
+	cbnz	x1, .L2589	// tmp157,
+.L2558:
 // linux-perf-events.h:44:     for (auto config : config_vec) {
-	cmp	x26, x20	// _51, ivtmp.1980
+	cmp	x26, x20	// _51, ivtmp.2049
 // linux-perf-events.h:43:     uint32_t i = 0;
 	mov	w21, 0	// i,
 // linux-perf-events.h:40:     int group = -1; // no group
 	mov	w22, -1	// group,
 // linux-perf-events.h:44:     for (auto config : config_vec) {
-	beq	.L2530		//,
+	beq	.L2566		//,
 	stp	x27, x28, [sp, 80]	//,,
 	.cfi_offset 28, -56
 	.cfi_offset 27, -64
@@ -20461,9 +20528,9 @@ _ZN11LinuxEventsILi0EEC2ESt6vectorIiSaIiEE:
 	add	x28, x28, :lo12:.LC11	// tmp207, tmp206,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	movk	x27, 0x8008, lsl 16	// tmp208,,
-	b	.L2529		//
+	b	.L2565		//
 	.p2align 2,,3
-.L2526:
+.L2562:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
 	ldr	x2, [x19, 152]	// MEM[(long unsigned int * *)this_24(D) + 152B], MEM[(long unsigned int * *)this_24(D) + 152B]
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
@@ -20475,17 +20542,17 @@ _ZN11LinuxEventsILi0EEC2ESt6vectorIiSaIiEE:
 	bl	ioctl		//
 // linux-perf-events.h:51:       if (group == -1) {
 	cmn	w22, #1	// group,
-	bne	.L2528		//,
+	bne	.L2564		//,
 // linux-perf-events.h:52:         group = fd;
 	ldr	w22, [x19]	//, *this_24(D).fd
-.L2528:
-	add	x20, x20, 4	// ivtmp.1980, ivtmp.1980,
+.L2564:
+	add	x20, x20, 4	// ivtmp.2049, ivtmp.2049,
 // linux-perf-events.h:44:     for (auto config : config_vec) {
-	cmp	x26, x20	// _51, ivtmp.1980
-	beq	.L2554		//,
+	cmp	x26, x20	// _51, ivtmp.2049
+	beq	.L2590		//,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	mov	w21, w23	// i, i
-.L2529:
+.L2565:
 // linux-perf-events.h:45:       attribs.config = config;
 	ldrsw	x0, [x20]	// MEM[base: _123, offset: 0], MEM[base: _123, offset: 0]
 // linux-perf-events.h:46:       fd = syscall(__NR_perf_event_open, &attribs, pid, cpu, group, flags);
@@ -20503,7 +20570,7 @@ _ZN11LinuxEventsILi0EEC2ESt6vectorIiSaIiEE:
 	str	w0, [x19]	// _7, *this_24(D).fd
 // linux-perf-events.h:47:       if (fd == -1) {
 	cmn	w0, #1	// _7,
-	bne	.L2526		//,
+	bne	.L2562		//,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	x2, [x28, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)"perf_event_open"]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
@@ -20528,18 +20595,18 @@ _ZN11LinuxEventsILi0EEC2ESt6vectorIiSaIiEE:
 	ldr	x0, [sp, 112]	// _57, MEM[(char * *)&D.51754]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x25	// _57, tmp205
-	beq	.L2527		//,
+	beq	.L2563		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2527:
+.L2563:
 	ldr	w0, [x19]	//, *this_24(D).fd
-	b	.L2526		//
+	b	.L2562		//
 	.p2align 2,,3
-.L2554:
+.L2590:
 	ldp	x27, x28, [sp, 80]	//,,
 	.cfi_restore 28
 	.cfi_restore 27
-.L2530:
+.L2566:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
 	ldp	x3, x2, [x19, 128]	// _103, _104, MEM[(long unsigned int * *)this_24(D) + 128B]
 // linux-perf-events.h:56:     temp_result_vec.resize(num_events * 2 + 1);
@@ -20555,17 +20622,17 @@ _ZN11LinuxEventsILi0EEC2ESt6vectorIiSaIiEE:
 	asr	x1, x1, 3	// tmp163, tmp162,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
 	cmp	x0, x1	// _15, tmp163
-	bhi	.L2555		//,
+	bhi	.L2591		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:938: 	else if (__new_size < size())
-	bcs	.L2521		//,
+	bcs	.L2557		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:939: 	  _M_erase_at_end(this->_M_impl._M_start + __new_size);
 	add	x0, x3, x0, lsl 3	// _110, _103, _15,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1791: 	if (size_type __n = this->_M_impl._M_finish - __pos)
 	cmp	x2, x0	// _104, _110
-	beq	.L2521		//,
+	beq	.L2557		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1795: 	    this->_M_impl._M_finish = __pos;
 	str	x0, [x19, 136]	// _110, MEM[(long unsigned int * *)this_24(D) + 136B]
-.L2521:
+.L2557:
 // linux-perf-events.h:57:   }
 	ldp	x19, x20, [sp, 16]	//,,
 	ldp	x21, x22, [sp, 32]	//,,
@@ -20586,7 +20653,7 @@ _ZN11LinuxEventsILi0EEC2ESt6vectorIiSaIiEE:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2555:
+.L2591:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:937: 	  _M_default_append(__new_size - size());
 	sub	x1, x0, x1	//, _15, tmp163
@@ -20613,50 +20680,50 @@ _ZN11LinuxEventsILi0EEC2ESt6vectorIiSaIiEE:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2553:
+.L2589:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:937: 	  _M_default_append(__new_size - size());
 	bl	_ZNSt6vectorImSaImEE17_M_default_appendEm		//
 .LEHE23:
 	ldp	x20, x26, [x21]	// _50, _51, MEM[(int * const &)config_vec_34(D)]
-	b	.L2522		//
-.L2539:
+	b	.L2558		//
+.L2575:
 	mov	x20, x0	// tmp190, tmp213
 	stp	x27, x28, [sp, 80]	//,,
 	.cfi_offset 28, -56
 	.cfi_offset 27, -64
-.L2535:
+.L2571:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x19, 152]	// _62, MEM[(struct vector *)this_24(D) + 152B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2536	// _62,
+	cbz	x0, .L2572	// _62,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2536:
+.L2572:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x19, 128]	// _63, MEM[(struct vector *)this_24(D) + 128B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2537	// _63,
+	cbz	x0, .L2573	// _63,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2537:
+.L2573:
 	mov	x0, x20	//, tmp190
 .LEHB24:
 	bl	_Unwind_Resume		//
 .LEHE24:
-.L2540:
+.L2576:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
 	ldr	x2, [sp, 112]	// _61, MEM[(char * *)&D.51754]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x1, sp, 128	// tmp189,,
 	mov	x20, x0	// tmp191, tmp212
 	cmp	x2, x1	// _61, tmp189
-	beq	.L2535		//,
+	beq	.L2571		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x2	//, _61
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2535		//
+	b	.L2571		//
 	.cfi_endproc
 .LFE2393:
 	.section	.gcc_except_table
@@ -20668,11 +20735,11 @@ _ZN11LinuxEventsILi0EEC2ESt6vectorIiSaIiEE:
 .LLSDACSB2393:
 	.uleb128 .LEHB22-.LFB2393
 	.uleb128 .LEHE22-.LEHB22
-	.uleb128 .L2540-.LFB2393
+	.uleb128 .L2576-.LFB2393
 	.uleb128 0
 	.uleb128 .LEHB23-.LFB2393
 	.uleb128 .LEHE23-.LEHB23
-	.uleb128 .L2539-.LFB2393
+	.uleb128 .L2575-.LFB2393
 	.uleb128 0
 	.uleb128 .LEHB24-.LFB2393
 	.uleb128 .LEHE24-.LEHB24
@@ -20722,22 +20789,22 @@ _ZN11LinuxEventsILi0EEC2ESt6vectorIiSaIiEE:
 	.p2align 3,,7
 	.type	_Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0, %function
 _Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0:
-.LFB3266:
+.LFB3264:
 	.cfi_startproc
 	.cfi_personality 0x9b,DW.ref.__gxx_personality_v0
-	.cfi_lsda 0x1b,.LLSDA3266
+	.cfi_lsda 0x1b,.LLSDA3264
 	stp	x29, x30, [sp, -448]!	//,,,
 	.cfi_def_cfa_offset 448
 	.cfi_offset 29, -448
 	.cfi_offset 30, -440
 // bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
 	mov	w1, 44	//,
-	adrp	x0, .LC12	// tmp304,
+	adrp	x0, .LC12	// tmp317,
 // bitmapdecoding.cpp:206: void test(const char *filename, char target) {
 	mov	x29, sp	//,
 // bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
 	add	x2, sp, 112	//,,
-	add	x0, x0, :lo12:.LC12	//, tmp304,
+	add	x0, x0, :lo12:.LC12	//, tmp317,
 // bitmapdecoding.cpp:206: void test(const char *filename, char target) {
 	stp	x19, x20, [sp, 16]	//,,
 	stp	x21, x22, [sp, 32]	//,,
@@ -20762,400 +20829,446 @@ _Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0:
 // bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
 	ldr	x1, [sp, 112]	// wordcount.105_2, wordcount
 // bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
-	mov	x2, 2305843009213693950	// tmp306,
-	cmp	x2, x1, lsl 6	// tmp306, wordcount.105_2,
-	bcc	.L2557		//,
-	mov	x21, x0	// _1, tmp581
+	mov	x2, 2305843009213693950	// tmp319,
+	cmp	x2, x1, lsl 6	// tmp319, wordcount.105_2,
+	bcc	.L2593		//,
+	mov	x21, x0	// _1, tmp599
 	lsl	x0, x1, 8	//, wordcount.105_2,
 	bl	_Znam		//
 .LEHE25:
-	mov	x19, x0	// _5, tmp582
+	mov	x19, x0	// _5, tmp600
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp604,,
-	add	x0, sp, 120	// tmp605,,
+	add	x1, sp, 272	// tmp623,,
+	add	x0, sp, 120	// tmp624,,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
 	stp	xzr, xzr, [sp, 120]	//,, MEM[(struct _Vector_impl_data *)&evts]._M_start
 	str	xzr, [sp, 136]	//, MEM[(struct _Vector_impl_data *)&evts]._M_end_of_storage
 // bitmapdecoding.cpp:213:   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
-	str	wzr, [sp, 272]	//, D.65045
+	str	wzr, [sp, 272]	//, D.64961
 .LEHB26:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
 	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
 // bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
-	mov	w2, 1	// tmp311,
+	mov	w2, 1	// tmp324,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp606,,
-	add	x0, sp, 120	// tmp607,,
+	add	x1, sp, 272	// tmp625,,
+	add	x0, sp, 120	// tmp626,,
 // bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
-	str	w2, [sp, 272]	// tmp311, D.65044
+	str	w2, [sp, 272]	// tmp324, D.64960
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
 	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
 // bitmapdecoding.cpp:215:   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
-	mov	w2, 5	// tmp314,
+	mov	w2, 5	// tmp327,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp608,,
-	add	x0, sp, 120	// tmp609,,
+	add	x1, sp, 272	// tmp627,,
+	add	x0, sp, 120	// tmp628,,
 // bitmapdecoding.cpp:215:   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
-	str	w2, [sp, 272]	// tmp314, D.65043
+	str	w2, [sp, 272]	// tmp327, D.64959
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
 	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
 // bitmapdecoding.cpp:216:   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
-	mov	w2, 2	// tmp317,
+	mov	w2, 2	// tmp330,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp610,,
-	add	x0, sp, 120	// tmp611,,
+	add	x1, sp, 272	// tmp629,,
+	add	x0, sp, 120	// tmp630,,
 // bitmapdecoding.cpp:216:   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
-	str	w2, [sp, 272]	// tmp317, D.65042
+	str	w2, [sp, 272]	// tmp330, D.64958
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
 	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
 // bitmapdecoding.cpp:217:   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
-	mov	w2, 3	// tmp320,
+	mov	w2, 3	// tmp333,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp612,,
-	add	x0, sp, 120	// tmp613,,
+	add	x0, sp, 120	// tmp631,,
+	add	x1, sp, 272	// tmp632,,
 // bitmapdecoding.cpp:217:   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
-	str	w2, [sp, 272]	// tmp320, D.65041
+	str	w2, [sp, 272]	// tmp333, D.64957
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
 	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
-	add	x1, sp, 120	// tmp614,,
-	add	x0, sp, 240	// tmp615,,
-	bl	_ZNSt6vectorIiSaIiEEC1ERKS1_		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x1, x0, [sp, 120]	// _202, _203, MEM[(int * *)&evts]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 240]	//,, MEM[(struct _Vector_impl_data *)&D.64956]._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x3, 0	// _209,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [sp, 256]	//, MEM[(struct _Vector_impl_data *)&D.64956]._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x20, x0, x1	// _196, _203, _202
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cmp	xzr, x20, asr 2	//, _196,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x2, x20, 2	// tmp338, _196,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	beq	.L2596		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x0, 2305843009213693951	// tmp339,
+	cmp	x2, x0	// tmp338, tmp339
+	bhi	.L2708		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x20	//, _196
+	bl	_Znwm		//
 .LEHE26:
-	add	x1, sp, 240	// tmp616,,
-	add	x0, sp, 272	// tmp617,,
+	mov	x3, x0	// _209, tmp601
+	ldp	x1, x0, [sp, 120]	// _202, _203, MEM[(int * *)&evts]
+.L2596:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x2, x3, x20	// tmp341, _209, _196
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x3, x3, [sp, 240]	// _209, _209, MEM[(struct _Vector_base *)&D.64956]._M_impl.D.43606._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	cmp	x1, x0	// _202, _203
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
+	sub	x20, x0, x1	// _241, _203, _202
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x2, [sp, 256]	// tmp341, MEM[(struct _Vector_base *)&D.64956]._M_impl.D.43606._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	beq	.L2598		//,
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+	mov	x0, x3	//, _209
+	mov	x2, x20	//, _241
+	bl	memmove		//
+	mov	x3, x0	// _209,
+.L2598:
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	add	x3, x3, x20	// tmp342, _209, _241
+// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
+	add	x1, sp, 240	// tmp633,,
+	add	x0, sp, 272	// tmp634,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x3, [sp, 248]	// tmp342, D.64956.D.44271._M_impl.D.43606._M_finish
 .LEHB27:
+// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
 	bl	_ZN11LinuxEventsILi0EEC1ESt6vectorIiSaIiEE		//
 .LEHE27:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 240]	// _6, D.65040.D.44271._M_impl.D.43606._M_start
+	ldr	x0, [sp, 240]	// _6, D.64956.D.44271._M_impl.D.43606._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2559	// _6,
+	cbz	x0, .L2599	// _6,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2559:
+.L2599:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x2, x1, [sp, 120]	// MEM[(int * *)&evts], MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
-// bitmapdecoding.cpp:221:   results.resize(evts.size());
-	add	x0, sp, 144	// tmp618,,
-	add	x25, sp, 168	// tmp574,,
+	ldp	x1, x0, [sp, 120]	// MEM[(int * *)&evts], MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
 	stp	xzr, xzr, [sp, 144]	//,, MEM[(struct _Vector_impl_data *)&results]._M_start
 	stp	xzr, xzr, [sp, 160]	//,, MEM[(struct _Vector_impl_data *)&results]._M_end_of_storage
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	sub	x1, x1, x2	// tmp327, MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
 	stp	xzr, xzr, [sp, 176]	//,, MEM[(struct _Vector_impl_data *)&allresults]._M_finish
-// bitmapdecoding.cpp:221:   results.resize(evts.size());
-	asr	x1, x1, 2	//, tmp327,
-.LEHB28:
-	bl	_ZNSt6vectorIySaIyEE6resizeEm		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x0, x0, x1	// tmp345, MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	cmp	xzr, x0, asr 2	//, tmp345,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x1, x0, 2	// tmp348, tmp345,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	bne	.L2600		//,
+.L2602:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	adrp	x23, .LC13	// tmp577,
-	adrp	x24, .LC14	// tmp579,
-	add	x23, x23, :lo12:.LC13	// tmp578, tmp577,
-	add	x24, x24, :lo12:.LC14	// tmp580, tmp579,
-	add	x25, sp, 168	// tmp574,,
-// bitmapdecoding.cpp:221:   results.resize(evts.size());
-	mov	w22, 10	// ivtmp_419,
+	adrp	x23, .LC13	// tmp595,
+	adrp	x24, .LC14	// tmp597,
+	add	x23, x23, :lo12:.LC13	// tmp596, tmp595,
+	add	x24, x24, :lo12:.LC14	// tmp598, tmp597,
+	add	x25, sp, 168	// tmp590,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	w22, 10	// ivtmp_211,
 	.p2align 3,,7
-.L2591:
+.L2601:
 // linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
 	ldr	w0, [sp, 272]	//, unified.fd
 	mov	w2, 1	//,
 	mov	x1, 9219	//,
 	bl	ioctl		//
 // linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp583,
-	beq	.L2666		//,
-.L2560:
+	cmn	w0, #1	// tmp602,
+	beq	.L2709		//,
+.L2603:
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	ldr	w0, [sp, 272]	//, unified.fd
 	mov	w2, 1	//,
 	mov	x1, 9216	//,
 	bl	ioctl		//
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp585,
-	beq	.L2667		//,
-.L2562:
+	cmn	w0, #1	// tmp604,
+	beq	.L2710		//,
+.L2605:
 // bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
-	ldr	x6, [sp, 112]	// wordcount.106_12, wordcount
+	ldr	x6, [sp, 112]	// wordcount.106_566, wordcount
 	mov	w20, 0	// next_base,
-	cbz	x6, .L2564	// wordcount.106_12,
+	cbz	x6, .L2607	// wordcount.106_566,
 	mov	x3, 0	// idx,
 	.p2align 3,,7
-.L2565:
+.L2608:
 // bitmapdecoding.cpp:227:       F(bigarray, matches, idx, array[idx]);
-	ldr	x1, [x21, x3, lsl 3]	// _18, MEM[base: _1, index: idx_417, step: 8, offset: 0B]
+	ldr	x1, [x21, x3, lsl 3]	// _18, MEM[base: _1, index: idx_400, step: 8, offset: 0B]
 // bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	fmov	d0, x1	// tmp633, _18
+	fmov	d0, x1	// tmp649, _18
 	mov	w0, w20	// matches, next_base
-	cnt	v0.8b, v0.8b	// tmp383, tmp633
-	addv	b0, v0.8b	// tmp385, tmp383
-	umov	w4, v0.b[0]	// tmp381, tmp385,
+	cnt	v0.8b, v0.8b	// tmp400, tmp649
+	addv	b0, v0.8b	// tmp402, tmp400
+	umov	w4, v0.b[0]	// tmp398, tmp402,
 // bitmapdecoding.cpp:173:   uint32_t next_base = base + cnt;
-	add	w20, w20, w4	// next_base, next_base, tmp381
+	add	w20, w20, w4	// next_base, next_base, tmp398
 // bitmapdecoding.cpp:174:   if (bits != 0u) {
-	cbz	x1, .L2572	// _18,
+	cbz	x1, .L2615	// _18,
 // bitmapdecoding.cpp:176:     bits = bits & (bits - 1);
-	sub	x5, x1, #1	// tmp390, _18,
+	sub	x5, x1, #1	// tmp407, _18,
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x1	// tmp386, _18
+	rbit	x2, x1	// tmp403, _18
 // bitmapdecoding.cpp:176:     bits = bits & (bits - 1);
-	and	x5, x5, x1	// bits, tmp390, _18
+	and	x5, x5, x1	// bits, tmp407, _18
 // bitmapdecoding.cpp:177:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w9, w0, 1	// tmp393, matches,
+	add	w9, w0, 1	// tmp410, matches,
 // bitmapdecoding.cpp:178:     bits = bits & (bits - 1);
-	sub	x1, x5, #1	// _248, bits,
+	sub	x1, x5, #1	// _273, bits,
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp386, tmp386
+	clz	x2, x2	// tmp403, tmp403
 // bitmapdecoding.cpp:178:     bits = bits & (bits - 1);
-	and	x1, x5, x1	// bits, bits, _248
+	and	x1, x5, x1	// bits, bits, _273
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x5, x5	// tmp391, bits
+	rbit	x5, x5	// tmp408, bits
 // bitmapdecoding.cpp:175:     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w3, w2	// tmp389, idx, tmp386
+	add	w2, w3, w2	// tmp406, idx, tmp403
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp391, tmp391
+	clz	x5, x5	// tmp408, tmp408
 // bitmapdecoding.cpp:177:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w5, w3, w5	// tmp395, idx, tmp391
+	add	w5, w3, w5	// tmp412, idx, tmp408
 // bitmapdecoding.cpp:179:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w8, w0, 2	// tmp398, matches,
+	add	w8, w0, 2	// tmp415, matches,
 // bitmapdecoding.cpp:175:     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x19, w0, uxtw 2]	// tmp389, *_236
+	str	w2, [x19, w0, uxtw 2]	// tmp406, *_261
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x1	// tmp396, bits
-	clz	x2, x2	// tmp396, tmp396
+	rbit	x2, x1	// tmp413, bits
+	clz	x2, x2	// tmp413, tmp413
 // bitmapdecoding.cpp:177:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [x19, x9, lsl 2]	// tmp395, *_246
+	str	w5, [x19, x9, lsl 2]	// tmp412, *_271
 // bitmapdecoding.cpp:180:     bits = bits & (bits - 1);
-	sub	x5, x1, #1	// _258, bits,
+	sub	x5, x1, #1	// _283, bits,
 // bitmapdecoding.cpp:181:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w7, w0, 3	// tmp403, matches,
+	add	w7, w0, 3	// tmp420, matches,
 // bitmapdecoding.cpp:180:     bits = bits & (bits - 1);
-	and	x1, x1, x5	// bits, bits, _258
+	and	x1, x1, x5	// bits, bits, _283
 // bitmapdecoding.cpp:179:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w3, w2	// tmp400, idx, tmp396
+	add	w2, w3, w2	// tmp417, idx, tmp413
 // bitmapdecoding.cpp:179:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x19, x8, lsl 2]	// tmp400, *_256
+	str	w2, [x19, x8, lsl 2]	// tmp417, *_281
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x1	// tmp401, bits
-	clz	x2, x2	// tmp401, tmp401
+	rbit	x2, x1	// tmp418, bits
+	clz	x2, x2	// tmp418, tmp418
 // bitmapdecoding.cpp:184:   if (cnt > 4) {
-	cmp	w4, 4	// tmp381,
+	cmp	w4, 4	// tmp398,
 // bitmapdecoding.cpp:181:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w3, w2	// tmp405, idx, tmp401
+	add	w2, w3, w2	// tmp422, idx, tmp418
 // bitmapdecoding.cpp:181:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x19, x7, lsl 2]	// tmp405, *_266
+	str	w2, [x19, x7, lsl 2]	// tmp422, *_291
 // bitmapdecoding.cpp:182:     bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _268, bits,
-	mov	w7, w3	// _565, idx
+	sub	x2, x1, #1	// _293, bits,
+	mov	w7, w3	// _607, idx
 // bitmapdecoding.cpp:182:     bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _268
+	and	x1, x1, x2	// bits, bits, _293
 // bitmapdecoding.cpp:184:   if (cnt > 4) {
-	ble	.L2572		//,
+	ble	.L2615		//,
 // bitmapdecoding.cpp:186:     bits = bits & (bits - 1);
-	sub	x5, x1, #1	// _279, bits,
+	sub	x5, x1, #1	// _304, bits,
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x1	// tmp406, bits
+	rbit	x2, x1	// tmp423, bits
 // bitmapdecoding.cpp:186:     bits = bits & (bits - 1);
-	and	x5, x1, x5	// bits, bits, _279
+	and	x5, x1, x5	// bits, bits, _304
 // bitmapdecoding.cpp:185:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w11, w0, 4	// tmp408, matches,
+	add	w11, w0, 4	// tmp425, matches,
 // bitmapdecoding.cpp:188:     bits = bits & (bits - 1);
-	sub	x1, x5, #1	// _289, bits,
+	sub	x1, x5, #1	// _314, bits,
 // bitmapdecoding.cpp:187:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w10, w0, 5	// tmp413, matches,
+	add	w10, w0, 5	// tmp430, matches,
 // bitmapdecoding.cpp:188:     bits = bits & (bits - 1);
-	and	x1, x5, x1	// bits, bits, _289
+	and	x1, x5, x1	// bits, bits, _314
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp406, tmp406
-	rbit	x5, x5	// tmp411, bits
+	clz	x2, x2	// tmp423, tmp423
+	rbit	x5, x5	// tmp428, bits
 // bitmapdecoding.cpp:185:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w3, w2	// tmp410, idx, tmp406
+	add	w2, w3, w2	// tmp427, idx, tmp423
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp411, tmp411
+	clz	x5, x5	// tmp428, tmp428
 // bitmapdecoding.cpp:189:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w9, w0, 6	// tmp418, matches,
+	add	w9, w0, 6	// tmp435, matches,
 // bitmapdecoding.cpp:187:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w5, w3, w5	// tmp415, idx, tmp411
+	add	w5, w3, w5	// tmp432, idx, tmp428
 // bitmapdecoding.cpp:185:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x19, x11, lsl 2]	// tmp410, *_277
+	str	w2, [x19, x11, lsl 2]	// tmp427, *_302
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x1	// tmp416, bits
+	rbit	x2, x1	// tmp433, bits
 // bitmapdecoding.cpp:187:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [x19, x10, lsl 2]	// tmp415, *_287
+	str	w5, [x19, x10, lsl 2]	// tmp432, *_312
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp416, tmp416
+	clz	x2, x2	// tmp433, tmp433
 // bitmapdecoding.cpp:190:     bits = bits & (bits - 1);
-	sub	x5, x1, #1	// _299, bits,
+	sub	x5, x1, #1	// _324, bits,
 // bitmapdecoding.cpp:190:     bits = bits & (bits - 1);
-	and	x1, x1, x5	// bits, bits, _299
+	and	x1, x1, x5	// bits, bits, _324
 // bitmapdecoding.cpp:189:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w3, w2	// tmp420, idx, tmp416
+	add	w2, w3, w2	// tmp437, idx, tmp433
 // bitmapdecoding.cpp:191:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w8, w0, 7	// tmp423, matches,
+	add	w8, w0, 7	// tmp440, matches,
 // bitmapdecoding.cpp:189:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x19, x9, lsl 2]	// tmp420, *_297
+	str	w2, [x19, x9, lsl 2]	// tmp437, *_322
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x1	// tmp421, bits
+	rbit	x2, x1	// tmp438, bits
 // bitmapdecoding.cpp:194:   if (cnt > 8) {
-	cmp	w4, 8	// tmp381,
+	cmp	w4, 8	// tmp398,
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp421, tmp421
+	clz	x2, x2	// tmp438, tmp438
 // bitmapdecoding.cpp:191:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w3, w2	// tmp425, idx, tmp421
+	add	w2, w3, w2	// tmp442, idx, tmp438
 // bitmapdecoding.cpp:191:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x19, x8, lsl 2]	// tmp425, *_307
+	str	w2, [x19, x8, lsl 2]	// tmp442, *_332
 // bitmapdecoding.cpp:192:     bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _309, bits,
+	sub	x2, x1, #1	// _334, bits,
 // bitmapdecoding.cpp:192:     bits = bits & (bits - 1);
-	and	x1, x1, x2	// bits, bits, _309
+	and	x1, x1, x2	// bits, bits, _334
 // bitmapdecoding.cpp:194:   if (cnt > 8) {
-	ble	.L2572		//,
+	ble	.L2615		//,
 // bitmapdecoding.cpp:195:     base += 8;
-	add	w0, w0, 8	// _324, matches,
+	add	w0, w0, 8	// _349, matches,
 	.p2align 3,,7
-.L2573:
+.L2616:
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x1	// tmp426, bits
-	clz	x2, x2	// tmp426, tmp426
+	rbit	x2, x1	// tmp443, bits
+	clz	x2, x2	// tmp443, tmp443
 // bitmapdecoding.cpp:197:       base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w7, w2	// tmp429, _565, tmp426
+	add	w2, w7, w2	// tmp446, _607, tmp443
 // bitmapdecoding.cpp:197:       base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x19, w0, uxtw 2]	// tmp429, *_319
+	str	w2, [x19, w0, uxtw 2]	// tmp446, *_344
 // bitmapdecoding.cpp:198:       bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _321, bits,
+	sub	x2, x1, #1	// _346, bits,
 // bitmapdecoding.cpp:199:       base++;
-	add	w0, w0, 1	// _324, _324,
+	add	w0, w0, 1	// _349, _349,
 // bitmapdecoding.cpp:200:     } while (bits != 0);
-	ands	x1, x1, x2	// bits, bits, _321
-	bne	.L2573		//,
-.L2572:
+	ands	x1, x1, x2	// bits, bits, _346
+	bne	.L2616		//,
+.L2615:
 // bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
 	add	x3, x3, 1	// idx, idx,
 // bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
-	cmp	x6, x3	// wordcount.106_12, idx
-	bne	.L2565		//,
-.L2564:
+	cmp	x3, x6	// idx, wordcount.106_566
+	bne	.L2608		//,
+.L2607:
 // linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	ldr	w0, [sp, 272]	//, unified.fd
 	mov	w2, 1	//,
 	mov	x1, 9217	//,
 	bl	ioctl		//
 // linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp589,
-	beq	.L2668		//,
-.L2574:
+	cmn	w0, #1	// tmp608,
+	beq	.L2711		//,
+.L2617:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x1, x2, [sp, 400]	// _330, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
+	ldp	x1, x2, [sp, 400]	// _355, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
 // linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
 	ldr	w0, [sp, 272]	//, unified.fd
-	sub	x2, x2, x1	//, MEM[(long unsigned int * *)&unified + 136B], _330
+	sub	x2, x2, x1	//, MEM[(long unsigned int * *)&unified + 136B], _355
+.LEHB28:
 	bl	read		//
 // linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
-	cmn	x0, #1	// tmp591,
-	beq	.L2669		//,
-.L2576:
+	cmn	x0, #1	// tmp610,
+	beq	.L2712		//,
+.L2619:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x4, x3, [sp, 400]	// _464, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
-	sub	x3, x3, x4	// tmp462, MEM[(long unsigned int * *)&unified + 136B], _464
+	ldp	x4, x3, [sp, 400]	// _562, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
+	sub	x3, x3, x4	// tmp479, MEM[(long unsigned int * *)&unified + 136B], _562
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	cmp	x3, 15	// tmp462,
+	cmp	x3, 15	// tmp479,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	asr	x3, x3, 3	// _520, tmp462,
+	asr	x3, x3, 3	// _12, tmp479,
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	bls	.L2578		//,
+	bls	.L2621		//,
 // linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	ldr	x5, [sp, 144]	// _347, MEM[(long long unsigned int * *)&results]
+	ldr	x5, [sp, 144]	// _372, MEM[(long long unsigned int * *)&results]
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	mov	x1, 1	// _33,
+	mov	x1, 1	// _362,
 // linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	mov	w0, w1	// i, _33
+	mov	w0, w1	// i, _362
 	.p2align 3,,7
-.L2579:
+.L2622:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
-	lsr	w2, w0, 1	// tmp466, i,
+	lsr	w2, w0, 1	// tmp483, i,
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
 	add	w0, w0, 2	// i, i,
 // linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	ldr	x1, [x4, x1, lsl 3]	// *_344, *_344
+	ldr	x1, [x4, x1, lsl 3]	// *_369, *_369
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	cmp	x3, x0, uxtw	// _520, i
+	cmp	x3, x0, uxtw	// _12, i
 // linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	str	x1, [x5, x2, lsl 3]	// *_344, *_349
+	str	x1, [x5, x2, lsl 3]	// *_369, *_374
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	uxtw	x1, w0	// _33, i
+	uxtw	x1, w0	// _362, i
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	bhi	.L2579		//,
-.L2578:
+	bhi	.L2622		//,
+.L2621:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1186: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
-	ldp	x26, x0, [sp, 176]	// _381, allresults.D.46492._M_impl.D.45827._M_end_of_storage, allresults.D.46492._M_impl.D.45827._M_finish
-	cmp	x26, x0	// _381, allresults.D.46492._M_impl.D.45827._M_end_of_storage
-	beq	.L2584		//,
+	ldp	x26, x0, [sp, 176]	// _406, allresults.D.46492._M_impl.D.45827._M_end_of_storage, allresults.D.46492._M_impl.D.45827._M_finish
+	cmp	x26, x0	// _406, allresults.D.46492._M_impl.D.45827._M_end_of_storage
+	beq	.L2627		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x0, x27, [sp, 144]	// MEM[(long long unsigned int * *)&results], MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	stp	xzr, xzr, [x26]	//,, MEM[(struct _Vector_impl_data *)_381]._M_start
+	stp	xzr, xzr, [x26]	//,, MEM[(struct _Vector_impl_data *)_406]._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	mov	x28, x26	// prephitmp_390, _381
+	mov	x28, x26	// pretmp_397, _406
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	str	xzr, [x26, 16]	//, MEM[(struct _Vector_impl_data *)_381]._M_end_of_storage
+	str	xzr, [x26, 16]	//, MEM[(struct _Vector_impl_data *)_406]._M_end_of_storage
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	mov	x3, 0	// _400,
+	mov	x3, 0	// _425,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	sub	x27, x27, x0	// _387, MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
+	sub	x27, x27, x0	// _412, MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cmp	xzr, x27, asr 3	//, _387,
+	cmp	xzr, x27, asr 3	//, _412,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	asr	x0, x27, 3	// tmp480, _387,
+	asr	x0, x27, 3	// tmp497, _412,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L2586		//,
+	beq	.L2629		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
-	mov	x1, 1152921504606846975	// tmp481,
-	cmp	x0, x1	// tmp480, tmp481
-	bhi	.L2670		//,
+	mov	x1, 1152921504606846975	// tmp498,
+	cmp	x0, x1	// tmp497, tmp498
+	bhi	.L2713		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
-	mov	x0, x27	//, _387
+	mov	x0, x27	//, _412
 	bl	_Znwm		//
-	ldr	x28, [sp, 176]	// prephitmp_390, allresults.D.46492._M_impl.D.45827._M_finish
-	mov	x3, x0	// _400, tmp594
-.L2586:
+	ldr	x28, [sp, 176]	// pretmp_397, allresults.D.46492._M_impl.D.45827._M_finish
+	mov	x3, x0	// _425, tmp613
+.L2629:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
-	stp	x3, x3, [x26]	// _400, _400, MEM[(struct _Vector_base *)_381]._M_impl.D.44749._M_start
+	stp	x3, x3, [x26]	// _425, _425, MEM[(struct _Vector_base *)_406]._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
-	add	x27, x3, x27	// tmp483, _400, _387
+	add	x27, x3, x27	// tmp500, _425, _412
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:555: 	  std::__uninitialized_copy_a(__x.begin(), __x.end(),
-	ldp	x1, x2, [sp, 144]	// _393, _394, MEM[(long long unsigned int * *)&results]
+	ldp	x1, x2, [sp, 144]	// _418, _419, MEM[(long long unsigned int * *)&results]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
-	str	x27, [x26, 16]	// tmp483, MEM[(struct _Vector_base *)_381]._M_impl.D.44749._M_end_of_storage
+	str	x27, [x26, 16]	// tmp500, MEM[(struct _Vector_base *)_406]._M_impl.D.44749._M_end_of_storage
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	cmp	x1, x2	// _393, _394
+	cmp	x1, x2	// _418, _419
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
-	sub	x27, x2, x1	// _395, _394, _393
+	sub	x27, x2, x1	// _420, _419, _418
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L2589		//,
+	beq	.L2632		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
-	mov	x0, x3	//, _400
-	mov	x2, x27	//, _395
+	mov	x0, x3	//, _425
+	mov	x2, x27	//, _420
 	bl	memmove		//
-	mov	x3, x0	// _400,
-.L2589:
+	mov	x3, x0	// _425,
+.L2632:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
-	add	x3, x3, x27	// tmp484, _400, _395
+	add	x3, x3, x27	// tmp501, _425, _420
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
-	str	x3, [x26, 8]	// tmp484, *_381.D.45414._M_impl.D.44749._M_finish
+	str	x3, [x26, 8]	// tmp501, *_406.D.45414._M_impl.D.44749._M_finish
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1191: 	    ++this->_M_impl._M_finish;
-	add	x28, x28, 24	// tmp485, prephitmp_390,
-	str	x28, [sp, 176]	// tmp485, allresults.D.46492._M_impl.D.45827._M_finish
-.L2590:
+	add	x28, x28, 24	// tmp502, pretmp_397,
+	str	x28, [sp, 176]	// tmp502, allresults.D.46492._M_impl.D.45827._M_finish
+.L2633:
 // bitmapdecoding.cpp:223:   for (uint32_t i = 0; i < iterations; i++) {
-	subs	w22, w22, #1	// ivtmp_419, ivtmp_419,
-	bne	.L2591		//,
+	subs	w22, w22, #1	// ivtmp_211, ivtmp_211,
+	bne	.L2601		//,
 // bitmapdecoding.cpp:232:   if (bigarray[0] == 0)
 	ldr	w0, [x19]	//, *_5
-	cbz	w0, .L2671	// *_5,
-.L2592:
+	cbz	w0, .L2714	// *_5,
+.L2634:
 // bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
 	ldr	x2, [sp, 112]	// wordcount.108_23, wordcount
 // bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
@@ -21163,64 +21276,64 @@ _Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0:
 // bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
 	ucvtf	d8, w20	// _24, next_base
 // bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	mov	x0, 4636737291354636288	// tmp603,
+	mov	x0, 4636737291354636288	// tmp622,
 // bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
-	shl	d0, d0, 6	// tmp491, wordcount.108_23,
+	shl	d0, d0, 6	// tmp508, wordcount.108_23,
 // bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	fmov	d1, x0	// tmp495, tmp603
+	fmov	d1, x0	// tmp512, tmp622
 	mov	w1, w20	//, next_base
-	adrp	x0, .LC17	// tmp497,
-	add	x0, x0, :lo12:.LC17	//, tmp497,
+	adrp	x0, .LC17	// tmp514,
+	add	x0, x0, :lo12:.LC17	//, tmp514,
 // bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
-	ucvtf	d0, d0	// tmp492, tmp491
-	fdiv	d0, d8, d0	// tmp493, _24, tmp492
+	ucvtf	d0, d0	// tmp509, tmp508
+	fdiv	d0, d8, d0	// tmp510, _24, tmp509
 // bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	fmul	d0, d0, d1	//, tmp493, tmp495
+	fmul	d0, d0, d1	//, tmp510, tmp512
 	bl	printf		//
 // bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
 	ldr	d0, [sp, 112]	// wordcount, wordcount
-	mov	x0, 4634204016564240384	// tmp602,
-	fmov	d1, x0	// tmp501, tmp602
+	mov	x0, 4634204016564240384	// tmp621,
+	fmov	d1, x0	// tmp518, tmp621
 // bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	adrp	x0, .LC18	// tmp504,
-	add	x0, x0, :lo12:.LC18	//, tmp504,
+	adrp	x0, .LC18	// tmp521,
+	add	x0, x0, :lo12:.LC18	//, tmp521,
 // bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	ucvtf	d0, d0	// tmp498, wordcount
-	fmul	d0, d0, d1	// tmp500, tmp498, tmp501
+	ucvtf	d0, d0	// tmp515, wordcount
+	fmul	d0, d0, d1	// tmp517, tmp515, tmp518
 // bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	fdiv	d0, d0, d8	//, tmp500, _24
+	fdiv	d0, d0, d8	//, tmp517, _24
 	bl	printf		//
 // bitmapdecoding.cpp:237:   std::vector<unsigned long long> mins = compute_mins(allresults);
-	mov	x1, x25	//, tmp574
-	add	x0, sp, 240	// tmp648,,
+	mov	x1, x25	//, tmp590
+	add	x0, sp, 240	// tmp663,,
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EEC1ERKS3_		//
 .LEHE28:
 	add	x8, sp, 192	//,,
-	add	x0, sp, 240	// tmp649,,
+	add	x0, sp, 240	// tmp664,,
 .LEHB29:
 	bl	_Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE		//
 .LEHE29:
-	add	x0, sp, 240	// tmp650,,
+	add	x0, sp, 240	// tmp665,,
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
 // bitmapdecoding.cpp:238:   std::vector<double> avg = compute_averages(allresults);
-	mov	x1, x25	//, tmp574
-	add	x0, sp, 240	// tmp651,,
+	mov	x1, x25	//, tmp590
+	add	x0, sp, 240	// tmp666,,
 .LEHB30:
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EEC1ERKS3_		//
 .LEHE30:
 	add	x8, sp, 216	//,,
-	add	x0, sp, 240	// tmp652,,
+	add	x0, sp, 240	// tmp667,,
 .LEHB31:
 	bl	_Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE		//
 .LEHE31:
-	add	x0, sp, 240	// tmp653,,
+	add	x0, sp, 240	// tmp668,,
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
 // bitmapdecoding.cpp:243:          double(mins[1]) / mins[0], double(mins[0]) / matches,
 	ldr	x1, [sp, 192]	// _35, MEM[(long long unsigned int * *)&mins]
 // bitmapdecoding.cpp:239:   printf("instructions per cycle %4.2f, cycles per value set:  "
-	adrp	x0, .LC19	// tmp524,
+	adrp	x0, .LC19	// tmp541,
 	ldr	d4, [sp, 112]	// wordcount, wordcount
-	add	x0, x0, :lo12:.LC19	//, tmp524,
+	add	x0, x0, :lo12:.LC19	//, tmp541,
 	ldp	d0, d5, [x1]	// MEM[(value_type &)_35], MEM[(value_type &)_35 + 8], MEM[(value_type &)_35]
 	ucvtf	d4, d4	// _46, wordcount
 	ucvtf	d0, d0	// _39, MEM[(value_type &)_35]
@@ -21235,34 +21348,34 @@ _Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0:
 // bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
 	ldr	x2, [sp, 192]	// _49, MEM[(long long unsigned int * *)&mins]
 // bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
-	adrp	x0, .LC20	// tmp534,
+	adrp	x0, .LC20	// tmp551,
 // bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
 	ldr	x1, [sp, 112]	// wordcount, wordcount
 	fmov	d0, x1	// wordcount, wordcount
 // bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
 	ldp	d2, d1, [x2]	// MEM[(value_type &)_49], MEM[(value_type &)_49 + 8], MEM[(value_type &)_49]
 // bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
-	shl	d0, d0, 6	// tmp525, wordcount,
+	shl	d0, d0, 6	// tmp542, wordcount,
 // bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
-	add	x0, x0, :lo12:.LC20	//, tmp534,
-	ucvtf	d2, d2	// tmp530, MEM[(value_type &)_49]
-	ucvtf	d1, d1	// tmp527, MEM[(value_type &)_49 + 8]
-	ucvtf	d0, d0	// _54, tmp525
-	fdiv	d1, d1, d0	//, tmp527, _54
-	fdiv	d0, d2, d0	//, tmp530, _54
+	add	x0, x0, :lo12:.LC20	//, tmp551,
+	ucvtf	d2, d2	// tmp547, MEM[(value_type &)_49]
+	ucvtf	d1, d1	// tmp544, MEM[(value_type &)_49 + 8]
+	ucvtf	d0, d0	// _54, tmp542
+	fdiv	d1, d1, d0	//, tmp544, _54
+	fdiv	d0, d2, d0	//, tmp547, _54
 	bl	printf		//
 // bitmapdecoding.cpp:250:   printf("min: %8llu cycles, %8llu instructions, \t%8llu branch mis., %8llu "
 	ldr	x5, [sp, 192]	// _59, MEM[(long long unsigned int * *)&mins]
-	adrp	x0, .LC21	// tmp541,
-	add	x0, x0, :lo12:.LC21	//, tmp541,
+	adrp	x0, .LC21	// tmp558,
+	add	x0, x0, :lo12:.LC21	//, tmp558,
 	ldp	x1, x2, [x5]	//,, MEM[(value_type &)_59]
 	ldp	x3, x4, [x5, 16]	//,, MEM[(value_type &)_59 + 16]
 	ldr	x5, [x5, 32]	//, MEM[(value_type &)_59 + 32]
 	bl	printf		//
 // bitmapdecoding.cpp:253:   printf("avg: %8.1f cycles, %8.1f instructions, \t%8.1f branch mis., %8.1f "
 	ldr	x1, [sp, 216]	// _65, MEM[(double * *)&avg]
-	adrp	x0, .LC22	// tmp548,
-	add	x0, x0, :lo12:.LC22	//, tmp548,
+	adrp	x0, .LC22	// tmp565,
+	add	x0, x0, :lo12:.LC22	//, tmp565,
 	ldp	d0, d1, [x1]	//,, MEM[(value_type &)_65]
 	ldp	d2, d3, [x1, 16]	//,, MEM[(value_type &)_65 + 16]
 	ldr	d4, [x1, 32]	//, MEM[(value_type &)_65 + 32]
@@ -21272,47 +21385,47 @@ _Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0:
 	bl	putchar		//
 .LEHE32:
 // bitmapdecoding.cpp:257:   delete[] array;
-	cbz	x21, .L2593	// _1,
+	cbz	x21, .L2635	// _1,
 	mov	x0, x21	//, _1
 	bl	_ZdaPv		//
-.L2593:
+.L2635:
 // bitmapdecoding.cpp:258:   delete[] bigarray;
 	mov	x0, x19	//, _5
 	bl	_ZdaPv		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 216]	// _71, avg.D.47664._M_impl.D.46999._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2594	// _71,
+	cbz	x0, .L2636	// _71,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2594:
+.L2636:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 192]	// _72, mins.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2595	// _72,
+	cbz	x0, .L2637	// _72,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2595:
+.L2637:
 // bitmapdecoding.cpp:220:   std::vector<std::vector<unsigned long long>> allresults;
-	mov	x0, x25	//, tmp574
+	mov	x0, x25	//, tmp590
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 144]	// _73, results.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2596	// _73,
+	cbz	x0, .L2638	// _73,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2596:
+.L2638:
 // bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
-	add	x0, sp, 272	// tmp655,,
+	add	x0, sp, 272	// tmp670,,
 	bl	_ZN11LinuxEventsILi0EED1Ev		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 120]	// _74, evts.D.44271._M_impl.D.43606._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2556	// _74,
+	cbz	x0, .L2592	// _74,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2556:
+.L2592:
 // bitmapdecoding.cpp:259: }
 	ldp	x19, x20, [sp, 16]	//,,
 	ldp	x21, x22, [sp, 32]	//,,
@@ -21338,83 +21451,83 @@ _Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0:
 	.cfi_def_cfa_offset 0
 	ret	
 	.p2align 2,,3
-.L2668:
+.L2711:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x3, sp, 256	// tmp432,,
+	add	x3, sp, 256	// tmp449,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	mov	x4, 29	// tmp433,
+	mov	x4, 29	// tmp450,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp634,,
+	add	x0, sp, 240	// tmp650,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	add	x1, sp, 216	// tmp635,,
+	add	x1, sp, 216	// tmp651,,
 	mov	x2, 0	//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	str	x4, [sp, 216]	// tmp433, __dnew
+	str	x4, [sp, 216]	// tmp450, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x3, [sp, 240]	// tmp432, MEM[(struct _Alloc_hider *)&D.66705]._M_p
+	str	x3, [sp, 240]	// tmp449, MEM[(struct _Alloc_hider *)&D.66588]._M_p
 .LEHB33:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
 .LEHE33:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	adrp	x3, .LC15	// tmp438,
-	add	x3, x3, :lo12:.LC15	// tmp437, tmp438,
+	adrp	x3, .LC15	// tmp455,
+	add	x3, x3, :lo12:.LC15	// tmp454, tmp455,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	mov	x2, x0	// _361, tmp590
+	mov	x2, x0	// _386, tmp609
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x2, [sp, 240]	// _361, MEM[(char * *)&D.66705]
+	str	x2, [sp, 240]	// _386, MEM[(char * *)&D.66588]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	ldr	x0, [sp, 216]	// __dnew, __dnew
-	str	x0, [sp, 256]	// __dnew, MEM[(size_type *)&D.66705 + 16B]
+	str	x0, [sp, 256]	// __dnew, MEM[(size_type *)&D.66588 + 16B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	x0, [x3, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
-	str	x0, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_361]
+	str	x0, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_386]
 	ldp	x4, x5, [x3]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
-	stp	x4, x5, [x2]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_361]
+	stp	x4, x5, [x2]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_386]
 // linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
-	add	x1, sp, 240	// tmp637,,
+	add	x1, sp, 240	// tmp653,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	x3, [x3, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
-	str	x3, [x2, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_361]
+	str	x3, [x2, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_386]
 // linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
-	add	x0, sp, 272	// tmp638,,
+	add	x0, sp, 272	// tmp654,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
-	ldr	x2, [sp, 216]	// __dnew.49_365, __dnew
+	ldr	x2, [sp, 216]	// __dnew.49_390, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 248]	// __dnew.49_365, MEM[(size_type *)&D.66705 + 8B]
+	str	x2, [sp, 248]	// __dnew.49_390, MEM[(size_type *)&D.66588 + 8B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66705], MEM[(char * *)&D.66705]
-	strb	wzr, [x3, x2]	//, MEM[(char_type &)_367]
+	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66588], MEM[(char * *)&D.66588]
+	strb	wzr, [x3, x2]	//, MEM[(char_type &)_392]
 .LEHB34:
 // linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
 .LEHE34:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _328, MEM[(char * *)&D.66705]
+	ldr	x0, [sp, 240]	// _353, MEM[(char * *)&D.66588]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp448,,
-	cmp	x0, x1	// _328, tmp448
-	beq	.L2574		//,
+	add	x1, sp, 256	// tmp465,,
+	cmp	x0, x1	// _353, tmp465
+	beq	.L2617		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2574		//
+	b	.L2617		//
 	.p2align 2,,3
-.L2666:
+.L2709:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x3, sp, 256	// tmp335,,
+	add	x3, sp, 256	// tmp352,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	mov	x4, 27	// tmp336,
+	mov	x4, 27	// tmp353,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp619,,
+	add	x0, sp, 240	// tmp635,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	add	x1, sp, 216	// tmp620,,
+	add	x1, sp, 216	// tmp636,,
 	mov	x2, 0	//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	str	x4, [sp, 216]	// tmp336, __dnew
+	str	x4, [sp, 216]	// tmp353, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x3, [sp, 240]	// tmp335, MEM[(struct _Alloc_hider *)&D.66664]._M_p
+	str	x3, [sp, 240]	// tmp352, MEM[(struct _Alloc_hider *)&D.66547]._M_p
 .LEHB35:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
@@ -21422,38 +21535,38 @@ _Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	ldr	x1, [sp, 216]	// __dnew, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x0, [sp, 240]	// _208, MEM[(char * *)&D.66664]
+	str	x0, [sp, 240]	// _233, MEM[(char * *)&D.66547]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	str	x1, [sp, 256]	// __dnew, MEM[(size_type *)&D.66664 + 16B]
+	str	x1, [sp, 256]	// __dnew, MEM[(size_type *)&D.66547 + 16B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	x1, [x23, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
-	str	x1, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_208]
+	str	x1, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_233]
 	ldr	w2, [x23, 23]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
 // linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
-	add	x1, sp, 240	// tmp622,,
+	add	x1, sp, 240	// tmp638,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldp	x4, x5, [x23]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
-	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_208]
-	str	w2, [x0, 23]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_208]
+	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_233]
+	str	w2, [x0, 23]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_233]
 // linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
-	add	x0, sp, 272	// tmp623,,
+	add	x0, sp, 272	// tmp639,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
-	ldr	x2, [sp, 216]	// __dnew.49_212, __dnew
+	ldr	x2, [sp, 216]	// __dnew.49_237, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 248]	// __dnew.49_212, MEM[(size_type *)&D.66664 + 8B]
+	str	x2, [sp, 248]	// __dnew.49_237, MEM[(size_type *)&D.66547 + 8B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66664], MEM[(char * *)&D.66664]
-	strb	wzr, [x3, x2]	//, MEM[(char_type &)_214]
+	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66547], MEM[(char * *)&D.66547]
+	strb	wzr, [x3, x2]	//, MEM[(char_type &)_239]
 .LEHB36:
 // linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
 .LEHE36:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _196, MEM[(char * *)&D.66664]
+	ldr	x0, [sp, 240]	// _221, MEM[(char * *)&D.66547]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp351,,
-	cmp	x0, x1	// _196, tmp351
-	beq	.L2560		//,
+	add	x1, sp, 256	// tmp368,,
+	cmp	x0, x1	// _221, tmp368
+	beq	.L2603		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
@@ -21462,23 +21575,23 @@ _Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0:
 	mov	x1, 9216	//,
 	bl	ioctl		//
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp585,
-	bne	.L2562		//,
+	cmn	w0, #1	// tmp604,
+	bne	.L2605		//,
 	.p2align 3,,7
-.L2667:
+.L2710:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x3, sp, 256	// tmp354,,
+	add	x3, sp, 256	// tmp371,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	mov	x4, 28	// tmp355,
+	mov	x4, 28	// tmp372,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp625,,
+	add	x0, sp, 240	// tmp641,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	add	x1, sp, 216	// tmp626,,
+	add	x1, sp, 216	// tmp642,,
 	mov	x2, 0	//,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	str	x4, [sp, 216]	// tmp355, __dnew
+	str	x4, [sp, 216]	// tmp372, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x3, [sp, 240]	// tmp354, MEM[(struct _Alloc_hider *)&D.66663]._M_p
+	str	x3, [sp, 240]	// tmp371, MEM[(struct _Alloc_hider *)&D.66546]._M_p
 .LEHB37:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
@@ -21486,2362 +21599,206 @@ _Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	ldr	x1, [sp, 216]	// __dnew, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x0, [sp, 240]	// _221, MEM[(char * *)&D.66663]
+	str	x0, [sp, 240]	// _246, MEM[(char * *)&D.66546]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	w2, [x24, 24]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	str	x1, [sp, 256]	// __dnew, MEM[(size_type *)&D.66663 + 16B]
+	str	x1, [sp, 256]	// __dnew, MEM[(size_type *)&D.66546 + 16B]
 // linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
-	add	x1, sp, 240	// tmp628,,
+	add	x1, sp, 240	// tmp644,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldp	x4, x5, [x24]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
-	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_221]
+	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_246]
 	ldr	x3, [x24, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
-	str	x3, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_221]
-	str	w2, [x0, 24]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_221]
+	str	x3, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_246]
+	str	w2, [x0, 24]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_246]
 // linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
-	add	x0, sp, 272	// tmp629,,
+	add	x0, sp, 272	// tmp645,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
-	ldr	x2, [sp, 216]	// __dnew.49_225, __dnew
+	ldr	x2, [sp, 216]	// __dnew.49_250, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 248]	// __dnew.49_225, MEM[(size_type *)&D.66663 + 8B]
+	str	x2, [sp, 248]	// __dnew.49_250, MEM[(size_type *)&D.66546 + 8B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66663], MEM[(char * *)&D.66663]
-	strb	wzr, [x3, x2]	//, MEM[(char_type &)_227]
+	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66546], MEM[(char * *)&D.66546]
+	strb	wzr, [x3, x2]	//, MEM[(char_type &)_252]
 .LEHB38:
 // linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
 .LEHE38:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _199, MEM[(char * *)&D.66663]
+	ldr	x0, [sp, 240]	// _224, MEM[(char * *)&D.66546]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp370,,
-	cmp	x0, x1	// _199, tmp370
-	beq	.L2562		//,
+	add	x1, sp, 256	// tmp387,,
+	cmp	x0, x1	// _224, tmp387
+	beq	.L2605		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2562		//
+	b	.L2605		//
 	.p2align 2,,3
-.L2584:
+.L2627:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1195: 	  _M_realloc_insert(end(), __x);
-	mov	x1, x26	//, _381
-	add	x2, sp, 144	// tmp646,,
-	mov	x0, x25	//, tmp574
+	mov	x1, x26	//, _406
+	add	x2, sp, 144	//,,
+	mov	x0, x25	//, tmp590
 .LEHB39:
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_		//
 .LEHE39:
-	b	.L2590		//
+	b	.L2633		//
 	.p2align 2,,3
-.L2669:
+.L2712:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x4, sp, 256	// tmp453,,
+	add	x4, sp, 256	// tmp470,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	mov	w2, 25970	// tmp456,
-	movk	w2, 0x6461, lsl 16	// tmp456,,
+	mov	w2, 25970	// tmp473,
+	movk	w2, 0x6461, lsl 16	// tmp473,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	mov	x3, 4	// tmp457,
+	mov	x3, 4	// tmp474,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp640,,
+	add	x0, sp, 240	// tmp656,,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	stp	x4, x3, [sp, 240]	// tmp453, tmp457, MEM[(struct _Alloc_hider *)&D.66704]._M_p
+	stp	x4, x3, [sp, 240]	// tmp470, tmp474, MEM[(struct _Alloc_hider *)&D.66587]._M_p
 // linux-perf-events.h:77:       report_error("read");
-	mov	x1, x0	// tmp641, tmp640
-	add	x0, sp, 272	// tmp642,,
+	mov	x1, x0	// tmp657, tmp656
+	add	x0, sp, 272	// tmp658,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	str	w2, [sp, 256]	// tmp456, MEM[(void *)&D.66704 + 16B]
+	str	w2, [sp, 256]	// tmp473, MEM[(void *)&D.66587 + 16B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	strb	wzr, [sp, 260]	//, MEM[(char_type &)&D.66704 + 20]
+	strb	wzr, [sp, 260]	//, MEM[(char_type &)&D.66587 + 20]
 .LEHB40:
 // linux-perf-events.h:77:       report_error("read");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
 .LEHE40:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _335, MEM[(char * *)&D.66704]
+	ldr	x0, [sp, 240]	// _360, MEM[(char * *)&D.66587]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp461,,
-	cmp	x0, x1	// _335, tmp461
-	beq	.L2576		//,
+	add	x1, sp, 256	// tmp478,,
+	cmp	x0, x1	// _360, tmp478
+	beq	.L2619		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2576		//
-.L2671:
+	b	.L2619		//
+.L2714:
 // bitmapdecoding.cpp:233:     printf("bogus\n.");
-	adrp	x0, .LC16	// tmp490,
-	add	x0, x0, :lo12:.LC16	//, tmp490,
+	adrp	x0, .LC16	// tmp507,
+	add	x0, x0, :lo12:.LC16	//, tmp507,
 .LEHB41:
 	bl	printf		//
-	b	.L2592		//
-.L2670:
+	b	.L2634		//
+.L2600:
+	add	x25, sp, 168	// tmp590,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:937: 	  _M_default_append(__new_size - size());
+	add	x0, sp, 144	//,,
+	bl	_ZNSt6vectorIySaIyEE17_M_default_appendEm		//
+	b	.L2602		//
+.L2713:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
 	bl	_ZSt17__throw_bad_allocv		//
 .LEHE41:
-.L2611:
-	mov	x19, x0	// tmp373, tmp600
-.L2568:
-// bitmapdecoding.cpp:220:   std::vector<std::vector<unsigned long long>> allresults;
-	mov	x0, x25	//, tmp574
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 144]	// _78, results.D.45414._M_impl.D.44749._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2607	// _78,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2607:
-// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
-	add	x0, sp, 272	// tmp658,,
-	bl	_ZN11LinuxEventsILi0EED1Ev		//
-.L2600:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 120]	// _79, evts.D.44271._M_impl.D.43606._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2608	// _79,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2608:
-	mov	x0, x19	//, tmp551
-.LEHB42:
-	bl	_Unwind_Resume		//
-.L2616:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x1, [sp, 240]	// _75, D.65040.D.44271._M_impl.D.43606._M_start
-	mov	x19, x0	// tmp552, tmp595
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x1, .L2600	// _75,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	mov	x0, x1	//, _75
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2600		//
-.L2610:
-	mov	x19, x0	// tmp551, tmp601
-	b	.L2600		//
-.L2557:
-// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
-	bl	__cxa_throw_bad_array_new_length		//
-.LEHE42:
-.L2619:
-.L2663:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x1, [sp, 240]	// _353,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x2, sp, 256	// tmp474,,
-	mov	x19, x0	// tmp475, tmp593
-	cmp	x1, x2	// _353, tmp474
-	beq	.L2568		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	mov	x0, x1	//, _353
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2568		//
-.L2617:
-	b	.L2663		//
-.L2618:
-	b	.L2663		//
-.L2620:
-	b	.L2663		//
-.L2613:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x1, [sp, 216]	// _76, avg.D.47664._M_impl.D.46999._M_start
-	mov	x19, x0	// tmp563, tmp598
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x1, .L2603	// _76,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	mov	x0, x1	//, _76
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2603		//
-.L2614:
-	mov	x19, x0	// tmp597,
-	add	x0, sp, 240	// tmp657,,
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-.L2603:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 192]	// _77, mins.D.45414._M_impl.D.44749._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2568	// _77,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2568		//
-.L2612:
-	mov	x19, x0	// tmp559, tmp599
-	b	.L2603		//
-.L2615:
-	mov	x19, x0	// tmp596,
-	add	x0, sp, 240	// tmp656,,
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-	b	.L2568		//
-	.cfi_endproc
-.LFE3266:
-	.section	.gcc_except_table
-.LLSDA3266:
-	.byte	0xff
-	.byte	0xff
-	.byte	0x1
-	.uleb128 .LLSDACSE3266-.LLSDACSB3266
-.LLSDACSB3266:
-	.uleb128 .LEHB25-.LFB3266
-	.uleb128 .LEHE25-.LEHB25
-	.uleb128 0
-	.uleb128 0
-	.uleb128 .LEHB26-.LFB3266
-	.uleb128 .LEHE26-.LEHB26
-	.uleb128 .L2610-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB27-.LFB3266
-	.uleb128 .LEHE27-.LEHB27
-	.uleb128 .L2616-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB28-.LFB3266
-	.uleb128 .LEHE28-.LEHB28
-	.uleb128 .L2611-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB29-.LFB3266
-	.uleb128 .LEHE29-.LEHB29
-	.uleb128 .L2615-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB30-.LFB3266
-	.uleb128 .LEHE30-.LEHB30
-	.uleb128 .L2612-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB31-.LFB3266
-	.uleb128 .LEHE31-.LEHB31
-	.uleb128 .L2614-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB32-.LFB3266
-	.uleb128 .LEHE32-.LEHB32
-	.uleb128 .L2613-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB33-.LFB3266
-	.uleb128 .LEHE33-.LEHB33
-	.uleb128 .L2611-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB34-.LFB3266
-	.uleb128 .LEHE34-.LEHB34
-	.uleb128 .L2620-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB35-.LFB3266
-	.uleb128 .LEHE35-.LEHB35
-	.uleb128 .L2611-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB36-.LFB3266
-	.uleb128 .LEHE36-.LEHB36
-	.uleb128 .L2618-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB37-.LFB3266
-	.uleb128 .LEHE37-.LEHB37
-	.uleb128 .L2611-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB38-.LFB3266
-	.uleb128 .LEHE38-.LEHB38
-	.uleb128 .L2617-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB39-.LFB3266
-	.uleb128 .LEHE39-.LEHB39
-	.uleb128 .L2611-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB40-.LFB3266
-	.uleb128 .LEHE40-.LEHB40
-	.uleb128 .L2619-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB41-.LFB3266
-	.uleb128 .LEHE41-.LEHB41
-	.uleb128 .L2611-.LFB3266
-	.uleb128 0
-	.uleb128 .LEHB42-.LFB3266
-	.uleb128 .LEHE42-.LEHB42
-	.uleb128 0
-	.uleb128 0
-.LLSDACSE3266:
-	.text
-	.size	_Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0, .-_Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0
-	.align	2
-	.p2align 3,,7
-	.type	_Z4testIXadL_ZL16simdjson_decoderPjRjjmEEEvPKcc.constprop.0, %function
-_Z4testIXadL_ZL16simdjson_decoderPjRjjmEEEvPKcc.constprop.0:
-.LFB3265:
-	.cfi_startproc
-	.cfi_personality 0x9b,DW.ref.__gxx_personality_v0
-	.cfi_lsda 0x1b,.LLSDA3265
-	stp	x29, x30, [sp, -448]!	//,,,
-	.cfi_def_cfa_offset 448
-	.cfi_offset 29, -448
-	.cfi_offset 30, -440
-// bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
-	mov	w1, 44	//,
-	adrp	x0, .LC12	// tmp296,
-// bitmapdecoding.cpp:206: void test(const char *filename, char target) {
-	mov	x29, sp	//,
-// bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
-	add	x2, sp, 112	//,,
-	add	x0, x0, :lo12:.LC12	//, tmp296,
-// bitmapdecoding.cpp:206: void test(const char *filename, char target) {
-	stp	x19, x20, [sp, 16]	//,,
-	stp	x21, x22, [sp, 32]	//,,
-	stp	x23, x24, [sp, 48]	//,,
-	stp	x25, x26, [sp, 64]	//,,
-	stp	x27, x28, [sp, 80]	//,,
-	str	d8, [sp, 96]	//,
-	.cfi_offset 19, -432
-	.cfi_offset 20, -424
-	.cfi_offset 21, -416
-	.cfi_offset 22, -408
-	.cfi_offset 23, -400
-	.cfi_offset 24, -392
-	.cfi_offset 25, -384
-	.cfi_offset 26, -376
-	.cfi_offset 27, -368
-	.cfi_offset 28, -360
-	.cfi_offset 72, -352
-.LEHB43:
-// bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
-	bl	_Z12build_bitmapPKccPm		//
-// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
-	ldr	x1, [sp, 112]	// wordcount.126_2, wordcount
-// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
-	mov	x2, 2305843009213693950	// tmp298,
-	cmp	x2, x1, lsl 6	// tmp298, wordcount.126_2,
-	bcc	.L2673		//,
-	mov	x21, x0	// _1, tmp568
-	lsl	x0, x1, 8	//, wordcount.126_2,
-	bl	_Znam		//
-.LEHE43:
-	mov	x19, x0	// _5, tmp569
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp591,,
-	add	x0, sp, 120	// tmp592,,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	stp	xzr, xzr, [sp, 120]	//,, MEM[(struct _Vector_impl_data *)&evts]._M_start
-	str	xzr, [sp, 136]	//, MEM[(struct _Vector_impl_data *)&evts]._M_end_of_storage
-// bitmapdecoding.cpp:213:   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
-	str	wzr, [sp, 272]	//, D.65004
-.LEHB44:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
-	mov	w2, 1	// tmp303,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp593,,
-	add	x0, sp, 120	// tmp594,,
-// bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
-	str	w2, [sp, 272]	// tmp303, D.65003
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:215:   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
-	mov	w2, 5	// tmp306,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp595,,
-	add	x0, sp, 120	// tmp596,,
-// bitmapdecoding.cpp:215:   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
-	str	w2, [sp, 272]	// tmp306, D.65002
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:216:   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
-	mov	w2, 2	// tmp309,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp597,,
-	add	x0, sp, 120	// tmp598,,
-// bitmapdecoding.cpp:216:   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
-	str	w2, [sp, 272]	// tmp309, D.65001
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:217:   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
-	mov	w2, 3	// tmp312,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp599,,
-	add	x0, sp, 120	// tmp600,,
-// bitmapdecoding.cpp:217:   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
-	str	w2, [sp, 272]	// tmp312, D.65000
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
-	add	x1, sp, 120	// tmp601,,
-	add	x0, sp, 240	// tmp602,,
-	bl	_ZNSt6vectorIiSaIiEEC1ERKS1_		//
-.LEHE44:
-	add	x1, sp, 240	// tmp603,,
-	add	x0, sp, 272	// tmp604,,
-.LEHB45:
-	bl	_ZN11LinuxEventsILi0EEC1ESt6vectorIiSaIiEE		//
-.LEHE45:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 240]	// _6, D.64999.D.44271._M_impl.D.43606._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2675	// _6,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2675:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x2, x1, [sp, 120]	// MEM[(int * *)&evts], MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
-// bitmapdecoding.cpp:221:   results.resize(evts.size());
-	add	x0, sp, 144	// tmp605,,
-	add	x25, sp, 168	// tmp561,,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	stp	xzr, xzr, [sp, 144]	//,, MEM[(struct _Vector_impl_data *)&results]._M_start
-	stp	xzr, xzr, [sp, 160]	//,, MEM[(struct _Vector_impl_data *)&results]._M_end_of_storage
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	sub	x1, x1, x2	// tmp319, MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	stp	xzr, xzr, [sp, 176]	//,, MEM[(struct _Vector_impl_data *)&allresults]._M_finish
-// bitmapdecoding.cpp:221:   results.resize(evts.size());
-	asr	x1, x1, 2	//, tmp319,
-.LEHB46:
-	bl	_ZNSt6vectorIySaIyEE6resizeEm		//
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	adrp	x23, .LC13	// tmp564,
-	adrp	x24, .LC14	// tmp566,
-	add	x23, x23, :lo12:.LC13	// tmp565, tmp564,
-	add	x24, x24, :lo12:.LC14	// tmp567, tmp566,
-	add	x25, sp, 168	// tmp561,,
-// bitmapdecoding.cpp:221:   results.resize(evts.size());
-	mov	w22, 10	// ivtmp_304,
-	.p2align 3,,7
-.L2706:
-// linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
-	ldr	w0, [sp, 272]	//, unified.fd
-	mov	w2, 1	//,
-	mov	x1, 9219	//,
-	bl	ioctl		//
-// linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp570,
-	beq	.L2782		//,
-.L2676:
-// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	ldr	w0, [sp, 272]	//, unified.fd
-	mov	w2, 1	//,
-	mov	x1, 9216	//,
-	bl	ioctl		//
-// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp572,
-	beq	.L2783		//,
-.L2678:
-// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
-	ldr	x6, [sp, 112]	// wordcount.127_42, wordcount
-	mov	w20, 0	// matches,
-	cbz	x6, .L2680	// wordcount.127_42,
-	mov	x5, 0	// idx,
-	.p2align 3,,7
-.L2681:
-// bitmapdecoding.cpp:227:       F(bigarray, matches, idx, array[idx]);
-	ldr	x1, [x21, x5, lsl 3]	// bits, MEM[base: _1, index: idx_366, step: 8, offset: 0B]
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	fmov	d0, x1	// tmp620, bits
-	mov	w0, w20	// _313, matches
-	mov	w4, w5	// _619, idx
-	cnt	v0.8b, v0.8b	// tmp375, tmp620
-	addv	b0, v0.8b	// tmp377, tmp375
-	umov	w2, v0.b[0]	// tmp373, tmp377,
-// bitmapdecoding.cpp:96:   uint32_t next_base = base + cnt;
-	add	w20, w20, w2	// matches, matches, tmp373
-// bitmapdecoding.cpp:97:   while (bits != 0u) {
-	cbz	x1, .L2688	// bits,
-	.p2align 3,,7
-.L2687:
-// bitmapdecoding.cpp:99:     bits = bits & (bits - 1);
-	sub	x7, x1, #1	// _240, bits,
-// bitmapdecoding.cpp:100:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w9, w0, 1	// tmp384, _313,
-// bitmapdecoding.cpp:99:     bits = bits & (bits - 1);
-	and	x7, x7, x1	// bits, _240, bits
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x1, x1	// tmp378, bits
-// bitmapdecoding.cpp:101:     bits = bits & (bits - 1);
-	sub	x2, x7, #1	// _250, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x1, x1	// tmp378, tmp378
-// bitmapdecoding.cpp:101:     bits = bits & (bits - 1);
-	and	x2, x7, x2	// bits, bits, _250
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x7, x7	// tmp382, bits
-// bitmapdecoding.cpp:103:     bits = bits & (bits - 1);
-	sub	x3, x2, #1	// _260, bits,
-// bitmapdecoding.cpp:98:     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w1, w4, w1	// tmp381, _619, tmp378
-// bitmapdecoding.cpp:103:     bits = bits & (bits - 1);
-	and	x3, x2, x3	// bits, bits, _260
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x7, x7	// tmp382, tmp382
-// bitmapdecoding.cpp:102:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w8, w0, 2	// tmp389, _313,
-// bitmapdecoding.cpp:100:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w7, w4, w7	// tmp386, _619, tmp382
-// bitmapdecoding.cpp:98:     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w1, [x19, w0, uxtw 2]	// tmp381, *_238
-// bitmapdecoding.cpp:105:     bits = bits & (bits - 1);
-	sub	x1, x3, #1	// _270, bits,
-// bitmapdecoding.cpp:105:     bits = bits & (bits - 1);
-	and	x1, x3, x1	// bits, bits, _270
-// bitmapdecoding.cpp:104:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w11, w0, 3	// tmp394, _313,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x3, x3	// tmp392, bits
-// bitmapdecoding.cpp:100:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w7, [x19, x9, lsl 2]	// tmp386, *_248
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x7, x2	// tmp387, bits
-	clz	x3, x3	// tmp392, tmp392
-// bitmapdecoding.cpp:107:     bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _280, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x7, x7	// tmp387, tmp387
-// bitmapdecoding.cpp:107:     bits = bits & (bits - 1);
-	and	x2, x1, x2	// bits, bits, _280
-// bitmapdecoding.cpp:102:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w7, w4, w7	// tmp391, _619, tmp387
-// bitmapdecoding.cpp:104:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w3, w4, w3	// tmp396, _619, tmp392
-// bitmapdecoding.cpp:102:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w7, [x19, x8, lsl 2]	// tmp391, *_258
-// bitmapdecoding.cpp:106:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w10, w0, 4	// tmp399, _313,
-// bitmapdecoding.cpp:104:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w3, [x19, x11, lsl 2]	// tmp396, *_268
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x3, x1	// tmp397, bits
-// bitmapdecoding.cpp:109:     bits = bits & (bits - 1);
-	sub	x1, x2, #1	// _290, bits,
-// bitmapdecoding.cpp:109:     bits = bits & (bits - 1);
-	and	x1, x2, x1	// bits, bits, _290
-// bitmapdecoding.cpp:108:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w9, w0, 5	// tmp404, _313,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x2	// tmp402, bits
-	clz	x3, x3	// tmp397, tmp397
-	clz	x2, x2	// tmp402, tmp402
-// bitmapdecoding.cpp:106:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w3, w4, w3	// tmp401, _619, tmp397
-// bitmapdecoding.cpp:108:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w4, w2	// tmp406, _619, tmp402
-// bitmapdecoding.cpp:106:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w3, [x19, x10, lsl 2]	// tmp401, *_278
-// bitmapdecoding.cpp:110:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w8, w0, 6	// tmp409, _313,
-// bitmapdecoding.cpp:108:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x19, x9, lsl 2]	// tmp406, *_288
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x1	// tmp407, bits
-// bitmapdecoding.cpp:111:     bits = bits & (bits - 1);
-	sub	x3, x1, #1	// _300, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp407, tmp407
-// bitmapdecoding.cpp:111:     bits = bits & (bits - 1);
-	and	x1, x1, x3	// bits, bits, _300
-// bitmapdecoding.cpp:112:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w7, w0, 7	// tmp414, _313,
-// bitmapdecoding.cpp:110:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w4, w2	// tmp411, _619, tmp407
-// bitmapdecoding.cpp:110:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x19, x8, lsl 2]	// tmp411, *_298
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x1	// tmp412, bits
-	clz	x2, x2	// tmp412, tmp412
-// bitmapdecoding.cpp:114:     base += 8;
-	add	w0, w0, 8	// _313, _313,
-// bitmapdecoding.cpp:112:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w4, w2	// tmp416, _619, tmp412
-// bitmapdecoding.cpp:112:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x19, x7, lsl 2]	// tmp416, *_308
-// bitmapdecoding.cpp:113:     bits = bits & (bits - 1);
-	sub	x2, x1, #1	// _310, bits,
-// bitmapdecoding.cpp:97:   while (bits != 0u) {
-	ands	x1, x1, x2	// bits, bits, _310
-	bne	.L2687		//,
-.L2688:
-// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
-	add	x5, x5, 1	// idx, idx,
-// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
-	cmp	x5, x6	// idx, wordcount.127_42
-	bne	.L2681		//,
-.L2680:
-// linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	ldr	w0, [sp, 272]	//, unified.fd
-	mov	w2, 1	//,
-	mov	x1, 9217	//,
-	bl	ioctl		//
-// linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp576,
-	beq	.L2784		//,
-.L2689:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x1, x2, [sp, 400]	// _318, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
-// linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
-	ldr	w0, [sp, 272]	//, unified.fd
-	sub	x2, x2, x1	//, MEM[(long unsigned int * *)&unified + 136B], _318
-	bl	read		//
-// linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
-	cmn	x0, #1	// tmp578,
-	beq	.L2785		//,
-.L2691:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x4, x3, [sp, 400]	// _449, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
-	sub	x3, x3, x4	// tmp449, MEM[(long unsigned int * *)&unified + 136B], _449
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	cmp	x3, 15	// tmp449,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	asr	x3, x3, 3	// _542, tmp449,
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	bls	.L2693		//,
-// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	ldr	x5, [sp, 144]	// _335, MEM[(long long unsigned int * *)&results]
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	mov	x1, 1	// _325,
-// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	mov	w0, w1	// i, _325
-	.p2align 3,,7
-.L2694:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
-	lsr	w2, w0, 1	// tmp453, i,
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	add	w0, w0, 2	// i, i,
-// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	ldr	x1, [x4, x1, lsl 3]	// *_332, *_332
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	cmp	x3, x0, uxtw	// _542, i
-// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	str	x1, [x5, x2, lsl 3]	// *_332, *_337
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	uxtw	x1, w0	// _325, i
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	bhi	.L2694		//,
-.L2693:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1186: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
-	ldp	x26, x0, [sp, 176]	// _369, allresults.D.46492._M_impl.D.45827._M_end_of_storage, allresults.D.46492._M_impl.D.45827._M_finish
-	cmp	x26, x0	// _369, allresults.D.46492._M_impl.D.45827._M_end_of_storage
-	beq	.L2699		//,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x0, x27, [sp, 144]	// MEM[(long long unsigned int * *)&results], MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	stp	xzr, xzr, [x26]	//,, MEM[(struct _Vector_impl_data *)_369]._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	mov	x28, x26	// pretmp_639, _369
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	str	xzr, [x26, 16]	//, MEM[(struct _Vector_impl_data *)_369]._M_end_of_storage
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	mov	x3, 0	// _388,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	sub	x27, x27, x0	// _375, MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cmp	xzr, x27, asr 3	//, _375,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	asr	x0, x27, 3	// tmp467, _375,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L2701		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
-	mov	x1, 1152921504606846975	// tmp468,
-	cmp	x0, x1	// tmp467, tmp468
-	bhi	.L2786		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
-	mov	x0, x27	//, _375
-	bl	_Znwm		//
-	ldr	x28, [sp, 176]	// pretmp_639, allresults.D.46492._M_impl.D.45827._M_finish
-	mov	x3, x0	// _388, tmp581
-.L2701:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
-	stp	x3, x3, [x26]	// _388, _388, MEM[(struct _Vector_base *)_369]._M_impl.D.44749._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
-	add	x27, x3, x27	// tmp470, _388, _375
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:555: 	  std::__uninitialized_copy_a(__x.begin(), __x.end(),
-	ldp	x1, x2, [sp, 144]	// _381, _382, MEM[(long long unsigned int * *)&results]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
-	str	x27, [x26, 16]	// tmp470, MEM[(struct _Vector_base *)_369]._M_impl.D.44749._M_end_of_storage
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	cmp	x1, x2	// _381, _382
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
-	sub	x27, x2, x1	// _383, _382, _381
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L2704		//,
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
-	mov	x0, x3	//, _388
-	mov	x2, x27	//, _383
-	bl	memmove		//
-	mov	x3, x0	// _388,
-.L2704:
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
-	add	x3, x3, x27	// tmp471, _388, _383
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
-	str	x3, [x26, 8]	// tmp471, *_369.D.45414._M_impl.D.44749._M_finish
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1191: 	    ++this->_M_impl._M_finish;
-	add	x28, x28, 24	// tmp472, pretmp_639,
-	str	x28, [sp, 176]	// tmp472, allresults.D.46492._M_impl.D.45827._M_finish
-.L2705:
-// bitmapdecoding.cpp:223:   for (uint32_t i = 0; i < iterations; i++) {
-	subs	w22, w22, #1	// ivtmp_304, ivtmp_304,
-	bne	.L2706		//,
-// bitmapdecoding.cpp:232:   if (bigarray[0] == 0)
-	ldr	w0, [x19]	//, *_5
-	cbz	w0, .L2787	// *_5,
-.L2707:
-// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	ldr	x2, [sp, 112]	// wordcount.129_23, wordcount
-// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
-	fmov	d0, x2	// wordcount.129_23, wordcount.129_23
-// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
-	ucvtf	d8, w20	// _24, matches
-// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	mov	x0, 4636737291354636288	// tmp590,
-// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
-	shl	d0, d0, 6	// tmp478, wordcount.129_23,
-// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	fmov	d1, x0	// tmp482, tmp590
-	mov	w1, w20	//, matches
-	adrp	x0, .LC17	// tmp484,
-	add	x0, x0, :lo12:.LC17	//, tmp484,
-// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
-	ucvtf	d0, d0	// tmp479, tmp478
-	fdiv	d0, d8, d0	// tmp480, _24, tmp479
-// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	fmul	d0, d0, d1	//, tmp480, tmp482
-	bl	printf		//
-// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	ldr	d0, [sp, 112]	// wordcount, wordcount
-	mov	x0, 4634204016564240384	// tmp589,
-	fmov	d1, x0	// tmp488, tmp589
-// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	adrp	x0, .LC18	// tmp491,
-	add	x0, x0, :lo12:.LC18	//, tmp491,
-// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	ucvtf	d0, d0	// tmp485, wordcount
-	fmul	d0, d0, d1	// tmp487, tmp485, tmp488
-// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	fdiv	d0, d0, d8	//, tmp487, _24
-	bl	printf		//
-// bitmapdecoding.cpp:237:   std::vector<unsigned long long> mins = compute_mins(allresults);
-	mov	x1, x25	//, tmp561
-	add	x0, sp, 240	// tmp635,,
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EEC1ERKS3_		//
-.LEHE46:
-	add	x8, sp, 192	//,,
-	add	x0, sp, 240	// tmp636,,
-.LEHB47:
-	bl	_Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE		//
-.LEHE47:
-	add	x0, sp, 240	// tmp637,,
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-// bitmapdecoding.cpp:238:   std::vector<double> avg = compute_averages(allresults);
-	mov	x1, x25	//, tmp561
-	add	x0, sp, 240	// tmp638,,
-.LEHB48:
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EEC1ERKS3_		//
-.LEHE48:
-	add	x8, sp, 216	//,,
-	add	x0, sp, 240	// tmp639,,
-.LEHB49:
-	bl	_Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE		//
-.LEHE49:
-	add	x0, sp, 240	// tmp640,,
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-// bitmapdecoding.cpp:243:          double(mins[1]) / mins[0], double(mins[0]) / matches,
-	ldr	x1, [sp, 192]	// _35, MEM[(long long unsigned int * *)&mins]
-// bitmapdecoding.cpp:239:   printf("instructions per cycle %4.2f, cycles per value set:  "
-	adrp	x0, .LC19	// tmp511,
-	ldr	d4, [sp, 112]	// wordcount, wordcount
-	add	x0, x0, :lo12:.LC19	//, tmp511,
-	ldp	d0, d5, [x1]	// MEM[(value_type &)_35], MEM[(value_type &)_35 + 8], MEM[(value_type &)_35]
-	ucvtf	d4, d4	// _46, wordcount
-	ucvtf	d0, d0	// _39, MEM[(value_type &)_35]
-	ucvtf	d5, d5	// _37, MEM[(value_type &)_35 + 8]
-	fdiv	d3, d0, d4	//, _39, _46
-	fdiv	d1, d0, d8	//, _39, _24
-	fdiv	d4, d5, d4	//, _37, _46
-	fdiv	d2, d5, d8	//, _37, _24
-	fdiv	d0, d5, d0	//, _37, _39
-.LEHB50:
-	bl	printf		//
-// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
-	ldr	x2, [sp, 192]	// _49, MEM[(long long unsigned int * *)&mins]
-// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
-	adrp	x0, .LC20	// tmp521,
-// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
-	ldr	x1, [sp, 112]	// wordcount, wordcount
-	fmov	d0, x1	// wordcount, wordcount
-// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
-	ldp	d2, d1, [x2]	// MEM[(value_type &)_49], MEM[(value_type &)_49 + 8], MEM[(value_type &)_49]
-// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
-	shl	d0, d0, 6	// tmp512, wordcount,
-// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
-	add	x0, x0, :lo12:.LC20	//, tmp521,
-	ucvtf	d2, d2	// tmp517, MEM[(value_type &)_49]
-	ucvtf	d1, d1	// tmp514, MEM[(value_type &)_49 + 8]
-	ucvtf	d0, d0	// _54, tmp512
-	fdiv	d1, d1, d0	//, tmp514, _54
-	fdiv	d0, d2, d0	//, tmp517, _54
-	bl	printf		//
-// bitmapdecoding.cpp:250:   printf("min: %8llu cycles, %8llu instructions, \t%8llu branch mis., %8llu "
-	ldr	x5, [sp, 192]	// _59, MEM[(long long unsigned int * *)&mins]
-	adrp	x0, .LC21	// tmp528,
-	add	x0, x0, :lo12:.LC21	//, tmp528,
-	ldp	x1, x2, [x5]	//,, MEM[(value_type &)_59]
-	ldp	x3, x4, [x5, 16]	//,, MEM[(value_type &)_59 + 16]
-	ldr	x5, [x5, 32]	//, MEM[(value_type &)_59 + 32]
-	bl	printf		//
-// bitmapdecoding.cpp:253:   printf("avg: %8.1f cycles, %8.1f instructions, \t%8.1f branch mis., %8.1f "
-	ldr	x1, [sp, 216]	// _65, MEM[(double * *)&avg]
-	adrp	x0, .LC22	// tmp535,
-	add	x0, x0, :lo12:.LC22	//, tmp535,
-	ldp	d0, d1, [x1]	//,, MEM[(value_type &)_65]
-	ldp	d2, d3, [x1, 16]	//,, MEM[(value_type &)_65 + 16]
-	ldr	d4, [x1, 32]	//, MEM[(value_type &)_65 + 32]
-	bl	printf		//
-// bitmapdecoding.cpp:256:   printf("\n");
-	mov	w0, 10	//,
-	bl	putchar		//
-.LEHE50:
-// bitmapdecoding.cpp:257:   delete[] array;
-	cbz	x21, .L2708	// _1,
-	mov	x0, x21	//, _1
-	bl	_ZdaPv		//
 .L2708:
-// bitmapdecoding.cpp:258:   delete[] bigarray;
-	mov	x0, x19	//, _5
-	bl	_ZdaPv		//
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 216]	// _71, avg.D.47664._M_impl.D.46999._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2709	// _71,
+.LEHB42:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE42:
+.L2661:
+.L2705:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x1, [sp, 240]	// _378,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	add	x2, sp, 256	// tmp491,,
+	mov	x19, x0	// tmp492, tmp612
+	cmp	x1, x2	// _378, tmp491
+	beq	.L2611		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x1	//, _378
 	bl	_ZdlPv		//
-.L2709:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 192]	// _72, mins.D.45414._M_impl.D.44749._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2710	// _72,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2710:
+.L2611:
 // bitmapdecoding.cpp:220:   std::vector<std::vector<unsigned long long>> allresults;
-	mov	x0, x25	//, tmp561
+	mov	x0, x25	//, tmp590
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 144]	// _73, results.D.45414._M_impl.D.44749._M_start
+	ldr	x0, [sp, 144]	// _78, results.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2711	// _73,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2711:
+	cbnz	x0, .L2715	// _78,
+.L2649:
 // bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
-	add	x0, sp, 272	// tmp642,,
+	add	x0, sp, 272	// tmp673,,
 	bl	_ZN11LinuxEventsILi0EED1Ev		//
+.L2642:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 120]	// _74, evts.D.44271._M_impl.D.43606._M_start
+	ldr	x0, [sp, 120]	// _79, evts.D.44271._M_impl.D.43606._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2672	// _74,
+	cbz	x0, .L2650	// _79,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2672:
-// bitmapdecoding.cpp:259: }
-	ldp	x19, x20, [sp, 16]	//,,
-	ldp	x21, x22, [sp, 32]	//,,
-	ldp	x23, x24, [sp, 48]	//,,
-	ldp	x25, x26, [sp, 64]	//,,
-	ldp	x27, x28, [sp, 80]	//,,
-	ldr	d8, [sp, 96]	//,
-	ldp	x29, x30, [sp], 448	//,,,
-	.cfi_remember_state
-	.cfi_restore 30
-	.cfi_restore 29
-	.cfi_restore 72
-	.cfi_restore 27
-	.cfi_restore 28
-	.cfi_restore 25
-	.cfi_restore 26
-	.cfi_restore 23
-	.cfi_restore 24
-	.cfi_restore 21
-	.cfi_restore 22
-	.cfi_restore 19
-	.cfi_restore 20
-	.cfi_def_cfa_offset 0
-	ret	
-	.p2align 2,,3
-.L2784:
-	.cfi_restore_state
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x3, sp, 256	// tmp419,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	mov	x4, 29	// tmp420,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp621,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	add	x1, sp, 216	// tmp622,,
-	mov	x2, 0	//,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	str	x4, [sp, 216]	// tmp420, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x3, [sp, 240]	// tmp419, MEM[(struct _Alloc_hider *)&D.66866]._M_p
-.LEHB51:
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE51:
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	adrp	x3, .LC15	// tmp425,
-	add	x3, x3, :lo12:.LC15	// tmp424, tmp425,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	mov	x2, x0	// _349, tmp577
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x2, [sp, 240]	// _349, MEM[(char * *)&D.66866]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	ldr	x0, [sp, 216]	// __dnew, __dnew
-	str	x0, [sp, 256]	// __dnew, MEM[(size_type *)&D.66866 + 16B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldr	x0, [x3, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
-	str	x0, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_349]
-	ldp	x4, x5, [x3]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
-	stp	x4, x5, [x2]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_349]
-// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
-	add	x1, sp, 240	// tmp624,,
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldr	x3, [x3, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
-	str	x3, [x2, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_349]
-// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
-	add	x0, sp, 272	// tmp625,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
-	ldr	x2, [sp, 216]	// __dnew.49_353, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 248]	// __dnew.49_353, MEM[(size_type *)&D.66866 + 8B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66866], MEM[(char * *)&D.66866]
-	strb	wzr, [x3, x2]	//, MEM[(char_type &)_355]
-.LEHB52:
-// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
-	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE52:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _316, MEM[(char * *)&D.66866]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp435,,
-	cmp	x0, x1	// _316, tmp435
-	beq	.L2689		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2689		//
-	.p2align 2,,3
-.L2782:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x3, sp, 256	// tmp327,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	mov	x4, 27	// tmp328,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp606,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	add	x1, sp, 216	// tmp607,,
-	mov	x2, 0	//,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	str	x4, [sp, 216]	// tmp328, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x3, [sp, 240]	// tmp327, MEM[(struct _Alloc_hider *)&D.66825]._M_p
-.LEHB53:
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE53:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	ldr	x1, [sp, 216]	// __dnew, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x0, [sp, 240]	// _208, MEM[(char * *)&D.66825]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	str	x1, [sp, 256]	// __dnew, MEM[(size_type *)&D.66825 + 16B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldr	x1, [x23, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
-	str	x1, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_208]
-	ldr	w2, [x23, 23]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
-// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
-	add	x1, sp, 240	// tmp609,,
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldp	x4, x5, [x23]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
-	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_208]
-	str	w2, [x0, 23]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_208]
-// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
-	add	x0, sp, 272	// tmp610,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
-	ldr	x2, [sp, 216]	// __dnew.49_212, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 248]	// __dnew.49_212, MEM[(size_type *)&D.66825 + 8B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66825], MEM[(char * *)&D.66825]
-	strb	wzr, [x3, x2]	//, MEM[(char_type &)_214]
-.LEHB54:
-// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
-	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE54:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _196, MEM[(char * *)&D.66825]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp343,,
-	cmp	x0, x1	// _196, tmp343
-	beq	.L2676		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	ldr	w0, [sp, 272]	//, unified.fd
-	mov	w2, 1	//,
-	mov	x1, 9216	//,
-	bl	ioctl		//
-// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp572,
-	bne	.L2678		//,
-	.p2align 3,,7
-.L2783:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x3, sp, 256	// tmp346,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	mov	x4, 28	// tmp347,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp612,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	add	x1, sp, 216	// tmp613,,
-	mov	x2, 0	//,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	str	x4, [sp, 216]	// tmp347, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x3, [sp, 240]	// tmp346, MEM[(struct _Alloc_hider *)&D.66824]._M_p
-.LEHB55:
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE55:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	ldr	x1, [sp, 216]	// __dnew, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x0, [sp, 240]	// _221, MEM[(char * *)&D.66824]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldr	w2, [x24, 24]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	str	x1, [sp, 256]	// __dnew, MEM[(size_type *)&D.66824 + 16B]
-// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
-	add	x1, sp, 240	// tmp615,,
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldp	x4, x5, [x24]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
-	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_221]
-	ldr	x3, [x24, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
-	str	x3, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_221]
-	str	w2, [x0, 24]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_221]
-// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
-	add	x0, sp, 272	// tmp616,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
-	ldr	x2, [sp, 216]	// __dnew.49_225, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 248]	// __dnew.49_225, MEM[(size_type *)&D.66824 + 8B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66824], MEM[(char * *)&D.66824]
-	strb	wzr, [x3, x2]	//, MEM[(char_type &)_227]
-.LEHB56:
-// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
-	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE56:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _199, MEM[(char * *)&D.66824]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp362,,
-	cmp	x0, x1	// _199, tmp362
-	beq	.L2678		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2678		//
-	.p2align 2,,3
-.L2699:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1195: 	  _M_realloc_insert(end(), __x);
-	mov	x1, x26	//, _369
-	add	x2, sp, 144	// tmp633,,
-	mov	x0, x25	//, tmp561
-.LEHB57:
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_		//
-.LEHE57:
+.L2650:
+	mov	x0, x19	//, tmp568
+.LEHB43:
+	bl	_Unwind_Resume		//
+.L2659:
 	b	.L2705		//
-	.p2align 2,,3
-.L2785:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x4, sp, 256	// tmp440,,
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	mov	w2, 25970	// tmp443,
-	movk	w2, 0x6461, lsl 16	// tmp443,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	mov	x3, 4	// tmp444,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp627,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	stp	x4, x3, [sp, 240]	// tmp440, tmp444, MEM[(struct _Alloc_hider *)&D.66865]._M_p
-// linux-perf-events.h:77:       report_error("read");
-	mov	x1, x0	// tmp628, tmp627
-	add	x0, sp, 272	// tmp629,,
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	str	w2, [sp, 256]	// tmp443, MEM[(void *)&D.66865 + 16B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	strb	wzr, [sp, 260]	//, MEM[(char_type &)&D.66865 + 20]
-.LEHB58:
-// linux-perf-events.h:77:       report_error("read");
-	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE58:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _323, MEM[(char * *)&D.66865]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp448,,
-	cmp	x0, x1	// _323, tmp448
-	beq	.L2691		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2691		//
-.L2787:
-// bitmapdecoding.cpp:233:     printf("bogus\n.");
-	adrp	x0, .LC16	// tmp477,
-	add	x0, x0, :lo12:.LC16	//, tmp477,
-.LEHB59:
-	bl	printf		//
-	b	.L2707		//
-.L2786:
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
-	bl	_ZSt17__throw_bad_allocv		//
-.LEHE59:
-.L2726:
-	mov	x19, x0	// tmp365, tmp587
-.L2684:
-// bitmapdecoding.cpp:220:   std::vector<std::vector<unsigned long long>> allresults;
-	mov	x0, x25	//, tmp561
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
+.L2660:
+	b	.L2705		//
+.L2658:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 144]	// _78, results.D.45414._M_impl.D.44749._M_start
+	ldr	x1, [sp, 240]	// _75, D.64956.D.44271._M_impl.D.43606._M_start
+	mov	x19, x0	// tmp569, tmp614
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2722	// _78,
+	cbz	x1, .L2642	// _75,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x1	//, _75
 	bl	_ZdlPv		//
-.L2722:
-// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
-	add	x0, sp, 272	// tmp645,,
-	bl	_ZN11LinuxEventsILi0EED1Ev		//
+// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
+	b	.L2642		//
 .L2715:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 120]	// _79, evts.D.44271._M_impl.D.43606._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2723	// _79,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2723:
-	mov	x0, x19	//, tmp538
-.LEHB60:
-	bl	_Unwind_Resume		//
-.L2731:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x1, [sp, 240]	// _75, D.64999.D.44271._M_impl.D.43606._M_start
-	mov	x19, x0	// tmp539, tmp582
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x1, .L2715	// _75,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	mov	x0, x1	//, _75
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2715		//
-.L2725:
-	mov	x19, x0	// tmp538, tmp588
-	b	.L2715		//
-.L2673:
+	b	.L2649		//
+.L2593:
 // bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
 	bl	__cxa_throw_bad_array_new_length		//
-.LEHE60:
-.L2734:
-.L2779:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x1, [sp, 240]	// _341,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x2, sp, 256	// tmp461,,
-	mov	x19, x0	// tmp462, tmp580
-	cmp	x1, x2	// _341, tmp461
-	beq	.L2684		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	mov	x0, x1	//, _341
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2684		//
-.L2732:
-	b	.L2779		//
-.L2733:
-	b	.L2779		//
-.L2735:
-	b	.L2779		//
-.L2728:
+.LEHE43:
+.L2654:
+	mov	x19, x0	// tmp576, tmp618
+	b	.L2645		//
+.L2655:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x1, [sp, 216]	// _76, avg.D.47664._M_impl.D.46999._M_start
-	mov	x19, x0	// tmp550, tmp585
+	mov	x19, x0	// tmp580, tmp617
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x1, .L2718	// _76,
+	cbz	x1, .L2645	// _76,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x1	//, _76
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2718		//
-.L2729:
-	mov	x19, x0	// tmp584,
-	add	x0, sp, 240	// tmp644,,
+	b	.L2645		//
+.L2656:
+	mov	x19, x0	// tmp616,
+	add	x0, sp, 240	// tmp672,,
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-.L2718:
+.L2645:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 192]	// _77, mins.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2684	// _77,
+	cbz	x0, .L2611	// _77,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2684		//
-.L2727:
-	mov	x19, x0	// tmp546, tmp586
-	b	.L2718		//
-.L2730:
-	mov	x19, x0	// tmp583,
-	add	x0, sp, 240	// tmp643,,
+	b	.L2611		//
+.L2652:
+	mov	x19, x0	// tmp568, tmp620
+	b	.L2642		//
+.L2653:
+	mov	x19, x0	// tmp390, tmp619
+	b	.L2611		//
+.L2657:
+	mov	x19, x0	// tmp615,
+	add	x0, sp, 240	// tmp671,,
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-	b	.L2684		//
-	.cfi_endproc
-.LFE3265:
-	.section	.gcc_except_table
-.LLSDA3265:
-	.byte	0xff
-	.byte	0xff
-	.byte	0x1
-	.uleb128 .LLSDACSE3265-.LLSDACSB3265
-.LLSDACSB3265:
-	.uleb128 .LEHB43-.LFB3265
-	.uleb128 .LEHE43-.LEHB43
-	.uleb128 0
-	.uleb128 0
-	.uleb128 .LEHB44-.LFB3265
-	.uleb128 .LEHE44-.LEHB44
-	.uleb128 .L2725-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB45-.LFB3265
-	.uleb128 .LEHE45-.LEHB45
-	.uleb128 .L2731-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB46-.LFB3265
-	.uleb128 .LEHE46-.LEHB46
-	.uleb128 .L2726-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB47-.LFB3265
-	.uleb128 .LEHE47-.LEHB47
-	.uleb128 .L2730-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB48-.LFB3265
-	.uleb128 .LEHE48-.LEHB48
-	.uleb128 .L2727-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB49-.LFB3265
-	.uleb128 .LEHE49-.LEHB49
-	.uleb128 .L2729-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB50-.LFB3265
-	.uleb128 .LEHE50-.LEHB50
-	.uleb128 .L2728-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB51-.LFB3265
-	.uleb128 .LEHE51-.LEHB51
-	.uleb128 .L2726-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB52-.LFB3265
-	.uleb128 .LEHE52-.LEHB52
-	.uleb128 .L2735-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB53-.LFB3265
-	.uleb128 .LEHE53-.LEHB53
-	.uleb128 .L2726-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB54-.LFB3265
-	.uleb128 .LEHE54-.LEHB54
-	.uleb128 .L2733-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB55-.LFB3265
-	.uleb128 .LEHE55-.LEHB55
-	.uleb128 .L2726-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB56-.LFB3265
-	.uleb128 .LEHE56-.LEHB56
-	.uleb128 .L2732-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB57-.LFB3265
-	.uleb128 .LEHE57-.LEHB57
-	.uleb128 .L2726-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB58-.LFB3265
-	.uleb128 .LEHE58-.LEHB58
-	.uleb128 .L2734-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB59-.LFB3265
-	.uleb128 .LEHE59-.LEHB59
-	.uleb128 .L2726-.LFB3265
-	.uleb128 0
-	.uleb128 .LEHB60-.LFB3265
-	.uleb128 .LEHE60-.LEHB60
-	.uleb128 0
-	.uleb128 0
-.LLSDACSE3265:
-	.text
-	.size	_Z4testIXadL_ZL16simdjson_decoderPjRjjmEEEvPKcc.constprop.0, .-_Z4testIXadL_ZL16simdjson_decoderPjRjjmEEEvPKcc.constprop.0
-	.align	2
-	.p2align 3,,7
-	.type	_Z4testIXadL_ZL14faster_decoderPjRjjmEEEvPKcc.constprop.0, %function
-_Z4testIXadL_ZL14faster_decoderPjRjjmEEEvPKcc.constprop.0:
-.LFB3264:
-	.cfi_startproc
-	.cfi_personality 0x9b,DW.ref.__gxx_personality_v0
-	.cfi_lsda 0x1b,.LLSDA3264
-	stp	x29, x30, [sp, -448]!	//,,,
-	.cfi_def_cfa_offset 448
-	.cfi_offset 29, -448
-	.cfi_offset 30, -440
-// bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
-	mov	w1, 44	//,
-	adrp	x0, .LC12	// tmp368,
-// bitmapdecoding.cpp:206: void test(const char *filename, char target) {
-	mov	x29, sp	//,
-// bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
-	add	x2, sp, 112	//,,
-	add	x0, x0, :lo12:.LC12	//, tmp368,
-// bitmapdecoding.cpp:206: void test(const char *filename, char target) {
-	stp	x19, x20, [sp, 16]	//,,
-	stp	x21, x22, [sp, 32]	//,,
-	stp	x23, x24, [sp, 48]	//,,
-	stp	x25, x26, [sp, 64]	//,,
-	stp	x27, x28, [sp, 80]	//,,
-	str	d8, [sp, 96]	//,
-	.cfi_offset 19, -432
-	.cfi_offset 20, -424
-	.cfi_offset 21, -416
-	.cfi_offset 22, -408
-	.cfi_offset 23, -400
-	.cfi_offset 24, -392
-	.cfi_offset 25, -384
-	.cfi_offset 26, -376
-	.cfi_offset 27, -368
-	.cfi_offset 28, -360
-	.cfi_offset 72, -352
-.LEHB61:
-// bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
-	bl	_Z12build_bitmapPKccPm		//
-// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
-	ldr	x1, [sp, 112]	// wordcount.168_2, wordcount
-// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
-	mov	x2, 2305843009213693950	// tmp370,
-	cmp	x2, x1, lsl 6	// tmp370, wordcount.168_2,
-	bcc	.L2789		//,
-	mov	x21, x0	// _1, tmp685
-	lsl	x0, x1, 8	//, wordcount.168_2,
-	bl	_Znam		//
-.LEHE61:
-	mov	x20, x0	// _5, tmp686
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp708,,
-	add	x0, sp, 120	// tmp709,,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	stp	xzr, xzr, [sp, 120]	//,, MEM[(struct _Vector_impl_data *)&evts]._M_start
-	str	xzr, [sp, 136]	//, MEM[(struct _Vector_impl_data *)&evts]._M_end_of_storage
-// bitmapdecoding.cpp:213:   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
-	str	wzr, [sp, 272]	//, D.64963
-.LEHB62:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
-	mov	w2, 1	// tmp375,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp710,,
-	add	x0, sp, 120	// tmp711,,
-// bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
-	str	w2, [sp, 272]	// tmp375, D.64962
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:215:   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
-	mov	w2, 5	// tmp378,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp712,,
-	add	x0, sp, 120	// tmp713,,
-// bitmapdecoding.cpp:215:   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
-	str	w2, [sp, 272]	// tmp378, D.64961
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:216:   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
-	mov	w2, 2	// tmp381,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp714,,
-	add	x0, sp, 120	// tmp715,,
-// bitmapdecoding.cpp:216:   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
-	str	w2, [sp, 272]	// tmp381, D.64960
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:217:   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
-	mov	w2, 3	// tmp384,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	add	x1, sp, 272	// tmp716,,
-	add	x0, sp, 120	// tmp717,,
-// bitmapdecoding.cpp:217:   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
-	str	w2, [sp, 272]	// tmp384, D.64959
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
-	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
-// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
-	add	x1, sp, 120	// tmp718,,
-	add	x0, sp, 240	// tmp719,,
-	bl	_ZNSt6vectorIiSaIiEEC1ERKS1_		//
-.LEHE62:
-	add	x1, sp, 240	// tmp720,,
-	add	x0, sp, 272	// tmp721,,
-.LEHB63:
-	bl	_ZN11LinuxEventsILi0EEC1ESt6vectorIiSaIiEE		//
-.LEHE63:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 240]	// _6, D.64958.D.44271._M_impl.D.43606._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2791	// _6,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2791:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x2, x1, [sp, 120]	// MEM[(int * *)&evts], MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
-// bitmapdecoding.cpp:221:   results.resize(evts.size());
-	add	x0, sp, 144	// tmp722,,
-	add	x25, sp, 168	// tmp676,,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	stp	xzr, xzr, [sp, 144]	//,, MEM[(struct _Vector_impl_data *)&results]._M_start
-	stp	xzr, xzr, [sp, 160]	//,, MEM[(struct _Vector_impl_data *)&results]._M_end_of_storage
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	sub	x1, x1, x2	// tmp391, MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	stp	xzr, xzr, [sp, 176]	//,, MEM[(struct _Vector_impl_data *)&allresults]._M_finish
-// bitmapdecoding.cpp:221:   results.resize(evts.size());
-	asr	x1, x1, 2	//, tmp391,
-.LEHB64:
-	bl	_ZNSt6vectorIySaIyEE6resizeEm		//
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	adrp	x23, .LC13	// tmp681,
-	adrp	x24, .LC14	// tmp683,
-	add	x23, x23, :lo12:.LC13	// tmp682, tmp681,
-	add	x24, x24, :lo12:.LC14	// tmp684, tmp683,
-	add	x25, sp, 168	// tmp676,,
-// bitmapdecoding.cpp:221:   results.resize(evts.size());
-	mov	w22, 10	// ivtmp_652,
-	.p2align 3,,7
-.L2822:
-// linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
-	ldr	w0, [sp, 272]	//, unified.fd
-	mov	w2, 1	//,
-	mov	x1, 9219	//,
-	bl	ioctl		//
-// linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp687,
-	beq	.L2901		//,
-.L2792:
-// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	ldr	w0, [sp, 272]	//, unified.fd
-	mov	w2, 1	//,
-	mov	x1, 9216	//,
-	bl	ioctl		//
-// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp689,
-	beq	.L2902		//,
-.L2794:
-// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
-	ldr	x4, [sp, 112]	// wordcount.169_12, wordcount
-	mov	w19, 0	// matches,
-	cbz	x4, .L2796	// wordcount.169_12,
-	mov	x1, 0	// idx,
-	.p2align 3,,7
-.L2797:
-// bitmapdecoding.cpp:227:       F(bigarray, matches, idx, array[idx]);
-	ldr	x0, [x21, x1, lsl 3]	// _18, MEM[base: _1, index: idx_496, step: 8, offset: 0B]
-// bitmapdecoding.cpp:121:   if (bits != 0u) {
-	cbz	x0, .L2803	// _18,
-// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
-	sub	x6, x0, #1	// tmp454, _18,
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	fmov	d0, x0	// tmp737, _18
-// bitmapdecoding.cpp:125:     bits = bits & (bits - 1);
-	and	x6, x6, x0	// bits, tmp454, _18
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x0, x0	// tmp450, _18
-// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
-	sub	x5, x6, #1	// _249, bits,
-// bitmapdecoding.cpp:126:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w8, w19, 1	// tmp457, matches,
-// bitmapdecoding.cpp:127:     bits = bits & (bits - 1);
-	and	x5, x6, x5	// bits, bits, _249
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x0, x0	// tmp450, tmp450
-// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
-	sub	x3, x5, #1	// _259, bits,
-// bitmapdecoding.cpp:128:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w7, w19, 2	// tmp462, matches,
-// bitmapdecoding.cpp:129:     bits = bits & (bits - 1);
-	and	x3, x5, x3	// bits, bits, _259
-// bitmapdecoding.cpp:124:     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w0, w1, w0	// tmp453, idx, tmp450
-// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
-	sub	x2, x3, #1	// _269, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x6, x6	// tmp455, bits
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w10, w19, 3	// tmp467, matches,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x6, x6	// tmp455, tmp455
-	rbit	x5, x5	// tmp460, bits
-// bitmapdecoding.cpp:124:     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w0, [x20, w19, uxtw 2]	// tmp453, *_237
-// bitmapdecoding.cpp:131:     bits = bits & (bits - 1);
-	and	x0, x3, x2	// bits, bits, _269
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x3, x3	// tmp465, bits
-// bitmapdecoding.cpp:126:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w6, w1, w6	// tmp459, idx, tmp455
-// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _279, bits,
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	cnt	v0.8b, v0.8b	// tmp447, tmp737
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x5, x5	// tmp460, tmp460
-	clz	x3, x3	// tmp465, tmp465
-// bitmapdecoding.cpp:126:     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w6, [x20, x8, lsl 2]	// tmp459, *_247
-// bitmapdecoding.cpp:133:     bits = bits & (bits - 1);
-	and	x2, x0, x2	// bits, bits, _279
-// bitmapdecoding.cpp:128:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w5, w1, w5	// tmp464, idx, tmp460
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w3, w1, w3	// tmp469, idx, tmp465
-// bitmapdecoding.cpp:128:     base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w5, [x20, x7, lsl 2]	// tmp464, *_257
-// bitmapdecoding.cpp:132:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w9, w19, 4	// tmp472, matches,
-// bitmapdecoding.cpp:130:     base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w3, [x20, x10, lsl 2]	// tmp469, *_267
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x3, x0	// tmp470, bits
-// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
-	sub	x0, x2, #1	// _289, bits,
-// bitmapdecoding.cpp:135:     bits = bits & (bits - 1);
-	and	x0, x2, x0	// bits, bits, _289
-// bitmapdecoding.cpp:134:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w8, w19, 5	// tmp477, matches,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x2	// tmp475, bits
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	addv	b0, v0.8b	// tmp449, tmp447
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x3, x3	// tmp470, tmp470
-	clz	x2, x2	// tmp475, tmp475
-// bitmapdecoding.cpp:132:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w3, w1, w3	// tmp474, idx, tmp470
-// bitmapdecoding.cpp:134:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w1, w2	// tmp479, idx, tmp475
-// bitmapdecoding.cpp:132:     base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w3, [x20, x9, lsl 2]	// tmp474, *_277
-// bitmapdecoding.cpp:136:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w7, w19, 6	// tmp482, matches,
-// bitmapdecoding.cpp:134:     base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x20, x8, lsl 2]	// tmp479, *_287
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x0	// tmp480, bits
-// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
-	sub	x3, x0, #1	// _299, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x2, x2	// tmp480, tmp480
-// bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
-	umov	w5, v0.b[0]	// tmp445, tmp449,
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w6, w19, 7	// tmp487, matches,
-// bitmapdecoding.cpp:136:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w1, w2	// tmp484, idx, tmp480
-// bitmapdecoding.cpp:137:     bits = bits & (bits - 1);
-	and	x0, x0, x3	// bits, bits, _299
-// bitmapdecoding.cpp:136:     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x20, x7, lsl 2]	// tmp484, *_297
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x2, x0	// tmp485, bits
-	clz	x2, x2	// tmp485, tmp485
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w2, w1, w2	// tmp489, idx, tmp485
-// bitmapdecoding.cpp:138:     base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w2, [x20, x6, lsl 2]	// tmp489, *_307
-// bitmapdecoding.cpp:140:     if (cnt > 8) {
-	cmp	w5, 8	// tmp445,
-// bitmapdecoding.cpp:123:     uint32_t next_base = base + cnt;
-	add	w7, w19, w5	// next_base, matches, tmp445
-	mov	w6, w1	// _647, idx
-// bitmapdecoding.cpp:140:     if (cnt > 8) {
-	ble	.L2842		//,
-// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _309, bits,
-// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w12, w19, 8	// tmp492, matches,
-// bitmapdecoding.cpp:139:     bits = bits & (bits - 1);
-	and	x0, x0, x2	// bits, bits, _309
-// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w9, w19, 9	// tmp497, matches,
-// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _319, bits,
-// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w10, w19, 10	// tmp502, matches,
-// bitmapdecoding.cpp:142:       bits = bits & (bits - 1);
-	and	x2, x0, x2	// bits, bits, _319
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x0, x0	// tmp490, bits
-// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
-	sub	x8, x2, #1	// _329, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x0, x0	// tmp490, tmp490
-// bitmapdecoding.cpp:144:       bits = bits & (bits - 1);
-	and	x8, x2, x8	// bits, bits, _329
-// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w0, w1, w0	// tmp494, idx, tmp490
-// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
-	sub	x3, x8, #1	// _339, bits,
-// bitmapdecoding.cpp:141:       base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w0, [x20, x12, lsl 2]	// tmp494, *_317
-// bitmapdecoding.cpp:146:       bits = bits & (bits - 1);
-	and	x3, x8, x3	// bits, bits, _339
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x0, x2	// tmp495, bits
-	clz	x0, x0	// tmp495, tmp495
-// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
-	sub	x2, x3, #1	// _349, bits,
-// bitmapdecoding.cpp:148:       bits = bits & (bits - 1);
-	and	x2, x3, x2	// bits, bits, _349
-// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w0, w1, w0	// tmp499, idx, tmp495
-// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w11, w19, 11	// tmp507, matches,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x8, x8	// tmp500, bits
-	rbit	x3, x3	// tmp505, bits
-	clz	x8, x8	// tmp500, tmp500
-	clz	x3, x3	// tmp505, tmp505
-// bitmapdecoding.cpp:143:       base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w0, [x20, x9, lsl 2]	// tmp499, *_327
-// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
-	sub	x0, x2, #1	// _359, bits,
-// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w8, w1, w8	// tmp504, idx, tmp500
-// bitmapdecoding.cpp:150:       bits = bits & (bits - 1);
-	and	x0, x2, x0	// bits, bits, _359
-// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w3, w1, w3	// tmp509, idx, tmp505
-// bitmapdecoding.cpp:145:       base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w8, [x20, x10, lsl 2]	// tmp504, *_337
-// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w12, w19, 12	// tmp512, matches,
-// bitmapdecoding.cpp:147:       base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w3, [x20, x11, lsl 2]	// tmp509, *_347
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x3, x2	// tmp510, bits
-// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
-	sub	x2, x0, #1	// _369, bits,
-// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w9, w19, 13	// tmp517, matches,
-// bitmapdecoding.cpp:152:       bits = bits & (bits - 1);
-	and	x2, x0, x2	// bits, bits, _369
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x0, x0	// tmp515, bits
-	clz	x3, x3	// tmp510, tmp510
-	clz	x0, x0	// tmp515, tmp515
-// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w3, w1, w3	// tmp514, idx, tmp510
-// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w0, w1, w0	// tmp519, idx, tmp515
-// bitmapdecoding.cpp:149:       base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w3, [x20, x12, lsl 2]	// tmp514, *_357
-// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w10, w19, 14	// tmp522, matches,
-// bitmapdecoding.cpp:151:       base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w0, [x20, x9, lsl 2]	// tmp519, *_367
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x0, x2	// tmp520, bits
-// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
-	sub	x3, x2, #1	// _379, bits,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x0, x0	// tmp520, tmp520
-// bitmapdecoding.cpp:154:       bits = bits & (bits - 1);
-	and	x2, x2, x3	// bits, bits, _379
-// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w0, w1, w0	// tmp524, idx, tmp520
-// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w8, w19, 15	// tmp527, matches,
-// bitmapdecoding.cpp:153:       base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w0, [x20, x10, lsl 2]	// tmp524, *_377
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x0, x2	// tmp525, bits
-// bitmapdecoding.cpp:158:     if (cnt > 16) {
-	cmp	w5, 16	// tmp445,
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	clz	x0, x0	// tmp525, tmp525
-// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w0, w1, w0	// tmp529, idx, tmp525
-// bitmapdecoding.cpp:155:       base_ptr[base + 15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w0, [x20, x8, lsl 2]	// tmp529, *_387
-// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
-	sub	x0, x2, #1	// _389, bits,
-// bitmapdecoding.cpp:156:       bits = bits & (bits - 1);
-	and	x2, x2, x0	// bits, bits, _389
-// bitmapdecoding.cpp:158:     if (cnt > 16) {
-	ble	.L2842		//,
-// bitmapdecoding.cpp:159:       base += 16;
-	add	w19, w19, 16	// _404, matches,
-	.p2align 3,,7
-.L2804:
-// bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
-	rbit	x0, x2	// tmp530, bits
-	clz	x0, x0	// tmp530, tmp530
-// bitmapdecoding.cpp:161:         base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	add	w0, w6, w0	// tmp533, _647, tmp530
-// bitmapdecoding.cpp:161:         base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-	str	w0, [x20, w19, uxtw 2]	// tmp533, *_399
-// bitmapdecoding.cpp:162:         bits = bits & (bits - 1);
-	sub	x0, x2, #1	// _401, bits,
-// bitmapdecoding.cpp:163:         base++;
-	add	w19, w19, 1	// _404, _404,
-// bitmapdecoding.cpp:164:       } while (bits != 0);
-	ands	x2, x2, x0	// bits, bits, _401
-	bne	.L2804		//,
-.L2842:
-// bitmapdecoding.cpp:166:     base = next_base;
-	mov	w19, w7	// matches, next_base
-.L2803:
-// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
-	add	x1, x1, 1	// idx, idx,
-// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
-	cmp	x4, x1	// wordcount.169_12, idx
-	bne	.L2797		//,
-.L2796:
-// linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	ldr	w0, [sp, 272]	//, unified.fd
-	mov	w2, 1	//,
-	mov	x1, 9217	//,
-	bl	ioctl		//
-// linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp693,
-	beq	.L2903		//,
-.L2805:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x1, x2, [sp, 400]	// _410, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
-// linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
-	ldr	w0, [sp, 272]	//, unified.fd
-	sub	x2, x2, x1	//, MEM[(long unsigned int * *)&unified + 136B], _410
-	bl	read		//
-// linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
-	cmn	x0, #1	// tmp695,
-	beq	.L2904		//,
-.L2807:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x4, x3, [sp, 400]	// _543, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
-	sub	x3, x3, x4	// tmp566, MEM[(long unsigned int * *)&unified + 136B], _543
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	cmp	x3, 15	// tmp566,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	asr	x3, x3, 3	// _607, tmp566,
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	bls	.L2809		//,
-// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	ldr	x5, [sp, 144]	// _427, MEM[(long long unsigned int * *)&results]
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	mov	x1, 1	// _396,
-// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	mov	w0, w1	// i, _396
-	.p2align 3,,7
-.L2810:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
-	lsr	w2, w0, 1	// tmp570, i,
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	add	w0, w0, 2	// i, i,
-// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	ldr	x1, [x4, x1, lsl 3]	// *_424, *_424
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	cmp	x3, x0, uxtw	// _607, i
-// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
-	str	x1, [x5, x2, lsl 3]	// *_424, *_429
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	uxtw	x1, w0	// _396, i
-// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	bhi	.L2810		//,
-.L2809:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1186: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
-	ldp	x26, x0, [sp, 176]	// _461, allresults.D.46492._M_impl.D.45827._M_end_of_storage, allresults.D.46492._M_impl.D.45827._M_finish
-	cmp	x26, x0	// _461, allresults.D.46492._M_impl.D.45827._M_end_of_storage
-	beq	.L2815		//,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	ldp	x0, x27, [sp, 144]	// MEM[(long long unsigned int * *)&results], MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	stp	xzr, xzr, [x26]	//,, MEM[(struct _Vector_impl_data *)_461]._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	mov	x28, x26	// pretmp_220, _461
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
-	str	xzr, [x26, 16]	//, MEM[(struct _Vector_impl_data *)_461]._M_end_of_storage
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	mov	x3, 0	// _480,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	sub	x27, x27, x0	// _467, MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cmp	xzr, x27, asr 3	//, _467,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
-	asr	x0, x27, 3	// tmp584, _467,
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L2817		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
-	mov	x1, 1152921504606846975	// tmp585,
-	cmp	x0, x1	// tmp584, tmp585
-	bhi	.L2905		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
-	mov	x0, x27	//, _467
-	bl	_Znwm		//
-	ldr	x28, [sp, 176]	// pretmp_220, allresults.D.46492._M_impl.D.45827._M_finish
-	mov	x3, x0	// _480, tmp698
-.L2817:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
-	stp	x3, x3, [x26]	// _480, _480, MEM[(struct _Vector_base *)_461]._M_impl.D.44749._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
-	add	x27, x3, x27	// tmp587, _480, _467
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:555: 	  std::__uninitialized_copy_a(__x.begin(), __x.end(),
-	ldp	x1, x2, [sp, 144]	// _473, _474, MEM[(long long unsigned int * *)&results]
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
-	str	x27, [x26, 16]	// tmp587, MEM[(struct _Vector_base *)_461]._M_impl.D.44749._M_end_of_storage
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	cmp	x1, x2	// _473, _474
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
-	sub	x27, x2, x1	// _475, _474, _473
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L2820		//,
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
-	mov	x0, x3	//, _480
-	mov	x2, x27	//, _475
-	bl	memmove		//
-	mov	x3, x0	// _480,
-.L2820:
-// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
-	add	x3, x3, x27	// tmp588, _480, _475
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
-	str	x3, [x26, 8]	// tmp588, *_461.D.45414._M_impl.D.44749._M_finish
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1191: 	    ++this->_M_impl._M_finish;
-	add	x28, x28, 24	// tmp589, pretmp_220,
-	str	x28, [sp, 176]	// tmp589, allresults.D.46492._M_impl.D.45827._M_finish
-.L2821:
-// bitmapdecoding.cpp:223:   for (uint32_t i = 0; i < iterations; i++) {
-	subs	w22, w22, #1	// ivtmp_652, ivtmp_652,
-	bne	.L2822		//,
-// bitmapdecoding.cpp:232:   if (bigarray[0] == 0)
-	ldr	w0, [x20]	//, *_5
-	cbz	w0, .L2906	// *_5,
-.L2823:
-// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	ldr	x2, [sp, 112]	// wordcount.171_23, wordcount
-// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
-	fmov	d0, x2	// wordcount.171_23, wordcount.171_23
-// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
-	ucvtf	d8, w19	// _24, matches
-// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	mov	x0, 4636737291354636288	// tmp707,
-// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
-	shl	d0, d0, 6	// tmp595, wordcount.171_23,
-// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	fmov	d1, x0	// tmp599, tmp707
-	mov	w1, w19	//, matches
-	adrp	x0, .LC17	// tmp601,
-	add	x0, x0, :lo12:.LC17	//, tmp601,
-// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
-	ucvtf	d0, d0	// tmp596, tmp595
-	fdiv	d0, d8, d0	// tmp597, _24, tmp596
-// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
-	fmul	d0, d0, d1	//, tmp597, tmp599
-	bl	printf		//
-// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	ldr	d0, [sp, 112]	// wordcount, wordcount
-	mov	x0, 4634204016564240384	// tmp706,
-	fmov	d1, x0	// tmp605, tmp706
-// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	adrp	x0, .LC18	// tmp608,
-	add	x0, x0, :lo12:.LC18	//, tmp608,
-// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	ucvtf	d0, d0	// tmp602, wordcount
-	fmul	d0, d0, d1	// tmp604, tmp602, tmp605
-// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-	fdiv	d0, d0, d8	//, tmp604, _24
-	bl	printf		//
-// bitmapdecoding.cpp:237:   std::vector<unsigned long long> mins = compute_mins(allresults);
-	mov	x1, x25	//, tmp676
-	add	x0, sp, 240	// tmp752,,
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EEC1ERKS3_		//
-.LEHE64:
-	add	x8, sp, 192	//,,
-	add	x0, sp, 240	// tmp753,,
-.LEHB65:
-	bl	_Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE		//
-.LEHE65:
-	add	x0, sp, 240	// tmp754,,
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-// bitmapdecoding.cpp:238:   std::vector<double> avg = compute_averages(allresults);
-	mov	x1, x25	//, tmp676
-	add	x0, sp, 240	// tmp755,,
-.LEHB66:
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EEC1ERKS3_		//
-.LEHE66:
-	add	x8, sp, 216	//,,
-	add	x0, sp, 240	// tmp756,,
-.LEHB67:
-	bl	_Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE		//
-.LEHE67:
-	add	x0, sp, 240	// tmp757,,
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-// bitmapdecoding.cpp:243:          double(mins[1]) / mins[0], double(mins[0]) / matches,
-	ldr	x1, [sp, 192]	// _35, MEM[(long long unsigned int * *)&mins]
-// bitmapdecoding.cpp:239:   printf("instructions per cycle %4.2f, cycles per value set:  "
-	adrp	x0, .LC19	// tmp628,
-	ldr	d4, [sp, 112]	// wordcount, wordcount
-	add	x0, x0, :lo12:.LC19	//, tmp628,
-	ldp	d0, d5, [x1]	// MEM[(value_type &)_35], MEM[(value_type &)_35 + 8], MEM[(value_type &)_35]
-	ucvtf	d4, d4	// _46, wordcount
-	ucvtf	d0, d0	// _39, MEM[(value_type &)_35]
-	ucvtf	d5, d5	// _37, MEM[(value_type &)_35 + 8]
-	fdiv	d3, d0, d4	//, _39, _46
-	fdiv	d1, d0, d8	//, _39, _24
-	fdiv	d4, d5, d4	//, _37, _46
-	fdiv	d2, d5, d8	//, _37, _24
-	fdiv	d0, d5, d0	//, _37, _39
-.LEHB68:
-	bl	printf		//
-// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
-	ldr	x2, [sp, 192]	// _49, MEM[(long long unsigned int * *)&mins]
-// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
-	adrp	x0, .LC20	// tmp638,
-// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
-	ldr	x1, [sp, 112]	// wordcount, wordcount
-	fmov	d0, x1	// wordcount, wordcount
-// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
-	ldp	d2, d1, [x2]	// MEM[(value_type &)_49], MEM[(value_type &)_49 + 8], MEM[(value_type &)_49]
-// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
-	shl	d0, d0, 6	// tmp629, wordcount,
-// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
-	add	x0, x0, :lo12:.LC20	//, tmp638,
-	ucvtf	d2, d2	// tmp634, MEM[(value_type &)_49]
-	ucvtf	d1, d1	// tmp631, MEM[(value_type &)_49 + 8]
-	ucvtf	d0, d0	// _54, tmp629
-	fdiv	d1, d1, d0	//, tmp631, _54
-	fdiv	d0, d2, d0	//, tmp634, _54
-	bl	printf		//
-// bitmapdecoding.cpp:250:   printf("min: %8llu cycles, %8llu instructions, \t%8llu branch mis., %8llu "
-	ldr	x5, [sp, 192]	// _59, MEM[(long long unsigned int * *)&mins]
-	adrp	x0, .LC21	// tmp645,
-	add	x0, x0, :lo12:.LC21	//, tmp645,
-	ldp	x1, x2, [x5]	//,, MEM[(value_type &)_59]
-	ldp	x3, x4, [x5, 16]	//,, MEM[(value_type &)_59 + 16]
-	ldr	x5, [x5, 32]	//, MEM[(value_type &)_59 + 32]
-	bl	printf		//
-// bitmapdecoding.cpp:253:   printf("avg: %8.1f cycles, %8.1f instructions, \t%8.1f branch mis., %8.1f "
-	ldr	x1, [sp, 216]	// _65, MEM[(double * *)&avg]
-	adrp	x0, .LC22	// tmp652,
-	add	x0, x0, :lo12:.LC22	//, tmp652,
-	ldp	d0, d1, [x1]	//,, MEM[(value_type &)_65]
-	ldp	d2, d3, [x1, 16]	//,, MEM[(value_type &)_65 + 16]
-	ldr	d4, [x1, 32]	//, MEM[(value_type &)_65 + 32]
-	bl	printf		//
-// bitmapdecoding.cpp:256:   printf("\n");
-	mov	w0, 10	//,
-	bl	putchar		//
-.LEHE68:
-// bitmapdecoding.cpp:257:   delete[] array;
-	cbz	x21, .L2824	// _1,
-	mov	x0, x21	//, _1
-	bl	_ZdaPv		//
-.L2824:
-// bitmapdecoding.cpp:258:   delete[] bigarray;
-	mov	x0, x20	//, _5
-	bl	_ZdaPv		//
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 216]	// _71, avg.D.47664._M_impl.D.46999._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2825	// _71,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2825:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 192]	// _72, mins.D.45414._M_impl.D.44749._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2826	// _72,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2826:
-// bitmapdecoding.cpp:220:   std::vector<std::vector<unsigned long long>> allresults;
-	mov	x0, x25	//, tmp676
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 144]	// _73, results.D.45414._M_impl.D.44749._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2827	// _73,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2827:
-// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
-	add	x0, sp, 272	// tmp759,,
-	bl	_ZN11LinuxEventsILi0EED1Ev		//
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 120]	// _74, evts.D.44271._M_impl.D.43606._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2788	// _74,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2788:
-// bitmapdecoding.cpp:259: }
-	ldp	x19, x20, [sp, 16]	//,,
-	ldp	x21, x22, [sp, 32]	//,,
-	ldp	x23, x24, [sp, 48]	//,,
-	ldp	x25, x26, [sp, 64]	//,,
-	ldp	x27, x28, [sp, 80]	//,,
-	ldr	d8, [sp, 96]	//,
-	ldp	x29, x30, [sp], 448	//,,,
-	.cfi_remember_state
-	.cfi_restore 30
-	.cfi_restore 29
-	.cfi_restore 72
-	.cfi_restore 27
-	.cfi_restore 28
-	.cfi_restore 25
-	.cfi_restore 26
-	.cfi_restore 23
-	.cfi_restore 24
-	.cfi_restore 21
-	.cfi_restore 22
-	.cfi_restore 19
-	.cfi_restore 20
-	.cfi_def_cfa_offset 0
-	ret	
-	.p2align 2,,3
-.L2903:
-	.cfi_restore_state
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x3, sp, 256	// tmp536,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	mov	x4, 29	// tmp537,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp738,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	add	x1, sp, 216	// tmp739,,
-	mov	x2, 0	//,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	str	x4, [sp, 216]	// tmp537, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x3, [sp, 240]	// tmp536, MEM[(struct _Alloc_hider *)&D.67042]._M_p
-.LEHB69:
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE69:
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	adrp	x3, .LC15	// tmp542,
-	add	x3, x3, :lo12:.LC15	// tmp541, tmp542,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	mov	x2, x0	// _441, tmp694
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x2, [sp, 240]	// _441, MEM[(char * *)&D.67042]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	ldr	x0, [sp, 216]	// __dnew, __dnew
-	str	x0, [sp, 256]	// __dnew, MEM[(size_type *)&D.67042 + 16B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldr	x0, [x3, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
-	str	x0, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_441]
-	ldp	x4, x5, [x3]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
-	stp	x4, x5, [x2]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_441]
-// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
-	add	x1, sp, 240	// tmp741,,
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldr	x3, [x3, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
-	str	x3, [x2, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_441]
-// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
-	add	x0, sp, 272	// tmp742,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
-	ldr	x2, [sp, 216]	// __dnew.49_445, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 248]	// __dnew.49_445, MEM[(size_type *)&D.67042 + 8B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 240]	// MEM[(char * *)&D.67042], MEM[(char * *)&D.67042]
-	strb	wzr, [x3, x2]	//, MEM[(char_type &)_447]
-.LEHB70:
-// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
-	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE70:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _408, MEM[(char * *)&D.67042]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp552,,
-	cmp	x0, x1	// _408, tmp552
-	beq	.L2805		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2805		//
-	.p2align 2,,3
-.L2901:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x3, sp, 256	// tmp399,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	mov	x4, 27	// tmp400,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp723,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	add	x1, sp, 216	// tmp724,,
-	mov	x2, 0	//,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	str	x4, [sp, 216]	// tmp400, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x3, [sp, 240]	// tmp399, MEM[(struct _Alloc_hider *)&D.66983]._M_p
-.LEHB71:
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE71:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	ldr	x1, [sp, 216]	// __dnew, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x0, [sp, 240]	// _209, MEM[(char * *)&D.66983]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	str	x1, [sp, 256]	// __dnew, MEM[(size_type *)&D.66983 + 16B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldr	x1, [x23, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
-	str	x1, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_209]
-	ldr	w2, [x23, 23]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
-// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
-	add	x1, sp, 240	// tmp726,,
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldp	x4, x5, [x23]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
-	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_209]
-	str	w2, [x0, 23]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_209]
-// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
-	add	x0, sp, 272	// tmp727,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
-	ldr	x2, [sp, 216]	// __dnew.49_213, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 248]	// __dnew.49_213, MEM[(size_type *)&D.66983 + 8B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66983], MEM[(char * *)&D.66983]
-	strb	wzr, [x3, x2]	//, MEM[(char_type &)_215]
-.LEHB72:
-// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
-	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE72:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _197, MEM[(char * *)&D.66983]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp415,,
-	cmp	x0, x1	// _197, tmp415
-	beq	.L2792		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	ldr	w0, [sp, 272]	//, unified.fd
-	mov	w2, 1	//,
-	mov	x1, 9216	//,
-	bl	ioctl		//
-// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
-	cmn	w0, #1	// tmp689,
-	bne	.L2794		//,
-	.p2align 3,,7
-.L2902:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x3, sp, 256	// tmp418,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	mov	x4, 28	// tmp419,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp729,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	add	x1, sp, 216	// tmp730,,
-	mov	x2, 0	//,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-	str	x4, [sp, 216]	// tmp419, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x3, [sp, 240]	// tmp418, MEM[(struct _Alloc_hider *)&D.66982]._M_p
-.LEHB73:
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
-	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE73:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	ldr	x1, [sp, 216]	// __dnew, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x0, [sp, 240]	// _222, MEM[(char * *)&D.66982]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldr	w2, [x24, 24]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	str	x1, [sp, 256]	// __dnew, MEM[(size_type *)&D.66982 + 16B]
-// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
-	add	x1, sp, 240	// tmp732,,
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	ldp	x4, x5, [x24]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
-	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_222]
-	ldr	x3, [x24, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
-	str	x3, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_222]
-	str	w2, [x0, 24]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_222]
-// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
-	add	x0, sp, 272	// tmp733,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
-	ldr	x2, [sp, 216]	// __dnew.49_226, __dnew
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 248]	// __dnew.49_226, MEM[(size_type *)&D.66982 + 8B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 240]	// MEM[(char * *)&D.66982], MEM[(char * *)&D.66982]
-	strb	wzr, [x3, x2]	//, MEM[(char_type &)_228]
-.LEHB74:
-// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
-	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE74:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _200, MEM[(char * *)&D.66982]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp434,,
-	cmp	x0, x1	// _200, tmp434
-	beq	.L2794		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2794		//
-	.p2align 2,,3
-.L2815:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1195: 	  _M_realloc_insert(end(), __x);
-	mov	x1, x26	//, _461
-	add	x2, sp, 144	// tmp750,,
-	mov	x0, x25	//, tmp676
-.LEHB75:
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_		//
-.LEHE75:
-	b	.L2821		//
-	.p2align 2,,3
-.L2904:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x4, sp, 256	// tmp557,,
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	mov	w2, 25970	// tmp560,
-	movk	w2, 0x6461, lsl 16	// tmp560,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	mov	x3, 4	// tmp561,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	add	x0, sp, 240	// tmp744,,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	stp	x4, x3, [sp, 240]	// tmp557, tmp561, MEM[(struct _Alloc_hider *)&D.67041]._M_p
-// linux-perf-events.h:77:       report_error("read");
-	mov	x1, x0	// tmp745, tmp744
-	add	x0, sp, 272	// tmp746,,
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	str	w2, [sp, 256]	// tmp560, MEM[(void *)&D.67041 + 16B]
-// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	strb	wzr, [sp, 260]	//, MEM[(char_type &)&D.67041 + 20]
-.LEHB76:
-// linux-perf-events.h:77:       report_error("read");
-	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE76:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 240]	// _415, MEM[(char * *)&D.67041]
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x1, sp, 256	// tmp565,,
-	cmp	x0, x1	// _415, tmp565
-	beq	.L2807		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2807		//
-.L2906:
-// bitmapdecoding.cpp:233:     printf("bogus\n.");
-	adrp	x0, .LC16	// tmp594,
-	add	x0, x0, :lo12:.LC16	//, tmp594,
-.LEHB77:
-	bl	printf		//
-	b	.L2823		//
-.L2905:
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
-	bl	_ZSt17__throw_bad_allocv		//
-.LEHE77:
-.L2844:
-	mov	x19, x0	// tmp437, tmp704
-.L2800:
-// bitmapdecoding.cpp:220:   std::vector<std::vector<unsigned long long>> allresults;
-	mov	x0, x25	//, tmp676
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 144]	// _78, results.D.45414._M_impl.D.44749._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2838	// _78,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2838:
-// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
-	add	x0, sp, 272	// tmp762,,
-	bl	_ZN11LinuxEventsILi0EED1Ev		//
-.L2831:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 120]	// _79, evts.D.44271._M_impl.D.43606._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2839	// _79,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-.L2839:
-	mov	x0, x19	//, tmp655
-.LEHB78:
-	bl	_Unwind_Resume		//
-.L2849:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x1, [sp, 240]	// _75, D.64958.D.44271._M_impl.D.43606._M_start
-	mov	x19, x0	// tmp656, tmp699
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x1, .L2831	// _75,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	mov	x0, x1	//, _75
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2831		//
-.L2843:
-	mov	x19, x0	// tmp655, tmp705
-	b	.L2831		//
-.L2789:
-// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
-	bl	__cxa_throw_bad_array_new_length		//
-.LEHE78:
-.L2852:
-.L2898:
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x1, [sp, 240]	// _433,
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
-	add	x2, sp, 256	// tmp578,,
-	mov	x19, x0	// tmp579, tmp697
-	cmp	x1, x2	// _433, tmp578
-	beq	.L2800		//,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	mov	x0, x1	//, _433
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2800		//
-.L2850:
-	b	.L2898		//
-.L2851:
-	b	.L2898		//
-.L2853:
-	b	.L2898		//
-.L2846:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x1, [sp, 216]	// _76, avg.D.47664._M_impl.D.46999._M_start
-	mov	x19, x0	// tmp667, tmp702
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x1, .L2834	// _76,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	mov	x0, x1	//, _76
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2834		//
-.L2847:
-	mov	x19, x0	// tmp701,
-	add	x0, sp, 240	// tmp761,,
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-.L2834:
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
-	ldr	x0, [sp, 192]	// _77, mins.D.45414._M_impl.D.44749._M_start
-// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2800	// _77,
-// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
-	bl	_ZdlPv		//
-// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L2800		//
-.L2845:
-	mov	x19, x0	// tmp663, tmp703
-	b	.L2834		//
-.L2848:
-	mov	x19, x0	// tmp700,
-	add	x0, sp, 240	// tmp760,,
-	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-	b	.L2800		//
+	b	.L2611		//
+.L2662:
+	b	.L2705		//
 	.cfi_endproc
 .LFE3264:
 	.section	.gcc_except_table
@@ -23851,81 +21808,85 @@ _Z4testIXadL_ZL14faster_decoderPjRjjmEEEvPKcc.constprop.0:
 	.byte	0x1
 	.uleb128 .LLSDACSE3264-.LLSDACSB3264
 .LLSDACSB3264:
-	.uleb128 .LEHB61-.LFB3264
-	.uleb128 .LEHE61-.LEHB61
+	.uleb128 .LEHB25-.LFB3264
+	.uleb128 .LEHE25-.LEHB25
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB62-.LFB3264
-	.uleb128 .LEHE62-.LEHB62
-	.uleb128 .L2843-.LFB3264
+	.uleb128 .LEHB26-.LFB3264
+	.uleb128 .LEHE26-.LEHB26
+	.uleb128 .L2652-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB63-.LFB3264
-	.uleb128 .LEHE63-.LEHB63
-	.uleb128 .L2849-.LFB3264
+	.uleb128 .LEHB27-.LFB3264
+	.uleb128 .LEHE27-.LEHB27
+	.uleb128 .L2658-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB64-.LFB3264
-	.uleb128 .LEHE64-.LEHB64
-	.uleb128 .L2844-.LFB3264
+	.uleb128 .LEHB28-.LFB3264
+	.uleb128 .LEHE28-.LEHB28
+	.uleb128 .L2653-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB65-.LFB3264
-	.uleb128 .LEHE65-.LEHB65
-	.uleb128 .L2848-.LFB3264
+	.uleb128 .LEHB29-.LFB3264
+	.uleb128 .LEHE29-.LEHB29
+	.uleb128 .L2657-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB66-.LFB3264
-	.uleb128 .LEHE66-.LEHB66
-	.uleb128 .L2845-.LFB3264
+	.uleb128 .LEHB30-.LFB3264
+	.uleb128 .LEHE30-.LEHB30
+	.uleb128 .L2654-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB67-.LFB3264
-	.uleb128 .LEHE67-.LEHB67
-	.uleb128 .L2847-.LFB3264
+	.uleb128 .LEHB31-.LFB3264
+	.uleb128 .LEHE31-.LEHB31
+	.uleb128 .L2656-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB68-.LFB3264
-	.uleb128 .LEHE68-.LEHB68
-	.uleb128 .L2846-.LFB3264
+	.uleb128 .LEHB32-.LFB3264
+	.uleb128 .LEHE32-.LEHB32
+	.uleb128 .L2655-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB69-.LFB3264
-	.uleb128 .LEHE69-.LEHB69
-	.uleb128 .L2844-.LFB3264
+	.uleb128 .LEHB33-.LFB3264
+	.uleb128 .LEHE33-.LEHB33
+	.uleb128 .L2653-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB70-.LFB3264
-	.uleb128 .LEHE70-.LEHB70
-	.uleb128 .L2853-.LFB3264
+	.uleb128 .LEHB34-.LFB3264
+	.uleb128 .LEHE34-.LEHB34
+	.uleb128 .L2662-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB71-.LFB3264
-	.uleb128 .LEHE71-.LEHB71
-	.uleb128 .L2844-.LFB3264
+	.uleb128 .LEHB35-.LFB3264
+	.uleb128 .LEHE35-.LEHB35
+	.uleb128 .L2653-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB72-.LFB3264
-	.uleb128 .LEHE72-.LEHB72
-	.uleb128 .L2851-.LFB3264
+	.uleb128 .LEHB36-.LFB3264
+	.uleb128 .LEHE36-.LEHB36
+	.uleb128 .L2660-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB73-.LFB3264
-	.uleb128 .LEHE73-.LEHB73
-	.uleb128 .L2844-.LFB3264
+	.uleb128 .LEHB37-.LFB3264
+	.uleb128 .LEHE37-.LEHB37
+	.uleb128 .L2653-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB74-.LFB3264
-	.uleb128 .LEHE74-.LEHB74
-	.uleb128 .L2850-.LFB3264
+	.uleb128 .LEHB38-.LFB3264
+	.uleb128 .LEHE38-.LEHB38
+	.uleb128 .L2659-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB75-.LFB3264
-	.uleb128 .LEHE75-.LEHB75
-	.uleb128 .L2844-.LFB3264
+	.uleb128 .LEHB39-.LFB3264
+	.uleb128 .LEHE39-.LEHB39
+	.uleb128 .L2653-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB76-.LFB3264
-	.uleb128 .LEHE76-.LEHB76
-	.uleb128 .L2852-.LFB3264
+	.uleb128 .LEHB40-.LFB3264
+	.uleb128 .LEHE40-.LEHB40
+	.uleb128 .L2661-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB77-.LFB3264
-	.uleb128 .LEHE77-.LEHB77
-	.uleb128 .L2844-.LFB3264
+	.uleb128 .LEHB41-.LFB3264
+	.uleb128 .LEHE41-.LEHB41
+	.uleb128 .L2653-.LFB3264
 	.uleb128 0
-	.uleb128 .LEHB78-.LFB3264
-	.uleb128 .LEHE78-.LEHB78
+	.uleb128 .LEHB42-.LFB3264
+	.uleb128 .LEHE42-.LEHB42
+	.uleb128 .L2652-.LFB3264
+	.uleb128 0
+	.uleb128 .LEHB43-.LFB3264
+	.uleb128 .LEHE43-.LEHB43
 	.uleb128 0
 	.uleb128 0
 .LLSDACSE3264:
 	.text
-	.size	_Z4testIXadL_ZL14faster_decoderPjRjjmEEEvPKcc.constprop.0, .-_Z4testIXadL_ZL14faster_decoderPjRjjmEEEvPKcc.constprop.0
+	.size	_Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0, .-_Z4testIXadL_ZL12fast_decoderPjRjjmEEEvPKcc.constprop.0
 	.section	.text._Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc,"axG",@progbits,_Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc,comdat
 	.align	2
 	.p2align 3,,7
@@ -23961,7 +21922,7 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	.cfi_offset 27, -384
 	.cfi_offset 28, -376
 	.cfi_offset 72, -368
-.LEHB79:
+.LEHB44:
 // bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
 	bl	_Z12build_bitmapPKccPm		//
 // bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
@@ -23969,12 +21930,12 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
 	mov	x2, 2305843009213693950	// tmp355,
 	cmp	x2, x1, lsl 6	// tmp355, wordcount.147_1,
-	bcc	.L2908		//,
+	bcc	.L2717		//,
 	mov	x20, x0	// _62, tmp689
 // bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
 	lsl	x0, x1, 8	//, wordcount.147_1,
 	bl	_Znam		//
-.LEHE79:
+.LEHE44:
 	mov	x19, x0	// _67, tmp690
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
 	add	x1, sp, 288	// tmp723,,
@@ -23984,7 +21945,7 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	str	xzr, [sp, 152]	//, MEM[(struct _Vector_impl_data *)&evts]._M_end_of_storage
 // bitmapdecoding.cpp:213:   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
 	str	wzr, [sp, 288]	//, D.52282
-.LEHB80:
+.LEHB45:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
 	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
 // bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
@@ -24032,30 +21993,30 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x22, x26, 2	// _394, _376,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L3030		//,
+	beq	.L2839		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x0, 2305843009213693951	// tmp373,
 	cmp	x22, x0	// _394, tmp373
-	bhi	.L3145		//,
+	bhi	.L2954		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x26	//, _376
 	bl	_Znwm		//
-.LEHE80:
+.LEHE45:
 	str	x0, [sp, 120]	// tmp691, %sfp
 	ldr	x1, [sp, 136]	// pretmp_364, evts.D.44271._M_impl.D.43606._M_start
 	ldr	x0, [sp, 144]	// pretmp_373, MEM[(int * *)&evts + 8B]
 	sub	x26, x0, x1	// _376, pretmp_373, pretmp_364
 	asr	x23, x26, 2	// _358, _376,
 	mov	x22, x23	// _394, _358
-.L2910:
+.L2719:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
 	cmp	x1, x0	// pretmp_364, pretmp_373
-	beq	.L2912		//,
+	beq	.L2721		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	ldr	x0, [sp, 120]	//, %sfp
 	mov	x2, x26	//, _376
 	bl	memmove		//
-.L2912:
+.L2721:
 // linux-perf-events.h:27:     memset(&attribs, 0, sizeof(attribs));
 	add	x1, sp, 528	// tmp735,,
 	add	x0, sp, 288	// tmp733,,
@@ -24102,15 +22063,15 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	stp	xzr, xzr, [x0, 88]	// MEM[(void *)&unified + 8B]
 	stp	xzr, xzr, [x0, 104]	// MEM[(void *)&unified + 8B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
-	cbnz	x22, .L2913	// _394,
-.L2916:
+	cbnz	x22, .L2722	// _394,
+.L2725:
 // linux-perf-events.h:44:     for (auto config : config_vec) {
 	ldr	x0, [sp, 120]	// _222, %sfp
 	mov	w23, 0	// i,
 	mov	w21, -1	// group,
 	cmp	x26, x0	// _220, _222
-	mov	x22, x0	// ivtmp.2137, _222
-	beq	.L2915		//,
+	mov	x22, x0	// ivtmp.2150, _222
+	beq	.L2724		//,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	mov	x27, 9223	// tmp688,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
@@ -24121,14 +22082,14 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	add	x28, x28, :lo12:.LC11	// tmp687, tmp686,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	movk	x27, 0x8008, lsl 16	// tmp688,,
-	b	.L2922		//
+	b	.L2731		//
 	.p2align 2,,3
-.L2919:
+.L2728:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
 	ldr	x2, [sp, 440]	// MEM[(long unsigned int * *)&unified + 152B], MEM[(long unsigned int * *)&unified + 152B]
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	mov	x1, x27	//, tmp688
-	add	x22, x22, 4	// ivtmp.2137, ivtmp.2137,
+	add	x22, x22, 4	// ivtmp.2150, ivtmp.2150,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	add	w24, w23, 1	// i, i,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
@@ -24139,11 +22100,11 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	cmn	w21, #1	// group,
 	csel	w21, w0, w21, eq	// group, unified.fd, group,
 // linux-perf-events.h:44:     for (auto config : config_vec) {
-	cmp	x26, x22	// _220, ivtmp.2137
-	beq	.L2915		//,
+	cmp	x26, x22	// _220, ivtmp.2150
+	beq	.L2724		//,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	mov	w23, w24	// i, i
-.L2922:
+.L2731:
 // linux-perf-events.h:45:       attribs.config = config;
 	ldrsw	x6, [x22]	// MEM[base: _582, offset: 0], MEM[base: _582, offset: 0]
 // linux-perf-events.h:46:       fd = syscall(__NR_perf_event_open, &attribs, pid, cpu, group, flags);
@@ -24161,36 +22122,36 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	str	w0, [sp, 288]	// _239, unified.fd
 // linux-perf-events.h:47:       if (fd == -1) {
 	cmn	w0, #1	// _239,
-	bne	.L2919		//,
+	bne	.L2728		//,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	x0, [x28]	// MEM[(void *)"perf_event_open"], MEM[(void *)"perf_event_open"]
-	str	x0, [x25]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.67162 + 16B]
+	str	x0, [x25]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.66722 + 16B]
 	ldr	x2, [x28, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)"perf_event_open"]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
 	mov	x3, 15	// tmp408,
-	stp	x25, x3, [sp, 256]	// tmp685, tmp408, MEM[(struct _Alloc_hider *)&D.67162]._M_p
+	stp	x25, x3, [sp, 256]	// tmp685, tmp408, MEM[(struct _Alloc_hider *)&D.66722]._M_p
 // linux-perf-events.h:48:         report_error("perf_event_open");
 	add	x1, sp, 256	// tmp741,,
 	add	x0, sp, 288	// tmp742,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	strb	wzr, [sp, 287]	//, MEM[(char_type &)&D.67162 + 31]
+	strb	wzr, [sp, 287]	//, MEM[(char_type &)&D.66722 + 31]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	str	x2, [x25, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.67162 + 16B]
-.LEHB81:
+	str	x2, [x25, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.66722 + 16B]
+.LEHB46:
 // linux-perf-events.h:48:         report_error("perf_event_open");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE81:
+.LEHE46:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 256]	// _241, MEM[(char * *)&D.67162]
+	ldr	x0, [sp, 256]	// _241, MEM[(char * *)&D.66722]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x25	// _241, tmp685
-	beq	.L2920		//,
+	beq	.L2729		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2920:
+.L2729:
 	ldr	w0, [sp, 288]	//, unified.fd
-	b	.L2919		//
-.L2915:
+	b	.L2728		//
+.L2724:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
 	ldp	x3, x2, [sp, 416]	// _280, _281, MEM[(long unsigned int * *)&unified + 128B]
 // linux-perf-events.h:56:     temp_result_vec.resize(num_events * 2 + 1);
@@ -24206,17 +22167,17 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	asr	x1, x1, 3	// tmp394, tmp393,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
 	cmp	x0, x1	// _254, tmp394
-	bhi	.L3146		//,
+	bhi	.L2955		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:938: 	else if (__new_size < size())
-	bcc	.L3147		//,
-.L2923:
+	bcc	.L2956		//,
+.L2732:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
 	ldr	x0, [sp, 120]	// _222, %sfp
-	cbz	x0, .L2926	// _222,
+	cbz	x0, .L2735	// _222,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	ldr	x0, [sp, 120]	//, %sfp
 	bl	_ZdlPv		//
-.L2926:
+.L2735:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x1, x0, [sp, 136]	// MEM[(int * *)&evts], MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
@@ -24230,8 +22191,8 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x1, x0, 2	// tmp436, tmp433,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
-	bne	.L2934		//,
-.L2936:
+	bne	.L2743		//,
+.L2745:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	mov	w24, 25970	// tmp683,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
@@ -24241,7 +22202,7 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	movk	w24, 0x6461, lsl 16	// tmp683,,
 	.p2align 3,,7
-.L2935:
+.L2744:
 // linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
 	ldr	w0, [sp, 288]	//, unified.fd
 	mov	w2, 1	//,
@@ -24249,8 +22210,8 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	bl	ioctl		//
 // linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
 	cmn	w0, #1	// tmp695,
-	beq	.L3148		//,
-.L2937:
+	beq	.L2957		//,
+.L2746:
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	ldr	w0, [sp, 288]	//, unified.fd
 	mov	w2, 1	//,
@@ -24258,26 +22219,26 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	bl	ioctl		//
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	cmn	w0, #1	// tmp697,
-	beq	.L3149		//,
-.L2939:
+	beq	.L2958		//,
+.L2748:
 // bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
 	ldr	x6, [sp, 128]	// wordcount.148_764, wordcount
 	mov	w21, 0	// matches,
-	cbz	x6, .L2941	// wordcount.148_764,
+	cbz	x6, .L2750	// wordcount.148_764,
 // bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
 	mov	x5, 0	// idx,
 	.p2align 3,,7
-.L2942:
+.L2751:
 // bitmapdecoding.cpp:227:       F(bigarray, matches, idx, array[idx]);
 	ldr	x4, [x20, x5, lsl 3]	// _6, MEM[base: _62, index: idx_321, step: 8, offset: 0B]
 	mov	w3, w5	// _593, idx
 // bitmapdecoding.cpp:86:   while (bits != 0) {
-	cbz	x4, .L2948	// _6,
+	cbz	x4, .L2757	// _6,
 // bitmapdecoding.cpp:86:   while (bits != 0) {
 	mov	w2, w21	// _98, matches
 	mov	x0, x4	// bits, _6
 	.p2align 3,,7
-.L2949:
+.L2758:
 // bitmapdecoding.cpp:26:   return __builtin_ctzll(input_num);
 	rbit	x1, x0	// tmp486, bits
 	clz	x1, x1	// tmp486, tmp486
@@ -24291,19 +22252,19 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	add	w2, w2, 1	// _98, _98,
 // bitmapdecoding.cpp:86:   while (bits != 0) {
 	ands	x0, x0, x1	// bits, bits, _101
-	bne	.L2949		//,
+	bne	.L2758		//,
 	fmov	d0, x4	// tmp760, _6
 	cnt	v0.8b, v0.8b	// tmp492, tmp760
 	addv	b0, v0.8b	// tmp494, tmp492
 	umov	w0, v0.b[0]	// _777, tmp494,
 	add	w21, w21, w0	// matches, matches, _777
-.L2948:
+.L2757:
 // bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
 	add	x5, x5, 1	// idx, idx,
 // bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
 	cmp	x5, x6	// idx, wordcount.148_764
-	bne	.L2942		//,
-.L2941:
+	bne	.L2751		//,
+.L2750:
 // linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	ldr	w0, [sp, 288]	//, unified.fd
 	mov	w2, 1	//,
@@ -24311,20 +22272,20 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	bl	ioctl		//
 // linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	cmn	w0, #1	// tmp701,
-	beq	.L3150		//,
-.L2950:
+	beq	.L2959		//,
+.L2759:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x1, x2, [sp, 416]	// _334, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
 	add	x27, sp, 184	// tmp766,,
 // linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
 	ldr	w0, [sp, 288]	//, unified.fd
 	sub	x2, x2, x1	//, MEM[(long unsigned int * *)&unified + 136B], _334
-.LEHB82:
+.LEHB47:
 	bl	read		//
 // linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
 	cmn	x0, #1	// tmp703,
-	beq	.L3151		//,
-.L2952:
+	beq	.L2960		//,
+.L2761:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x4, x3, [sp, 416]	// _652, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
 	sub	x3, x3, x4	// tmp531, MEM[(long unsigned int * *)&unified + 136B], _652
@@ -24333,7 +22294,7 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x3, x3, 3	// _740, tmp531,
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	bls	.L2954		//,
+	bls	.L2763		//,
 // linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
 	ldr	x5, [sp, 160]	// _351, MEM[(long long unsigned int * *)&results]
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
@@ -24341,7 +22302,7 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
 	mov	w0, w1	// i, _305
 	.p2align 3,,7
-.L2955:
+.L2764:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
 	lsr	w2, w0, 1	// tmp535, i,
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
@@ -24355,12 +22316,12 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
 	uxtw	x1, w0	// _305, i
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	bhi	.L2955		//,
-.L2954:
+	bhi	.L2764		//,
+.L2763:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1186: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
 	ldp	x25, x0, [sp, 192]	// _385, allresults.D.46492._M_impl.D.45827._M_end_of_storage, allresults.D.46492._M_impl.D.45827._M_finish
 	cmp	x25, x0	// _385, allresults.D.46492._M_impl.D.45827._M_end_of_storage
-	beq	.L2960		//,
+	beq	.L2769		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x0, x26, [sp, 160]	// MEM[(long long unsigned int * *)&results], MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
@@ -24378,18 +22339,18 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x0, x26, 3	// tmp549, _391,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L2962		//,
+	beq	.L2771		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x1, 1152921504606846975	// tmp550,
 	add	x27, sp, 184	// tmp668,,
 	cmp	x0, x1	// tmp549, tmp550
-	bhi	.L3152		//,
+	bhi	.L2961		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x26	//, _391
 	bl	_Znwm		//
 	ldr	x27, [sp, 192]	// pretmp_883, allresults.D.46492._M_impl.D.45827._M_finish
 	mov	x3, x0	// _404, tmp706
-.L2962:
+.L2771:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
 	stp	x3, x3, [x25]	// _404, _404, MEM[(struct _Vector_base *)_385]._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
@@ -24403,13 +22364,13 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
 	sub	x26, x0, x1	// _399, _398, _397
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L2965		//,
+	beq	.L2774		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	mov	x0, x3	//, _404
 	mov	x2, x26	//, _399
 	bl	memmove		//
 	mov	x3, x0	// _404,
-.L2965:
+.L2774:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
 	add	x3, x3, x26	// tmp553, _404, _399
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
@@ -24417,14 +22378,14 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1191: 	    ++this->_M_impl._M_finish;
 	add	x0, x27, 24	// tmp554, pretmp_883,
 	str	x0, [sp, 192]	// tmp554, allresults.D.46492._M_impl.D.45827._M_finish
-.L2966:
+.L2775:
 // bitmapdecoding.cpp:223:   for (uint32_t i = 0; i < iterations; i++) {
 	subs	w22, w22, #1	// ivtmp_743, ivtmp_743,
-	bne	.L2935		//,
+	bne	.L2744		//,
 // bitmapdecoding.cpp:232:   if (bigarray[0] == 0)
 	ldr	w0, [x19]	//, *_67
-	cbz	w0, .L3153	// *_67,
-.L2967:
+	cbz	w0, .L2962	// *_67,
+.L2776:
 // bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
 	ldr	x2, [sp, 128]	// wordcount.150_8, wordcount
 // bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
@@ -24477,20 +22438,20 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	asr	x0, x21, 3	// tmp574, _408,
 	mul	x0, x0, x1	// tmp575, tmp574, tmp576
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cbz	x0, .L2969	// tmp575,
+	cbz	x0, .L2778	// tmp575,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x1, 6148914691236517205	// tmp577,
 	add	x27, sp, 184	// tmp668,,
 	movk	x1, 0x555, lsl 48	// tmp577,,
 	cmp	x0, x1	// tmp575, tmp577
-	bhi	.L3154		//,
+	bhi	.L2963		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x21	//, _408
 	bl	_Znwm		//
-.LEHE82:
+.LEHE47:
 	ldp	x22, x23, [sp, 184]	// prephitmp_96, pretmp_92, MEM[(struct vector * *)&allresults]
 	mov	x24, x0	// __first, tmp707
-.L2969:
+.L2778:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x21, x24, x21	// tmp579, __first, _408
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -24502,11 +22463,11 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:79: 	  _ForwardIterator __cur = __result;
 	mov	x21, x24	// __cur, __first
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
-	beq	.L2971		//,
+	beq	.L2780		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x25, 1152921504606846975	// tmp677,
 	.p2align 3,,7
-.L2977:
+.L2786:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x0, x26, [x22]	// MEM[base: _620, offset: 0B], MEM[base: _620, offset: 8B], MEM[base: _620, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
@@ -24522,17 +22483,17 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x0, x26, 3	// tmp582, _435,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L2973		//,
+	beq	.L2782		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	cmp	x0, x25	// tmp582, tmp677
-	bhi	.L3155		//,
+	bhi	.L2964		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x26	//, _435
-.LEHB83:
+.LEHB48:
 	bl	_Znwm		//
-.LEHE83:
+.LEHE48:
 	mov	x3, x0	// _448, tmp708
-.L2973:
+.L2782:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x26, x3, x26	// tmp585, _448, _435
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -24546,60 +22507,60 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
 	sub	x26, x0, x1	// _443, _442, _441
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L2976		//,
+	beq	.L2785		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	mov	x0, x3	//, _448
 	mov	x2, x26	//, _443
 	bl	memmove		//
 	mov	x3, x0	// _448,
-.L2976:
+.L2785:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
 	add	x3, x3, x26	// tmp586, _448, _443
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
 	str	x3, [x21, 8]	// tmp586, MEM[base: __cur_289, offset: 8B]
-	add	x22, x22, 24	// ivtmp.2109, ivtmp.2109,
+	add	x22, x22, 24	// ivtmp.2122, ivtmp.2122,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
 	add	x21, x21, 24	// __cur, __cur,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
-	cmp	x23, x22	// pretmp_92, ivtmp.2109
-	bne	.L2977		//,
-.L2971:
+	cmp	x23, x22	// pretmp_92, ivtmp.2122
+	bne	.L2786		//,
+.L2780:
 // bitmapdecoding.cpp:237:   std::vector<unsigned long long> mins = compute_mins(allresults);
 	add	x8, sp, 208	//,,
 	add	x0, sp, 256	// tmp775,,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
 	str	x21, [sp, 264]	// __cur, D.52295.D.46492._M_impl.D.45827._M_finish
-.LEHB84:
+.LEHB49:
 // bitmapdecoding.cpp:237:   std::vector<unsigned long long> mins = compute_mins(allresults);
 	bl	_Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE		//
-.LEHE84:
+.LEHE49:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldp	x21, x22, [sp, 256]	// __first, pretmp_78, D.52295.D.46492._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x21, x22	// __first, pretmp_78
-	beq	.L2985		//,
+	beq	.L2794		//,
 	.p2align 3,,7
-.L2987:
+.L2796:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x21]	// _465, MEM[base: __first_325, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2986	// _465,
+	cbz	x0, .L2795	// _465,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2986:
+.L2795:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x21, x21, 24	// __first, __first,
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x22, x21	// pretmp_78, __first
-	bne	.L2987		//,
+	bne	.L2796		//,
 	ldr	x22, [sp, 256]	// pretmp_78, MEM[(struct _Vector_base *)&D.52295]._M_impl.D.45827._M_start
-.L2985:
+.L2794:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x22, .L2988	// pretmp_78,
+	cbz	x22, .L2797	// pretmp_78,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x22	//, pretmp_78
 	bl	_ZdlPv		//
-.L2988:
+.L2797:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:552: 	_Alloc_traits::_S_select_on_copy(__x._M_get_Tp_allocator()))
 	ldp	x22, x23, [sp, 184]	// pretmp_869, pretmp_871, MEM[(struct vector * *)&allresults]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
@@ -24616,20 +22577,20 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	asr	x0, x21, 3	// tmp594, _452,
 	mul	x0, x0, x1	// tmp595, tmp594, tmp596
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cbz	x0, .L2990	// tmp595,
+	cbz	x0, .L2799	// tmp595,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x1, 6148914691236517205	// tmp597,
 	movk	x1, 0x555, lsl 48	// tmp597,,
 	cmp	x0, x1	// tmp595, tmp597
-	bhi	.L3156		//,
+	bhi	.L2965		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x21	//, _452
-.LEHB85:
+.LEHB50:
 	bl	_Znwm		//
-.LEHE85:
+.LEHE50:
 	ldp	x22, x23, [sp, 184]	// pretmp_869, pretmp_871, MEM[(struct vector * *)&allresults]
 	mov	x24, x0	// __first, tmp710
-.L2990:
+.L2799:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x21, x24, x21	// tmp599, __first, _452
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -24641,11 +22602,11 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:79: 	  _ForwardIterator __cur = __result;
 	mov	x21, x24	// __cur, __first
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
-	beq	.L2992		//,
+	beq	.L2801		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x25, 1152921504606846975	// tmp675,
 	.p2align 3,,7
-.L2998:
+.L2807:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x0, x26, [x22]	// MEM[base: _705, offset: 0B], MEM[base: _705, offset: 8B], MEM[base: _705, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
@@ -24661,17 +22622,17 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x0, x26, 3	// tmp602, _485,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L2994		//,
+	beq	.L2803		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	cmp	x0, x25	// tmp602, tmp675
-	bhi	.L3157		//,
+	bhi	.L2966		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x26	//, _485
-.LEHB86:
+.LEHB51:
 	bl	_Znwm		//
-.LEHE86:
+.LEHE51:
 	mov	x3, x0	// _498, tmp711
-.L2994:
+.L2803:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x26, x3, x26	// tmp605, _498, _485
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -24685,60 +22646,60 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
 	sub	x26, x0, x1	// _493, _492, _491
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L2997		//,
+	beq	.L2806		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	mov	x0, x3	//, _498
 	mov	x2, x26	//, _493
 	bl	memmove		//
 	mov	x3, x0	// _498,
-.L2997:
+.L2806:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
 	add	x3, x3, x26	// tmp606, _498, _493
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
 	str	x3, [x21, 8]	// tmp606, MEM[base: __cur_293, offset: 8B]
-	add	x22, x22, 24	// ivtmp.2096, ivtmp.2096,
+	add	x22, x22, 24	// ivtmp.2109, ivtmp.2109,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
 	add	x21, x21, 24	// __cur, __cur,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
-	cmp	x23, x22	// pretmp_871, ivtmp.2096
-	bne	.L2998		//,
-.L2992:
+	cmp	x23, x22	// pretmp_871, ivtmp.2109
+	bne	.L2807		//,
+.L2801:
 // bitmapdecoding.cpp:238:   std::vector<double> avg = compute_averages(allresults);
 	add	x8, sp, 232	//,,
 	add	x0, sp, 256	// tmp776,,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
 	str	x21, [sp, 264]	// __cur, D.52298.D.46492._M_impl.D.45827._M_finish
-.LEHB87:
+.LEHB52:
 // bitmapdecoding.cpp:238:   std::vector<double> avg = compute_averages(allresults);
 	bl	_Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE		//
-.LEHE87:
+.LEHE52:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldp	x21, x22, [sp, 256]	// __first, pretmp_879, D.52298.D.46492._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x21, x22	// __first, pretmp_879
-	beq	.L3007		//,
+	beq	.L2816		//,
 	.p2align 3,,7
-.L3009:
+.L2818:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x21]	// _503, MEM[base: __first_226, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3008	// _503,
+	cbz	x0, .L2817	// _503,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3008:
+.L2817:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x21, x21, 24	// __first, __first,
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x22, x21	// pretmp_879, __first
-	bne	.L3009		//,
+	bne	.L2818		//,
 	ldr	x22, [sp, 256]	// pretmp_879, MEM[(struct _Vector_base *)&D.52298]._M_impl.D.45827._M_start
-.L3007:
+.L2816:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x22, .L3010	// pretmp_879,
+	cbz	x22, .L2819	// pretmp_879,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x22	//, pretmp_879
 	bl	_ZdlPv		//
-.L3010:
+.L2819:
 // bitmapdecoding.cpp:243:          double(mins[1]) / mins[0], double(mins[0]) / matches,
 	ldr	x1, [sp, 208]	// _142, MEM[(long long unsigned int * *)&mins]
 // bitmapdecoding.cpp:239:   printf("instructions per cycle %4.2f, cycles per value set:  "
@@ -24754,7 +22715,7 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	fdiv	d4, d5, d4	//, _19, _26
 	fdiv	d2, d5, d8	//, _19, _9
 	fdiv	d0, d5, d0	//, _19, _21
-.LEHB88:
+.LEHB53:
 	bl	printf		//
 // bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
 	ldr	x2, [sp, 208]	// _143, MEM[(long long unsigned int * *)&mins]
@@ -24794,88 +22755,88 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // bitmapdecoding.cpp:256:   printf("\n");
 	mov	w0, 10	//,
 	bl	putchar		//
-.LEHE88:
+.LEHE53:
 // bitmapdecoding.cpp:257:   delete[] array;
-	cbz	x20, .L3011	// _62,
+	cbz	x20, .L2820	// _62,
 // bitmapdecoding.cpp:257:   delete[] array;
 	mov	x0, x20	//, _62
 	bl	_ZdaPv		//
-.L3011:
+.L2820:
 // bitmapdecoding.cpp:258:   delete[] bigarray;
 	mov	x0, x19	//, _67
 	bl	_ZdaPv		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 232]	// _151, avg.D.47664._M_impl.D.46999._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3012	// _151,
+	cbz	x0, .L2821	// _151,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3012:
+.L2821:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 208]	// _150, mins.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3013	// _150,
+	cbz	x0, .L2822	// _150,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3013:
+.L2822:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldp	x19, x20, [sp, 184]	// __first, pretmp_881, allresults.D.46492._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x19, x20	// __first, pretmp_881
-	beq	.L3014		//,
+	beq	.L2823		//,
 	.p2align 3,,7
-.L3016:
+.L2825:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x19]	// _509, MEM[base: __first_225, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3015	// _509,
+	cbz	x0, .L2824	// _509,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3015:
+.L2824:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x19, x19, 24	// __first, __first,
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x20, x19	// pretmp_881, __first
-	bne	.L3016		//,
+	bne	.L2825		//,
 	ldr	x20, [sp, 184]	// pretmp_881, MEM[(struct _Vector_base *)&allresults]._M_impl.D.45827._M_start
-.L3014:
+.L2823:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x20, .L3017	// pretmp_881,
+	cbz	x20, .L2826	// pretmp_881,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x20	//, pretmp_881
 	bl	_ZdlPv		//
-.L3017:
+.L2826:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 160]	// _149, results.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3018	// _149,
+	cbz	x0, .L2827	// _149,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3018:
+.L2827:
 // linux-perf-events.h:59:   ~LinuxEvents() { close(fd); }
 	ldr	w0, [sp, 288]	//, unified.fd
 	bl	close		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 440]	// _513, MEM[(struct vector *)&unified + 152B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3019	// _513,
+	cbz	x0, .L2828	// _513,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3019:
+.L2828:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 416]	// _514, MEM[(struct vector *)&unified + 128B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3020	// _514,
+	cbz	x0, .L2829	// _514,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3020:
+.L2829:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 136]	// _148, evts.D.44271._M_impl.D.43606._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2907	// _148,
+	cbz	x0, .L2716	// _148,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2907:
+.L2716:
 // bitmapdecoding.cpp:259: }
 	ldp	x19, x20, [sp, 16]	//,,
 	ldp	x21, x22, [sp, 32]	//,,
@@ -24900,7 +22861,7 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	.cfi_restore 20
 	.cfi_def_cfa_offset 0
 	ret	
-.L3150:
+.L2959:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	mov	x3, 29	// tmp502,
@@ -24912,21 +22873,21 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	str	x3, [sp, 232]	// tmp502, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x23, [sp, 256]	// tmp680, MEM[(struct _Alloc_hider *)&D.67224]._M_p
-.LEHB89:
+	str	x23, [sp, 256]	// tmp680, MEM[(struct _Alloc_hider *)&D.66784]._M_p
+.LEHB54:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE89:
+.LEHE54:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	adrp	x3, .LC15	// tmp507,
 	add	x3, x3, :lo12:.LC15	// tmp506, tmp507,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	mov	x2, x0	// _365, tmp702
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x2, [sp, 256]	// _365, MEM[(char * *)&D.67224]
+	str	x2, [sp, 256]	// _365, MEM[(char * *)&D.66784]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	ldr	x0, [sp, 232]	// __dnew, __dnew
-	str	x0, [sp, 272]	// __dnew, MEM[(size_type *)&D.67224 + 16B]
+	str	x0, [sp, 272]	// __dnew, MEM[(size_type *)&D.66784 + 16B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	x0, [x3, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
 	str	x0, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_365]
@@ -24942,24 +22903,24 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
 	ldr	x2, [sp, 232]	// __dnew.49_369, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 264]	// __dnew.49_369, MEM[(size_type *)&D.67224 + 8B]
+	str	x2, [sp, 264]	// __dnew.49_369, MEM[(size_type *)&D.66784 + 8B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 256]	// MEM[(char * *)&D.67224], MEM[(char * *)&D.67224]
+	ldr	x3, [sp, 256]	// MEM[(char * *)&D.66784], MEM[(char * *)&D.66784]
 	strb	wzr, [x3, x2]	//, MEM[(char_type &)_371]
-.LEHB90:
+.LEHB55:
 // linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE90:
+.LEHE55:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 256]	// _332, MEM[(char * *)&D.67224]
+	ldr	x0, [sp, 256]	// _332, MEM[(char * *)&D.66784]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x23	// _332, tmp680
-	beq	.L2950		//,
+	beq	.L2759		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2950		//
-.L3148:
+	b	.L2759		//
+.L2957:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	mov	x3, 27	// tmp441,
 	add	x27, sp, 184	// tmp748,,
@@ -24970,20 +22931,20 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	str	x3, [sp, 232]	// tmp441, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x23, [sp, 256]	// tmp680, MEM[(struct _Alloc_hider *)&D.67189]._M_p
-.LEHB91:
+	str	x23, [sp, 256]	// tmp680, MEM[(struct _Alloc_hider *)&D.66749]._M_p
+.LEHB56:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE91:
+.LEHE56:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	adrp	x2, .LC13	// tmp446,
 	add	x2, x2, :lo12:.LC13	// tmp445, tmp446,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	ldr	x1, [sp, 232]	// __dnew, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x0, [sp, 256]	// _310, MEM[(char * *)&D.67189]
+	str	x0, [sp, 256]	// _310, MEM[(char * *)&D.66749]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	str	x1, [sp, 272]	// __dnew, MEM[(size_type *)&D.67189 + 16B]
+	str	x1, [sp, 272]	// __dnew, MEM[(size_type *)&D.66749 + 16B]
 // linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
 	add	x1, sp, 256	// tmp751,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
@@ -24998,19 +22959,19 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
 	ldr	x2, [sp, 232]	// __dnew.49_314, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 264]	// __dnew.49_314, MEM[(size_type *)&D.67189 + 8B]
+	str	x2, [sp, 264]	// __dnew.49_314, MEM[(size_type *)&D.66749 + 8B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 256]	// MEM[(char * *)&D.67189], MEM[(char * *)&D.67189]
+	ldr	x3, [sp, 256]	// MEM[(char * *)&D.66749], MEM[(char * *)&D.66749]
 	strb	wzr, [x3, x2]	//, MEM[(char_type &)_316]
-.LEHB92:
+.LEHB57:
 // linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE92:
+.LEHE57:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 256]	// _298, MEM[(char * *)&D.67189]
+	ldr	x0, [sp, 256]	// _298, MEM[(char * *)&D.66749]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x23	// _298, tmp680
-	beq	.L2937		//,
+	beq	.L2746		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
@@ -25020,8 +22981,8 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	bl	ioctl		//
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	cmn	w0, #1	// tmp697,
-	bne	.L2939		//,
-.L3149:
+	bne	.L2748		//,
+.L2958:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	mov	x3, 28	// tmp460,
 	add	x27, sp, 184	// tmp753,,
@@ -25032,22 +22993,22 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	str	x3, [sp, 232]	// tmp460, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x23, [sp, 256]	// tmp680, MEM[(struct _Alloc_hider *)&D.67188]._M_p
-.LEHB93:
+	str	x23, [sp, 256]	// tmp680, MEM[(struct _Alloc_hider *)&D.66748]._M_p
+.LEHB58:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE93:
+.LEHE58:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	adrp	x2, .LC14	// tmp465,
 	add	x2, x2, :lo12:.LC14	// tmp464, tmp465,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	ldr	x1, [sp, 232]	// __dnew, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x0, [sp, 256]	// _323, MEM[(char * *)&D.67188]
+	str	x0, [sp, 256]	// _323, MEM[(char * *)&D.66748]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	w3, [x2, 24]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	str	x1, [sp, 272]	// __dnew, MEM[(size_type *)&D.67188 + 16B]
+	str	x1, [sp, 272]	// __dnew, MEM[(size_type *)&D.66748 + 16B]
 // linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
 	add	x1, sp, 256	// tmp756,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
@@ -25061,322 +23022,322 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
 	ldr	x2, [sp, 232]	// __dnew.49_327, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 264]	// __dnew.49_327, MEM[(size_type *)&D.67188 + 8B]
+	str	x2, [sp, 264]	// __dnew.49_327, MEM[(size_type *)&D.66748 + 8B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 256]	// MEM[(char * *)&D.67188], MEM[(char * *)&D.67188]
+	ldr	x3, [sp, 256]	// MEM[(char * *)&D.66748], MEM[(char * *)&D.66748]
 	strb	wzr, [x3, x2]	//, MEM[(char_type &)_329]
-.LEHB94:
+.LEHB59:
 // linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE94:
+.LEHE59:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 256]	// _301, MEM[(char * *)&D.67188]
+	ldr	x0, [sp, 256]	// _301, MEM[(char * *)&D.66748]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x23	// _301, tmp680
-	beq	.L2939		//,
+	beq	.L2748		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2939		//
-.L2960:
+	b	.L2748		//
+.L2769:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1195: 	  _M_realloc_insert(end(), __x);
 	add	x27, sp, 184	// tmp772,,
 	mov	x1, x25	//, _385
 	add	x2, sp, 160	//,,
 	mov	x0, x27	// tmp773, tmp772
-.LEHB95:
+.LEHB60:
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_		//
-.LEHE95:
-	b	.L2966		//
-.L3151:
+.LEHE60:
+	b	.L2775		//
+.L2960:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
 	mov	x2, 4	// tmp526,
-	stp	x23, x2, [sp, 256]	// tmp680, tmp526, MEM[(struct _Alloc_hider *)&D.67223]._M_p
+	stp	x23, x2, [sp, 256]	// tmp680, tmp526, MEM[(struct _Alloc_hider *)&D.66783]._M_p
 // linux-perf-events.h:77:       report_error("read");
 	add	x1, sp, 256	// tmp767,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	strb	wzr, [sp, 276]	//, MEM[(char_type &)&D.67223 + 20]
+	strb	wzr, [sp, 276]	//, MEM[(char_type &)&D.66783 + 20]
 // linux-perf-events.h:77:       report_error("read");
 	add	x0, sp, 288	// tmp768,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	str	w24, [x23]	// tmp683, MEM[(void *)&D.67223 + 16B]
-.LEHB96:
+	str	w24, [x23]	// tmp683, MEM[(void *)&D.66783 + 16B]
+.LEHB61:
 // linux-perf-events.h:77:       report_error("read");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE96:
+.LEHE61:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 256]	// _339, MEM[(char * *)&D.67223]
+	ldr	x0, [sp, 256]	// _339, MEM[(char * *)&D.66783]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x23	// _339, tmp680
-	beq	.L2952		//,
+	beq	.L2761		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L2952		//
-.L3153:
+	b	.L2761		//
+.L2962:
 // bitmapdecoding.cpp:233:     printf("bogus\n.");
 	adrp	x0, .LC16	// tmp559,
 	add	x27, sp, 184	// tmp668,,
 	add	x0, x0, :lo12:.LC16	//, tmp559,
-.LEHB97:
+.LEHB62:
 	bl	printf		//
-.LEHE97:
-	b	.L2967		//
-.L3147:
+.LEHE62:
+	b	.L2776		//
+.L2956:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:939: 	  _M_erase_at_end(this->_M_impl._M_start + __new_size);
 	add	x0, x3, x0, lsl 3	// _287, _280, _254,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1791: 	if (size_type __n = this->_M_impl._M_finish - __pos)
 	cmp	x2, x0	// _281, _287
-	beq	.L2923		//,
+	beq	.L2732		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1795: 	    this->_M_impl._M_finish = __pos;
 	str	x0, [sp, 424]	// _287, MEM[(long unsigned int * *)&unified + 136B]
-	b	.L2923		//
-.L3146:
+	b	.L2732		//
+.L2955:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:937: 	  _M_default_append(__new_size - size());
 	sub	x1, x0, x1	//, _254, tmp394
 	add	x0, sp, 416	//,,
-.LEHB98:
+.LEHB63:
 	bl	_ZNSt6vectorImSaImEE17_M_default_appendEm		//
-.LEHE98:
-	b	.L2923		//
-.L2934:
+.LEHE63:
+	b	.L2732		//
+.L2743:
 	add	x27, sp, 184	// tmp668,,
 	add	x0, sp, 160	//,,
-.LEHB99:
+.LEHB64:
 	bl	_ZNSt6vectorIySaIyEE17_M_default_appendEm		//
-.LEHE99:
-	b	.L2936		//
-.L2913:
+.LEHE64:
+	b	.L2745		//
+.L2722:
 	mov	x1, x22	//, _394
 	add	x0, sp, 440	//,,
-.LEHB100:
+.LEHB65:
 	bl	_ZNSt6vectorImSaImEE17_M_default_appendEm		//
-.LEHE100:
-	b	.L2916		//
-.L3030:
+.LEHE65:
+	b	.L2725		//
+.L2839:
 	mov	x23, 0	// _358,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
 	str	xzr, [sp, 120]	//, %sfp
-	b	.L2910		//
-.L3145:
-.LEHB101:
+	b	.L2719		//
+.L2954:
+.LEHB66:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE101:
-.L3152:
-.LEHB102:
+.LEHE66:
+.L2961:
+.LEHB67:
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE102:
-.L3157:
-.LEHB103:
+.LEHE67:
+.L2966:
+.LEHB68:
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE103:
-.L3156:
-.LEHB104:
+.LEHE68:
+.L2965:
+.LEHB69:
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE104:
-.L3155:
-.LEHB105:
+.LEHE69:
+.L2964:
+.LEHB70:
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE105:
-.L3154:
-.LEHB106:
+.LEHE70:
+.L2963:
+.LEHB71:
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE106:
-.L3037:
+.LEHE71:
+.L2846:
 	mov	x19, x0	// tmp654, tmp713
 	add	x27, sp, 184	// tmp668,,
 	add	x0, sp, 256	// tmp778,,
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-.L2945:
+.L2754:
 // bitmapdecoding.cpp:220:   std::vector<std::vector<unsigned long long>> allresults;
 	mov	x0, x27	//, tmp668
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 160]	// _155, results.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbnz	x0, .L3158	// _155,
-.L3028:
+	cbnz	x0, .L2967	// _155,
+.L2837:
 // bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
 	add	x0, sp, 288	// tmp780,,
 	bl	_ZN11LinuxEventsILi0EED1Ev		//
-.L3022:
+.L2831:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 136]	// _156, evts.D.44271._M_impl.D.43606._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3029	// _156,
+	cbz	x0, .L2838	// _156,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3029:
+.L2838:
 	mov	x0, x19	//, tmp651
-.LEHB107:
+.LEHB72:
 	bl	_Unwind_Resume		//
-.LEHE107:
-.L3048:
+.LEHE72:
+.L2857:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
 	bl	__cxa_begin_catch		//
-.L2982:
+.L2791:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x21, x24	// __cur, __first
-	bne	.L3159		//,
-.LEHB108:
+	bne	.L2968		//,
+.LEHB73:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:89: 	      __throw_exception_again;
 	bl	__cxa_rethrow		//
-.LEHE108:
-.L3050:
+.LEHE73:
+.L2859:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
 	bl	__cxa_begin_catch		//
-.L3003:
+.L2812:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x21, x24	// __cur, __first
-	bne	.L3160		//,
-.LEHB109:
+	bne	.L2969		//,
+.LEHB74:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:89: 	      __throw_exception_again;
 	bl	__cxa_rethrow		//
-.LEHE109:
-.L3159:
+.LEHE74:
+.L2968:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x24]	// _431, MEM[base: __first_430, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2981	// _431,
+	cbz	x0, .L2790	// _431,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2981:
+.L2790:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x24, x24, 24	// __first, __first,
-	b	.L2982		//
-.L3047:
+	b	.L2791		//
+.L2856:
 	mov	x19, x0	// tmp591, tmp709
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
 	bl	__cxa_end_catch		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:332: 	_M_deallocate(_M_impl._M_start,
 	ldr	x0, [sp, 256]	// _417, MEM[(struct _Vector_base *)&D.52295]._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3027	// _417,
+	cbz	x0, .L2836	// _417,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3027:
+.L2836:
 	add	x27, sp, 184	// tmp668,,
-	b	.L2945		//
-.L2908:
-.LEHB110:
+	b	.L2754		//
+.L2717:
+.LEHB75:
 // bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
 	bl	__cxa_throw_bad_array_new_length		//
-.LEHE110:
-.L3045:
-.L3142:
+.LEHE75:
+.L2854:
+.L2951:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
 	ldr	x1, [sp, 256]	// _357,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x2, sp, 272	// tmp543,,
 	mov	x19, x0	// tmp544, tmp705
 	cmp	x1, x2	// _357, tmp543
-	beq	.L3027		//,
+	beq	.L2836		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x1	//, _357
 	add	x27, sp, 184	// tmp668,,
 	bl	_ZdlPv		//
-	b	.L2945		//
-.L3038:
+	b	.L2754		//
+.L2847:
 	mov	x19, x0	// tmp614, tmp716
-	b	.L3006		//
-.L3046:
-	b	.L3142		//
-.L3158:
+	b	.L2815		//
+.L2855:
+	b	.L2951		//
+.L2967:
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L3028		//
-.L3160:
+	b	.L2837		//
+.L2969:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x24]	// _481, MEM[base: __first_480, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3002	// _481,
+	cbz	x0, .L2811	// _481,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3002:
+.L2811:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x24, x24, 24	// __first, __first,
-	b	.L3003		//
-.L3049:
+	b	.L2812		//
+.L2858:
 	mov	x19, x0	// tmp611, tmp712
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
 	bl	__cxa_end_catch		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:332: 	_M_deallocate(_M_impl._M_start,
 	ldr	x0, [sp, 256]	// _461, MEM[(struct _Vector_base *)&D.52298]._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3006	// _461,
-.L3138:
+	cbz	x0, .L2815	// _461,
+.L2947:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3006:
+.L2815:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 208]	// _154, mins.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3027	// _154,
+	cbz	x0, .L2836	// _154,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-	b	.L3027		//
-.L3036:
+	b	.L2836		//
+.L2845:
 	mov	x19, x0	// tmp478, tmp717
-	b	.L2945		//
-.L3042:
+	b	.L2754		//
+.L2851:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x2, [sp, 256]	// _255, MEM[(char * *)&D.67162]
+	ldr	x2, [sp, 256]	// _255, MEM[(char * *)&D.66722]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x1, sp, 272	// tmp424,,
 	mov	x19, x0	// tmp426, tmp693
 	cmp	x2, x1	// _255, tmp424
-	beq	.L2929		//,
+	beq	.L2738		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x2	//, _255
 	bl	_ZdlPv		//
-.L2929:
+.L2738:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 440]	// _256, MEM[(struct vector *)&unified + 152B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2930	// _256,
+	cbz	x0, .L2739	// _256,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2930:
+.L2739:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 416]	// _257, MEM[(struct vector *)&unified + 128B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L2931	// _257,
+	cbz	x0, .L2740	// _257,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L2931:
+.L2740:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
 	ldr	x0, [sp, 120]	// _222, %sfp
-	cbz	x0, .L3022	// _222,
+	cbz	x0, .L2831	// _222,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	ldr	x0, [sp, 120]	//, %sfp
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L3022		//
-.L3035:
+	b	.L2831		//
+.L2844:
 	mov	x19, x0	// tmp651, tmp718
-	b	.L3022		//
-.L3043:
-	b	.L3142		//
-.L3044:
-	b	.L3142		//
-.L3039:
+	b	.L2831		//
+.L2852:
+	b	.L2951		//
+.L2853:
+	b	.L2951		//
+.L2848:
 	mov	x19, x0	// tmp714,
 	add	x0, sp, 256	// tmp779,,
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-	b	.L3006		//
-.L3040:
+	b	.L2815		//
+.L2849:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x1, [sp, 232]	// _153, avg.D.47664._M_impl.D.46999._M_start
 	mov	x19, x0	// tmp659, tmp715
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x1, .L3006	// _153,
+	cbz	x1, .L2815	// _153,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x1	//, _153
-	b	.L3138		//
-.L3041:
+	b	.L2947		//
+.L2850:
 	mov	x19, x0	// tmp425, tmp694
-	b	.L2929		//
+	b	.L2738		//
 	.cfi_endproc
 .LFE2423:
 	.section	.gcc_except_table
@@ -25389,132 +23350,132 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 	.byte	0x1
 	.uleb128 .LLSDACSE2423-.LLSDACSB2423
 .LLSDACSB2423:
-	.uleb128 .LEHB79-.LFB2423
-	.uleb128 .LEHE79-.LEHB79
+	.uleb128 .LEHB44-.LFB2423
+	.uleb128 .LEHE44-.LEHB44
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB80-.LFB2423
-	.uleb128 .LEHE80-.LEHB80
-	.uleb128 .L3035-.LFB2423
+	.uleb128 .LEHB45-.LFB2423
+	.uleb128 .LEHE45-.LEHB45
+	.uleb128 .L2844-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB81-.LFB2423
-	.uleb128 .LEHE81-.LEHB81
-	.uleb128 .L3042-.LFB2423
+	.uleb128 .LEHB46-.LFB2423
+	.uleb128 .LEHE46-.LEHB46
+	.uleb128 .L2851-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB82-.LFB2423
-	.uleb128 .LEHE82-.LEHB82
-	.uleb128 .L3036-.LFB2423
+	.uleb128 .LEHB47-.LFB2423
+	.uleb128 .LEHE47-.LEHB47
+	.uleb128 .L2845-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB83-.LFB2423
-	.uleb128 .LEHE83-.LEHB83
-	.uleb128 .L3048-.LFB2423
+	.uleb128 .LEHB48-.LFB2423
+	.uleb128 .LEHE48-.LEHB48
+	.uleb128 .L2857-.LFB2423
 	.uleb128 0x1
-	.uleb128 .LEHB84-.LFB2423
-	.uleb128 .LEHE84-.LEHB84
-	.uleb128 .L3037-.LFB2423
+	.uleb128 .LEHB49-.LFB2423
+	.uleb128 .LEHE49-.LEHB49
+	.uleb128 .L2846-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB85-.LFB2423
-	.uleb128 .LEHE85-.LEHB85
-	.uleb128 .L3038-.LFB2423
+	.uleb128 .LEHB50-.LFB2423
+	.uleb128 .LEHE50-.LEHB50
+	.uleb128 .L2847-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB86-.LFB2423
-	.uleb128 .LEHE86-.LEHB86
-	.uleb128 .L3050-.LFB2423
+	.uleb128 .LEHB51-.LFB2423
+	.uleb128 .LEHE51-.LEHB51
+	.uleb128 .L2859-.LFB2423
 	.uleb128 0x1
-	.uleb128 .LEHB87-.LFB2423
-	.uleb128 .LEHE87-.LEHB87
-	.uleb128 .L3039-.LFB2423
+	.uleb128 .LEHB52-.LFB2423
+	.uleb128 .LEHE52-.LEHB52
+	.uleb128 .L2848-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB88-.LFB2423
-	.uleb128 .LEHE88-.LEHB88
-	.uleb128 .L3040-.LFB2423
+	.uleb128 .LEHB53-.LFB2423
+	.uleb128 .LEHE53-.LEHB53
+	.uleb128 .L2849-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB89-.LFB2423
-	.uleb128 .LEHE89-.LEHB89
-	.uleb128 .L3036-.LFB2423
+	.uleb128 .LEHB54-.LFB2423
+	.uleb128 .LEHE54-.LEHB54
+	.uleb128 .L2845-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB90-.LFB2423
-	.uleb128 .LEHE90-.LEHB90
-	.uleb128 .L3046-.LFB2423
+	.uleb128 .LEHB55-.LFB2423
+	.uleb128 .LEHE55-.LEHB55
+	.uleb128 .L2855-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB91-.LFB2423
-	.uleb128 .LEHE91-.LEHB91
-	.uleb128 .L3036-.LFB2423
+	.uleb128 .LEHB56-.LFB2423
+	.uleb128 .LEHE56-.LEHB56
+	.uleb128 .L2845-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB92-.LFB2423
-	.uleb128 .LEHE92-.LEHB92
-	.uleb128 .L3044-.LFB2423
+	.uleb128 .LEHB57-.LFB2423
+	.uleb128 .LEHE57-.LEHB57
+	.uleb128 .L2853-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB93-.LFB2423
-	.uleb128 .LEHE93-.LEHB93
-	.uleb128 .L3036-.LFB2423
+	.uleb128 .LEHB58-.LFB2423
+	.uleb128 .LEHE58-.LEHB58
+	.uleb128 .L2845-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB94-.LFB2423
-	.uleb128 .LEHE94-.LEHB94
-	.uleb128 .L3043-.LFB2423
+	.uleb128 .LEHB59-.LFB2423
+	.uleb128 .LEHE59-.LEHB59
+	.uleb128 .L2852-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB95-.LFB2423
-	.uleb128 .LEHE95-.LEHB95
-	.uleb128 .L3036-.LFB2423
+	.uleb128 .LEHB60-.LFB2423
+	.uleb128 .LEHE60-.LEHB60
+	.uleb128 .L2845-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB96-.LFB2423
-	.uleb128 .LEHE96-.LEHB96
-	.uleb128 .L3045-.LFB2423
+	.uleb128 .LEHB61-.LFB2423
+	.uleb128 .LEHE61-.LEHB61
+	.uleb128 .L2854-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB97-.LFB2423
-	.uleb128 .LEHE97-.LEHB97
-	.uleb128 .L3036-.LFB2423
+	.uleb128 .LEHB62-.LFB2423
+	.uleb128 .LEHE62-.LEHB62
+	.uleb128 .L2845-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB98-.LFB2423
-	.uleb128 .LEHE98-.LEHB98
-	.uleb128 .L3041-.LFB2423
+	.uleb128 .LEHB63-.LFB2423
+	.uleb128 .LEHE63-.LEHB63
+	.uleb128 .L2850-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB99-.LFB2423
-	.uleb128 .LEHE99-.LEHB99
-	.uleb128 .L3036-.LFB2423
+	.uleb128 .LEHB64-.LFB2423
+	.uleb128 .LEHE64-.LEHB64
+	.uleb128 .L2845-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB100-.LFB2423
-	.uleb128 .LEHE100-.LEHB100
-	.uleb128 .L3041-.LFB2423
+	.uleb128 .LEHB65-.LFB2423
+	.uleb128 .LEHE65-.LEHB65
+	.uleb128 .L2850-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB101-.LFB2423
-	.uleb128 .LEHE101-.LEHB101
-	.uleb128 .L3035-.LFB2423
+	.uleb128 .LEHB66-.LFB2423
+	.uleb128 .LEHE66-.LEHB66
+	.uleb128 .L2844-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB102-.LFB2423
-	.uleb128 .LEHE102-.LEHB102
-	.uleb128 .L3036-.LFB2423
+	.uleb128 .LEHB67-.LFB2423
+	.uleb128 .LEHE67-.LEHB67
+	.uleb128 .L2845-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB103-.LFB2423
-	.uleb128 .LEHE103-.LEHB103
-	.uleb128 .L3050-.LFB2423
+	.uleb128 .LEHB68-.LFB2423
+	.uleb128 .LEHE68-.LEHB68
+	.uleb128 .L2859-.LFB2423
 	.uleb128 0x1
-	.uleb128 .LEHB104-.LFB2423
-	.uleb128 .LEHE104-.LEHB104
-	.uleb128 .L3038-.LFB2423
+	.uleb128 .LEHB69-.LFB2423
+	.uleb128 .LEHE69-.LEHB69
+	.uleb128 .L2847-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB105-.LFB2423
-	.uleb128 .LEHE105-.LEHB105
-	.uleb128 .L3048-.LFB2423
+	.uleb128 .LEHB70-.LFB2423
+	.uleb128 .LEHE70-.LEHB70
+	.uleb128 .L2857-.LFB2423
 	.uleb128 0x1
-	.uleb128 .LEHB106-.LFB2423
-	.uleb128 .LEHE106-.LEHB106
-	.uleb128 .L3036-.LFB2423
+	.uleb128 .LEHB71-.LFB2423
+	.uleb128 .LEHE71-.LEHB71
+	.uleb128 .L2845-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB107-.LFB2423
-	.uleb128 .LEHE107-.LEHB107
+	.uleb128 .LEHB72-.LFB2423
+	.uleb128 .LEHE72-.LEHB72
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB108-.LFB2423
-	.uleb128 .LEHE108-.LEHB108
-	.uleb128 .L3047-.LFB2423
+	.uleb128 .LEHB73-.LFB2423
+	.uleb128 .LEHE73-.LEHB73
+	.uleb128 .L2856-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB109-.LFB2423
-	.uleb128 .LEHE109-.LEHB109
-	.uleb128 .L3049-.LFB2423
+	.uleb128 .LEHB74-.LFB2423
+	.uleb128 .LEHE74-.LEHB74
+	.uleb128 .L2858-.LFB2423
 	.uleb128 0
-	.uleb128 .LEHB110-.LFB2423
-	.uleb128 .LEHE110-.LEHB110
+	.uleb128 .LEHB75-.LFB2423
+	.uleb128 .LEHE75-.LEHB75
 	.uleb128 0
 	.uleb128 0
 .LLSDACSE2423:
@@ -25526,6 +23487,3234 @@ _Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc:
 .LLSDATT2423:
 	.section	.text._Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc,"axG",@progbits,_Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc,comdat
 	.size	_Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc, .-_Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc
+	.section	.text._Z4testIXadL_Z16simdjson_decoderPjRjjmEEEvPKcc,"axG",@progbits,_Z4testIXadL_Z16simdjson_decoderPjRjjmEEEvPKcc,comdat
+	.align	2
+	.p2align 3,,7
+	.weak	_Z4testIXadL_Z16simdjson_decoderPjRjjmEEEvPKcc
+	.type	_Z4testIXadL_Z16simdjson_decoderPjRjjmEEEvPKcc, %function
+_Z4testIXadL_Z16simdjson_decoderPjRjjmEEEvPKcc:
+.LFB2421:
+	.cfi_startproc
+	.cfi_personality 0x9b,DW.ref.__gxx_personality_v0
+	.cfi_lsda 0x1b,.LLSDA2421
+	stp	x29, x30, [sp, -464]!	//,,,
+	.cfi_def_cfa_offset 464
+	.cfi_offset 29, -464
+	.cfi_offset 30, -456
+	mov	x29, sp	//,
+// bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
+	add	x2, sp, 128	//,,
+// bitmapdecoding.cpp:206: void test(const char *filename, char target) {
+	stp	x21, x22, [sp, 32]	//,,
+	stp	x23, x24, [sp, 48]	//,,
+	stp	x25, x26, [sp, 64]	//,,
+.LEHB76:
+	.cfi_offset 21, -432
+	.cfi_offset 22, -424
+	.cfi_offset 23, -416
+	.cfi_offset 24, -408
+	.cfi_offset 25, -400
+	.cfi_offset 26, -392
+// bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
+	bl	_Z12build_bitmapPKccPm		//
+// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
+	mov	x2, 2305843009213693950	// tmp347,
+// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
+	ldr	x1, [sp, 128]	// wordcount.126_1, wordcount
+	stp	x19, x20, [sp, 16]	//,,
+	.cfi_offset 20, -440
+	.cfi_offset 19, -448
+// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
+	cmp	x2, x1, lsl 6	// tmp347, wordcount.126_1,
+	bcc	.L2971		//,
+	mov	x20, x0	// _67, tmp677
+// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
+	lsl	x0, x1, 8	//, wordcount.126_1,
+	bl	_Znam		//
+.LEHE76:
+	mov	x19, x0	// _72, tmp678
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	add	x1, sp, 288	// tmp711,,
+	add	x0, sp, 136	// tmp712,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 136]	//,, MEM[(struct _Vector_impl_data *)&evts]._M_start
+	str	xzr, [sp, 152]	//, MEM[(struct _Vector_impl_data *)&evts]._M_end_of_storage
+// bitmapdecoding.cpp:213:   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
+	str	wzr, [sp, 288]	//, D.52232
+.LEHB77:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
+// bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
+	mov	w2, 1	// tmp352,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	add	x1, sp, 288	// tmp713,,
+	add	x0, sp, 136	// tmp714,,
+// bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
+	str	w2, [sp, 288]	// tmp352, D.52233
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
+// bitmapdecoding.cpp:215:   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
+	mov	w2, 5	// tmp355,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	add	x1, sp, 288	// tmp715,,
+	add	x0, sp, 136	// tmp716,,
+// bitmapdecoding.cpp:215:   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
+	str	w2, [sp, 288]	// tmp355, D.52234
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
+// bitmapdecoding.cpp:216:   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
+	mov	w2, 2	// tmp358,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	add	x1, sp, 288	// tmp717,,
+	add	x0, sp, 136	// tmp718,,
+// bitmapdecoding.cpp:216:   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
+	str	w2, [sp, 288]	// tmp358, D.52235
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
+// bitmapdecoding.cpp:217:   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
+	mov	w2, 3	// tmp361,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	add	x0, sp, 136	// tmp719,,
+	add	x1, sp, 288	// tmp720,,
+// bitmapdecoding.cpp:217:   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
+	str	w2, [sp, 288]	// tmp361, D.52236
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:552: 	_Alloc_traits::_S_select_on_copy(__x._M_get_Tp_allocator()))
+	ldp	x1, x0, [sp, 136]	// pretmp_353, pretmp_362, MEM[(int * *)&evts]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x24, x0, x1	// _364, pretmp_362, pretmp_353
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cmp	xzr, x24, asr 2	//, _364,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x21, x24, 2	// prephitmp_384, _364,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	beq	.L3092		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x0, 2305843009213693951	// tmp365,
+	cmp	x21, x0	// prephitmp_384, tmp365
+	bhi	.L3204		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x24	//, _364
+	bl	_Znwm		//
+.LEHE77:
+	str	x0, [sp, 104]	// tmp679, %sfp
+	ldr	x1, [sp, 136]	// pretmp_353, evts.D.44271._M_impl.D.43606._M_start
+	ldr	x0, [sp, 144]	// pretmp_362, MEM[(int * *)&evts + 8B]
+	sub	x24, x0, x1	// _364, pretmp_362, pretmp_353
+	asr	x22, x24, 2	// prephitmp_348, _364,
+	mov	x21, x22	// prephitmp_384, prephitmp_348
+.L2973:
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	cmp	x1, x0	// pretmp_353, pretmp_362
+	beq	.L2975		//,
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+	ldr	x0, [sp, 104]	//, %sfp
+	mov	x2, x24	//, _364
+	bl	memmove		//
+.L2975:
+// linux-perf-events.h:27:     memset(&attribs, 0, sizeof(attribs));
+	add	x1, sp, 528	// tmp723,,
+	add	x0, sp, 288	// tmp721,,
+// linux-perf-events.h:30:     attribs.disabled = 1;
+	mov	w5, 97	// tmp378,
+// linux-perf-events.h:26:   explicit LinuxEvents(std::vector<int> config_vec) : fd(0), working(true) {
+	mov	w4, 1	// tmp368,
+// linux-perf-events.h:29:     attribs.size = sizeof(attribs);
+	mov	w3, 112	// tmp371,
+// linux-perf-events.h:35:     attribs.read_format = PERF_FORMAT_GROUP | PERF_FORMAT_ID;
+	mov	x2, 12	// tmp372,
+// linux-perf-events.h:27:     memset(&attribs, 0, sizeof(attribs));
+	stp	xzr, xzr, [x1, -232]	// MEM[(void *)&unified + 8B]
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	ldr	x1, [sp, 104]	// _212, %sfp
+// linux-perf-events.h:27:     memset(&attribs, 0, sizeof(attribs));
+	stp	xzr, xzr, [x0, 40]	// MEM[(void *)&unified + 8B]
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	add	x24, x1, x24	// _210, _212, _364
+// linux-perf-events.h:30:     attribs.disabled = 1;
+	ldrb	w1, [sp, 336]	//, MEM[(struct perf_event_attr *)&unified + 48B]
+// linux-perf-events.h:26:   explicit LinuxEvents(std::vector<int> config_vec) : fd(0), working(true) {
+	str	wzr, [sp, 288]	//, unified.fd
+// linux-perf-events.h:30:     attribs.disabled = 1;
+	orr	w1, w1, w5	// tmp377, MEM[(struct perf_event_attr *)&unified + 48B], tmp378
+// linux-perf-events.h:26:   explicit LinuxEvents(std::vector<int> config_vec) : fd(0), working(true) {
+	strb	w4, [sp, 292]	// tmp368, unified.working
+// linux-perf-events.h:29:     attribs.size = sizeof(attribs);
+	str	w3, [sp, 300]	// tmp371, unified.attribs.size
+// linux-perf-events.h:35:     attribs.read_format = PERF_FORMAT_GROUP | PERF_FORMAT_ID;
+	str	x2, [sp, 328]	// tmp372, unified.attribs.read_format
+// linux-perf-events.h:30:     attribs.disabled = 1;
+	strb	w1, [sp, 336]	// tmp377, MEM[(struct perf_event_attr *)&unified + 48B]
+// linux-perf-events.h:41:     num_events = config_vec.size();
+	str	w22, [sp, 408]	// prephitmp_348, unified.num_events
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 416]	//,, MEM[(struct _Vector_impl_data *)&unified + 128B]._M_start
+	stp	xzr, xzr, [sp, 432]	//,, MEM[(struct _Vector_impl_data *)&unified + 128B]._M_end_of_storage
+	stp	xzr, xzr, [sp, 448]	//,, MEM[(struct _Vector_impl_data *)&unified + 152B]._M_finish
+// linux-perf-events.h:27:     memset(&attribs, 0, sizeof(attribs));
+	stp	xzr, xzr, [x0, 24]	// MEM[(void *)&unified + 8B]
+	stp	xzr, xzr, [x0, 56]	// MEM[(void *)&unified + 8B]
+	stp	xzr, xzr, [x0, 72]	// MEM[(void *)&unified + 8B]
+	stp	xzr, xzr, [x0, 88]	// MEM[(void *)&unified + 8B]
+	stp	xzr, xzr, [x0, 104]	// MEM[(void *)&unified + 8B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	cbnz	x21, .L2976	// prephitmp_384,
+.L2979:
+// linux-perf-events.h:44:     for (auto config : config_vec) {
+	ldr	x0, [sp, 104]	// _212, %sfp
+	mov	w23, 0	// i,
+	mov	w21, -1	// group,
+	cmp	x24, x0	// _210, _212
+	mov	x22, x0	// ivtmp.2222, _212
+	beq	.L2978		//,
+	stp	x27, x28, [sp, 80]	//,,
+	.cfi_offset 28, -376
+	.cfi_offset 27, -384
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	mov	x27, 9223	// tmp676,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	adrp	x28, .LC11	// tmp674,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
+	add	x26, sp, 272	// tmp673,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	add	x28, x28, :lo12:.LC11	// tmp675, tmp674,
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	movk	x27, 0x8008, lsl 16	// tmp676,,
+	b	.L2985		//
+	.p2align 2,,3
+.L2982:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
+	ldr	x2, [sp, 440]	// MEM[(long unsigned int * *)&unified + 152B], MEM[(long unsigned int * *)&unified + 152B]
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	mov	x1, x27	//, tmp676
+	add	x22, x22, 4	// ivtmp.2222, ivtmp.2222,
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	add	w25, w23, 1	// i, i,
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	add	x2, x2, x23, uxtw 3	//, MEM[(long unsigned int * *)&unified + 152B], i,,
+	bl	ioctl		//
+// linux-perf-events.h:52:         group = fd;
+	ldr	w0, [sp, 288]	//, unified.fd
+	cmn	w21, #1	// group,
+	csel	w21, w0, w21, eq	// group, unified.fd, group,
+// linux-perf-events.h:44:     for (auto config : config_vec) {
+	cmp	x24, x22	// _210, ivtmp.2222
+	beq	.L3205		//,
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	mov	w23, w25	// i, i
+.L2985:
+// linux-perf-events.h:45:       attribs.config = config;
+	ldrsw	x6, [x22]	// MEM[base: _642, offset: 0], MEM[base: _642, offset: 0]
+// linux-perf-events.h:46:       fd = syscall(__NR_perf_event_open, &attribs, pid, cpu, group, flags);
+	mov	w4, w21	//, group
+	add	x1, sp, 296	//,,
+	mov	x5, 0	//,
+	mov	w3, -1	//,
+	mov	w2, 0	//,
+	mov	x0, 241	//,
+// linux-perf-events.h:45:       attribs.config = config;
+	str	x6, [sp, 304]	// MEM[base: _642, offset: 0], unified.attribs.config
+// linux-perf-events.h:46:       fd = syscall(__NR_perf_event_open, &attribs, pid, cpu, group, flags);
+	bl	syscall		//
+// linux-perf-events.h:46:       fd = syscall(__NR_perf_event_open, &attribs, pid, cpu, group, flags);
+	str	w0, [sp, 288]	// _229, unified.fd
+// linux-perf-events.h:47:       if (fd == -1) {
+	cmn	w0, #1	// _229,
+	bne	.L2982		//,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldr	x0, [x28]	// MEM[(void *)"perf_event_open"], MEM[(void *)"perf_event_open"]
+	str	x0, [x26]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.67054 + 16B]
+	ldr	x2, [x28, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)"perf_event_open"]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
+	mov	x3, 15	// tmp400,
+	stp	x26, x3, [sp, 256]	// tmp673, tmp400, MEM[(struct _Alloc_hider *)&D.67054]._M_p
+// linux-perf-events.h:48:         report_error("perf_event_open");
+	add	x1, sp, 256	// tmp729,,
+	add	x0, sp, 288	// tmp730,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
+	strb	wzr, [sp, 287]	//, MEM[(char_type &)&D.67054 + 31]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	str	x2, [x26, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.67054 + 16B]
+.LEHB78:
+// linux-perf-events.h:48:         report_error("perf_event_open");
+	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
+.LEHE78:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x0, [sp, 256]	// _231, MEM[(char * *)&D.67054]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	cmp	x0, x26	// _231, tmp673
+	beq	.L2983		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L2983:
+	ldr	w0, [sp, 288]	//, unified.fd
+	b	.L2982		//
+.L3205:
+	ldp	x27, x28, [sp, 80]	//,,
+	.cfi_restore 28
+	.cfi_restore 27
+.L2978:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	ldp	x3, x2, [sp, 416]	// _270, _271, MEM[(long unsigned int * *)&unified + 128B]
+// linux-perf-events.h:56:     temp_result_vec.resize(num_events * 2 + 1);
+	ldr	w0, [sp, 408]	//, unified.num_events
+	lsl	w0, w0, 1	// tmp383, unified.num_events,
+// linux-perf-events.h:56:     temp_result_vec.resize(num_events * 2 + 1);
+	add	w0, w0, 1	// _243, tmp383,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x1, x2, x3	// tmp385, _271, _270
+// linux-perf-events.h:56:     temp_result_vec.resize(num_events * 2 + 1);
+	sxtw	x0, w0	// _244, _243
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x1, x1, 3	// tmp386, tmp385,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	cmp	x0, x1	// _244, tmp386
+	bhi	.L3206		//,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:938: 	else if (__new_size < size())
+	bcc	.L3207		//,
+.L2986:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	ldr	x0, [sp, 104]	// _212, %sfp
+	cbz	x0, .L2989	// _212,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	ldr	x0, [sp, 104]	//, %sfp
+	bl	_ZdlPv		//
+.L2989:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x1, x0, [sp, 136]	// MEM[(int * *)&evts], MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 160]	//,, MEM[(struct _Vector_impl_data *)&results]._M_start
+	stp	xzr, xzr, [sp, 176]	//,, MEM[(struct _Vector_impl_data *)&results]._M_end_of_storage
+	stp	xzr, xzr, [sp, 192]	//,, MEM[(struct _Vector_impl_data *)&allresults]._M_finish
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x0, x0, x1	// tmp425, MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	cmp	xzr, x0, asr 2	//, tmp425,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x1, x0, 2	// tmp428, tmp425,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	bne	.L2997		//,
+.L2999:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
+	add	x22, sp, 272	// tmp668,,
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	mov	w21, 10	// ivtmp_835,
+	.p2align 3,,7
+.L2998:
+// linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
+	ldr	w0, [sp, 288]	//, unified.fd
+	mov	w2, 1	//,
+	mov	x1, 9219	//,
+// bitmapdecoding.cpp:224:     matches = 0;
+	str	wzr, [sp, 124]	//, matches
+// linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
+	bl	ioctl		//
+// linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
+	cmn	w0, #1	// tmp683,
+	beq	.L3208		//,
+.L3000:
+// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	ldr	w0, [sp, 288]	//, unified.fd
+	mov	w2, 1	//,
+	mov	x1, 9216	//,
+	bl	ioctl		//
+// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	cmn	w0, #1	// tmp685,
+	beq	.L3209		//,
+.L3002:
+// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
+	ldr	x0, [sp, 128]	// wordcount, wordcount
+	mov	x12, 0	// idx,
+	cbz	x0, .L3012	// wordcount,
+	.p2align 3,,7
+.L3004:
+// bitmapdecoding.cpp:227:       F(bigarray, matches, idx, array[idx]);
+	ldr	x3, [x20, x12, lsl 3]	//, MEM[base: _67, index: idx_53, step: 8, offset: 0B]
+	mov	w2, w12	//, idx
+// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
+	add	x12, x12, 1	// idx, idx,
+// bitmapdecoding.cpp:227:       F(bigarray, matches, idx, array[idx]);
+	mov	x0, x19	//, _72
+	add	x1, sp, 124	// tmp748,,
+	bl	_Z16simdjson_decoderPjRjjm		//
+// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
+	ldr	x0, [sp, 128]	// wordcount, wordcount
+	cmp	x0, x12	// wordcount, idx
+	bhi	.L3004		//,
+.L3012:
+// linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	ldr	w0, [sp, 288]	//, unified.fd
+	mov	w2, 1	//,
+	mov	x1, 9217	//,
+	bl	ioctl		//
+// linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	cmn	w0, #1	// tmp687,
+	beq	.L3210		//,
+.L3006:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x1, x2, [sp, 416]	// _324, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
+	add	x25, sp, 184	// tmp754,,
+// linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
+	ldr	w0, [sp, 288]	//, unified.fd
+	sub	x2, x2, x1	//, MEM[(long unsigned int * *)&unified + 136B], _324
+.LEHB79:
+	bl	read		//
+// linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
+	cmn	x0, #1	// tmp691,
+	beq	.L3211		//,
+.L3014:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x4, x3, [sp, 416]	// _664, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
+	sub	x3, x3, x4	// tmp514, MEM[(long unsigned int * *)&unified + 136B], _664
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	cmp	x3, 15	// tmp514,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x3, x3, 3	// _731, tmp514,
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	bls	.L3016		//,
+// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
+	ldr	x5, [sp, 160]	// _341, MEM[(long long unsigned int * *)&results]
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	mov	x1, 1	// _331,
+// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
+	mov	w0, w1	// i, _331
+	.p2align 3,,7
+.L3017:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
+	lsr	w2, w0, 1	// tmp518, i,
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	add	w0, w0, 2	// i, i,
+// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
+	ldr	x1, [x4, x1, lsl 3]	// *_338, *_338
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	cmp	x3, x0, uxtw	// _731, i
+// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
+	str	x1, [x5, x2, lsl 3]	// *_338, *_343
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	uxtw	x1, w0	// _331, i
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	bhi	.L3017		//,
+.L3016:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1186: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
+	ldp	x23, x0, [sp, 192]	// _375, allresults.D.46492._M_impl.D.45827._M_end_of_storage, allresults.D.46492._M_impl.D.45827._M_finish
+	cmp	x23, x0	// _375, allresults.D.46492._M_impl.D.45827._M_end_of_storage
+	beq	.L3022		//,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x0, x24, [sp, 160]	// MEM[(long long unsigned int * *)&results], MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [x23]	//,, MEM[(struct _Vector_impl_data *)_375]._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x25, x23	// pretmp_872, _375
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [x23, 16]	//, MEM[(struct _Vector_impl_data *)_375]._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x3, 0	// _394,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x24, x24, x0	// _381, MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cmp	xzr, x24, asr 3	//, _381,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x0, x24, 3	// tmp532, _381,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	beq	.L3024		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x1, 1152921504606846975	// tmp533,
+	add	x25, sp, 184	// tmp656,,
+	cmp	x0, x1	// tmp532, tmp533
+	bhi	.L3212		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x24	//, _381
+	bl	_Znwm		//
+	ldr	x25, [sp, 192]	// pretmp_872, allresults.D.46492._M_impl.D.45827._M_finish
+	mov	x3, x0	// _394, tmp694
+.L3024:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x3, x3, [x23]	// _394, _394, MEM[(struct _Vector_base *)_375]._M_impl.D.44749._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x24, x3, x24	// tmp535, _394, _381
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:555: 	  std::__uninitialized_copy_a(__x.begin(), __x.end(),
+	ldp	x1, x2, [sp, 160]	// _387, _388, MEM[(long long unsigned int * *)&results]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x24, [x23, 16]	// tmp535, MEM[(struct _Vector_base *)_375]._M_impl.D.44749._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	cmp	x1, x2	// _387, _388
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
+	sub	x24, x2, x1	// _389, _388, _387
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	beq	.L3027		//,
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+	mov	x0, x3	//, _394
+	mov	x2, x24	//, _389
+	bl	memmove		//
+	mov	x3, x0	// _394,
+.L3027:
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	add	x3, x3, x24	// tmp536, _394, _389
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x3, [x23, 8]	// tmp536, *_375.D.45414._M_impl.D.44749._M_finish
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1191: 	    ++this->_M_impl._M_finish;
+	add	x25, x25, 24	// tmp537, pretmp_872,
+	str	x25, [sp, 192]	// tmp537, allresults.D.46492._M_impl.D.45827._M_finish
+.L3028:
+// bitmapdecoding.cpp:223:   for (uint32_t i = 0; i < iterations; i++) {
+	subs	w21, w21, #1	// ivtmp_835, ivtmp_835,
+	bne	.L2998		//,
+// bitmapdecoding.cpp:232:   if (bigarray[0] == 0)
+	ldr	w0, [x19]	//, *_72
+	cbz	w0, .L3213	// *_72,
+.L3029:
+// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
+	ldr	x2, [sp, 128]	// wordcount.129_9, wordcount
+// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
+	fmov	d0, x2	// wordcount.129_9, wordcount.129_9
+// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
+	ldr	w1, [sp, 124]	//, matches
+	mov	x0, 4636737291354636288	// tmp709,
+// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
+	shl	d1, d0, 6	// tmp544, wordcount.129_9,
+// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
+	fmov	d2, x0	// tmp548, tmp709
+	add	x25, sp, 184	// tmp656,,
+	adrp	x0, .LC17	// tmp550,
+// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
+	ucvtf	d0, w1	// tmp543, matches.128_8
+// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
+	add	x0, x0, :lo12:.LC17	//, tmp550,
+// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
+	ucvtf	d1, d1	// tmp545, tmp544
+	fdiv	d0, d0, d1	// tmp546, tmp543, tmp545
+// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
+	fmul	d0, d0, d2	//, tmp546, tmp548
+	bl	printf		//
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	ldr	d0, [sp, 128]	// wordcount, wordcount
+	mov	x0, 4634204016564240384	// tmp708,
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	ldr	w1, [sp, 124]	//, matches
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	fmov	d2, x0	// tmp554, tmp708
+	add	x25, sp, 184	// tmp656,,
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	adrp	x0, .LC18	// tmp559,
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	ucvtf	d0, d0	// tmp551, wordcount
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	add	x0, x0, :lo12:.LC18	//, tmp559,
+	ucvtf	d1, w1	// tmp555, matches
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	fmul	d0, d0, d2	// tmp553, tmp551, tmp554
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	fdiv	d0, d0, d1	//, tmp553, tmp555
+	bl	printf		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:552: 	_Alloc_traits::_S_select_on_copy(__x._M_get_Tp_allocator()))
+	ldp	x22, x23, [sp, 184]	// prephitmp_117, prephitmp_100, MEM[(struct vector * *)&allresults]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	mov	x1, -6148914691236517206	// tmp562,
+	movk	x1, 0xaaab, lsl 0	// tmp562,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 256]	//,, MEM[(struct _Vector_impl_data *)&D.52245]._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x24, 0	// __first,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [sp, 272]	//, MEM[(struct _Vector_impl_data *)&D.52245]._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x21, x23, x22	// _398, prephitmp_100, prephitmp_117
+	asr	x0, x21, 3	// tmp560, _398,
+	mul	x0, x0, x1	// tmp561, tmp560, tmp562
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cbz	x0, .L3031	// tmp561,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x1, 6148914691236517205	// tmp563,
+	add	x25, sp, 184	// tmp656,,
+	movk	x1, 0x555, lsl 48	// tmp563,,
+	cmp	x0, x1	// tmp561, tmp563
+	bhi	.L3214		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x21	//, _398
+	bl	_Znwm		//
+.LEHE79:
+	ldp	x22, x23, [sp, 184]	// prephitmp_117, prephitmp_100, MEM[(struct vector * *)&allresults]
+	mov	x24, x0	// __first, tmp695
+.L3031:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x21, x24, x21	// tmp565, __first, _398
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x24, x24, [sp, 256]	// __first, __first, MEM[(struct _Vector_base *)&D.52245]._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	cmp	x23, x22	// prephitmp_100, prephitmp_117
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x21, [sp, 272]	// tmp565, MEM[(struct _Vector_base *)&D.52245]._M_impl.D.45827._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:79: 	  _ForwardIterator __cur = __result;
+	mov	x21, x24	// __cur, __first
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	beq	.L3033		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x25, 1152921504606846975	// tmp665,
+	.p2align 3,,7
+.L3039:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x0, x26, [x22]	// MEM[base: _732, offset: 0B], MEM[base: _732, offset: 8B], MEM[base: _732, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [x21]	//,, MEM[base: __cur_295, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x3, 0	// _438,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [x21, 16]	//, MEM[base: __cur_295, offset: 16B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x26, x26, x0	// _425, MEM[base: _732, offset: 8B], MEM[base: _732, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cmp	xzr, x26, asr 3	//, _425,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x0, x26, 3	// tmp568, _425,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	beq	.L3035		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	cmp	x0, x25	// tmp568, tmp665
+	bhi	.L3215		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x26	//, _425
+.LEHB80:
+	bl	_Znwm		//
+.LEHE80:
+	mov	x3, x0	// _438, tmp696
+.L3035:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x26, x3, x26	// tmp571, _438, _425
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x3, x3, [x21]	// _438, _438, MEM[base: __cur_295, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x26, [x21, 16]	// tmp571, MEM[base: __cur_295, offset: 16B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:555: 	  std::__uninitialized_copy_a(__x.begin(), __x.end(),
+	ldp	x1, x2, [x22]	// _431, _432, MEM[base: _732, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	cmp	x1, x2	// _431, _432
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
+	sub	x26, x2, x1	// _433, _432, _431
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	beq	.L3038		//,
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+	mov	x0, x3	//, _438
+	mov	x2, x26	//, _433
+	bl	memmove		//
+	mov	x3, x0	// _438,
+.L3038:
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	add	x3, x3, x26	// tmp572, _438, _433
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x3, [x21, 8]	// tmp572, MEM[base: __cur_295, offset: 8B]
+	add	x22, x22, 24	// ivtmp.2198, ivtmp.2198,
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	add	x21, x21, 24	// __cur, __cur,
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	cmp	x23, x22	// prephitmp_100, ivtmp.2198
+	bne	.L3039		//,
+.L3033:
+// bitmapdecoding.cpp:237:   std::vector<unsigned long long> mins = compute_mins(allresults);
+	add	x8, sp, 208	//,,
+	add	x0, sp, 256	// tmp763,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x21, [sp, 264]	// __cur, D.52245.D.46492._M_impl.D.45827._M_finish
+.LEHB81:
+// bitmapdecoding.cpp:237:   std::vector<unsigned long long> mins = compute_mins(allresults);
+	bl	_Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE		//
+.LEHE81:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldp	x21, x22, [sp, 256]	// __first, prephitmp_83, D.52245.D.46492._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x21, x22	// __first, prephitmp_83
+	beq	.L3047		//,
+	.p2align 3,,7
+.L3049:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [x21]	// _455, MEM[base: __first_294, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3048	// _455,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3048:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	add	x21, x21, 24	// __first, __first,
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x22, x21	// prephitmp_83, __first
+	bne	.L3049		//,
+	ldr	x22, [sp, 256]	// prephitmp_83, MEM[(struct _Vector_base *)&D.52245]._M_impl.D.45827._M_start
+.L3047:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x22, .L3050	// prephitmp_83,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x22	//, prephitmp_83
+	bl	_ZdlPv		//
+.L3050:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:552: 	_Alloc_traits::_S_select_on_copy(__x._M_get_Tp_allocator()))
+	ldp	x22, x23, [sp, 184]	// pretmp_858, pretmp_860, MEM[(struct vector * *)&allresults]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	mov	x1, -6148914691236517206	// tmp582,
+	movk	x1, 0xaaab, lsl 0	// tmp582,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 256]	//,, MEM[(struct _Vector_impl_data *)&D.52248]._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x25, 0	// __first,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [sp, 272]	//, MEM[(struct _Vector_impl_data *)&D.52248]._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x21, x23, x22	// _442, pretmp_860, pretmp_858
+	asr	x0, x21, 3	// tmp580, _442,
+	mul	x0, x0, x1	// tmp581, tmp580, tmp582
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cbz	x0, .L3052	// tmp581,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x1, 6148914691236517205	// tmp583,
+	movk	x1, 0x555, lsl 48	// tmp583,,
+	cmp	x0, x1	// tmp581, tmp583
+	bhi	.L3216		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x21	//, _442
+.LEHB82:
+	bl	_Znwm		//
+.LEHE82:
+	ldp	x22, x23, [sp, 184]	// pretmp_858, pretmp_860, MEM[(struct vector * *)&allresults]
+	mov	x25, x0	// __first, tmp698
+.L3052:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x21, x25, x21	// tmp585, __first, _442
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x25, x25, [sp, 256]	// __first, __first, MEM[(struct _Vector_base *)&D.52248]._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	cmp	x22, x23	// pretmp_858, pretmp_860
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x21, [sp, 272]	// tmp585, MEM[(struct _Vector_base *)&D.52248]._M_impl.D.45827._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:79: 	  _ForwardIterator __cur = __result;
+	mov	x21, x25	// __cur, __first
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	beq	.L3054		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x24, 1152921504606846975	// tmp663,
+	.p2align 3,,7
+.L3060:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x0, x26, [x22]	// MEM[base: _767, offset: 0B], MEM[base: _767, offset: 8B], MEM[base: _767, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [x21]	//,, MEM[base: __cur_215, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x3, 0	// _488,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [x21, 16]	//, MEM[base: __cur_215, offset: 16B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x26, x26, x0	// _475, MEM[base: _767, offset: 8B], MEM[base: _767, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cmp	xzr, x26, asr 3	//, _475,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x0, x26, 3	// tmp588, _475,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	beq	.L3056		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	cmp	x0, x24	// tmp588, tmp663
+	bhi	.L3217		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x26	//, _475
+.LEHB83:
+	bl	_Znwm		//
+.LEHE83:
+	mov	x3, x0	// _488, tmp699
+.L3056:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x26, x3, x26	// tmp591, _488, _475
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x3, x3, [x21]	// _488, _488, MEM[base: __cur_215, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x26, [x21, 16]	// tmp591, MEM[base: __cur_215, offset: 16B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:555: 	  std::__uninitialized_copy_a(__x.begin(), __x.end(),
+	ldp	x1, x2, [x22]	// _481, _482, MEM[base: _767, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	cmp	x1, x2	// _481, _482
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
+	sub	x26, x2, x1	// _483, _482, _481
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	beq	.L3059		//,
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+	mov	x0, x3	//, _488
+	mov	x2, x26	//, _483
+	bl	memmove		//
+	mov	x3, x0	// _488,
+.L3059:
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	add	x3, x3, x26	// tmp592, _488, _483
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x3, [x21, 8]	// tmp592, MEM[base: __cur_215, offset: 8B]
+	add	x22, x22, 24	// ivtmp.2185, ivtmp.2185,
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	add	x21, x21, 24	// __cur, __cur,
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	cmp	x23, x22	// pretmp_860, ivtmp.2185
+	bne	.L3060		//,
+.L3054:
+// bitmapdecoding.cpp:238:   std::vector<double> avg = compute_averages(allresults);
+	add	x8, sp, 232	//,,
+	add	x0, sp, 256	// tmp764,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x21, [sp, 264]	// __cur, D.52248.D.46492._M_impl.D.45827._M_finish
+.LEHB84:
+// bitmapdecoding.cpp:238:   std::vector<double> avg = compute_averages(allresults);
+	bl	_Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE		//
+.LEHE84:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldp	x21, x22, [sp, 256]	// __first, pretmp_868, D.52248.D.46492._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x21, x22	// __first, pretmp_868
+	beq	.L3069		//,
+	.p2align 3,,7
+.L3071:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [x21]	// _493, MEM[base: __first_282, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3070	// _493,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3070:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	add	x21, x21, 24	// __first, __first,
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x22, x21	// pretmp_868, __first
+	bne	.L3071		//,
+	ldr	x22, [sp, 256]	// pretmp_868, MEM[(struct _Vector_base *)&D.52248]._M_impl.D.45827._M_start
+.L3069:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x22, .L3072	// pretmp_868,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x22	//, pretmp_868
+	bl	_ZdlPv		//
+.L3072:
+// bitmapdecoding.cpp:243:          double(mins[1]) / mins[0], double(mins[0]) / matches,
+	ldr	x1, [sp, 208]	// _139, MEM[(long long unsigned int * *)&mins]
+// bitmapdecoding.cpp:239:   printf("instructions per cycle %4.2f, cycles per value set:  "
+	adrp	x0, .LC19	// tmp612,
+	ldr	d4, [sp, 128]	// wordcount, wordcount
+	add	x0, x0, :lo12:.LC19	//, tmp612,
+	ldp	d1, d0, [x1]	// MEM[(value_type &)_139], MEM[(value_type &)_139 + 8], MEM[(value_type &)_139]
+	ldr	w1, [sp, 124]	//, matches
+	ucvtf	d4, d4	// _31, wordcount
+	ucvtf	d1, d1	// _24, MEM[(value_type &)_139]
+	ucvtf	d0, d0	// _22, MEM[(value_type &)_139 + 8]
+	ucvtf	d5, w1	// _27, matches
+	fdiv	d3, d1, d4	//, _24, _31
+	fdiv	d2, d0, d5	//, _22, _27
+	fdiv	d4, d0, d4	//, _22, _31
+	fdiv	d0, d0, d1	//, _22, _24
+	fdiv	d1, d1, d5	//, _24, _27
+.LEHB85:
+	bl	printf		//
+// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
+	ldr	x2, [sp, 208]	// _140, MEM[(long long unsigned int * *)&mins]
+// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
+	adrp	x0, .LC20	// tmp622,
+// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
+	ldr	x1, [sp, 128]	// wordcount, wordcount
+	fmov	d0, x1	// wordcount, wordcount
+// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
+	ldp	d2, d1, [x2]	// MEM[(value_type &)_140], MEM[(value_type &)_140 + 8], MEM[(value_type &)_140]
+// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
+	shl	d0, d0, 6	// tmp613, wordcount,
+// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
+	add	x0, x0, :lo12:.LC20	//, tmp622,
+	ucvtf	d2, d2	// tmp618, MEM[(value_type &)_140]
+	ucvtf	d1, d1	// tmp615, MEM[(value_type &)_140 + 8]
+	ucvtf	d0, d0	// _38, tmp613
+	fdiv	d1, d1, d0	//, tmp615, _38
+	fdiv	d0, d2, d0	//, tmp618, _38
+	bl	printf		//
+// bitmapdecoding.cpp:250:   printf("min: %8llu cycles, %8llu instructions, \t%8llu branch mis., %8llu "
+	ldr	x5, [sp, 208]	// _141, MEM[(long long unsigned int * *)&mins]
+	adrp	x0, .LC21	// tmp629,
+	add	x0, x0, :lo12:.LC21	//, tmp629,
+	ldp	x1, x2, [x5]	//,, MEM[(value_type &)_141]
+	ldp	x3, x4, [x5, 16]	//,, MEM[(value_type &)_141 + 16]
+	ldr	x5, [x5, 32]	//, MEM[(value_type &)_141 + 32]
+	bl	printf		//
+// bitmapdecoding.cpp:253:   printf("avg: %8.1f cycles, %8.1f instructions, \t%8.1f branch mis., %8.1f "
+	ldr	x1, [sp, 232]	// _142, MEM[(double * *)&avg]
+	adrp	x0, .LC22	// tmp636,
+	add	x0, x0, :lo12:.LC22	//, tmp636,
+	ldp	d0, d1, [x1]	//,, MEM[(value_type &)_142]
+	ldp	d2, d3, [x1, 16]	//,, MEM[(value_type &)_142 + 16]
+	ldr	d4, [x1, 32]	//, MEM[(value_type &)_142 + 32]
+	bl	printf		//
+// bitmapdecoding.cpp:256:   printf("\n");
+	mov	w0, 10	//,
+	bl	putchar		//
+.LEHE85:
+// bitmapdecoding.cpp:257:   delete[] array;
+	cbz	x20, .L3073	// _67,
+// bitmapdecoding.cpp:257:   delete[] array;
+	mov	x0, x20	//, _67
+	bl	_ZdaPv		//
+.L3073:
+// bitmapdecoding.cpp:258:   delete[] bigarray;
+	mov	x0, x19	//, _72
+	bl	_ZdaPv		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 232]	// _148, avg.D.47664._M_impl.D.46999._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3074	// _148,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3074:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 208]	// _147, mins.D.45414._M_impl.D.44749._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3075	// _147,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3075:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldp	x19, x20, [sp, 184]	// __first, pretmp_870, allresults.D.46492._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x19, x20	// __first, pretmp_870
+	beq	.L3076		//,
+	.p2align 3,,7
+.L3078:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [x19]	// _499, MEM[base: __first_283, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3077	// _499,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3077:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	add	x19, x19, 24	// __first, __first,
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x20, x19	// pretmp_870, __first
+	bne	.L3078		//,
+	ldr	x20, [sp, 184]	// pretmp_870, MEM[(struct _Vector_base *)&allresults]._M_impl.D.45827._M_start
+.L3076:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x20, .L3079	// pretmp_870,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x20	//, pretmp_870
+	bl	_ZdlPv		//
+.L3079:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 160]	// _146, results.D.45414._M_impl.D.44749._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3080	// _146,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3080:
+// linux-perf-events.h:59:   ~LinuxEvents() { close(fd); }
+	ldr	w0, [sp, 288]	//, unified.fd
+	bl	close		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 440]	// _503, MEM[(struct vector *)&unified + 152B].D.43213._M_impl.D.42516._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3081	// _503,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3081:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 416]	// _504, MEM[(struct vector *)&unified + 128B].D.43213._M_impl.D.42516._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3082	// _504,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3082:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 136]	// _145, evts.D.44271._M_impl.D.43606._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L2970	// _145,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L2970:
+	ldp	x19, x20, [sp, 16]	//,,
+	.cfi_remember_state
+	.cfi_restore 20
+	.cfi_restore 19
+// bitmapdecoding.cpp:259: }
+	ldp	x21, x22, [sp, 32]	//,,
+	ldp	x23, x24, [sp, 48]	//,,
+	ldp	x25, x26, [sp, 64]	//,,
+	ldp	x29, x30, [sp], 464	//,,,
+	.cfi_restore 30
+	.cfi_restore 29
+	.cfi_restore 25
+	.cfi_restore 26
+	.cfi_restore 23
+	.cfi_restore 24
+	.cfi_restore 21
+	.cfi_restore 22
+	.cfi_def_cfa_offset 0
+	ret	
+	.p2align 2,,3
+.L3210:
+	.cfi_restore_state
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	mov	x3, 29	// tmp485,
+	add	x25, sp, 184	// tmp749,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	add	x1, sp, 232	// tmp750,,
+	add	x0, sp, 256	// tmp751,,
+	mov	x2, 0	//,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	str	x3, [sp, 232]	// tmp485, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
+	str	x22, [sp, 256]	// tmp668, MEM[(struct _Alloc_hider *)&D.67116]._M_p
+.LEHB86:
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
+.LEHE86:
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	adrp	x3, .LC15	// tmp490,
+	add	x3, x3, :lo12:.LC15	// tmp489, tmp490,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	mov	x2, x0	// _355, tmp690
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
+	str	x2, [sp, 256]	// _355, MEM[(char * *)&D.67116]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
+	ldr	x0, [sp, 232]	// __dnew, __dnew
+	str	x0, [sp, 272]	// __dnew, MEM[(size_type *)&D.67116 + 16B]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldr	x0, [x3, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
+	str	x0, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_355]
+	ldp	x4, x5, [x3]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
+	stp	x4, x5, [x2]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_355]
+// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
+	add	x1, sp, 256	// tmp752,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldr	x3, [x3, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
+	str	x3, [x2, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_355]
+// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
+	add	x0, sp, 288	// tmp753,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
+	ldr	x2, [sp, 232]	// __dnew.49_359, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
+	str	x2, [sp, 264]	// __dnew.49_359, MEM[(size_type *)&D.67116 + 8B]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
+	ldr	x3, [sp, 256]	// MEM[(char * *)&D.67116], MEM[(char * *)&D.67116]
+	strb	wzr, [x3, x2]	//, MEM[(char_type &)_361]
+.LEHB87:
+// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
+	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
+.LEHE87:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x0, [sp, 256]	// _322, MEM[(char * *)&D.67116]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	cmp	x0, x22	// _322, tmp668
+	beq	.L3006		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
+	b	.L3006		//
+	.p2align 2,,3
+.L3208:
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	mov	x3, 27	// tmp433,
+	add	x25, sp, 184	// tmp736,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	add	x1, sp, 232	// tmp737,,
+	add	x0, sp, 256	// tmp738,,
+	mov	x2, 0	//,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	str	x3, [sp, 232]	// tmp433, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
+	str	x22, [sp, 256]	// tmp668, MEM[(struct _Alloc_hider *)&D.67081]._M_p
+.LEHB88:
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
+.LEHE88:
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	adrp	x2, .LC13	// tmp438,
+	add	x2, x2, :lo12:.LC13	// tmp437, tmp438,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
+	ldr	x1, [sp, 232]	// __dnew, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
+	str	x0, [sp, 256]	// _300, MEM[(char * *)&D.67081]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
+	str	x1, [sp, 272]	// __dnew, MEM[(size_type *)&D.67081 + 16B]
+// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
+	add	x1, sp, 256	// tmp739,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldr	x3, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
+	str	x3, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_300]
+	ldp	x4, x5, [x2]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
+	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_300]
+	ldr	w2, [x2, 23]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
+	str	w2, [x0, 23]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_300]
+// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
+	add	x0, sp, 288	// tmp740,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
+	ldr	x2, [sp, 232]	// __dnew.49_304, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
+	str	x2, [sp, 264]	// __dnew.49_304, MEM[(size_type *)&D.67081 + 8B]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
+	ldr	x3, [sp, 256]	// MEM[(char * *)&D.67081], MEM[(char * *)&D.67081]
+	strb	wzr, [x3, x2]	//, MEM[(char_type &)_306]
+.LEHB89:
+// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
+	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
+.LEHE89:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x0, [sp, 256]	// _288, MEM[(char * *)&D.67081]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	cmp	x0, x22	// _288, tmp668
+	beq	.L3000		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	ldr	w0, [sp, 288]	//, unified.fd
+	mov	w2, 1	//,
+	mov	x1, 9216	//,
+	bl	ioctl		//
+// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	cmn	w0, #1	// tmp685,
+	bne	.L3002		//,
+	.p2align 3,,7
+.L3209:
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	mov	x3, 28	// tmp452,
+	add	x25, sp, 184	// tmp741,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	add	x1, sp, 232	// tmp742,,
+	add	x0, sp, 256	// tmp743,,
+	mov	x2, 0	//,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	str	x3, [sp, 232]	// tmp452, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
+	str	x22, [sp, 256]	// tmp668, MEM[(struct _Alloc_hider *)&D.67080]._M_p
+.LEHB90:
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
+.LEHE90:
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	adrp	x2, .LC14	// tmp457,
+	add	x2, x2, :lo12:.LC14	// tmp456, tmp457,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
+	ldr	x1, [sp, 232]	// __dnew, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
+	str	x0, [sp, 256]	// _313, MEM[(char * *)&D.67080]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldr	w3, [x2, 24]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
+	str	x1, [sp, 272]	// __dnew, MEM[(size_type *)&D.67080 + 16B]
+// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
+	add	x1, sp, 256	// tmp744,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldp	x4, x5, [x2]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
+	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_313]
+	ldr	x2, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
+	str	x2, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_313]
+	str	w3, [x0, 24]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_313]
+// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
+	add	x0, sp, 288	// tmp745,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
+	ldr	x2, [sp, 232]	// __dnew.49_317, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
+	str	x2, [sp, 264]	// __dnew.49_317, MEM[(size_type *)&D.67080 + 8B]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
+	ldr	x3, [sp, 256]	// MEM[(char * *)&D.67080], MEM[(char * *)&D.67080]
+	strb	wzr, [x3, x2]	//, MEM[(char_type &)_319]
+.LEHB91:
+// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
+	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
+.LEHE91:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x0, [sp, 256]	// _291, MEM[(char * *)&D.67080]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	cmp	x0, x22	// _291, tmp668
+	beq	.L3002		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
+	b	.L3002		//
+	.p2align 2,,3
+.L3022:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1195: 	  _M_realloc_insert(end(), __x);
+	add	x25, sp, 184	// tmp760,,
+	mov	x1, x23	//, _375
+	add	x2, sp, 160	//,,
+	mov	x0, x25	// tmp761, tmp760
+.LEHB92:
+	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_		//
+.LEHE92:
+	b	.L3028		//
+	.p2align 2,,3
+.L3211:
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	mov	w2, 25970	// tmp508,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
+	mov	x3, 4	// tmp509,
+	stp	x22, x3, [sp, 256]	// tmp668, tmp509, MEM[(struct _Alloc_hider *)&D.67115]._M_p
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	movk	w2, 0x6461, lsl 16	// tmp508,,
+// linux-perf-events.h:77:       report_error("read");
+	add	x1, sp, 256	// tmp755,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
+	strb	wzr, [sp, 276]	//, MEM[(char_type &)&D.67115 + 20]
+// linux-perf-events.h:77:       report_error("read");
+	add	x0, sp, 288	// tmp756,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	str	w2, [x22]	// tmp508, MEM[(void *)&D.67115 + 16B]
+.LEHB93:
+// linux-perf-events.h:77:       report_error("read");
+	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
+.LEHE93:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x0, [sp, 256]	// _329, MEM[(char * *)&D.67115]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	cmp	x0, x22	// _329, tmp668
+	beq	.L3014		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
+	b	.L3014		//
+.L3213:
+// bitmapdecoding.cpp:233:     printf("bogus\n.");
+	adrp	x0, .LC16	// tmp542,
+	add	x25, sp, 184	// tmp656,,
+	add	x0, x0, :lo12:.LC16	//, tmp542,
+.LEHB94:
+	bl	printf		//
+.LEHE94:
+	b	.L3029		//
+.L3207:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:939: 	  _M_erase_at_end(this->_M_impl._M_start + __new_size);
+	add	x0, x3, x0, lsl 3	// _277, _270, _244,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1791: 	if (size_type __n = this->_M_impl._M_finish - __pos)
+	cmp	x2, x0	// _271, _277
+	beq	.L2986		//,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1795: 	    this->_M_impl._M_finish = __pos;
+	str	x0, [sp, 424]	// _277, MEM[(long unsigned int * *)&unified + 136B]
+	b	.L2986		//
+.L3206:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:937: 	  _M_default_append(__new_size - size());
+	sub	x1, x0, x1	//, _244, tmp386
+	add	x0, sp, 416	//,,
+.LEHB95:
+	bl	_ZNSt6vectorImSaImEE17_M_default_appendEm		//
+.LEHE95:
+	b	.L2986		//
+.L2997:
+	add	x25, sp, 184	// tmp656,,
+	add	x0, sp, 160	//,,
+.LEHB96:
+	bl	_ZNSt6vectorIySaIyEE17_M_default_appendEm		//
+.LEHE96:
+	b	.L2999		//
+.L2976:
+	mov	x1, x21	//, prephitmp_384
+	add	x0, sp, 440	//,,
+.LEHB97:
+	bl	_ZNSt6vectorImSaImEE17_M_default_appendEm		//
+.LEHE97:
+	b	.L2979		//
+.L3092:
+	mov	x22, 0	// prephitmp_348,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	str	xzr, [sp, 104]	//, %sfp
+	b	.L2973		//
+.L3204:
+.LEHB98:
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE98:
+.L3212:
+.LEHB99:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE99:
+.L3217:
+.LEHB100:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE100:
+.L3216:
+.LEHB101:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE101:
+.L3215:
+.LEHB102:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE102:
+.L3214:
+.LEHB103:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE103:
+.L3099:
+	mov	x19, x0	// tmp641, tmp701
+	add	x25, sp, 184	// tmp656,,
+	add	x0, sp, 256	// tmp766,,
+	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
+.L3009:
+// bitmapdecoding.cpp:220:   std::vector<std::vector<unsigned long long>> allresults;
+	mov	x0, x25	//, tmp656
+	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 160]	// _152, results.D.45414._M_impl.D.44749._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbnz	x0, .L3218	// _152,
+.L3090:
+// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
+	add	x0, sp, 288	// tmp768,,
+	bl	_ZN11LinuxEventsILi0EED1Ev		//
+.L3084:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 136]	// _153, evts.D.44271._M_impl.D.43606._M_start
+	stp	x27, x28, [sp, 80]	//,,
+	.cfi_offset 28, -376
+	.cfi_offset 27, -384
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3091	// _153,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3091:
+	mov	x0, x19	//, tmp638
+.LEHB104:
+	bl	_Unwind_Resume		//
+.LEHE104:
+.L3110:
+	.cfi_restore 27
+	.cfi_restore 28
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
+	bl	__cxa_begin_catch		//
+.L3044:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x21, x24	// __cur, __first
+	bne	.L3219		//,
+.LEHB105:
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:89: 	      __throw_exception_again;
+	bl	__cxa_rethrow		//
+.LEHE105:
+.L3112:
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
+	bl	__cxa_begin_catch		//
+.L3065:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x21, x25	// __cur, __first
+	bne	.L3220		//,
+.LEHB106:
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:89: 	      __throw_exception_again;
+	bl	__cxa_rethrow		//
+.LEHE106:
+.L3219:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [x24]	// _421, MEM[base: __first_420, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3043	// _421,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3043:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	add	x24, x24, 24	// __first, __first,
+	b	.L3044		//
+.L3109:
+	mov	x19, x0	// tmp577, tmp697
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
+	bl	__cxa_end_catch		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:332: 	_M_deallocate(_M_impl._M_start,
+	ldr	x0, [sp, 256]	// _407, MEM[(struct _Vector_base *)&D.52245]._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3089	// _407,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3089:
+	add	x25, sp, 184	// tmp656,,
+	b	.L3009		//
+.L2971:
+	stp	x27, x28, [sp, 80]	//,,
+	.cfi_offset 28, -376
+	.cfi_offset 27, -384
+.LEHB107:
+// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
+	bl	__cxa_throw_bad_array_new_length		//
+.LEHE107:
+.L3105:
+	.cfi_restore 27
+	.cfi_restore 28
+.L3201:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x1, [sp, 256]	// _347,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	add	x2, sp, 272	// tmp526,,
+	mov	x19, x0	// tmp527, tmp693
+	cmp	x1, x2	// _347, tmp526
+	beq	.L3089		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x1	//, _347
+	add	x25, sp, 184	// tmp656,,
+	bl	_ZdlPv		//
+	b	.L3009		//
+.L3100:
+	mov	x19, x0	// tmp600, tmp704
+	b	.L3068		//
+.L3108:
+	b	.L3201		//
+.L3218:
+	bl	_ZdlPv		//
+// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
+	b	.L3090		//
+.L3220:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [x25]	// _471, MEM[base: __first_470, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3064	// _471,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3064:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	add	x25, x25, 24	// __first, __first,
+	b	.L3065		//
+.L3111:
+	mov	x19, x0	// tmp597, tmp700
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
+	bl	__cxa_end_catch		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:332: 	_M_deallocate(_M_impl._M_start,
+	ldr	x0, [sp, 256]	// _451, MEM[(struct _Vector_base *)&D.52248]._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3068	// _451,
+.L3197:
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3068:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 208]	// _151, mins.D.45414._M_impl.D.44749._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3089	// _151,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+	b	.L3089		//
+.L3098:
+	mov	x19, x0	// tmp472, tmp705
+	b	.L3009		//
+.L3104:
+	.cfi_offset 27, -384
+	.cfi_offset 28, -376
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x2, [sp, 256]	// _245, MEM[(char * *)&D.67054]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	add	x1, sp, 272	// tmp416,,
+	mov	x19, x0	// tmp418, tmp681
+	cmp	x2, x1	// _245, tmp416
+	beq	.L3196		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x2	//, _245
+	bl	_ZdlPv		//
+	ldp	x27, x28, [sp, 80]	//,,
+	.cfi_restore 28
+	.cfi_restore 27
+.L2992:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 440]	// _246, MEM[(struct vector *)&unified + 152B].D.43213._M_impl.D.42516._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L2993	// _246,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L2993:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 416]	// _247, MEM[(struct vector *)&unified + 128B].D.43213._M_impl.D.42516._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L2994	// _247,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L2994:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	ldr	x0, [sp, 104]	// _212, %sfp
+	cbz	x0, .L3084	// _212,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	ldr	x0, [sp, 104]	//, %sfp
+	bl	_ZdlPv		//
+// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
+	b	.L3084		//
+.L3196:
+	.cfi_offset 27, -384
+	.cfi_offset 28, -376
+	ldp	x27, x28, [sp, 80]	//,,
+	.cfi_restore 28
+	.cfi_restore 27
+	b	.L2992		//
+.L3097:
+	mov	x19, x0	// tmp638, tmp706
+	b	.L3084		//
+.L3107:
+	b	.L3201		//
+.L3106:
+	b	.L3201		//
+.L3101:
+	mov	x19, x0	// tmp702,
+	add	x0, sp, 256	// tmp767,,
+	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
+	b	.L3068		//
+.L3102:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x1, [sp, 232]	// _150, avg.D.47664._M_impl.D.46999._M_start
+	mov	x19, x0	// tmp646, tmp703
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x1, .L3068	// _150,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x1	//, _150
+	b	.L3197		//
+.L3103:
+	mov	x19, x0	// tmp417, tmp682
+	b	.L2992		//
+	.cfi_endproc
+.LFE2421:
+	.section	.gcc_except_table
+	.align	2
+.LLSDA2421:
+	.byte	0xff
+	.byte	0x9b
+	.uleb128 .LLSDATT2421-.LLSDATTD2421
+.LLSDATTD2421:
+	.byte	0x1
+	.uleb128 .LLSDACSE2421-.LLSDACSB2421
+.LLSDACSB2421:
+	.uleb128 .LEHB76-.LFB2421
+	.uleb128 .LEHE76-.LEHB76
+	.uleb128 0
+	.uleb128 0
+	.uleb128 .LEHB77-.LFB2421
+	.uleb128 .LEHE77-.LEHB77
+	.uleb128 .L3097-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB78-.LFB2421
+	.uleb128 .LEHE78-.LEHB78
+	.uleb128 .L3104-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB79-.LFB2421
+	.uleb128 .LEHE79-.LEHB79
+	.uleb128 .L3098-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB80-.LFB2421
+	.uleb128 .LEHE80-.LEHB80
+	.uleb128 .L3110-.LFB2421
+	.uleb128 0x1
+	.uleb128 .LEHB81-.LFB2421
+	.uleb128 .LEHE81-.LEHB81
+	.uleb128 .L3099-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB82-.LFB2421
+	.uleb128 .LEHE82-.LEHB82
+	.uleb128 .L3100-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB83-.LFB2421
+	.uleb128 .LEHE83-.LEHB83
+	.uleb128 .L3112-.LFB2421
+	.uleb128 0x1
+	.uleb128 .LEHB84-.LFB2421
+	.uleb128 .LEHE84-.LEHB84
+	.uleb128 .L3101-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB85-.LFB2421
+	.uleb128 .LEHE85-.LEHB85
+	.uleb128 .L3102-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB86-.LFB2421
+	.uleb128 .LEHE86-.LEHB86
+	.uleb128 .L3098-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB87-.LFB2421
+	.uleb128 .LEHE87-.LEHB87
+	.uleb128 .L3108-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB88-.LFB2421
+	.uleb128 .LEHE88-.LEHB88
+	.uleb128 .L3098-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB89-.LFB2421
+	.uleb128 .LEHE89-.LEHB89
+	.uleb128 .L3106-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB90-.LFB2421
+	.uleb128 .LEHE90-.LEHB90
+	.uleb128 .L3098-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB91-.LFB2421
+	.uleb128 .LEHE91-.LEHB91
+	.uleb128 .L3105-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB92-.LFB2421
+	.uleb128 .LEHE92-.LEHB92
+	.uleb128 .L3098-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB93-.LFB2421
+	.uleb128 .LEHE93-.LEHB93
+	.uleb128 .L3107-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB94-.LFB2421
+	.uleb128 .LEHE94-.LEHB94
+	.uleb128 .L3098-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB95-.LFB2421
+	.uleb128 .LEHE95-.LEHB95
+	.uleb128 .L3103-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB96-.LFB2421
+	.uleb128 .LEHE96-.LEHB96
+	.uleb128 .L3098-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB97-.LFB2421
+	.uleb128 .LEHE97-.LEHB97
+	.uleb128 .L3103-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB98-.LFB2421
+	.uleb128 .LEHE98-.LEHB98
+	.uleb128 .L3097-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB99-.LFB2421
+	.uleb128 .LEHE99-.LEHB99
+	.uleb128 .L3098-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB100-.LFB2421
+	.uleb128 .LEHE100-.LEHB100
+	.uleb128 .L3112-.LFB2421
+	.uleb128 0x1
+	.uleb128 .LEHB101-.LFB2421
+	.uleb128 .LEHE101-.LEHB101
+	.uleb128 .L3100-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB102-.LFB2421
+	.uleb128 .LEHE102-.LEHB102
+	.uleb128 .L3110-.LFB2421
+	.uleb128 0x1
+	.uleb128 .LEHB103-.LFB2421
+	.uleb128 .LEHE103-.LEHB103
+	.uleb128 .L3098-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB104-.LFB2421
+	.uleb128 .LEHE104-.LEHB104
+	.uleb128 0
+	.uleb128 0
+	.uleb128 .LEHB105-.LFB2421
+	.uleb128 .LEHE105-.LEHB105
+	.uleb128 .L3109-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB106-.LFB2421
+	.uleb128 .LEHE106-.LEHB106
+	.uleb128 .L3111-.LFB2421
+	.uleb128 0
+	.uleb128 .LEHB107-.LFB2421
+	.uleb128 .LEHE107-.LEHB107
+	.uleb128 0
+	.uleb128 0
+.LLSDACSE2421:
+	.byte	0x1
+	.byte	0
+	.align	2
+	.4byte	0
+
+.LLSDATT2421:
+	.section	.text._Z4testIXadL_Z16simdjson_decoderPjRjjmEEEvPKcc,"axG",@progbits,_Z4testIXadL_Z16simdjson_decoderPjRjjmEEEvPKcc,comdat
+	.size	_Z4testIXadL_Z16simdjson_decoderPjRjjmEEEvPKcc, .-_Z4testIXadL_Z16simdjson_decoderPjRjjmEEEvPKcc
+	.section	.text._Z4testIXadL_Z14faster_decoderPjRjjmEEEvPKcc,"axG",@progbits,_Z4testIXadL_Z14faster_decoderPjRjjmEEEvPKcc,comdat
+	.align	2
+	.p2align 3,,7
+	.weak	_Z4testIXadL_Z14faster_decoderPjRjjmEEEvPKcc
+	.type	_Z4testIXadL_Z14faster_decoderPjRjjmEEEvPKcc, %function
+_Z4testIXadL_Z14faster_decoderPjRjjmEEEvPKcc:
+.LFB2425:
+	.cfi_startproc
+	.cfi_personality 0x9b,DW.ref.__gxx_personality_v0
+	.cfi_lsda 0x1b,.LLSDA2425
+	stp	x29, x30, [sp, -464]!	//,,,
+	.cfi_def_cfa_offset 464
+	.cfi_offset 29, -464
+	.cfi_offset 30, -456
+	mov	x29, sp	//,
+// bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
+	add	x2, sp, 128	//,,
+// bitmapdecoding.cpp:206: void test(const char *filename, char target) {
+	stp	x21, x22, [sp, 32]	//,,
+	stp	x23, x24, [sp, 48]	//,,
+	stp	x25, x26, [sp, 64]	//,,
+.LEHB108:
+	.cfi_offset 21, -432
+	.cfi_offset 22, -424
+	.cfi_offset 23, -416
+	.cfi_offset 24, -408
+	.cfi_offset 25, -400
+	.cfi_offset 26, -392
+// bitmapdecoding.cpp:208:   uint64_t *array = build_bitmap(filename, target, &wordcount);
+	bl	_Z12build_bitmapPKccPm		//
+// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
+	mov	x2, 2305843009213693950	// tmp347,
+// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
+	ldr	x1, [sp, 128]	// wordcount.168_1, wordcount
+	stp	x19, x20, [sp, 16]	//,,
+	.cfi_offset 20, -440
+	.cfi_offset 19, -448
+// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
+	cmp	x2, x1, lsl 6	// tmp347, wordcount.168_1,
+	bcc	.L3222		//,
+	mov	x19, x0	// _67, tmp677
+// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
+	lsl	x0, x1, 8	//, wordcount.168_1,
+	bl	_Znam		//
+.LEHE108:
+	mov	x20, x0	// _72, tmp678
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	add	x1, sp, 288	// tmp711,,
+	add	x0, sp, 136	// tmp712,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 136]	//,, MEM[(struct _Vector_impl_data *)&evts]._M_start
+	str	xzr, [sp, 152]	//, MEM[(struct _Vector_impl_data *)&evts]._M_end_of_storage
+// bitmapdecoding.cpp:213:   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
+	str	wzr, [sp, 288]	//, D.52332
+.LEHB109:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
+// bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
+	mov	w2, 1	// tmp352,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	add	x1, sp, 288	// tmp713,,
+	add	x0, sp, 136	// tmp714,,
+// bitmapdecoding.cpp:214:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
+	str	w2, [sp, 288]	// tmp352, D.52333
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
+// bitmapdecoding.cpp:215:   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
+	mov	w2, 5	// tmp355,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	add	x1, sp, 288	// tmp715,,
+	add	x0, sp, 136	// tmp716,,
+// bitmapdecoding.cpp:215:   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
+	str	w2, [sp, 288]	// tmp355, D.52334
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
+// bitmapdecoding.cpp:216:   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
+	mov	w2, 2	// tmp358,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	add	x1, sp, 288	// tmp717,,
+	add	x0, sp, 136	// tmp718,,
+// bitmapdecoding.cpp:216:   evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
+	str	w2, [sp, 288]	// tmp358, D.52335
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
+// bitmapdecoding.cpp:217:   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
+	mov	w2, 3	// tmp361,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	add	x0, sp, 136	// tmp719,,
+	add	x1, sp, 288	// tmp720,,
+// bitmapdecoding.cpp:217:   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
+	str	w2, [sp, 288]	// tmp361, D.52336
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
+	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:552: 	_Alloc_traits::_S_select_on_copy(__x._M_get_Tp_allocator()))
+	ldp	x1, x0, [sp, 136]	// pretmp_354, pretmp_363, MEM[(int * *)&evts]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x24, x0, x1	// _365, pretmp_363, pretmp_354
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cmp	xzr, x24, asr 2	//, _365,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x21, x24, 2	// prephitmp_385, _365,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	beq	.L3344		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x0, 2305843009213693951	// tmp365,
+	cmp	x21, x0	// prephitmp_385, tmp365
+	bhi	.L3459		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x24	//, _365
+	bl	_Znwm		//
+.LEHE109:
+	str	x0, [sp, 104]	// tmp679, %sfp
+	ldr	x1, [sp, 136]	// pretmp_354, evts.D.44271._M_impl.D.43606._M_start
+	ldr	x0, [sp, 144]	// pretmp_363, MEM[(int * *)&evts + 8B]
+	sub	x24, x0, x1	// _365, pretmp_363, pretmp_354
+	asr	x22, x24, 2	// prephitmp_349, _365,
+	mov	x21, x22	// prephitmp_385, prephitmp_349
+.L3224:
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	cmp	x1, x0	// pretmp_354, pretmp_363
+	beq	.L3226		//,
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+	ldr	x0, [sp, 104]	//, %sfp
+	mov	x2, x24	//, _365
+	bl	memmove		//
+.L3226:
+// linux-perf-events.h:27:     memset(&attribs, 0, sizeof(attribs));
+	add	x1, sp, 528	// tmp723,,
+	add	x0, sp, 288	// tmp721,,
+// linux-perf-events.h:30:     attribs.disabled = 1;
+	mov	w5, 97	// tmp378,
+// linux-perf-events.h:26:   explicit LinuxEvents(std::vector<int> config_vec) : fd(0), working(true) {
+	mov	w4, 1	// tmp368,
+// linux-perf-events.h:29:     attribs.size = sizeof(attribs);
+	mov	w3, 112	// tmp371,
+// linux-perf-events.h:35:     attribs.read_format = PERF_FORMAT_GROUP | PERF_FORMAT_ID;
+	mov	x2, 12	// tmp372,
+// linux-perf-events.h:27:     memset(&attribs, 0, sizeof(attribs));
+	stp	xzr, xzr, [x1, -232]	// MEM[(void *)&unified + 8B]
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	ldr	x1, [sp, 104]	// _213, %sfp
+// linux-perf-events.h:27:     memset(&attribs, 0, sizeof(attribs));
+	stp	xzr, xzr, [x0, 40]	// MEM[(void *)&unified + 8B]
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	add	x24, x1, x24	// _211, _213, _365
+// linux-perf-events.h:30:     attribs.disabled = 1;
+	ldrb	w1, [sp, 336]	//, MEM[(struct perf_event_attr *)&unified + 48B]
+// linux-perf-events.h:26:   explicit LinuxEvents(std::vector<int> config_vec) : fd(0), working(true) {
+	str	wzr, [sp, 288]	//, unified.fd
+// linux-perf-events.h:30:     attribs.disabled = 1;
+	orr	w1, w1, w5	// tmp377, MEM[(struct perf_event_attr *)&unified + 48B], tmp378
+// linux-perf-events.h:26:   explicit LinuxEvents(std::vector<int> config_vec) : fd(0), working(true) {
+	strb	w4, [sp, 292]	// tmp368, unified.working
+// linux-perf-events.h:29:     attribs.size = sizeof(attribs);
+	str	w3, [sp, 300]	// tmp371, unified.attribs.size
+// linux-perf-events.h:35:     attribs.read_format = PERF_FORMAT_GROUP | PERF_FORMAT_ID;
+	str	x2, [sp, 328]	// tmp372, unified.attribs.read_format
+// linux-perf-events.h:30:     attribs.disabled = 1;
+	strb	w1, [sp, 336]	// tmp377, MEM[(struct perf_event_attr *)&unified + 48B]
+// linux-perf-events.h:41:     num_events = config_vec.size();
+	str	w22, [sp, 408]	// prephitmp_349, unified.num_events
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 416]	//,, MEM[(struct _Vector_impl_data *)&unified + 128B]._M_start
+	stp	xzr, xzr, [sp, 432]	//,, MEM[(struct _Vector_impl_data *)&unified + 128B]._M_end_of_storage
+	stp	xzr, xzr, [sp, 448]	//,, MEM[(struct _Vector_impl_data *)&unified + 152B]._M_finish
+// linux-perf-events.h:27:     memset(&attribs, 0, sizeof(attribs));
+	stp	xzr, xzr, [x0, 24]	// MEM[(void *)&unified + 8B]
+	stp	xzr, xzr, [x0, 56]	// MEM[(void *)&unified + 8B]
+	stp	xzr, xzr, [x0, 72]	// MEM[(void *)&unified + 8B]
+	stp	xzr, xzr, [x0, 88]	// MEM[(void *)&unified + 8B]
+	stp	xzr, xzr, [x0, 104]	// MEM[(void *)&unified + 8B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	cbnz	x21, .L3227	// prephitmp_385,
+.L3230:
+// linux-perf-events.h:44:     for (auto config : config_vec) {
+	ldr	x0, [sp, 104]	// _213, %sfp
+	mov	w23, 0	// i,
+	mov	w21, -1	// group,
+	cmp	x24, x0	// _211, _213
+	mov	x22, x0	// ivtmp.2294, _213
+	beq	.L3229		//,
+	stp	x27, x28, [sp, 80]	//,,
+	.cfi_offset 28, -376
+	.cfi_offset 27, -384
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	mov	x27, 9223	// tmp676,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	adrp	x28, .LC11	// tmp674,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
+	add	x26, sp, 272	// tmp673,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	add	x28, x28, :lo12:.LC11	// tmp675, tmp674,
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	movk	x27, 0x8008, lsl 16	// tmp676,,
+	b	.L3236		//
+	.p2align 2,,3
+.L3233:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
+	ldr	x2, [sp, 440]	// MEM[(long unsigned int * *)&unified + 152B], MEM[(long unsigned int * *)&unified + 152B]
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	mov	x1, x27	//, tmp676
+	add	x22, x22, 4	// ivtmp.2294, ivtmp.2294,
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	add	w25, w23, 1	// i, i,
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	add	x2, x2, x23, uxtw 3	//, MEM[(long unsigned int * *)&unified + 152B], i,,
+	bl	ioctl		//
+// linux-perf-events.h:52:         group = fd;
+	ldr	w0, [sp, 288]	//, unified.fd
+	cmn	w21, #1	// group,
+	csel	w21, w0, w21, eq	// group, unified.fd, group,
+// linux-perf-events.h:44:     for (auto config : config_vec) {
+	cmp	x24, x22	// _211, ivtmp.2294
+	beq	.L3460		//,
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	mov	w23, w25	// i, i
+.L3236:
+// linux-perf-events.h:45:       attribs.config = config;
+	ldrsw	x6, [x22]	// MEM[base: _649, offset: 0], MEM[base: _649, offset: 0]
+// linux-perf-events.h:46:       fd = syscall(__NR_perf_event_open, &attribs, pid, cpu, group, flags);
+	mov	w4, w21	//, group
+	add	x1, sp, 296	//,,
+	mov	x5, 0	//,
+	mov	w3, -1	//,
+	mov	w2, 0	//,
+	mov	x0, 241	//,
+// linux-perf-events.h:45:       attribs.config = config;
+	str	x6, [sp, 304]	// MEM[base: _649, offset: 0], unified.attribs.config
+// linux-perf-events.h:46:       fd = syscall(__NR_perf_event_open, &attribs, pid, cpu, group, flags);
+	bl	syscall		//
+// linux-perf-events.h:46:       fd = syscall(__NR_perf_event_open, &attribs, pid, cpu, group, flags);
+	str	w0, [sp, 288]	// _230, unified.fd
+// linux-perf-events.h:47:       if (fd == -1) {
+	cmn	w0, #1	// _230,
+	bne	.L3233		//,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldr	x0, [x28]	// MEM[(void *)"perf_event_open"], MEM[(void *)"perf_event_open"]
+	str	x0, [x26]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.67381 + 16B]
+	ldr	x2, [x28, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)"perf_event_open"]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
+	mov	x3, 15	// tmp400,
+	stp	x26, x3, [sp, 256]	// tmp673, tmp400, MEM[(struct _Alloc_hider *)&D.67381]._M_p
+// linux-perf-events.h:48:         report_error("perf_event_open");
+	add	x1, sp, 256	// tmp729,,
+	add	x0, sp, 288	// tmp730,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
+	strb	wzr, [sp, 287]	//, MEM[(char_type &)&D.67381 + 31]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	str	x2, [x26, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.67381 + 16B]
+.LEHB110:
+// linux-perf-events.h:48:         report_error("perf_event_open");
+	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
+.LEHE110:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x0, [sp, 256]	// _232, MEM[(char * *)&D.67381]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	cmp	x0, x26	// _232, tmp673
+	beq	.L3234		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3234:
+	ldr	w0, [sp, 288]	//, unified.fd
+	b	.L3233		//
+.L3460:
+	ldp	x27, x28, [sp, 80]	//,,
+	.cfi_restore 28
+	.cfi_restore 27
+.L3229:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	ldp	x3, x2, [sp, 416]	// _271, _272, MEM[(long unsigned int * *)&unified + 128B]
+// linux-perf-events.h:56:     temp_result_vec.resize(num_events * 2 + 1);
+	ldr	w0, [sp, 408]	//, unified.num_events
+	lsl	w0, w0, 1	// tmp383, unified.num_events,
+// linux-perf-events.h:56:     temp_result_vec.resize(num_events * 2 + 1);
+	add	w0, w0, 1	// _244, tmp383,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x1, x2, x3	// tmp385, _272, _271
+// linux-perf-events.h:56:     temp_result_vec.resize(num_events * 2 + 1);
+	sxtw	x0, w0	// _245, _244
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x1, x1, 3	// tmp386, tmp385,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	cmp	x0, x1	// _245, tmp386
+	bhi	.L3461		//,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:938: 	else if (__new_size < size())
+	bcc	.L3462		//,
+.L3237:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	ldr	x0, [sp, 104]	// _213, %sfp
+	cbz	x0, .L3240	// _213,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	ldr	x0, [sp, 104]	//, %sfp
+	bl	_ZdlPv		//
+.L3240:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x1, x0, [sp, 136]	// MEM[(int * *)&evts], MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 160]	//,, MEM[(struct _Vector_impl_data *)&results]._M_start
+	stp	xzr, xzr, [sp, 176]	//,, MEM[(struct _Vector_impl_data *)&results]._M_end_of_storage
+	stp	xzr, xzr, [sp, 192]	//,, MEM[(struct _Vector_impl_data *)&allresults]._M_finish
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x0, x0, x1	// tmp425, MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	cmp	xzr, x0, asr 2	//, tmp425,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x1, x0, 2	// tmp428, tmp425,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
+	bne	.L3248		//,
+.L3250:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
+	add	x22, sp, 272	// tmp668,,
+// linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
+	mov	w21, 10	// ivtmp_836,
+	.p2align 3,,7
+.L3249:
+// linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
+	ldr	w0, [sp, 288]	//, unified.fd
+	mov	w2, 1	//,
+	mov	x1, 9219	//,
+// bitmapdecoding.cpp:224:     matches = 0;
+	str	wzr, [sp, 124]	//, matches
+// linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
+	bl	ioctl		//
+// linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
+	cmn	w0, #1	// tmp683,
+	beq	.L3463		//,
+.L3251:
+// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	ldr	w0, [sp, 288]	//, unified.fd
+	mov	w2, 1	//,
+	mov	x1, 9216	//,
+	bl	ioctl		//
+// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	cmn	w0, #1	// tmp685,
+	beq	.L3464		//,
+.L3253:
+// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
+	ldr	x0, [sp, 128]	// wordcount, wordcount
+	mov	x12, 0	// idx,
+	cbz	x0, .L3264	// wordcount,
+	.p2align 3,,7
+.L3255:
+// bitmapdecoding.cpp:227:       F(bigarray, matches, idx, array[idx]);
+	ldr	x3, [x19, x12, lsl 3]	// _6, MEM[base: _67, index: idx_53, step: 8, offset: 0B]
+// bitmapdecoding.cpp:121:   if (bits != 0u) {
+	cbz	x3, .L3263	// _6,
+	mov	x0, x20	//, _72
+	mov	w2, w12	//, idx
+	add	x1, sp, 124	// tmp746,,
+	bl	_Z14faster_decoderPjRjjm.part.0		//
+	ldr	x0, [sp, 128]	// wordcount, wordcount
+.L3263:
+// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
+	add	x12, x12, 1	// idx, idx,
+// bitmapdecoding.cpp:226:     for (size_t idx = 0; idx < wordcount; idx++) {
+	cmp	x0, x12	// wordcount, idx
+	bhi	.L3255		//,
+.L3264:
+// linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	ldr	w0, [sp, 288]	//, unified.fd
+	mov	w2, 1	//,
+	mov	x1, 9217	//,
+	bl	ioctl		//
+// linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	cmn	w0, #1	// tmp687,
+	beq	.L3465		//,
+.L3257:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x1, x2, [sp, 416]	// _325, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
+	add	x25, sp, 184	// tmp655,,
+// linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
+	ldr	w0, [sp, 288]	//, unified.fd
+	sub	x2, x2, x1	//, MEM[(long unsigned int * *)&unified + 136B], _325
+.LEHB111:
+	bl	read		//
+// linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
+	cmn	x0, #1	// tmp691,
+	beq	.L3466		//,
+.L3266:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x4, x3, [sp, 416]	// _665, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
+	sub	x3, x3, x4	// tmp513, MEM[(long unsigned int * *)&unified + 136B], _665
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	cmp	x3, 15	// tmp513,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x3, x3, 3	// _732, tmp513,
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	bls	.L3268		//,
+// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
+	ldr	x5, [sp, 160]	// _342, MEM[(long long unsigned int * *)&results]
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	mov	x1, 1	// _332,
+// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
+	mov	w0, w1	// i, _332
+	.p2align 3,,7
+.L3269:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
+	lsr	w2, w0, 1	// tmp517, i,
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	add	w0, w0, 2	// i, i,
+// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
+	ldr	x1, [x4, x1, lsl 3]	// *_339, *_339
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	cmp	x3, x0, uxtw	// _732, i
+// linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
+	str	x1, [x5, x2, lsl 3]	// *_339, *_344
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	uxtw	x1, w0	// _332, i
+// linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
+	bhi	.L3269		//,
+.L3268:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1186: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
+	ldp	x23, x0, [sp, 192]	// _376, allresults.D.46492._M_impl.D.45827._M_end_of_storage, allresults.D.46492._M_impl.D.45827._M_finish
+	cmp	x23, x0	// _376, allresults.D.46492._M_impl.D.45827._M_end_of_storage
+	beq	.L3274		//,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x0, x24, [sp, 160]	// MEM[(long long unsigned int * *)&results], MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [x23]	//,, MEM[(struct _Vector_impl_data *)_376]._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x25, x23	// pretmp_873, _376
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [x23, 16]	//, MEM[(struct _Vector_impl_data *)_376]._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x3, 0	// _395,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x24, x24, x0	// _382, MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cmp	xzr, x24, asr 3	//, _382,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x0, x24, 3	// tmp531, _382,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	beq	.L3276		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x1, 1152921504606846975	// tmp532,
+	add	x25, sp, 184	// tmp655,,
+	cmp	x0, x1	// tmp531, tmp532
+	bhi	.L3467		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x24	//, _382
+	bl	_Znwm		//
+	ldr	x25, [sp, 192]	// pretmp_873, allresults.D.46492._M_impl.D.45827._M_finish
+	mov	x3, x0	// _395, tmp694
+.L3276:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x3, x3, [x23]	// _395, _395, MEM[(struct _Vector_base *)_376]._M_impl.D.44749._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x24, x3, x24	// tmp534, _395, _382
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:555: 	  std::__uninitialized_copy_a(__x.begin(), __x.end(),
+	ldp	x1, x2, [sp, 160]	// _388, _389, MEM[(long long unsigned int * *)&results]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x24, [x23, 16]	// tmp534, MEM[(struct _Vector_base *)_376]._M_impl.D.44749._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	cmp	x1, x2	// _388, _389
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
+	sub	x24, x2, x1	// _390, _389, _388
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	beq	.L3279		//,
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+	mov	x0, x3	//, _395
+	mov	x2, x24	//, _390
+	bl	memmove		//
+	mov	x3, x0	// _395,
+.L3279:
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	add	x3, x3, x24	// tmp535, _395, _390
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x3, [x23, 8]	// tmp535, *_376.D.45414._M_impl.D.44749._M_finish
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1191: 	    ++this->_M_impl._M_finish;
+	add	x25, x25, 24	// tmp536, pretmp_873,
+	str	x25, [sp, 192]	// tmp536, allresults.D.46492._M_impl.D.45827._M_finish
+.L3280:
+// bitmapdecoding.cpp:223:   for (uint32_t i = 0; i < iterations; i++) {
+	subs	w21, w21, #1	// ivtmp_836, ivtmp_836,
+	bne	.L3249		//,
+// bitmapdecoding.cpp:232:   if (bigarray[0] == 0)
+	ldr	w0, [x20]	//, *_72
+	cbz	w0, .L3468	// *_72,
+.L3281:
+// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
+	ldr	x2, [sp, 128]	// wordcount.171_9, wordcount
+// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
+	fmov	d0, x2	// wordcount.171_9, wordcount.171_9
+// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
+	ldr	w1, [sp, 124]	//, matches
+	mov	x0, 4636737291354636288	// tmp709,
+// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
+	shl	d1, d0, 6	// tmp543, wordcount.171_9,
+// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
+	fmov	d2, x0	// tmp547, tmp709
+	add	x25, sp, 184	// tmp655,,
+	adrp	x0, .LC17	// tmp549,
+// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
+	ucvtf	d0, w1	// tmp542, matches.170_8
+// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
+	add	x0, x0, :lo12:.LC17	//, tmp549,
+// bitmapdecoding.cpp:235:          wordcount, double(matches) / (64 * wordcount) * 100);
+	ucvtf	d1, d1	// tmp544, tmp543
+	fdiv	d0, d0, d1	// tmp545, tmp542, tmp544
+// bitmapdecoding.cpp:234:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
+	fmul	d0, d0, d2	//, tmp545, tmp547
+	bl	printf		//
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	ldr	d0, [sp, 128]	// wordcount, wordcount
+	mov	x0, 4634204016564240384	// tmp708,
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	ldr	w1, [sp, 124]	//, matches
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	fmov	d2, x0	// tmp553, tmp708
+	add	x25, sp, 184	// tmp655,,
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	adrp	x0, .LC18	// tmp558,
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	ucvtf	d0, d0	// tmp550, wordcount
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	add	x0, x0, :lo12:.LC18	//, tmp558,
+	ucvtf	d1, w1	// tmp554, matches
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	fmul	d0, d0, d2	// tmp552, tmp550, tmp553
+// bitmapdecoding.cpp:236:   printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
+	fdiv	d0, d0, d1	//, tmp552, tmp554
+	bl	printf		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:552: 	_Alloc_traits::_S_select_on_copy(__x._M_get_Tp_allocator()))
+	ldp	x22, x23, [sp, 184]	// prephitmp_116, prephitmp_99, MEM[(struct vector * *)&allresults]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	mov	x1, -6148914691236517206	// tmp561,
+	movk	x1, 0xaaab, lsl 0	// tmp561,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 256]	//,, MEM[(struct _Vector_impl_data *)&D.52345]._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x24, 0	// __first,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [sp, 272]	//, MEM[(struct _Vector_impl_data *)&D.52345]._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x21, x23, x22	// _399, prephitmp_99, prephitmp_116
+	asr	x0, x21, 3	// tmp559, _399,
+	mul	x0, x0, x1	// tmp560, tmp559, tmp561
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cbz	x0, .L3283	// tmp560,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x1, 6148914691236517205	// tmp562,
+	add	x25, sp, 184	// tmp655,,
+	movk	x1, 0x555, lsl 48	// tmp562,,
+	cmp	x0, x1	// tmp560, tmp562
+	bhi	.L3469		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x21	//, _399
+	bl	_Znwm		//
+.LEHE111:
+	ldp	x22, x23, [sp, 184]	// prephitmp_116, prephitmp_99, MEM[(struct vector * *)&allresults]
+	mov	x24, x0	// __first, tmp695
+.L3283:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x21, x24, x21	// tmp564, __first, _399
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x24, x24, [sp, 256]	// __first, __first, MEM[(struct _Vector_base *)&D.52345]._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	cmp	x23, x22	// prephitmp_99, prephitmp_116
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x21, [sp, 272]	// tmp564, MEM[(struct _Vector_base *)&D.52345]._M_impl.D.45827._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:79: 	  _ForwardIterator __cur = __result;
+	mov	x21, x24	// __cur, __first
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	beq	.L3285		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x25, 1152921504606846975	// tmp664,
+	.p2align 3,,7
+.L3291:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x0, x26, [x22]	// MEM[base: _733, offset: 0B], MEM[base: _733, offset: 8B], MEM[base: _733, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [x21]	//,, MEM[base: __cur_297, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x3, 0	// _439,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [x21, 16]	//, MEM[base: __cur_297, offset: 16B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x26, x26, x0	// _426, MEM[base: _733, offset: 8B], MEM[base: _733, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cmp	xzr, x26, asr 3	//, _426,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x0, x26, 3	// tmp567, _426,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	beq	.L3287		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	cmp	x0, x25	// tmp567, tmp664
+	bhi	.L3470		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x26	//, _426
+.LEHB112:
+	bl	_Znwm		//
+.LEHE112:
+	mov	x3, x0	// _439, tmp696
+.L3287:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x26, x3, x26	// tmp570, _439, _426
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x3, x3, [x21]	// _439, _439, MEM[base: __cur_297, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x26, [x21, 16]	// tmp570, MEM[base: __cur_297, offset: 16B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:555: 	  std::__uninitialized_copy_a(__x.begin(), __x.end(),
+	ldp	x1, x2, [x22]	// _432, _433, MEM[base: _733, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	cmp	x1, x2	// _432, _433
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
+	sub	x26, x2, x1	// _434, _433, _432
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	beq	.L3290		//,
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+	mov	x0, x3	//, _439
+	mov	x2, x26	//, _434
+	bl	memmove		//
+	mov	x3, x0	// _439,
+.L3290:
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	add	x3, x3, x26	// tmp571, _439, _434
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x3, [x21, 8]	// tmp571, MEM[base: __cur_297, offset: 8B]
+	add	x22, x22, 24	// ivtmp.2270, ivtmp.2270,
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	add	x21, x21, 24	// __cur, __cur,
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	cmp	x23, x22	// prephitmp_99, ivtmp.2270
+	bne	.L3291		//,
+.L3285:
+// bitmapdecoding.cpp:237:   std::vector<unsigned long long> mins = compute_mins(allresults);
+	add	x8, sp, 208	//,,
+	add	x0, sp, 256	// tmp756,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x21, [sp, 264]	// __cur, D.52345.D.46492._M_impl.D.45827._M_finish
+.LEHB113:
+// bitmapdecoding.cpp:237:   std::vector<unsigned long long> mins = compute_mins(allresults);
+	bl	_Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE		//
+.LEHE113:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldp	x21, x22, [sp, 256]	// __first, prephitmp_83, D.52345.D.46492._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x21, x22	// __first, prephitmp_83
+	beq	.L3299		//,
+	.p2align 3,,7
+.L3301:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [x21]	// _456, MEM[base: __first_296, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3300	// _456,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3300:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	add	x21, x21, 24	// __first, __first,
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x22, x21	// prephitmp_83, __first
+	bne	.L3301		//,
+	ldr	x22, [sp, 256]	// prephitmp_83, MEM[(struct _Vector_base *)&D.52345]._M_impl.D.45827._M_start
+.L3299:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x22, .L3302	// prephitmp_83,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x22	//, prephitmp_83
+	bl	_ZdlPv		//
+.L3302:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:552: 	_Alloc_traits::_S_select_on_copy(__x._M_get_Tp_allocator()))
+	ldp	x22, x23, [sp, 184]	// pretmp_859, pretmp_861, MEM[(struct vector * *)&allresults]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	mov	x1, -6148914691236517206	// tmp581,
+	movk	x1, 0xaaab, lsl 0	// tmp581,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [sp, 256]	//,, MEM[(struct _Vector_impl_data *)&D.52348]._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x25, 0	// __first,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [sp, 272]	//, MEM[(struct _Vector_impl_data *)&D.52348]._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x21, x23, x22	// _443, pretmp_861, pretmp_859
+	asr	x0, x21, 3	// tmp579, _443,
+	mul	x0, x0, x1	// tmp580, tmp579, tmp581
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cbz	x0, .L3304	// tmp580,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x1, 6148914691236517205	// tmp582,
+	movk	x1, 0x555, lsl 48	// tmp582,,
+	cmp	x0, x1	// tmp580, tmp582
+	bhi	.L3471		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x21	//, _443
+.LEHB114:
+	bl	_Znwm		//
+.LEHE114:
+	ldp	x22, x23, [sp, 184]	// pretmp_859, pretmp_861, MEM[(struct vector * *)&allresults]
+	mov	x25, x0	// __first, tmp698
+.L3304:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x21, x25, x21	// tmp584, __first, _443
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x25, x25, [sp, 256]	// __first, __first, MEM[(struct _Vector_base *)&D.52348]._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	cmp	x22, x23	// pretmp_859, pretmp_861
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x21, [sp, 272]	// tmp584, MEM[(struct _Vector_base *)&D.52348]._M_impl.D.45827._M_end_of_storage
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:79: 	  _ForwardIterator __cur = __result;
+	mov	x21, x25	// __cur, __first
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	beq	.L3306		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	mov	x24, 1152921504606846975	// tmp662,
+	.p2align 3,,7
+.L3312:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	ldp	x0, x26, [x22]	// MEM[base: _768, offset: 0B], MEM[base: _768, offset: 8B], MEM[base: _768, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	stp	xzr, xzr, [x21]	//,, MEM[base: __cur_217, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	mov	x3, 0	// _489,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	str	xzr, [x21, 16]	//, MEM[base: __cur_217, offset: 16B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	sub	x26, x26, x0	// _476, MEM[base: _768, offset: 8B], MEM[base: _768, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	cmp	xzr, x26, asr 3	//, _476,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	asr	x0, x26, 3	// tmp587, _476,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	beq	.L3308		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
+	cmp	x0, x24	// tmp587, tmp662
+	bhi	.L3472		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	mov	x0, x26	//, _476
+.LEHB115:
+	bl	_Znwm		//
+.LEHE115:
+	mov	x3, x0	// _489, tmp699
+.L3308:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	add	x26, x3, x26	// tmp590, _489, _476
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
+	stp	x3, x3, [x21]	// _489, _489, MEM[base: __cur_217, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	str	x26, [x21, 16]	// tmp590, MEM[base: __cur_217, offset: 16B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:555: 	  std::__uninitialized_copy_a(__x.begin(), __x.end(),
+	ldp	x1, x2, [x22]	// _482, _483, MEM[base: _768, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	cmp	x1, x2	// _482, _483
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
+	sub	x26, x2, x1	// _484, _483, _482
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
+	beq	.L3311		//,
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+	mov	x0, x3	//, _489
+	mov	x2, x26	//, _484
+	bl	memmove		//
+	mov	x3, x0	// _489,
+.L3311:
+// /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
+	add	x3, x3, x26	// tmp591, _489, _484
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x3, [x21, 8]	// tmp591, MEM[base: __cur_217, offset: 8B]
+	add	x22, x22, 24	// ivtmp.2257, ivtmp.2257,
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	add	x21, x21, 24	// __cur, __cur,
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
+	cmp	x23, x22	// pretmp_861, ivtmp.2257
+	bne	.L3312		//,
+.L3306:
+// bitmapdecoding.cpp:238:   std::vector<double> avg = compute_averages(allresults);
+	add	x8, sp, 232	//,,
+	add	x0, sp, 256	// tmp757,,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
+	str	x21, [sp, 264]	// __cur, D.52348.D.46492._M_impl.D.45827._M_finish
+.LEHB116:
+// bitmapdecoding.cpp:238:   std::vector<double> avg = compute_averages(allresults);
+	bl	_Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE		//
+.LEHE116:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldp	x21, x22, [sp, 256]	// __first, pretmp_869, D.52348.D.46492._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x21, x22	// __first, pretmp_869
+	beq	.L3321		//,
+	.p2align 3,,7
+.L3323:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [x21]	// _494, MEM[base: __first_284, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3322	// _494,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3322:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	add	x21, x21, 24	// __first, __first,
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x22, x21	// pretmp_869, __first
+	bne	.L3323		//,
+	ldr	x22, [sp, 256]	// pretmp_869, MEM[(struct _Vector_base *)&D.52348]._M_impl.D.45827._M_start
+.L3321:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x22, .L3324	// pretmp_869,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x22	//, pretmp_869
+	bl	_ZdlPv		//
+.L3324:
+// bitmapdecoding.cpp:243:          double(mins[1]) / mins[0], double(mins[0]) / matches,
+	ldr	x1, [sp, 208]	// _138, MEM[(long long unsigned int * *)&mins]
+// bitmapdecoding.cpp:239:   printf("instructions per cycle %4.2f, cycles per value set:  "
+	adrp	x0, .LC19	// tmp611,
+	ldr	d4, [sp, 128]	// wordcount, wordcount
+	add	x0, x0, :lo12:.LC19	//, tmp611,
+	ldp	d1, d0, [x1]	// MEM[(value_type &)_138], MEM[(value_type &)_138 + 8], MEM[(value_type &)_138]
+	ldr	w1, [sp, 124]	//, matches
+	ucvtf	d4, d4	// _31, wordcount
+	ucvtf	d1, d1	// _24, MEM[(value_type &)_138]
+	ucvtf	d0, d0	// _22, MEM[(value_type &)_138 + 8]
+	ucvtf	d5, w1	// _27, matches
+	fdiv	d3, d1, d4	//, _24, _31
+	fdiv	d2, d0, d5	//, _22, _27
+	fdiv	d4, d0, d4	//, _22, _31
+	fdiv	d0, d0, d1	//, _22, _24
+	fdiv	d1, d1, d5	//, _24, _27
+.LEHB117:
+	bl	printf		//
+// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
+	ldr	x2, [sp, 208]	// _139, MEM[(long long unsigned int * *)&mins]
+// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
+	adrp	x0, .LC20	// tmp621,
+// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
+	ldr	x1, [sp, 128]	// wordcount, wordcount
+	fmov	d0, x1	// wordcount, wordcount
+// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
+	ldp	d2, d1, [x2]	// MEM[(value_type &)_139], MEM[(value_type &)_139 + 8], MEM[(value_type &)_139]
+// bitmapdecoding.cpp:247:          double(mins[0]) / (64 * wordcount),
+	shl	d0, d0, 6	// tmp612, wordcount,
+// bitmapdecoding.cpp:246:   printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
+	add	x0, x0, :lo12:.LC20	//, tmp621,
+	ucvtf	d2, d2	// tmp617, MEM[(value_type &)_139]
+	ucvtf	d1, d1	// tmp614, MEM[(value_type &)_139 + 8]
+	ucvtf	d0, d0	// _38, tmp612
+	fdiv	d1, d1, d0	//, tmp614, _38
+	fdiv	d0, d2, d0	//, tmp617, _38
+	bl	printf		//
+// bitmapdecoding.cpp:250:   printf("min: %8llu cycles, %8llu instructions, \t%8llu branch mis., %8llu "
+	ldr	x5, [sp, 208]	// _140, MEM[(long long unsigned int * *)&mins]
+	adrp	x0, .LC21	// tmp628,
+	add	x0, x0, :lo12:.LC21	//, tmp628,
+	ldp	x1, x2, [x5]	//,, MEM[(value_type &)_140]
+	ldp	x3, x4, [x5, 16]	//,, MEM[(value_type &)_140 + 16]
+	ldr	x5, [x5, 32]	//, MEM[(value_type &)_140 + 32]
+	bl	printf		//
+// bitmapdecoding.cpp:253:   printf("avg: %8.1f cycles, %8.1f instructions, \t%8.1f branch mis., %8.1f "
+	ldr	x1, [sp, 232]	// _141, MEM[(double * *)&avg]
+	adrp	x0, .LC22	// tmp635,
+	add	x0, x0, :lo12:.LC22	//, tmp635,
+	ldp	d0, d1, [x1]	//,, MEM[(value_type &)_141]
+	ldp	d2, d3, [x1, 16]	//,, MEM[(value_type &)_141 + 16]
+	ldr	d4, [x1, 32]	//, MEM[(value_type &)_141 + 32]
+	bl	printf		//
+// bitmapdecoding.cpp:256:   printf("\n");
+	mov	w0, 10	//,
+	bl	putchar		//
+.LEHE117:
+// bitmapdecoding.cpp:257:   delete[] array;
+	cbz	x19, .L3325	// _67,
+// bitmapdecoding.cpp:257:   delete[] array;
+	mov	x0, x19	//, _67
+	bl	_ZdaPv		//
+.L3325:
+// bitmapdecoding.cpp:258:   delete[] bigarray;
+	mov	x0, x20	//, _72
+	bl	_ZdaPv		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 232]	// _147, avg.D.47664._M_impl.D.46999._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3326	// _147,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3326:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 208]	// _146, mins.D.45414._M_impl.D.44749._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3327	// _146,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3327:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldp	x19, x20, [sp, 184]	// __first, pretmp_871, allresults.D.46492._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x19, x20	// __first, pretmp_871
+	beq	.L3328		//,
+	.p2align 3,,7
+.L3330:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [x19]	// _500, MEM[base: __first_303, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3329	// _500,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3329:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	add	x19, x19, 24	// __first, __first,
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x20, x19	// pretmp_871, __first
+	bne	.L3330		//,
+	ldr	x20, [sp, 184]	// pretmp_871, MEM[(struct _Vector_base *)&allresults]._M_impl.D.45827._M_start
+.L3328:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x20, .L3331	// pretmp_871,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x20	//, pretmp_871
+	bl	_ZdlPv		//
+.L3331:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 160]	// _145, results.D.45414._M_impl.D.44749._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3332	// _145,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3332:
+// linux-perf-events.h:59:   ~LinuxEvents() { close(fd); }
+	ldr	w0, [sp, 288]	//, unified.fd
+	bl	close		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 440]	// _504, MEM[(struct vector *)&unified + 152B].D.43213._M_impl.D.42516._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3333	// _504,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3333:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 416]	// _505, MEM[(struct vector *)&unified + 128B].D.43213._M_impl.D.42516._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3334	// _505,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3334:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 136]	// _144, evts.D.44271._M_impl.D.43606._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3221	// _144,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3221:
+	ldp	x19, x20, [sp, 16]	//,,
+	.cfi_remember_state
+	.cfi_restore 20
+	.cfi_restore 19
+// bitmapdecoding.cpp:259: }
+	ldp	x21, x22, [sp, 32]	//,,
+	ldp	x23, x24, [sp, 48]	//,,
+	ldp	x25, x26, [sp, 64]	//,,
+	ldp	x29, x30, [sp], 464	//,,,
+	.cfi_restore 30
+	.cfi_restore 29
+	.cfi_restore 25
+	.cfi_restore 26
+	.cfi_restore 23
+	.cfi_restore 24
+	.cfi_restore 21
+	.cfi_restore 22
+	.cfi_def_cfa_offset 0
+	ret	
+	.p2align 2,,3
+.L3465:
+	.cfi_restore_state
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	mov	x3, 29	// tmp484,
+	add	x25, sp, 184	// tmp655,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	add	x1, sp, 232	// tmp747,,
+	add	x0, sp, 256	// tmp748,,
+	mov	x2, 0	//,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	str	x3, [sp, 232]	// tmp484, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
+	str	x22, [sp, 256]	// tmp668, MEM[(struct _Alloc_hider *)&D.67443]._M_p
+.LEHB118:
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
+.LEHE118:
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	adrp	x3, .LC15	// tmp489,
+	add	x3, x3, :lo12:.LC15	// tmp488, tmp489,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	mov	x2, x0	// _356, tmp690
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
+	str	x2, [sp, 256]	// _356, MEM[(char * *)&D.67443]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
+	ldr	x0, [sp, 232]	// __dnew, __dnew
+	str	x0, [sp, 272]	// __dnew, MEM[(size_type *)&D.67443 + 16B]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldr	x0, [x3, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
+	str	x0, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_356]
+	ldp	x4, x5, [x3]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
+	stp	x4, x5, [x2]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_356]
+// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
+	add	x1, sp, 256	// tmp749,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldr	x3, [x3, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
+	str	x3, [x2, 21]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_356]
+// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
+	add	x0, sp, 288	// tmp750,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
+	ldr	x2, [sp, 232]	// __dnew.49_360, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
+	str	x2, [sp, 264]	// __dnew.49_360, MEM[(size_type *)&D.67443 + 8B]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
+	ldr	x3, [sp, 256]	// MEM[(char * *)&D.67443], MEM[(char * *)&D.67443]
+	strb	wzr, [x3, x2]	//, MEM[(char_type &)_362]
+.LEHB119:
+// linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
+	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
+.LEHE119:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x0, [sp, 256]	// _323, MEM[(char * *)&D.67443]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	cmp	x0, x22	// _323, tmp668
+	beq	.L3257		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
+	b	.L3257		//
+	.p2align 2,,3
+.L3463:
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	mov	x3, 27	// tmp433,
+	add	x25, sp, 184	// tmp655,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	add	x1, sp, 232	// tmp736,,
+	add	x0, sp, 256	// tmp737,,
+	mov	x2, 0	//,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	str	x3, [sp, 232]	// tmp433, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
+	str	x22, [sp, 256]	// tmp668, MEM[(struct _Alloc_hider *)&D.67408]._M_p
+.LEHB120:
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
+.LEHE120:
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	adrp	x2, .LC13	// tmp438,
+	add	x2, x2, :lo12:.LC13	// tmp437, tmp438,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
+	ldr	x1, [sp, 232]	// __dnew, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
+	str	x0, [sp, 256]	// _301, MEM[(char * *)&D.67408]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
+	str	x1, [sp, 272]	// __dnew, MEM[(size_type *)&D.67408 + 16B]
+// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
+	add	x1, sp, 256	// tmp738,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldr	x3, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
+	str	x3, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_301]
+	ldp	x4, x5, [x2]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
+	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_301]
+	ldr	w2, [x2, 23]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"]
+	str	w2, [x0, 23]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_RESET)"], MEM[(void *)_301]
+// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
+	add	x0, sp, 288	// tmp739,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
+	ldr	x2, [sp, 232]	// __dnew.49_305, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
+	str	x2, [sp, 264]	// __dnew.49_305, MEM[(size_type *)&D.67408 + 8B]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
+	ldr	x3, [sp, 256]	// MEM[(char * *)&D.67408], MEM[(char * *)&D.67408]
+	strb	wzr, [x3, x2]	//, MEM[(char_type &)_307]
+.LEHB121:
+// linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
+	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
+.LEHE121:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x0, [sp, 256]	// _289, MEM[(char * *)&D.67408]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	cmp	x0, x22	// _289, tmp668
+	beq	.L3251		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	ldr	w0, [sp, 288]	//, unified.fd
+	mov	w2, 1	//,
+	mov	x1, 9216	//,
+	bl	ioctl		//
+// linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
+	cmn	w0, #1	// tmp685,
+	bne	.L3253		//,
+	.p2align 3,,7
+.L3464:
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	mov	x3, 28	// tmp452,
+	add	x25, sp, 184	// tmp655,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	add	x1, sp, 232	// tmp740,,
+	add	x0, sp, 256	// tmp741,,
+	mov	x2, 0	//,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
+	str	x3, [sp, 232]	// tmp452, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
+	str	x22, [sp, 256]	// tmp668, MEM[(struct _Alloc_hider *)&D.67407]._M_p
+.LEHB122:
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
+	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
+.LEHE122:
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	adrp	x2, .LC14	// tmp457,
+	add	x2, x2, :lo12:.LC14	// tmp456, tmp457,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
+	ldr	x1, [sp, 232]	// __dnew, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
+	str	x0, [sp, 256]	// _314, MEM[(char * *)&D.67407]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldr	w3, [x2, 24]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
+	str	x1, [sp, 272]	// __dnew, MEM[(size_type *)&D.67407 + 16B]
+// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
+	add	x1, sp, 256	// tmp742,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	ldp	x4, x5, [x2]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
+	stp	x4, x5, [x0]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_314]
+	ldr	x2, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
+	str	x2, [x0, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_314]
+	str	w3, [x0, 24]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"], MEM[(void *)_314]
+// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
+	add	x0, sp, 288	// tmp743,,
+// /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
+	ldr	x2, [sp, 232]	// __dnew.49_318, __dnew
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
+	str	x2, [sp, 264]	// __dnew.49_318, MEM[(size_type *)&D.67407 + 8B]
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
+	ldr	x3, [sp, 256]	// MEM[(char * *)&D.67407], MEM[(char * *)&D.67407]
+	strb	wzr, [x3, x2]	//, MEM[(char_type &)_320]
+.LEHB123:
+// linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
+	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
+.LEHE123:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x0, [sp, 256]	// _292, MEM[(char * *)&D.67407]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	cmp	x0, x22	// _292, tmp668
+	beq	.L3253		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
+	b	.L3253		//
+	.p2align 2,,3
+.L3274:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1195: 	  _M_realloc_insert(end(), __x);
+	add	x25, sp, 184	// tmp655,,
+	mov	x1, x23	//, _376
+	mov	x0, x25	//, tmp655
+	add	x2, sp, 160	//,,
+.LEHB124:
+	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_		//
+.LEHE124:
+	b	.L3280		//
+	.p2align 2,,3
+.L3466:
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	mov	w2, 25970	// tmp507,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
+	mov	x3, 4	// tmp508,
+	stp	x22, x3, [sp, 256]	// tmp668, tmp508, MEM[(struct _Alloc_hider *)&D.67442]._M_p
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	movk	w2, 0x6461, lsl 16	// tmp507,,
+// linux-perf-events.h:77:       report_error("read");
+	add	x1, sp, 256	// tmp751,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
+	strb	wzr, [sp, 276]	//, MEM[(char_type &)&D.67442 + 20]
+// linux-perf-events.h:77:       report_error("read");
+	add	x0, sp, 288	// tmp752,,
+// /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
+	str	w2, [x22]	// tmp507, MEM[(void *)&D.67442 + 16B]
+.LEHB125:
+// linux-perf-events.h:77:       report_error("read");
+	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
+.LEHE125:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x0, [sp, 256]	// _330, MEM[(char * *)&D.67442]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	cmp	x0, x22	// _330, tmp668
+	beq	.L3266		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
+	b	.L3266		//
+.L3468:
+// bitmapdecoding.cpp:233:     printf("bogus\n.");
+	adrp	x0, .LC16	// tmp541,
+	add	x25, sp, 184	// tmp655,,
+	add	x0, x0, :lo12:.LC16	//, tmp541,
+.LEHB126:
+	bl	printf		//
+.LEHE126:
+	b	.L3281		//
+.L3462:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:939: 	  _M_erase_at_end(this->_M_impl._M_start + __new_size);
+	add	x0, x3, x0, lsl 3	// _278, _271, _245,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1791: 	if (size_type __n = this->_M_impl._M_finish - __pos)
+	cmp	x2, x0	// _272, _278
+	beq	.L3237		//,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:1795: 	    this->_M_impl._M_finish = __pos;
+	str	x0, [sp, 424]	// _278, MEM[(long unsigned int * *)&unified + 136B]
+	b	.L3237		//
+.L3461:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:937: 	  _M_default_append(__new_size - size());
+	sub	x1, x0, x1	//, _245, tmp386
+	add	x0, sp, 416	//,,
+.LEHB127:
+	bl	_ZNSt6vectorImSaImEE17_M_default_appendEm		//
+.LEHE127:
+	b	.L3237		//
+.L3248:
+	add	x25, sp, 184	// tmp655,,
+	add	x0, sp, 160	//,,
+.LEHB128:
+	bl	_ZNSt6vectorIySaIyEE17_M_default_appendEm		//
+.LEHE128:
+	b	.L3250		//
+.L3227:
+	mov	x1, x21	//, prephitmp_385
+	add	x0, sp, 440	//,,
+.LEHB129:
+	bl	_ZNSt6vectorImSaImEE17_M_default_appendEm		//
+.LEHE129:
+	b	.L3230		//
+.L3344:
+	mov	x22, 0	// prephitmp_349,
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	str	xzr, [sp, 104]	//, %sfp
+	b	.L3224		//
+.L3459:
+.LEHB130:
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE130:
+.L3467:
+.LEHB131:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE131:
+.L3472:
+.LEHB132:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE132:
+.L3471:
+.LEHB133:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE133:
+.L3470:
+.LEHB134:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE134:
+.L3469:
+.LEHB135:
+	bl	_ZSt17__throw_bad_allocv		//
+.LEHE135:
+.L3351:
+	mov	x19, x0	// tmp640, tmp701
+	add	x25, sp, 184	// tmp655,,
+	add	x0, sp, 256	// tmp759,,
+	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
+.L3260:
+// bitmapdecoding.cpp:220:   std::vector<std::vector<unsigned long long>> allresults;
+	mov	x0, x25	//, tmp655
+	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 160]	// _151, results.D.45414._M_impl.D.44749._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbnz	x0, .L3473	// _151,
+.L3342:
+// bitmapdecoding.cpp:218:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
+	add	x0, sp, 288	// tmp761,,
+	bl	_ZN11LinuxEventsILi0EED1Ev		//
+.L3336:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 136]	// _152, evts.D.44271._M_impl.D.43606._M_start
+	stp	x27, x28, [sp, 80]	//,,
+	.cfi_offset 28, -376
+	.cfi_offset 27, -384
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3343	// _152,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3343:
+	mov	x0, x19	//, tmp637
+.LEHB136:
+	bl	_Unwind_Resume		//
+.LEHE136:
+.L3362:
+	.cfi_restore 27
+	.cfi_restore 28
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
+	bl	__cxa_begin_catch		//
+.L3296:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x21, x24	// __cur, __first
+	bne	.L3474		//,
+.LEHB137:
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:89: 	      __throw_exception_again;
+	bl	__cxa_rethrow		//
+.LEHE137:
+.L3364:
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
+	bl	__cxa_begin_catch		//
+.L3317:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	cmp	x21, x25	// __cur, __first
+	bne	.L3475		//,
+.LEHB138:
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:89: 	      __throw_exception_again;
+	bl	__cxa_rethrow		//
+.LEHE138:
+.L3474:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [x24]	// _422, MEM[base: __first_421, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3295	// _422,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3295:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	add	x24, x24, 24	// __first, __first,
+	b	.L3296		//
+.L3361:
+	mov	x19, x0	// tmp576, tmp697
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
+	bl	__cxa_end_catch		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:332: 	_M_deallocate(_M_impl._M_start,
+	ldr	x0, [sp, 256]	// _408, MEM[(struct _Vector_base *)&D.52345]._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3341	// _408,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3341:
+	add	x25, sp, 184	// tmp655,,
+	b	.L3260		//
+.L3222:
+	stp	x27, x28, [sp, 80]	//,,
+	.cfi_offset 28, -376
+	.cfi_offset 27, -384
+.LEHB139:
+// bitmapdecoding.cpp:209:   uint32_t *bigarray = new uint32_t[wordcount * 64];
+	bl	__cxa_throw_bad_array_new_length		//
+.LEHE139:
+.L3357:
+	.cfi_restore 27
+	.cfi_restore 28
+.L3456:
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x1, [sp, 256]	// _348,
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	add	x2, sp, 272	// tmp525,,
+	mov	x19, x0	// tmp526, tmp693
+	cmp	x1, x2	// _348, tmp525
+	beq	.L3341		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x1	//, _348
+	add	x25, sp, 184	// tmp655,,
+	bl	_ZdlPv		//
+	b	.L3260		//
+.L3352:
+	mov	x19, x0	// tmp599, tmp704
+	b	.L3320		//
+.L3360:
+	b	.L3456		//
+.L3473:
+	bl	_ZdlPv		//
+// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
+	b	.L3342		//
+.L3475:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [x25]	// _472, MEM[base: __first_471, offset: 0B]
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3316	// _472,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3316:
+// /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
+	add	x25, x25, 24	// __first, __first,
+	b	.L3317		//
+.L3363:
+	mov	x19, x0	// tmp596, tmp700
+// /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
+	bl	__cxa_end_catch		//
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:332: 	_M_deallocate(_M_impl._M_start,
+	ldr	x0, [sp, 256]	// _452, MEM[(struct _Vector_base *)&D.52348]._M_impl.D.45827._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3320	// _452,
+.L3452:
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3320:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 208]	// _150, mins.D.45414._M_impl.D.44749._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3341	// _150,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+	b	.L3341		//
+.L3350:
+	mov	x19, x0	// tmp472, tmp705
+	b	.L3260		//
+.L3356:
+	.cfi_offset 27, -384
+	.cfi_offset 28, -376
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
+	ldr	x2, [sp, 256]	// _246, MEM[(char * *)&D.67381]
+// /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
+	add	x1, sp, 272	// tmp416,,
+	mov	x19, x0	// tmp418, tmp681
+	cmp	x2, x1	// _246, tmp416
+	beq	.L3451		//,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x2	//, _246
+	bl	_ZdlPv		//
+	ldp	x27, x28, [sp, 80]	//,,
+	.cfi_restore 28
+	.cfi_restore 27
+.L3243:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 440]	// _247, MEM[(struct vector *)&unified + 152B].D.43213._M_impl.D.42516._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3244	// _247,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3244:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x0, [sp, 416]	// _248, MEM[(struct vector *)&unified + 128B].D.43213._M_impl.D.42516._M_start
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x0, .L3245	// _248,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	bl	_ZdlPv		//
+.L3245:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	ldr	x0, [sp, 104]	// _213, %sfp
+	cbz	x0, .L3336	// _213,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	ldr	x0, [sp, 104]	//, %sfp
+	bl	_ZdlPv		//
+// /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
+	b	.L3336		//
+.L3451:
+	.cfi_offset 27, -384
+	.cfi_offset 28, -376
+	ldp	x27, x28, [sp, 80]	//,,
+	.cfi_restore 28
+	.cfi_restore 27
+	b	.L3243		//
+.L3349:
+	mov	x19, x0	// tmp637, tmp706
+	b	.L3336		//
+.L3359:
+	b	.L3456		//
+.L3358:
+	b	.L3456		//
+.L3353:
+	mov	x19, x0	// tmp702,
+	add	x0, sp, 256	// tmp760,,
+	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
+	b	.L3320		//
+.L3354:
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	ldr	x1, [sp, 232]	// _149, avg.D.47664._M_impl.D.46999._M_start
+	mov	x19, x0	// tmp645, tmp703
+// /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
+	cbz	x1, .L3320	// _149,
+// /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
+	mov	x0, x1	//, _149
+	b	.L3452		//
+.L3355:
+	mov	x19, x0	// tmp417, tmp682
+	b	.L3243		//
+	.cfi_endproc
+.LFE2425:
+	.section	.gcc_except_table
+	.align	2
+.LLSDA2425:
+	.byte	0xff
+	.byte	0x9b
+	.uleb128 .LLSDATT2425-.LLSDATTD2425
+.LLSDATTD2425:
+	.byte	0x1
+	.uleb128 .LLSDACSE2425-.LLSDACSB2425
+.LLSDACSB2425:
+	.uleb128 .LEHB108-.LFB2425
+	.uleb128 .LEHE108-.LEHB108
+	.uleb128 0
+	.uleb128 0
+	.uleb128 .LEHB109-.LFB2425
+	.uleb128 .LEHE109-.LEHB109
+	.uleb128 .L3349-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB110-.LFB2425
+	.uleb128 .LEHE110-.LEHB110
+	.uleb128 .L3356-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB111-.LFB2425
+	.uleb128 .LEHE111-.LEHB111
+	.uleb128 .L3350-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB112-.LFB2425
+	.uleb128 .LEHE112-.LEHB112
+	.uleb128 .L3362-.LFB2425
+	.uleb128 0x1
+	.uleb128 .LEHB113-.LFB2425
+	.uleb128 .LEHE113-.LEHB113
+	.uleb128 .L3351-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB114-.LFB2425
+	.uleb128 .LEHE114-.LEHB114
+	.uleb128 .L3352-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB115-.LFB2425
+	.uleb128 .LEHE115-.LEHB115
+	.uleb128 .L3364-.LFB2425
+	.uleb128 0x1
+	.uleb128 .LEHB116-.LFB2425
+	.uleb128 .LEHE116-.LEHB116
+	.uleb128 .L3353-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB117-.LFB2425
+	.uleb128 .LEHE117-.LEHB117
+	.uleb128 .L3354-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB118-.LFB2425
+	.uleb128 .LEHE118-.LEHB118
+	.uleb128 .L3350-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB119-.LFB2425
+	.uleb128 .LEHE119-.LEHB119
+	.uleb128 .L3360-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB120-.LFB2425
+	.uleb128 .LEHE120-.LEHB120
+	.uleb128 .L3350-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB121-.LFB2425
+	.uleb128 .LEHE121-.LEHB121
+	.uleb128 .L3358-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB122-.LFB2425
+	.uleb128 .LEHE122-.LEHB122
+	.uleb128 .L3350-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB123-.LFB2425
+	.uleb128 .LEHE123-.LEHB123
+	.uleb128 .L3357-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB124-.LFB2425
+	.uleb128 .LEHE124-.LEHB124
+	.uleb128 .L3350-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB125-.LFB2425
+	.uleb128 .LEHE125-.LEHB125
+	.uleb128 .L3359-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB126-.LFB2425
+	.uleb128 .LEHE126-.LEHB126
+	.uleb128 .L3350-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB127-.LFB2425
+	.uleb128 .LEHE127-.LEHB127
+	.uleb128 .L3355-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB128-.LFB2425
+	.uleb128 .LEHE128-.LEHB128
+	.uleb128 .L3350-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB129-.LFB2425
+	.uleb128 .LEHE129-.LEHB129
+	.uleb128 .L3355-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB130-.LFB2425
+	.uleb128 .LEHE130-.LEHB130
+	.uleb128 .L3349-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB131-.LFB2425
+	.uleb128 .LEHE131-.LEHB131
+	.uleb128 .L3350-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB132-.LFB2425
+	.uleb128 .LEHE132-.LEHB132
+	.uleb128 .L3364-.LFB2425
+	.uleb128 0x1
+	.uleb128 .LEHB133-.LFB2425
+	.uleb128 .LEHE133-.LEHB133
+	.uleb128 .L3352-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB134-.LFB2425
+	.uleb128 .LEHE134-.LEHB134
+	.uleb128 .L3362-.LFB2425
+	.uleb128 0x1
+	.uleb128 .LEHB135-.LFB2425
+	.uleb128 .LEHE135-.LEHB135
+	.uleb128 .L3350-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB136-.LFB2425
+	.uleb128 .LEHE136-.LEHB136
+	.uleb128 0
+	.uleb128 0
+	.uleb128 .LEHB137-.LFB2425
+	.uleb128 .LEHE137-.LEHB137
+	.uleb128 .L3361-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB138-.LFB2425
+	.uleb128 .LEHE138-.LEHB138
+	.uleb128 .L3363-.LFB2425
+	.uleb128 0
+	.uleb128 .LEHB139-.LFB2425
+	.uleb128 .LEHE139-.LEHB139
+	.uleb128 0
+	.uleb128 0
+.LLSDACSE2425:
+	.byte	0x1
+	.byte	0
+	.align	2
+	.4byte	0
+
+.LLSDATT2425:
+	.section	.text._Z4testIXadL_Z14faster_decoderPjRjjmEEEvPKcc,"axG",@progbits,_Z4testIXadL_Z14faster_decoderPjRjjmEEEvPKcc,comdat
+	.size	_Z4testIXadL_Z14faster_decoderPjRjjmEEEvPKcc, .-_Z4testIXadL_Z14faster_decoderPjRjjmEEEvPKcc
 	.text
 	.align	2
 	.p2align 3,,7
@@ -25561,7 +26750,7 @@ _Z8fasttestPKcc:
 	.cfi_offset 27, -416
 	.cfi_offset 28, -408
 	.cfi_offset 72, -400
-.LEHB111:
+.LEHB140:
 // bitmapdecoding.cpp:503:   uint64_t *array = build_bitmap(filename, target, &wordcount);
 	bl	_Z12build_bitmapPKccPm		//
 // bitmapdecoding.cpp:504:   uint32_t *bigarray = new uint32_t[wordcount * 64];
@@ -25569,12 +26758,12 @@ _Z8fasttestPKcc:
 // bitmapdecoding.cpp:504:   uint32_t *bigarray = new uint32_t[wordcount * 64];
 	mov	x2, 2305843009213693950	// tmp485,
 	cmp	x2, x1, lsl 6	// tmp485, wordcount.22_1,
-	bcc	.L3162		//,
+	bcc	.L3477		//,
 	mov	x20, x0	// _66, tmp822
 // bitmapdecoding.cpp:504:   uint32_t *bigarray = new uint32_t[wordcount * 64];
 	lsl	x0, x1, 8	//, wordcount.22_1,
 	bl	_Znam		//
-.LEHE111:
+.LEHE140:
 	mov	x19, x0	// _71, tmp823
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
 	add	x1, sp, 320	// tmp857,,
@@ -25584,7 +26773,7 @@ _Z8fasttestPKcc:
 	str	xzr, [sp, 160]	//, MEM[(struct _Vector_impl_data *)&evts]._M_end_of_storage
 // bitmapdecoding.cpp:508:   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
 	str	wzr, [sp, 320]	//, D.48513
-.LEHB112:
+.LEHB141:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1201:       { emplace_back(std::move(__x)); }
 	bl	_ZNSt6vectorIiSaIiEE12emplace_backIJiEEEvDpOT_		//
 // bitmapdecoding.cpp:509:   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
@@ -25632,30 +26821,30 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x21, x25, 2	// _1385, _1381,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L3349		//,
+	beq	.L3664		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x0, 2305843009213693951	// tmp503,
 	cmp	x21, x0	// _1385, tmp503
-	bhi	.L3471		//,
+	bhi	.L3786		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x25	//, _1381
 	bl	_Znwm		//
-.LEHE112:
+.LEHE141:
 	str	x0, [sp, 120]	// tmp824, %sfp
 	ldr	x1, [sp, 144]	// pretmp_1377, evts.D.44271._M_impl.D.43606._M_start
 	ldr	x0, [sp, 152]	// pretmp_1379, MEM[(int * *)&evts + 8B]
 	sub	x25, x0, x1	// _1381, pretmp_1379, pretmp_1377
 	asr	x22, x25, 2	// _1383, _1381,
 	mov	x21, x22	// _1385, _1383
-.L3164:
+.L3479:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
 	cmp	x1, x0	// pretmp_1377, pretmp_1379
-	beq	.L3166		//,
+	beq	.L3481		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	ldr	x0, [sp, 120]	//, %sfp
 	mov	x2, x25	//, _1381
 	bl	memmove		//
-.L3166:
+.L3481:
 // linux-perf-events.h:27:     memset(&attribs, 0, sizeof(attribs));
 	add	x1, sp, 528	// tmp869,,
 	add	x0, sp, 320	// tmp867,,
@@ -25702,15 +26891,15 @@ _Z8fasttestPKcc:
 	stp	xzr, xzr, [x0, 88]	// MEM[(void *)&unified + 8B]
 	stp	xzr, xzr, [x0, 104]	// MEM[(void *)&unified + 8B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
-	cbnz	x21, .L3167	// _1385,
-.L3170:
+	cbnz	x21, .L3482	// _1385,
+.L3485:
 // linux-perf-events.h:44:     for (auto config : config_vec) {
 	ldr	x0, [sp, 120]	// _240, %sfp
 	mov	w23, 0	// i,
 	mov	w21, -1	// group,
 	cmp	x25, x0	// _238, _240
-	mov	x22, x0	// ivtmp.2224, _240
-	beq	.L3169		//,
+	mov	x22, x0	// ivtmp.2381, _240
+	beq	.L3484		//,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	mov	x27, 9223	// tmp821,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
@@ -25721,14 +26910,14 @@ _Z8fasttestPKcc:
 	add	x28, x28, :lo12:.LC11	// tmp820, tmp819,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	movk	x27, 0x8008, lsl 16	// tmp821,,
-	b	.L3176		//
+	b	.L3491		//
 	.p2align 2,,3
-.L3173:
+.L3488:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
 	ldr	x2, [sp, 472]	// MEM[(long unsigned int * *)&unified + 152B], MEM[(long unsigned int * *)&unified + 152B]
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	mov	x1, x27	//, tmp821
-	add	x22, x22, 4	// ivtmp.2224, ivtmp.2224,
+	add	x22, x22, 4	// ivtmp.2381, ivtmp.2381,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	add	w24, w23, 1	// i, i,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
@@ -25739,11 +26928,11 @@ _Z8fasttestPKcc:
 	cmn	w21, #1	// group,
 	csel	w21, w0, w21, eq	// group, unified.fd, group,
 // linux-perf-events.h:44:     for (auto config : config_vec) {
-	cmp	x25, x22	// _238, ivtmp.2224
-	beq	.L3169		//,
+	cmp	x25, x22	// _238, ivtmp.2381
+	beq	.L3484		//,
 // linux-perf-events.h:50:       ioctl(fd, PERF_EVENT_IOC_ID, &ids[i++]);
 	mov	w23, w24	// i, i
-.L3176:
+.L3491:
 // linux-perf-events.h:45:       attribs.config = config;
 	ldrsw	x6, [x22]	// MEM[base: _1328, offset: 0], MEM[base: _1328, offset: 0]
 // linux-perf-events.h:46:       fd = syscall(__NR_perf_event_open, &attribs, pid, cpu, group, flags);
@@ -25761,36 +26950,36 @@ _Z8fasttestPKcc:
 	str	w0, [sp, 320]	// _257, unified.fd
 // linux-perf-events.h:47:       if (fd == -1) {
 	cmn	w0, #1	// _257,
-	bne	.L3173		//,
+	bne	.L3488		//,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	x0, [x28]	// MEM[(void *)"perf_event_open"], MEM[(void *)"perf_event_open"]
-	str	x0, [x26]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.67494 + 16B]
+	str	x0, [x26]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.67708 + 16B]
 	ldr	x2, [x28, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)"perf_event_open"]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
 	mov	x3, 15	// tmp538,
-	stp	x26, x3, [sp, 288]	// tmp818, tmp538, MEM[(struct _Alloc_hider *)&D.67494]._M_p
+	stp	x26, x3, [sp, 288]	// tmp818, tmp538, MEM[(struct _Alloc_hider *)&D.67708]._M_p
 // linux-perf-events.h:48:         report_error("perf_event_open");
 	add	x1, sp, 288	// tmp875,,
 	add	x0, sp, 320	// tmp876,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	strb	wzr, [sp, 319]	//, MEM[(char_type &)&D.67494 + 31]
+	strb	wzr, [sp, 319]	//, MEM[(char_type &)&D.67708 + 31]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	str	x2, [x26, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.67494 + 16B]
-.LEHB113:
+	str	x2, [x26, 7]	// MEM[(void *)"perf_event_open"], MEM[(void *)&D.67708 + 16B]
+.LEHB142:
 // linux-perf-events.h:48:         report_error("perf_event_open");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE113:
+.LEHE142:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 288]	// _259, MEM[(char * *)&D.67494]
+	ldr	x0, [sp, 288]	// _259, MEM[(char * *)&D.67708]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x26	// _259, tmp818
-	beq	.L3174		//,
+	beq	.L3489		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3174:
+.L3489:
 	ldr	w0, [sp, 320]	//, unified.fd
-	b	.L3173		//
-.L3169:
+	b	.L3488		//
+.L3484:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
 	ldp	x3, x2, [sp, 448]	// _298, _299, MEM[(long unsigned int * *)&unified + 128B]
 // linux-perf-events.h:56:     temp_result_vec.resize(num_events * 2 + 1);
@@ -25806,17 +26995,17 @@ _Z8fasttestPKcc:
 	asr	x1, x1, 3	// tmp524, tmp523,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
 	cmp	x0, x1	// _272, tmp524
-	bhi	.L3472		//,
+	bhi	.L3787		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:938: 	else if (__new_size < size())
-	bcc	.L3473		//,
-.L3177:
+	bcc	.L3788		//,
+.L3492:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
 	ldr	x0, [sp, 120]	// _240, %sfp
-	cbz	x0, .L3180	// _240,
+	cbz	x0, .L3495	// _240,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	ldr	x0, [sp, 120]	//, %sfp
 	bl	_ZdlPv		//
-.L3180:
+.L3495:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x1, x0, [sp, 144]	// MEM[(int * *)&evts], MEM[(int * *)&evts + 8B], MEM[(int * *)&evts]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
@@ -25830,14 +27019,14 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x1, x0, 2	// tmp566, tmp563,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:936: 	if (__new_size > size())
-	bne	.L3188		//,
-.L3190:
+	bne	.L3503		//,
+.L3505:
 // bitmapdecoding.cpp:519:   init_buf(&b, 64 * wordcount);
 	ldr	x1, [sp, 136]	// wordcount, wordcount
 	add	x0, sp, 216	// tmp881,,
 	add	x27, sp, 192	// tmp798,,
 	lsl	x1, x1, 6	//, wordcount,
-.LEHB114:
+.LEHB143:
 	bl	_Z8init_bufP5buf_sm		//
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	mov	w23, 25970	// tmp816,
@@ -25848,7 +27037,7 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	movk	w23, 0x6461, lsl 16	// tmp816,,
 	.p2align 3,,7
-.L3189:
+.L3504:
 // linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
 	ldr	w0, [sp, 320]	//, unified.fd
 	mov	w2, 1	//,
@@ -25856,8 +27045,8 @@ _Z8fasttestPKcc:
 	bl	ioctl		//
 // linux-perf-events.h:62:     if (ioctl(fd, PERF_EVENT_IOC_RESET, PERF_IOC_FLAG_GROUP) == -1) {
 	cmn	w0, #1	// tmp828,
-	beq	.L3474		//,
-.L3191:
+	beq	.L3789		//,
+.L3506:
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	ldr	w0, [sp, 320]	//, unified.fd
 	mov	w2, 1	//,
@@ -25865,41 +27054,41 @@ _Z8fasttestPKcc:
 	bl	ioctl		//
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	cmn	w0, #1	// tmp830,
-	beq	.L3475		//,
-.L3193:
+	beq	.L3790		//,
+.L3508:
 // bitmapdecoding.cpp:344:     b->buffer[i] = b->initbuffer[i];
 	ldp	x2, x3, [sp, 224]	// _114, _119, b.buffer
 // bitmapdecoding.cpp:344:     b->buffer[i] = b->initbuffer[i];
-	mov	x0, 8	// ivtmp.2212,
+	mov	x0, 8	// ivtmp.2369,
 // bitmapdecoding.cpp:342:   b->matches = 0;
 	str	wzr, [sp, 216]	//, b.matches
 	.p2align 3,,7
-.L3195:
+.L3510:
 // bitmapdecoding.cpp:344:     b->buffer[i] = b->initbuffer[i];
-	ldr	x1, [x3, x0]	// _111, MEM[base: _119, index: ivtmp.2212_1333, offset: 0B]
+	ldr	x1, [x3, x0]	// _111, MEM[base: _119, index: ivtmp.2369_1333, offset: 0B]
 // bitmapdecoding.cpp:344:     b->buffer[i] = b->initbuffer[i];
-	str	x1, [x2, x0]	// _111, MEM[base: _114, index: ivtmp.2212_1333, offset: 0B]
-	add	x0, x0, 8	// ivtmp.2212, ivtmp.2212,
+	str	x1, [x2, x0]	// _111, MEM[base: _114, index: ivtmp.2369_1333, offset: 0B]
+	add	x0, x0, 8	// ivtmp.2369, ivtmp.2369,
 // bitmapdecoding.cpp:343:   for (int i = 1; i <= 64; i++) {
-	cmp	x0, 520	// ivtmp.2212,
-	bne	.L3195		//,
+	cmp	x0, 520	// ivtmp.2369,
+	bne	.L3510		//,
 // bitmapdecoding.cpp:524:     for (size_t idx = 0; idx < wordcount; idx++) {
 	ldr	x9, [sp, 136]	// wordcount.24_827, wordcount
-	mov	w10, 0	// b__lsm.2148,
-	mov	w7, 0	// b__lsm.2147,
+	mov	w10, 0	// b__lsm.2305,
+	mov	w7, 0	// b__lsm.2304,
 // bitmapdecoding.cpp:524:     for (size_t idx = 0; idx < wordcount; idx++) {
 	mov	x0, 0	// idx,
 // bitmapdecoding.cpp:524:     for (size_t idx = 0; idx < wordcount; idx++) {
-	cbz	x9, .L3202	// wordcount.24_827,
+	cbz	x9, .L3517	// wordcount.24_827,
 	.p2align 3,,7
-.L3201:
+.L3516:
 // bitmapdecoding.cpp:525:       sorter(array[idx], idx, &b);
 	ldr	x4, [x20, x0, lsl 3]	// _7, MEM[base: _66, index: idx_1166, step: 8, offset: 0B]
 // bitmapdecoding.cpp:321:   if (bits != 0) {
-	cbz	x4, .L3203	// _7,
+	cbz	x4, .L3518	// _7,
 // bitmapdecoding.cpp:44:   return __builtin_popcountll(input_num);
 	fmov	d0, x4	// tmp895, _7
-	mov	w10, 1	// b__lsm.2148,
+	mov	w10, 1	// b__lsm.2305,
 	cnt	v0.8b, v0.8b	// tmp621, tmp895
 	addv	b0, v0.8b	// tmp623, tmp621
 	umov	w1, v0.b[0]	// tmp619, tmp623,
@@ -25909,789 +27098,789 @@ _Z8fasttestPKcc:
 // bitmapdecoding.cpp:325:     b->buffer[cnt]->word = bits;
 	mov	x5, x6	// tmp627, _160
 // bitmapdecoding.cpp:324:     b->buffer[cnt]->location = b->matches;
-	stp	w0, w7, [x6, 8]	// idx, b__lsm.2147, _160->idx
+	stp	w0, w7, [x6, 8]	// idx, b__lsm.2304, _160->idx
 // bitmapdecoding.cpp:327:     b->matches += cnt;
-	add	w7, w7, w1	// b__lsm.2147, b__lsm.2147, tmp619
+	add	w7, w7, w1	// b__lsm.2304, b__lsm.2304, tmp619
 // bitmapdecoding.cpp:325:     b->buffer[cnt]->word = bits;
 	str	x4, [x5], 16	// _7, _160->word
 // bitmapdecoding.cpp:326:     b->buffer[cnt]++;
 	str	x5, [x2, x8, lsl 3]	// tmp627, *_159
-.L3203:
+.L3518:
 // bitmapdecoding.cpp:524:     for (size_t idx = 0; idx < wordcount; idx++) {
 	add	x0, x0, 1	// idx, idx,
 // bitmapdecoding.cpp:524:     for (size_t idx = 0; idx < wordcount; idx++) {
 	cmp	x0, x9	// idx, wordcount.24_827
-	bne	.L3201		//,
-	cbz	w10, .L3202	// b__lsm.2148,
-	str	w7, [sp, 216]	// b__lsm.2147, MEM[(unsigned int *)&b]
-.L3202:
+	bne	.L3516		//,
+	cbz	w10, .L3517	// b__lsm.2305,
+	str	w7, [sp, 216]	// b__lsm.2304, MEM[(unsigned int *)&b]
+.L3517:
 // bitmapdecoding.cpp:371:   if (bfinal->initbuffer[1] != bfinal->buffer[1])
 	ldr	x1, [x2, 8]	// _380, MEM[(struct lead_t * *)_114 + 8B]
 // bitmapdecoding.cpp:371:   if (bfinal->initbuffer[1] != bfinal->buffer[1])
 	ldr	x0, [x3, 8]	// _378, MEM[(struct lead_t * *)_119 + 8B]
 // bitmapdecoding.cpp:371:   if (bfinal->initbuffer[1] != bfinal->buffer[1])
 	cmp	x0, x1	// _378, _380
-	beq	.L3205		//,
+	beq	.L3520		//,
 // bitmapdecoding.cpp:372:     unpack<1>(bfinal->initbuffer[1], bfinal->buffer[1], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj1EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3205:
+.L3520:
 // bitmapdecoding.cpp:373:   if (bfinal->initbuffer[2] != bfinal->buffer[2])
 	ldr	x1, [x2, 16]	// _384, MEM[(struct lead_t * *)prephitmp_1400 + 16B]
 // bitmapdecoding.cpp:373:   if (bfinal->initbuffer[2] != bfinal->buffer[2])
 	ldr	x0, [x3, 16]	// _382, MEM[(struct lead_t * *)prephitmp_1398 + 16B]
 // bitmapdecoding.cpp:373:   if (bfinal->initbuffer[2] != bfinal->buffer[2])
 	cmp	x0, x1	// _382, _384
-	beq	.L3206		//,
+	beq	.L3521		//,
 // bitmapdecoding.cpp:374:     unpack<2>(bfinal->initbuffer[2], bfinal->buffer[2], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj2EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3206:
+.L3521:
 // bitmapdecoding.cpp:375:   if (bfinal->initbuffer[3] != bfinal->buffer[3])
 	ldr	x1, [x2, 24]	// _388, MEM[(struct lead_t * *)prephitmp_1404 + 24B]
 // bitmapdecoding.cpp:375:   if (bfinal->initbuffer[3] != bfinal->buffer[3])
 	ldr	x0, [x3, 24]	// _386, MEM[(struct lead_t * *)prephitmp_1402 + 24B]
 // bitmapdecoding.cpp:375:   if (bfinal->initbuffer[3] != bfinal->buffer[3])
 	cmp	x0, x1	// _386, _388
-	beq	.L3207		//,
+	beq	.L3522		//,
 // bitmapdecoding.cpp:376:     unpack<3>(bfinal->initbuffer[3], bfinal->buffer[3], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj3EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3207:
+.L3522:
 // bitmapdecoding.cpp:377:   if (bfinal->initbuffer[4] != bfinal->buffer[4])
 	ldr	x1, [x2, 32]	// _392, MEM[(struct lead_t * *)prephitmp_1408 + 32B]
 // bitmapdecoding.cpp:377:   if (bfinal->initbuffer[4] != bfinal->buffer[4])
 	ldr	x0, [x3, 32]	// _390, MEM[(struct lead_t * *)prephitmp_1406 + 32B]
 // bitmapdecoding.cpp:377:   if (bfinal->initbuffer[4] != bfinal->buffer[4])
 	cmp	x0, x1	// _390, _392
-	beq	.L3208		//,
+	beq	.L3523		//,
 // bitmapdecoding.cpp:378:     unpack<4>(bfinal->initbuffer[4], bfinal->buffer[4], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj4EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3208:
+.L3523:
 // bitmapdecoding.cpp:379:   if (bfinal->initbuffer[5] != bfinal->buffer[5])
 	ldr	x1, [x2, 40]	// _396, MEM[(struct lead_t * *)prephitmp_1412 + 40B]
 // bitmapdecoding.cpp:379:   if (bfinal->initbuffer[5] != bfinal->buffer[5])
 	ldr	x0, [x3, 40]	// _394, MEM[(struct lead_t * *)prephitmp_1410 + 40B]
 // bitmapdecoding.cpp:379:   if (bfinal->initbuffer[5] != bfinal->buffer[5])
 	cmp	x0, x1	// _394, _396
-	beq	.L3209		//,
+	beq	.L3524		//,
 // bitmapdecoding.cpp:380:     unpack<5>(bfinal->initbuffer[5], bfinal->buffer[5], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj5EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3209:
+.L3524:
 // bitmapdecoding.cpp:381:   if (bfinal->initbuffer[6] != bfinal->buffer[6])
 	ldr	x1, [x2, 48]	// _400, MEM[(struct lead_t * *)prephitmp_1416 + 48B]
 // bitmapdecoding.cpp:381:   if (bfinal->initbuffer[6] != bfinal->buffer[6])
 	ldr	x0, [x3, 48]	// _398, MEM[(struct lead_t * *)prephitmp_1414 + 48B]
 // bitmapdecoding.cpp:381:   if (bfinal->initbuffer[6] != bfinal->buffer[6])
 	cmp	x0, x1	// _398, _400
-	beq	.L3210		//,
+	beq	.L3525		//,
 // bitmapdecoding.cpp:382:     unpack<6>(bfinal->initbuffer[6], bfinal->buffer[6], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj6EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3210:
+.L3525:
 // bitmapdecoding.cpp:383:   if (bfinal->initbuffer[7] != bfinal->buffer[7])
 	ldr	x1, [x2, 56]	// _404, MEM[(struct lead_t * *)prephitmp_1420 + 56B]
 // bitmapdecoding.cpp:383:   if (bfinal->initbuffer[7] != bfinal->buffer[7])
 	ldr	x0, [x3, 56]	// _402, MEM[(struct lead_t * *)prephitmp_1418 + 56B]
 // bitmapdecoding.cpp:383:   if (bfinal->initbuffer[7] != bfinal->buffer[7])
 	cmp	x0, x1	// _402, _404
-	beq	.L3211		//,
+	beq	.L3526		//,
 // bitmapdecoding.cpp:384:     unpack<7>(bfinal->initbuffer[7], bfinal->buffer[7], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj7EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3211:
+.L3526:
 // bitmapdecoding.cpp:385:   if (bfinal->initbuffer[8] != bfinal->buffer[8])
 	ldr	x1, [x2, 64]	// _408, MEM[(struct lead_t * *)prephitmp_1424 + 64B]
 // bitmapdecoding.cpp:385:   if (bfinal->initbuffer[8] != bfinal->buffer[8])
 	ldr	x0, [x3, 64]	// _406, MEM[(struct lead_t * *)prephitmp_1422 + 64B]
 // bitmapdecoding.cpp:385:   if (bfinal->initbuffer[8] != bfinal->buffer[8])
 	cmp	x0, x1	// _406, _408
-	beq	.L3212		//,
+	beq	.L3527		//,
 // bitmapdecoding.cpp:386:     unpack<8>(bfinal->initbuffer[8], bfinal->buffer[8], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj8EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3212:
+.L3527:
 // bitmapdecoding.cpp:387:   if (bfinal->initbuffer[9] != bfinal->buffer[9])
 	ldr	x1, [x2, 72]	// _412, MEM[(struct lead_t * *)prephitmp_1428 + 72B]
 // bitmapdecoding.cpp:387:   if (bfinal->initbuffer[9] != bfinal->buffer[9])
 	ldr	x0, [x3, 72]	// _410, MEM[(struct lead_t * *)prephitmp_1426 + 72B]
 // bitmapdecoding.cpp:387:   if (bfinal->initbuffer[9] != bfinal->buffer[9])
 	cmp	x0, x1	// _410, _412
-	beq	.L3213		//,
+	beq	.L3528		//,
 // bitmapdecoding.cpp:388:     unpack<9>(bfinal->initbuffer[9], bfinal->buffer[9], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj9EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3213:
+.L3528:
 // bitmapdecoding.cpp:389:   if (bfinal->initbuffer[10] != bfinal->buffer[10])
 	ldr	x1, [x2, 80]	// _416, MEM[(struct lead_t * *)prephitmp_1432 + 80B]
 // bitmapdecoding.cpp:389:   if (bfinal->initbuffer[10] != bfinal->buffer[10])
 	ldr	x0, [x3, 80]	// _414, MEM[(struct lead_t * *)prephitmp_1430 + 80B]
 // bitmapdecoding.cpp:389:   if (bfinal->initbuffer[10] != bfinal->buffer[10])
 	cmp	x0, x1	// _414, _416
-	beq	.L3214		//,
+	beq	.L3529		//,
 // bitmapdecoding.cpp:390:     unpack<10>(bfinal->initbuffer[10], bfinal->buffer[10], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj10EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3214:
+.L3529:
 // bitmapdecoding.cpp:391:   if (bfinal->initbuffer[11] != bfinal->buffer[11])
 	ldr	x1, [x2, 88]	// _420, MEM[(struct lead_t * *)prephitmp_1436 + 88B]
 // bitmapdecoding.cpp:391:   if (bfinal->initbuffer[11] != bfinal->buffer[11])
 	ldr	x0, [x3, 88]	// _418, MEM[(struct lead_t * *)prephitmp_1434 + 88B]
 // bitmapdecoding.cpp:391:   if (bfinal->initbuffer[11] != bfinal->buffer[11])
 	cmp	x0, x1	// _418, _420
-	beq	.L3215		//,
+	beq	.L3530		//,
 // bitmapdecoding.cpp:392:     unpack<11>(bfinal->initbuffer[11], bfinal->buffer[11], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj11EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3215:
+.L3530:
 // bitmapdecoding.cpp:393:   if (bfinal->initbuffer[12] != bfinal->buffer[12])
 	ldr	x1, [x2, 96]	// _424, MEM[(struct lead_t * *)prephitmp_1440 + 96B]
 // bitmapdecoding.cpp:393:   if (bfinal->initbuffer[12] != bfinal->buffer[12])
 	ldr	x0, [x3, 96]	// _422, MEM[(struct lead_t * *)prephitmp_1438 + 96B]
 // bitmapdecoding.cpp:393:   if (bfinal->initbuffer[12] != bfinal->buffer[12])
 	cmp	x0, x1	// _422, _424
-	beq	.L3216		//,
+	beq	.L3531		//,
 // bitmapdecoding.cpp:394:     unpack<12>(bfinal->initbuffer[12], bfinal->buffer[12], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj12EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3216:
+.L3531:
 // bitmapdecoding.cpp:395:   if (bfinal->initbuffer[13] != bfinal->buffer[13])
 	ldr	x1, [x2, 104]	// _428, MEM[(struct lead_t * *)prephitmp_1444 + 104B]
 // bitmapdecoding.cpp:395:   if (bfinal->initbuffer[13] != bfinal->buffer[13])
 	ldr	x0, [x3, 104]	// _426, MEM[(struct lead_t * *)prephitmp_1442 + 104B]
 // bitmapdecoding.cpp:395:   if (bfinal->initbuffer[13] != bfinal->buffer[13])
 	cmp	x0, x1	// _426, _428
-	beq	.L3217		//,
+	beq	.L3532		//,
 // bitmapdecoding.cpp:396:     unpack<13>(bfinal->initbuffer[13], bfinal->buffer[13], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj13EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3217:
+.L3532:
 // bitmapdecoding.cpp:397:   if (bfinal->initbuffer[14] != bfinal->buffer[14])
 	ldr	x1, [x2, 112]	// _432, MEM[(struct lead_t * *)prephitmp_1448 + 112B]
 // bitmapdecoding.cpp:397:   if (bfinal->initbuffer[14] != bfinal->buffer[14])
 	ldr	x0, [x3, 112]	// _430, MEM[(struct lead_t * *)prephitmp_1446 + 112B]
 // bitmapdecoding.cpp:397:   if (bfinal->initbuffer[14] != bfinal->buffer[14])
 	cmp	x0, x1	// _430, _432
-	beq	.L3218		//,
+	beq	.L3533		//,
 // bitmapdecoding.cpp:398:     unpack<14>(bfinal->initbuffer[14], bfinal->buffer[14], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj14EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3218:
+.L3533:
 // bitmapdecoding.cpp:399:   if (bfinal->initbuffer[15] != bfinal->buffer[15])
 	ldr	x1, [x2, 120]	// _436, MEM[(struct lead_t * *)prephitmp_1452 + 120B]
 // bitmapdecoding.cpp:399:   if (bfinal->initbuffer[15] != bfinal->buffer[15])
 	ldr	x0, [x3, 120]	// _434, MEM[(struct lead_t * *)prephitmp_1450 + 120B]
 // bitmapdecoding.cpp:399:   if (bfinal->initbuffer[15] != bfinal->buffer[15])
 	cmp	x0, x1	// _434, _436
-	beq	.L3219		//,
+	beq	.L3534		//,
 // bitmapdecoding.cpp:400:     unpack<15>(bfinal->initbuffer[15], bfinal->buffer[15], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj15EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3219:
+.L3534:
 // bitmapdecoding.cpp:401:   if (bfinal->initbuffer[16] != bfinal->buffer[16])
 	ldr	x1, [x2, 128]	// _440, MEM[(struct lead_t * *)prephitmp_1456 + 128B]
 // bitmapdecoding.cpp:401:   if (bfinal->initbuffer[16] != bfinal->buffer[16])
 	ldr	x0, [x3, 128]	// _438, MEM[(struct lead_t * *)prephitmp_1454 + 128B]
 // bitmapdecoding.cpp:401:   if (bfinal->initbuffer[16] != bfinal->buffer[16])
 	cmp	x0, x1	// _438, _440
-	beq	.L3220		//,
+	beq	.L3535		//,
 // bitmapdecoding.cpp:402:     unpack<16>(bfinal->initbuffer[16], bfinal->buffer[16], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj16EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3220:
+.L3535:
 // bitmapdecoding.cpp:403:   if (bfinal->initbuffer[17] != bfinal->buffer[17])
 	ldr	x1, [x2, 136]	// _444, MEM[(struct lead_t * *)prephitmp_1460 + 136B]
 // bitmapdecoding.cpp:403:   if (bfinal->initbuffer[17] != bfinal->buffer[17])
 	ldr	x0, [x3, 136]	// _442, MEM[(struct lead_t * *)prephitmp_1458 + 136B]
 // bitmapdecoding.cpp:403:   if (bfinal->initbuffer[17] != bfinal->buffer[17])
 	cmp	x0, x1	// _442, _444
-	beq	.L3221		//,
+	beq	.L3536		//,
 // bitmapdecoding.cpp:404:     unpack<17>(bfinal->initbuffer[17], bfinal->buffer[17], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj17EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3221:
+.L3536:
 // bitmapdecoding.cpp:405:   if (bfinal->initbuffer[18] != bfinal->buffer[18])
 	ldr	x1, [x2, 144]	// _448, MEM[(struct lead_t * *)prephitmp_1464 + 144B]
 // bitmapdecoding.cpp:405:   if (bfinal->initbuffer[18] != bfinal->buffer[18])
 	ldr	x0, [x3, 144]	// _446, MEM[(struct lead_t * *)prephitmp_1462 + 144B]
 // bitmapdecoding.cpp:405:   if (bfinal->initbuffer[18] != bfinal->buffer[18])
 	cmp	x0, x1	// _446, _448
-	beq	.L3222		//,
+	beq	.L3537		//,
 // bitmapdecoding.cpp:406:     unpack<18>(bfinal->initbuffer[18], bfinal->buffer[18], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj18EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3222:
+.L3537:
 // bitmapdecoding.cpp:407:   if (bfinal->initbuffer[19] != bfinal->buffer[19])
 	ldr	x1, [x2, 152]	// _452, MEM[(struct lead_t * *)prephitmp_1468 + 152B]
 // bitmapdecoding.cpp:407:   if (bfinal->initbuffer[19] != bfinal->buffer[19])
 	ldr	x0, [x3, 152]	// _450, MEM[(struct lead_t * *)prephitmp_1466 + 152B]
 // bitmapdecoding.cpp:407:   if (bfinal->initbuffer[19] != bfinal->buffer[19])
 	cmp	x0, x1	// _450, _452
-	beq	.L3223		//,
+	beq	.L3538		//,
 // bitmapdecoding.cpp:408:     unpack<19>(bfinal->initbuffer[19], bfinal->buffer[19], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj19EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3223:
+.L3538:
 // bitmapdecoding.cpp:409:   if (bfinal->initbuffer[20] != bfinal->buffer[20])
 	ldr	x1, [x2, 160]	// _456, MEM[(struct lead_t * *)prephitmp_1472 + 160B]
 // bitmapdecoding.cpp:409:   if (bfinal->initbuffer[20] != bfinal->buffer[20])
 	ldr	x0, [x3, 160]	// _454, MEM[(struct lead_t * *)prephitmp_1470 + 160B]
 // bitmapdecoding.cpp:409:   if (bfinal->initbuffer[20] != bfinal->buffer[20])
 	cmp	x0, x1	// _454, _456
-	beq	.L3224		//,
+	beq	.L3539		//,
 // bitmapdecoding.cpp:410:     unpack<20>(bfinal->initbuffer[20], bfinal->buffer[20], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj20EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3224:
+.L3539:
 // bitmapdecoding.cpp:411:   if (bfinal->initbuffer[21] != bfinal->buffer[21])
 	ldr	x1, [x2, 168]	// _460, MEM[(struct lead_t * *)prephitmp_1476 + 168B]
 // bitmapdecoding.cpp:411:   if (bfinal->initbuffer[21] != bfinal->buffer[21])
 	ldr	x0, [x3, 168]	// _458, MEM[(struct lead_t * *)prephitmp_1474 + 168B]
 // bitmapdecoding.cpp:411:   if (bfinal->initbuffer[21] != bfinal->buffer[21])
 	cmp	x0, x1	// _458, _460
-	beq	.L3225		//,
+	beq	.L3540		//,
 // bitmapdecoding.cpp:412:     unpack<21>(bfinal->initbuffer[21], bfinal->buffer[21], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj21EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3225:
+.L3540:
 // bitmapdecoding.cpp:413:   if (bfinal->initbuffer[22] != bfinal->buffer[22])
 	ldr	x1, [x2, 176]	// _464, MEM[(struct lead_t * *)prephitmp_1480 + 176B]
 // bitmapdecoding.cpp:413:   if (bfinal->initbuffer[22] != bfinal->buffer[22])
 	ldr	x0, [x3, 176]	// _462, MEM[(struct lead_t * *)prephitmp_1478 + 176B]
 // bitmapdecoding.cpp:413:   if (bfinal->initbuffer[22] != bfinal->buffer[22])
 	cmp	x0, x1	// _462, _464
-	beq	.L3226		//,
+	beq	.L3541		//,
 // bitmapdecoding.cpp:414:     unpack<22>(bfinal->initbuffer[22], bfinal->buffer[22], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj22EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3226:
+.L3541:
 // bitmapdecoding.cpp:415:   if (bfinal->initbuffer[23] != bfinal->buffer[23])
 	ldr	x1, [x2, 184]	// _468, MEM[(struct lead_t * *)prephitmp_1484 + 184B]
 // bitmapdecoding.cpp:415:   if (bfinal->initbuffer[23] != bfinal->buffer[23])
 	ldr	x0, [x3, 184]	// _466, MEM[(struct lead_t * *)prephitmp_1482 + 184B]
 // bitmapdecoding.cpp:415:   if (bfinal->initbuffer[23] != bfinal->buffer[23])
 	cmp	x0, x1	// _466, _468
-	beq	.L3227		//,
+	beq	.L3542		//,
 // bitmapdecoding.cpp:416:     unpack<23>(bfinal->initbuffer[23], bfinal->buffer[23], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj23EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3227:
+.L3542:
 // bitmapdecoding.cpp:417:   if (bfinal->initbuffer[24] != bfinal->buffer[24])
 	ldr	x1, [x2, 192]	// _472, MEM[(struct lead_t * *)prephitmp_1488 + 192B]
 // bitmapdecoding.cpp:417:   if (bfinal->initbuffer[24] != bfinal->buffer[24])
 	ldr	x0, [x3, 192]	// _470, MEM[(struct lead_t * *)prephitmp_1486 + 192B]
 // bitmapdecoding.cpp:417:   if (bfinal->initbuffer[24] != bfinal->buffer[24])
 	cmp	x0, x1	// _470, _472
-	beq	.L3228		//,
+	beq	.L3543		//,
 // bitmapdecoding.cpp:418:     unpack<24>(bfinal->initbuffer[24], bfinal->buffer[24], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj24EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3228:
+.L3543:
 // bitmapdecoding.cpp:419:   if (bfinal->initbuffer[25] != bfinal->buffer[25])
 	ldr	x1, [x2, 200]	// _476, MEM[(struct lead_t * *)prephitmp_1492 + 200B]
 // bitmapdecoding.cpp:419:   if (bfinal->initbuffer[25] != bfinal->buffer[25])
 	ldr	x0, [x3, 200]	// _474, MEM[(struct lead_t * *)prephitmp_1490 + 200B]
 // bitmapdecoding.cpp:419:   if (bfinal->initbuffer[25] != bfinal->buffer[25])
 	cmp	x0, x1	// _474, _476
-	beq	.L3229		//,
+	beq	.L3544		//,
 // bitmapdecoding.cpp:420:     unpack<25>(bfinal->initbuffer[25], bfinal->buffer[25], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj25EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3229:
+.L3544:
 // bitmapdecoding.cpp:421:   if (bfinal->initbuffer[26] != bfinal->buffer[26])
 	ldr	x1, [x2, 208]	// _480, MEM[(struct lead_t * *)prephitmp_1496 + 208B]
 // bitmapdecoding.cpp:421:   if (bfinal->initbuffer[26] != bfinal->buffer[26])
 	ldr	x0, [x3, 208]	// _478, MEM[(struct lead_t * *)prephitmp_1494 + 208B]
 // bitmapdecoding.cpp:421:   if (bfinal->initbuffer[26] != bfinal->buffer[26])
 	cmp	x0, x1	// _478, _480
-	beq	.L3230		//,
+	beq	.L3545		//,
 // bitmapdecoding.cpp:422:     unpack<26>(bfinal->initbuffer[26], bfinal->buffer[26], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj26EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3230:
+.L3545:
 // bitmapdecoding.cpp:423:   if (bfinal->initbuffer[27] != bfinal->buffer[27])
 	ldr	x1, [x2, 216]	// _484, MEM[(struct lead_t * *)prephitmp_1500 + 216B]
 // bitmapdecoding.cpp:423:   if (bfinal->initbuffer[27] != bfinal->buffer[27])
 	ldr	x0, [x3, 216]	// _482, MEM[(struct lead_t * *)prephitmp_1498 + 216B]
 // bitmapdecoding.cpp:423:   if (bfinal->initbuffer[27] != bfinal->buffer[27])
 	cmp	x0, x1	// _482, _484
-	beq	.L3231		//,
+	beq	.L3546		//,
 // bitmapdecoding.cpp:424:     unpack<27>(bfinal->initbuffer[27], bfinal->buffer[27], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj27EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3231:
+.L3546:
 // bitmapdecoding.cpp:425:   if (bfinal->initbuffer[28] != bfinal->buffer[28])
 	ldr	x1, [x2, 224]	// _488, MEM[(struct lead_t * *)prephitmp_1504 + 224B]
 // bitmapdecoding.cpp:425:   if (bfinal->initbuffer[28] != bfinal->buffer[28])
 	ldr	x0, [x3, 224]	// _486, MEM[(struct lead_t * *)prephitmp_1502 + 224B]
 // bitmapdecoding.cpp:425:   if (bfinal->initbuffer[28] != bfinal->buffer[28])
 	cmp	x0, x1	// _486, _488
-	beq	.L3232		//,
+	beq	.L3547		//,
 // bitmapdecoding.cpp:426:     unpack<28>(bfinal->initbuffer[28], bfinal->buffer[28], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj28EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3232:
+.L3547:
 // bitmapdecoding.cpp:427:   if (bfinal->initbuffer[29] != bfinal->buffer[29])
 	ldr	x1, [x2, 232]	// _492, MEM[(struct lead_t * *)prephitmp_1508 + 232B]
 // bitmapdecoding.cpp:427:   if (bfinal->initbuffer[29] != bfinal->buffer[29])
 	ldr	x0, [x3, 232]	// _490, MEM[(struct lead_t * *)prephitmp_1506 + 232B]
 // bitmapdecoding.cpp:427:   if (bfinal->initbuffer[29] != bfinal->buffer[29])
 	cmp	x0, x1	// _490, _492
-	beq	.L3233		//,
+	beq	.L3548		//,
 // bitmapdecoding.cpp:428:     unpack<29>(bfinal->initbuffer[29], bfinal->buffer[29], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj29EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3233:
+.L3548:
 // bitmapdecoding.cpp:429:   if (bfinal->initbuffer[30] != bfinal->buffer[30])
 	ldr	x1, [x2, 240]	// _496, MEM[(struct lead_t * *)prephitmp_1512 + 240B]
 // bitmapdecoding.cpp:429:   if (bfinal->initbuffer[30] != bfinal->buffer[30])
 	ldr	x0, [x3, 240]	// _494, MEM[(struct lead_t * *)prephitmp_1510 + 240B]
 // bitmapdecoding.cpp:429:   if (bfinal->initbuffer[30] != bfinal->buffer[30])
 	cmp	x0, x1	// _494, _496
-	beq	.L3234		//,
+	beq	.L3549		//,
 // bitmapdecoding.cpp:430:     unpack<30>(bfinal->initbuffer[30], bfinal->buffer[30], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj30EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3234:
+.L3549:
 // bitmapdecoding.cpp:431:   if (bfinal->initbuffer[31] != bfinal->buffer[31])
 	ldr	x1, [x2, 248]	// _500, MEM[(struct lead_t * *)prephitmp_1516 + 248B]
 // bitmapdecoding.cpp:431:   if (bfinal->initbuffer[31] != bfinal->buffer[31])
 	ldr	x0, [x3, 248]	// _498, MEM[(struct lead_t * *)prephitmp_1514 + 248B]
 // bitmapdecoding.cpp:431:   if (bfinal->initbuffer[31] != bfinal->buffer[31])
 	cmp	x0, x1	// _498, _500
-	beq	.L3235		//,
+	beq	.L3550		//,
 // bitmapdecoding.cpp:432:     unpack<31>(bfinal->initbuffer[31], bfinal->buffer[31], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj31EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3235:
+.L3550:
 // bitmapdecoding.cpp:433:   if (bfinal->initbuffer[32] != bfinal->buffer[32])
 	ldr	x1, [x2, 256]	// _504, MEM[(struct lead_t * *)prephitmp_1520 + 256B]
 // bitmapdecoding.cpp:433:   if (bfinal->initbuffer[32] != bfinal->buffer[32])
 	ldr	x0, [x3, 256]	// _502, MEM[(struct lead_t * *)prephitmp_1518 + 256B]
 // bitmapdecoding.cpp:433:   if (bfinal->initbuffer[32] != bfinal->buffer[32])
 	cmp	x0, x1	// _502, _504
-	beq	.L3236		//,
+	beq	.L3551		//,
 // bitmapdecoding.cpp:434:     unpack<32>(bfinal->initbuffer[32], bfinal->buffer[32], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj32EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3236:
+.L3551:
 // bitmapdecoding.cpp:435:   if (bfinal->initbuffer[33] != bfinal->buffer[33])
 	ldr	x1, [x2, 264]	// _508, MEM[(struct lead_t * *)prephitmp_1524 + 264B]
 // bitmapdecoding.cpp:435:   if (bfinal->initbuffer[33] != bfinal->buffer[33])
 	ldr	x0, [x3, 264]	// _506, MEM[(struct lead_t * *)prephitmp_1522 + 264B]
 // bitmapdecoding.cpp:435:   if (bfinal->initbuffer[33] != bfinal->buffer[33])
 	cmp	x0, x1	// _506, _508
-	beq	.L3237		//,
+	beq	.L3552		//,
 // bitmapdecoding.cpp:436:     unpack<33>(bfinal->initbuffer[33], bfinal->buffer[33], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj33EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3237:
+.L3552:
 // bitmapdecoding.cpp:437:   if (bfinal->initbuffer[34] != bfinal->buffer[34])
 	ldr	x1, [x2, 272]	// _512, MEM[(struct lead_t * *)prephitmp_1528 + 272B]
 // bitmapdecoding.cpp:437:   if (bfinal->initbuffer[34] != bfinal->buffer[34])
 	ldr	x0, [x3, 272]	// _510, MEM[(struct lead_t * *)prephitmp_1526 + 272B]
 // bitmapdecoding.cpp:437:   if (bfinal->initbuffer[34] != bfinal->buffer[34])
 	cmp	x0, x1	// _510, _512
-	beq	.L3238		//,
+	beq	.L3553		//,
 // bitmapdecoding.cpp:438:     unpack<34>(bfinal->initbuffer[34], bfinal->buffer[34], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj34EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3238:
+.L3553:
 // bitmapdecoding.cpp:439:   if (bfinal->initbuffer[35] != bfinal->buffer[35])
 	ldr	x1, [x2, 280]	// _516, MEM[(struct lead_t * *)prephitmp_1532 + 280B]
 // bitmapdecoding.cpp:439:   if (bfinal->initbuffer[35] != bfinal->buffer[35])
 	ldr	x0, [x3, 280]	// _514, MEM[(struct lead_t * *)prephitmp_1530 + 280B]
 // bitmapdecoding.cpp:439:   if (bfinal->initbuffer[35] != bfinal->buffer[35])
 	cmp	x0, x1	// _514, _516
-	beq	.L3239		//,
+	beq	.L3554		//,
 // bitmapdecoding.cpp:440:     unpack<35>(bfinal->initbuffer[35], bfinal->buffer[35], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj35EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3239:
+.L3554:
 // bitmapdecoding.cpp:441:   if (bfinal->initbuffer[36] != bfinal->buffer[36])
 	ldr	x1, [x2, 288]	// _520, MEM[(struct lead_t * *)prephitmp_1536 + 288B]
 // bitmapdecoding.cpp:441:   if (bfinal->initbuffer[36] != bfinal->buffer[36])
 	ldr	x0, [x3, 288]	// _518, MEM[(struct lead_t * *)prephitmp_1534 + 288B]
 // bitmapdecoding.cpp:441:   if (bfinal->initbuffer[36] != bfinal->buffer[36])
 	cmp	x0, x1	// _518, _520
-	beq	.L3240		//,
+	beq	.L3555		//,
 // bitmapdecoding.cpp:442:     unpack<36>(bfinal->initbuffer[36], bfinal->buffer[36], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj36EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3240:
+.L3555:
 // bitmapdecoding.cpp:443:   if (bfinal->initbuffer[37] != bfinal->buffer[37])
 	ldr	x1, [x2, 296]	// _524, MEM[(struct lead_t * *)prephitmp_1540 + 296B]
 // bitmapdecoding.cpp:443:   if (bfinal->initbuffer[37] != bfinal->buffer[37])
 	ldr	x0, [x3, 296]	// _522, MEM[(struct lead_t * *)prephitmp_1538 + 296B]
 // bitmapdecoding.cpp:443:   if (bfinal->initbuffer[37] != bfinal->buffer[37])
 	cmp	x0, x1	// _522, _524
-	beq	.L3241		//,
+	beq	.L3556		//,
 // bitmapdecoding.cpp:444:     unpack<37>(bfinal->initbuffer[37], bfinal->buffer[37], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj37EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3241:
+.L3556:
 // bitmapdecoding.cpp:445:   if (bfinal->initbuffer[38] != bfinal->buffer[38])
 	ldr	x1, [x2, 304]	// _528, MEM[(struct lead_t * *)prephitmp_1544 + 304B]
 // bitmapdecoding.cpp:445:   if (bfinal->initbuffer[38] != bfinal->buffer[38])
 	ldr	x0, [x3, 304]	// _526, MEM[(struct lead_t * *)prephitmp_1542 + 304B]
 // bitmapdecoding.cpp:445:   if (bfinal->initbuffer[38] != bfinal->buffer[38])
 	cmp	x0, x1	// _526, _528
-	beq	.L3242		//,
+	beq	.L3557		//,
 // bitmapdecoding.cpp:446:     unpack<38>(bfinal->initbuffer[38], bfinal->buffer[38], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj38EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3242:
+.L3557:
 // bitmapdecoding.cpp:447:   if (bfinal->initbuffer[39] != bfinal->buffer[39])
 	ldr	x1, [x2, 312]	// _532, MEM[(struct lead_t * *)prephitmp_1548 + 312B]
 // bitmapdecoding.cpp:447:   if (bfinal->initbuffer[39] != bfinal->buffer[39])
 	ldr	x0, [x3, 312]	// _530, MEM[(struct lead_t * *)prephitmp_1546 + 312B]
 // bitmapdecoding.cpp:447:   if (bfinal->initbuffer[39] != bfinal->buffer[39])
 	cmp	x0, x1	// _530, _532
-	beq	.L3243		//,
+	beq	.L3558		//,
 // bitmapdecoding.cpp:448:     unpack<39>(bfinal->initbuffer[39], bfinal->buffer[39], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj39EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3243:
+.L3558:
 // bitmapdecoding.cpp:449:   if (bfinal->initbuffer[40] != bfinal->buffer[40])
 	ldr	x1, [x2, 320]	// _536, MEM[(struct lead_t * *)prephitmp_1552 + 320B]
 // bitmapdecoding.cpp:449:   if (bfinal->initbuffer[40] != bfinal->buffer[40])
 	ldr	x0, [x3, 320]	// _534, MEM[(struct lead_t * *)prephitmp_1550 + 320B]
 // bitmapdecoding.cpp:449:   if (bfinal->initbuffer[40] != bfinal->buffer[40])
 	cmp	x0, x1	// _534, _536
-	beq	.L3244		//,
+	beq	.L3559		//,
 // bitmapdecoding.cpp:450:     unpack<40>(bfinal->initbuffer[40], bfinal->buffer[40], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj40EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3244:
+.L3559:
 // bitmapdecoding.cpp:451:   if (bfinal->initbuffer[41] != bfinal->buffer[41])
 	ldr	x1, [x2, 328]	// _540, MEM[(struct lead_t * *)prephitmp_1556 + 328B]
 // bitmapdecoding.cpp:451:   if (bfinal->initbuffer[41] != bfinal->buffer[41])
 	ldr	x0, [x3, 328]	// _538, MEM[(struct lead_t * *)prephitmp_1554 + 328B]
 // bitmapdecoding.cpp:451:   if (bfinal->initbuffer[41] != bfinal->buffer[41])
 	cmp	x0, x1	// _538, _540
-	beq	.L3245		//,
+	beq	.L3560		//,
 // bitmapdecoding.cpp:452:     unpack<41>(bfinal->initbuffer[41], bfinal->buffer[41], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj41EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3245:
+.L3560:
 // bitmapdecoding.cpp:453:   if (bfinal->initbuffer[42] != bfinal->buffer[42])
 	ldr	x1, [x2, 336]	// _544, MEM[(struct lead_t * *)prephitmp_1560 + 336B]
 // bitmapdecoding.cpp:453:   if (bfinal->initbuffer[42] != bfinal->buffer[42])
 	ldr	x0, [x3, 336]	// _542, MEM[(struct lead_t * *)prephitmp_1558 + 336B]
 // bitmapdecoding.cpp:453:   if (bfinal->initbuffer[42] != bfinal->buffer[42])
 	cmp	x0, x1	// _542, _544
-	beq	.L3246		//,
+	beq	.L3561		//,
 // bitmapdecoding.cpp:454:     unpack<42>(bfinal->initbuffer[42], bfinal->buffer[42], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj42EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3246:
+.L3561:
 // bitmapdecoding.cpp:455:   if (bfinal->initbuffer[43] != bfinal->buffer[43])
 	ldr	x1, [x2, 344]	// _548, MEM[(struct lead_t * *)prephitmp_1564 + 344B]
 // bitmapdecoding.cpp:455:   if (bfinal->initbuffer[43] != bfinal->buffer[43])
 	ldr	x0, [x3, 344]	// _546, MEM[(struct lead_t * *)prephitmp_1562 + 344B]
 // bitmapdecoding.cpp:455:   if (bfinal->initbuffer[43] != bfinal->buffer[43])
 	cmp	x0, x1	// _546, _548
-	beq	.L3247		//,
+	beq	.L3562		//,
 // bitmapdecoding.cpp:456:     unpack<43>(bfinal->initbuffer[43], bfinal->buffer[43], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj43EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3247:
+.L3562:
 // bitmapdecoding.cpp:457:   if (bfinal->initbuffer[44] != bfinal->buffer[44])
 	ldr	x1, [x2, 352]	// _552, MEM[(struct lead_t * *)prephitmp_1568 + 352B]
 // bitmapdecoding.cpp:457:   if (bfinal->initbuffer[44] != bfinal->buffer[44])
 	ldr	x0, [x3, 352]	// _550, MEM[(struct lead_t * *)prephitmp_1566 + 352B]
 // bitmapdecoding.cpp:457:   if (bfinal->initbuffer[44] != bfinal->buffer[44])
 	cmp	x0, x1	// _550, _552
-	beq	.L3248		//,
+	beq	.L3563		//,
 // bitmapdecoding.cpp:458:     unpack<44>(bfinal->initbuffer[44], bfinal->buffer[44], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj44EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3248:
+.L3563:
 // bitmapdecoding.cpp:459:   if (bfinal->initbuffer[45] != bfinal->buffer[45])
 	ldr	x1, [x2, 360]	// _556, MEM[(struct lead_t * *)prephitmp_1572 + 360B]
 // bitmapdecoding.cpp:459:   if (bfinal->initbuffer[45] != bfinal->buffer[45])
 	ldr	x0, [x3, 360]	// _554, MEM[(struct lead_t * *)prephitmp_1570 + 360B]
 // bitmapdecoding.cpp:459:   if (bfinal->initbuffer[45] != bfinal->buffer[45])
 	cmp	x0, x1	// _554, _556
-	beq	.L3249		//,
+	beq	.L3564		//,
 // bitmapdecoding.cpp:460:     unpack<45>(bfinal->initbuffer[45], bfinal->buffer[45], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj45EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3249:
+.L3564:
 // bitmapdecoding.cpp:461:   if (bfinal->initbuffer[46] != bfinal->buffer[46])
 	ldr	x1, [x2, 368]	// _560, MEM[(struct lead_t * *)prephitmp_1576 + 368B]
 // bitmapdecoding.cpp:461:   if (bfinal->initbuffer[46] != bfinal->buffer[46])
 	ldr	x0, [x3, 368]	// _558, MEM[(struct lead_t * *)prephitmp_1574 + 368B]
 // bitmapdecoding.cpp:461:   if (bfinal->initbuffer[46] != bfinal->buffer[46])
 	cmp	x0, x1	// _558, _560
-	beq	.L3250		//,
+	beq	.L3565		//,
 // bitmapdecoding.cpp:462:     unpack<46>(bfinal->initbuffer[46], bfinal->buffer[46], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj46EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3250:
+.L3565:
 // bitmapdecoding.cpp:463:   if (bfinal->initbuffer[47] != bfinal->buffer[47])
 	ldr	x1, [x2, 376]	// _564, MEM[(struct lead_t * *)prephitmp_1580 + 376B]
 // bitmapdecoding.cpp:463:   if (bfinal->initbuffer[47] != bfinal->buffer[47])
 	ldr	x0, [x3, 376]	// _562, MEM[(struct lead_t * *)prephitmp_1578 + 376B]
 // bitmapdecoding.cpp:463:   if (bfinal->initbuffer[47] != bfinal->buffer[47])
 	cmp	x0, x1	// _562, _564
-	beq	.L3251		//,
+	beq	.L3566		//,
 // bitmapdecoding.cpp:464:     unpack<47>(bfinal->initbuffer[47], bfinal->buffer[47], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj47EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3251:
+.L3566:
 // bitmapdecoding.cpp:465:   if (bfinal->initbuffer[48] != bfinal->buffer[48])
 	ldr	x1, [x2, 384]	// _568, MEM[(struct lead_t * *)prephitmp_1584 + 384B]
 // bitmapdecoding.cpp:465:   if (bfinal->initbuffer[48] != bfinal->buffer[48])
 	ldr	x0, [x3, 384]	// _566, MEM[(struct lead_t * *)prephitmp_1582 + 384B]
 // bitmapdecoding.cpp:465:   if (bfinal->initbuffer[48] != bfinal->buffer[48])
 	cmp	x0, x1	// _566, _568
-	beq	.L3252		//,
+	beq	.L3567		//,
 // bitmapdecoding.cpp:466:     unpack<48>(bfinal->initbuffer[48], bfinal->buffer[48], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj48EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3252:
+.L3567:
 // bitmapdecoding.cpp:467:   if (bfinal->initbuffer[49] != bfinal->buffer[49])
 	ldr	x1, [x2, 392]	// _572, MEM[(struct lead_t * *)prephitmp_1588 + 392B]
 // bitmapdecoding.cpp:467:   if (bfinal->initbuffer[49] != bfinal->buffer[49])
 	ldr	x0, [x3, 392]	// _570, MEM[(struct lead_t * *)prephitmp_1586 + 392B]
 // bitmapdecoding.cpp:467:   if (bfinal->initbuffer[49] != bfinal->buffer[49])
 	cmp	x0, x1	// _570, _572
-	beq	.L3253		//,
+	beq	.L3568		//,
 // bitmapdecoding.cpp:468:     unpack<49>(bfinal->initbuffer[49], bfinal->buffer[49], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj49EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3253:
+.L3568:
 // bitmapdecoding.cpp:469:   if (bfinal->initbuffer[50] != bfinal->buffer[50])
 	ldr	x1, [x2, 400]	// _576, MEM[(struct lead_t * *)prephitmp_1592 + 400B]
 // bitmapdecoding.cpp:469:   if (bfinal->initbuffer[50] != bfinal->buffer[50])
 	ldr	x0, [x3, 400]	// _574, MEM[(struct lead_t * *)prephitmp_1590 + 400B]
 // bitmapdecoding.cpp:469:   if (bfinal->initbuffer[50] != bfinal->buffer[50])
 	cmp	x0, x1	// _574, _576
-	beq	.L3254		//,
+	beq	.L3569		//,
 // bitmapdecoding.cpp:470:     unpack<50>(bfinal->initbuffer[50], bfinal->buffer[50], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj50EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3254:
+.L3569:
 // bitmapdecoding.cpp:471:   if (bfinal->initbuffer[51] != bfinal->buffer[51])
 	ldr	x1, [x2, 408]	// _580, MEM[(struct lead_t * *)prephitmp_1596 + 408B]
 // bitmapdecoding.cpp:471:   if (bfinal->initbuffer[51] != bfinal->buffer[51])
 	ldr	x0, [x3, 408]	// _578, MEM[(struct lead_t * *)prephitmp_1594 + 408B]
 // bitmapdecoding.cpp:471:   if (bfinal->initbuffer[51] != bfinal->buffer[51])
 	cmp	x0, x1	// _578, _580
-	beq	.L3255		//,
+	beq	.L3570		//,
 // bitmapdecoding.cpp:472:     unpack<51>(bfinal->initbuffer[51], bfinal->buffer[51], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj51EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3255:
+.L3570:
 // bitmapdecoding.cpp:473:   if (bfinal->initbuffer[52] != bfinal->buffer[52])
 	ldr	x1, [x2, 416]	// _584, MEM[(struct lead_t * *)prephitmp_1600 + 416B]
 // bitmapdecoding.cpp:473:   if (bfinal->initbuffer[52] != bfinal->buffer[52])
 	ldr	x0, [x3, 416]	// _582, MEM[(struct lead_t * *)prephitmp_1598 + 416B]
 // bitmapdecoding.cpp:473:   if (bfinal->initbuffer[52] != bfinal->buffer[52])
 	cmp	x0, x1	// _582, _584
-	beq	.L3256		//,
+	beq	.L3571		//,
 // bitmapdecoding.cpp:474:     unpack<52>(bfinal->initbuffer[52], bfinal->buffer[52], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj52EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3256:
+.L3571:
 // bitmapdecoding.cpp:475:   if (bfinal->initbuffer[53] != bfinal->buffer[53])
 	ldr	x1, [x2, 424]	// _588, MEM[(struct lead_t * *)prephitmp_1604 + 424B]
 // bitmapdecoding.cpp:475:   if (bfinal->initbuffer[53] != bfinal->buffer[53])
 	ldr	x0, [x3, 424]	// _586, MEM[(struct lead_t * *)prephitmp_1602 + 424B]
 // bitmapdecoding.cpp:475:   if (bfinal->initbuffer[53] != bfinal->buffer[53])
 	cmp	x0, x1	// _586, _588
-	beq	.L3257		//,
+	beq	.L3572		//,
 // bitmapdecoding.cpp:476:     unpack<53>(bfinal->initbuffer[53], bfinal->buffer[53], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj53EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3257:
+.L3572:
 // bitmapdecoding.cpp:477:   if (bfinal->initbuffer[54] != bfinal->buffer[54])
 	ldr	x1, [x2, 432]	// _592, MEM[(struct lead_t * *)prephitmp_1608 + 432B]
 // bitmapdecoding.cpp:477:   if (bfinal->initbuffer[54] != bfinal->buffer[54])
 	ldr	x0, [x3, 432]	// _590, MEM[(struct lead_t * *)prephitmp_1606 + 432B]
 // bitmapdecoding.cpp:477:   if (bfinal->initbuffer[54] != bfinal->buffer[54])
 	cmp	x0, x1	// _590, _592
-	beq	.L3258		//,
+	beq	.L3573		//,
 // bitmapdecoding.cpp:478:     unpack<54>(bfinal->initbuffer[54], bfinal->buffer[54], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj54EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3258:
+.L3573:
 // bitmapdecoding.cpp:479:   if (bfinal->initbuffer[55] != bfinal->buffer[55])
 	ldr	x1, [x2, 440]	// _596, MEM[(struct lead_t * *)prephitmp_1612 + 440B]
 // bitmapdecoding.cpp:479:   if (bfinal->initbuffer[55] != bfinal->buffer[55])
 	ldr	x0, [x3, 440]	// _594, MEM[(struct lead_t * *)prephitmp_1610 + 440B]
 // bitmapdecoding.cpp:479:   if (bfinal->initbuffer[55] != bfinal->buffer[55])
 	cmp	x0, x1	// _594, _596
-	beq	.L3259		//,
+	beq	.L3574		//,
 // bitmapdecoding.cpp:480:     unpack<55>(bfinal->initbuffer[55], bfinal->buffer[55], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj55EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3259:
+.L3574:
 // bitmapdecoding.cpp:481:   if (bfinal->initbuffer[56] != bfinal->buffer[56])
 	ldr	x1, [x2, 448]	// _600, MEM[(struct lead_t * *)prephitmp_1616 + 448B]
 // bitmapdecoding.cpp:481:   if (bfinal->initbuffer[56] != bfinal->buffer[56])
 	ldr	x0, [x3, 448]	// _598, MEM[(struct lead_t * *)prephitmp_1614 + 448B]
 // bitmapdecoding.cpp:481:   if (bfinal->initbuffer[56] != bfinal->buffer[56])
 	cmp	x0, x1	// _598, _600
-	beq	.L3260		//,
+	beq	.L3575		//,
 // bitmapdecoding.cpp:482:     unpack<56>(bfinal->initbuffer[56], bfinal->buffer[56], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj56EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3260:
+.L3575:
 // bitmapdecoding.cpp:483:   if (bfinal->initbuffer[57] != bfinal->buffer[57])
 	ldr	x1, [x2, 456]	// _604, MEM[(struct lead_t * *)prephitmp_1620 + 456B]
 // bitmapdecoding.cpp:483:   if (bfinal->initbuffer[57] != bfinal->buffer[57])
 	ldr	x0, [x3, 456]	// _602, MEM[(struct lead_t * *)prephitmp_1618 + 456B]
 // bitmapdecoding.cpp:483:   if (bfinal->initbuffer[57] != bfinal->buffer[57])
 	cmp	x0, x1	// _602, _604
-	beq	.L3261		//,
+	beq	.L3576		//,
 // bitmapdecoding.cpp:484:     unpack<57>(bfinal->initbuffer[57], bfinal->buffer[57], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj57EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3261:
+.L3576:
 // bitmapdecoding.cpp:485:   if (bfinal->initbuffer[58] != bfinal->buffer[58])
 	ldr	x1, [x2, 464]	// _608, MEM[(struct lead_t * *)prephitmp_1624 + 464B]
 // bitmapdecoding.cpp:485:   if (bfinal->initbuffer[58] != bfinal->buffer[58])
 	ldr	x0, [x3, 464]	// _606, MEM[(struct lead_t * *)prephitmp_1622 + 464B]
 // bitmapdecoding.cpp:485:   if (bfinal->initbuffer[58] != bfinal->buffer[58])
 	cmp	x0, x1	// _606, _608
-	beq	.L3262		//,
+	beq	.L3577		//,
 // bitmapdecoding.cpp:486:     unpack<58>(bfinal->initbuffer[58], bfinal->buffer[58], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj58EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3262:
+.L3577:
 // bitmapdecoding.cpp:487:   if (bfinal->initbuffer[59] != bfinal->buffer[59])
 	ldr	x1, [x2, 472]	// _612, MEM[(struct lead_t * *)prephitmp_1628 + 472B]
 // bitmapdecoding.cpp:487:   if (bfinal->initbuffer[59] != bfinal->buffer[59])
 	ldr	x0, [x3, 472]	// _610, MEM[(struct lead_t * *)prephitmp_1626 + 472B]
 // bitmapdecoding.cpp:487:   if (bfinal->initbuffer[59] != bfinal->buffer[59])
 	cmp	x0, x1	// _610, _612
-	beq	.L3263		//,
+	beq	.L3578		//,
 // bitmapdecoding.cpp:488:     unpack<59>(bfinal->initbuffer[59], bfinal->buffer[59], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj59EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3263:
+.L3578:
 // bitmapdecoding.cpp:489:   if (bfinal->initbuffer[60] != bfinal->buffer[60])
 	ldr	x1, [x2, 480]	// _616, MEM[(struct lead_t * *)prephitmp_1632 + 480B]
 // bitmapdecoding.cpp:489:   if (bfinal->initbuffer[60] != bfinal->buffer[60])
 	ldr	x0, [x3, 480]	// _614, MEM[(struct lead_t * *)prephitmp_1630 + 480B]
 // bitmapdecoding.cpp:489:   if (bfinal->initbuffer[60] != bfinal->buffer[60])
 	cmp	x0, x1	// _614, _616
-	beq	.L3264		//,
+	beq	.L3579		//,
 // bitmapdecoding.cpp:490:     unpack<60>(bfinal->initbuffer[60], bfinal->buffer[60], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj60EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3264:
+.L3579:
 // bitmapdecoding.cpp:491:   if (bfinal->initbuffer[61] != bfinal->buffer[61])
 	ldr	x1, [x2, 488]	// _620, MEM[(struct lead_t * *)prephitmp_1636 + 488B]
 // bitmapdecoding.cpp:491:   if (bfinal->initbuffer[61] != bfinal->buffer[61])
 	ldr	x0, [x3, 488]	// _618, MEM[(struct lead_t * *)prephitmp_1634 + 488B]
 // bitmapdecoding.cpp:491:   if (bfinal->initbuffer[61] != bfinal->buffer[61])
 	cmp	x0, x1	// _618, _620
-	beq	.L3265		//,
+	beq	.L3580		//,
 // bitmapdecoding.cpp:492:     unpack<61>(bfinal->initbuffer[61], bfinal->buffer[61], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj61EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3265:
+.L3580:
 // bitmapdecoding.cpp:493:   if (bfinal->initbuffer[62] != bfinal->buffer[62])
 	ldr	x1, [x2, 496]	// _624, MEM[(struct lead_t * *)prephitmp_1640 + 496B]
 // bitmapdecoding.cpp:493:   if (bfinal->initbuffer[62] != bfinal->buffer[62])
 	ldr	x0, [x3, 496]	// _622, MEM[(struct lead_t * *)prephitmp_1638 + 496B]
 // bitmapdecoding.cpp:493:   if (bfinal->initbuffer[62] != bfinal->buffer[62])
 	cmp	x0, x1	// _622, _624
-	beq	.L3266		//,
+	beq	.L3581		//,
 // bitmapdecoding.cpp:494:     unpack<62>(bfinal->initbuffer[62], bfinal->buffer[62], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj62EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3266:
+.L3581:
 // bitmapdecoding.cpp:495:   if (bfinal->initbuffer[63] != bfinal->buffer[63])
 	ldr	x1, [x2, 504]	// _628, MEM[(struct lead_t * *)prephitmp_1644 + 504B]
 // bitmapdecoding.cpp:495:   if (bfinal->initbuffer[63] != bfinal->buffer[63])
 	ldr	x0, [x3, 504]	// _626, MEM[(struct lead_t * *)prephitmp_1642 + 504B]
 // bitmapdecoding.cpp:495:   if (bfinal->initbuffer[63] != bfinal->buffer[63])
 	cmp	x0, x1	// _626, _628
-	beq	.L3267		//,
+	beq	.L3582		//,
 // bitmapdecoding.cpp:496:     unpack<63>(bfinal->initbuffer[63], bfinal->buffer[63], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj63EEvP6lead_sS1_Pj		//
 	ldp	x2, x3, [sp, 224]	// _114, _119, MEM[(struct lead_t * * *)&b + 8B]
-.L3267:
+.L3582:
 // bitmapdecoding.cpp:497:   if (bfinal->initbuffer[64] != bfinal->buffer[64])
 	ldr	x1, [x2, 512]	// _632, MEM[(struct lead_t * *)prephitmp_1648 + 512B]
 // bitmapdecoding.cpp:497:   if (bfinal->initbuffer[64] != bfinal->buffer[64])
 	ldr	x0, [x3, 512]	// _630, MEM[(struct lead_t * *)prephitmp_1646 + 512B]
 // bitmapdecoding.cpp:497:   if (bfinal->initbuffer[64] != bfinal->buffer[64])
 	cmp	x0, x1	// _630, _632
-	beq	.L3268		//,
+	beq	.L3583		//,
 // bitmapdecoding.cpp:498:     unpack<64>(bfinal->initbuffer[64], bfinal->buffer[64], out);
 	mov	x2, x19	//, _71
 	bl	_Z6unpackILj64EEvP6lead_sS1_Pj		//
-.L3268:
+.L3583:
 // linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	ldr	w0, [sp, 320]	//, unified.fd
 	mov	w2, 1	//,
@@ -26702,8 +27891,8 @@ _Z8fasttestPKcc:
 	bl	ioctl		//
 // linux-perf-events.h:72:     if (ioctl(fd, PERF_EVENT_IOC_DISABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	cmn	w0, #1	// tmp834,
-	beq	.L3476		//,
-.L3269:
+	beq	.L3791		//,
+.L3584:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x1, x2, [sp, 448]	// _352, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
 	add	x27, sp, 192	// tmp901,,
@@ -26713,8 +27902,8 @@ _Z8fasttestPKcc:
 	bl	read		//
 // linux-perf-events.h:76:     if (read(fd, temp_result_vec.data(), temp_result_vec.size() * 8) == -1) {
 	cmn	x0, #1	// tmp836,
-	beq	.L3477		//,
-.L3271:
+	beq	.L3792		//,
+.L3586:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x4, x3, [sp, 448]	// _1358, MEM[(long unsigned int * *)&unified + 136B], MEM[(long unsigned int * *)&unified + 128B]
 	sub	x3, x3, x4	// tmp660, MEM[(long unsigned int * *)&unified + 136B], _1358
@@ -26723,7 +27912,7 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x3, x3, 3	// _990, tmp660,
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	bls	.L3273		//,
+	bls	.L3588		//,
 // linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
 	ldr	x5, [sp, 168]	// _369, MEM[(long long unsigned int * *)&results]
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
@@ -26731,7 +27920,7 @@ _Z8fasttestPKcc:
 // linux-perf-events.h:82:       results[i / 2] = temp_result_vec[i];
 	mov	w0, w1	// i, _52
 	.p2align 3,,7
-.L3274:
+.L3589:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1043: 	return *(this->_M_impl._M_start + __n);
 	lsr	w2, w0, 1	// tmp664, i,
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
@@ -26745,12 +27934,12 @@ _Z8fasttestPKcc:
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
 	uxtw	x1, w0	// _52, i
 // linux-perf-events.h:81:     for (uint32_t i = 1; i < temp_result_vec.size(); i += 2) {
-	bhi	.L3274		//,
-.L3273:
+	bhi	.L3589		//,
+.L3588:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1186: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
 	ldp	x25, x0, [sp, 200]	// _659, allresults.D.46492._M_impl.D.45827._M_end_of_storage, allresults.D.46492._M_impl.D.45827._M_finish
 	cmp	x25, x0	// _659, allresults.D.46492._M_impl.D.45827._M_end_of_storage
-	beq	.L3279		//,
+	beq	.L3594		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x0, x26, [sp, 168]	// MEM[(long long unsigned int * *)&results], MEM[(long long unsigned int * *)&results + 8B], MEM[(long long unsigned int * *)&results]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
@@ -26768,18 +27957,18 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x0, x26, 3	// tmp678, _665,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L3281		//,
+	beq	.L3596		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x1, 1152921504606846975	// tmp679,
 	add	x27, sp, 192	// tmp798,,
 	cmp	x0, x1	// tmp678, tmp679
-	bhi	.L3478		//,
+	bhi	.L3793		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x26	//, _665
 	bl	_Znwm		//
 	ldr	x27, [sp, 200]	// pretmp_1682, allresults.D.46492._M_impl.D.45827._M_finish
 	mov	x3, x0	// _678, tmp839
-.L3281:
+.L3596:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
 	stp	x3, x3, [x25]	// _678, _678, MEM[(struct _Vector_base *)_659]._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
@@ -26793,13 +27982,13 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
 	sub	x26, x0, x1	// _673, _672, _671
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L3284		//,
+	beq	.L3599		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	mov	x0, x3	//, _678
 	mov	x2, x26	//, _673
 	bl	memmove		//
 	mov	x3, x0	// _678,
-.L3284:
+.L3599:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
 	add	x3, x3, x26	// tmp682, _678, _673
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
@@ -26807,17 +27996,17 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1191: 	    ++this->_M_impl._M_finish;
 	add	x27, x27, 24	// tmp683, pretmp_1682,
 	str	x27, [sp, 200]	// tmp683, allresults.D.46492._M_impl.D.45827._M_finish
-.L3285:
+.L3600:
 // bitmapdecoding.cpp:520:   for (uint32_t i = 0; i < iterations; i++) {
 	subs	w21, w21, #1	// ivtmp_1367, ivtmp_1367,
-	bne	.L3189		//,
+	bne	.L3504		//,
 // bitmapdecoding.cpp:532:   destroy_buf(&b);
 	add	x0, sp, 216	// tmp909,,
 	bl	_Z11destroy_bufP5buf_s		//
 // bitmapdecoding.cpp:533:   if (bigarray[0] == 0)
 	ldr	w0, [x19]	//, *_71
-	cbz	w0, .L3479	// *_71,
-.L3286:
+	cbz	w0, .L3794	// *_71,
+.L3601:
 // bitmapdecoding.cpp:535:   printf("matches = %u words = %zu 1-bit density %4.3f %% \n", matches,
 	ldr	x2, [sp, 136]	// wordcount.25_10, wordcount
 // bitmapdecoding.cpp:536:          wordcount, double(matches) / (64 * wordcount) * 100);
@@ -26870,20 +28059,20 @@ _Z8fasttestPKcc:
 	asr	x0, x21, 3	// tmp704, _682,
 	mul	x0, x0, x1	// tmp705, tmp704, tmp706
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cbz	x0, .L3288	// tmp705,
+	cbz	x0, .L3603	// tmp705,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x1, 6148914691236517205	// tmp707,
 	add	x27, sp, 192	// tmp798,,
 	movk	x1, 0x555, lsl 48	// tmp707,,
 	cmp	x0, x1	// tmp705, tmp707
-	bhi	.L3480		//,
+	bhi	.L3795		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x21	//, _682
 	bl	_Znwm		//
-.LEHE114:
+.LEHE143:
 	ldp	x22, x23, [sp, 192]	// pretmp_1656, pretmp_1658, MEM[(struct vector * *)&allresults]
 	mov	x24, x0	// __first, tmp840
-.L3288:
+.L3603:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x21, x24, x21	// tmp709, __first, _682
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -26895,11 +28084,11 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:79: 	  _ForwardIterator __cur = __result;
 	mov	x21, x24	// __cur, __first
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
-	beq	.L3290		//,
+	beq	.L3605		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x25, 1152921504606846975	// tmp809,
 	.p2align 3,,7
-.L3296:
+.L3611:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x0, x26, [x22]	// MEM[base: _1339, offset: 0B], MEM[base: _1339, offset: 8B], MEM[base: _1339, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
@@ -26915,17 +28104,17 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x0, x26, 3	// tmp712, _709,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L3292		//,
+	beq	.L3607		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	cmp	x0, x25	// tmp712, tmp809
-	bhi	.L3481		//,
+	bhi	.L3796		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x26	//, _709
-.LEHB115:
+.LEHB144:
 	bl	_Znwm		//
-.LEHE115:
+.LEHE144:
 	mov	x3, x0	// _722, tmp841
-.L3292:
+.L3607:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x26, x3, x26	// tmp715, _722, _709
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -26939,60 +28128,60 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
 	sub	x26, x0, x1	// _717, _716, _715
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L3295		//,
+	beq	.L3610		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	mov	x0, x3	//, _722
 	mov	x2, x26	//, _717
 	bl	memmove		//
 	mov	x3, x0	// _722,
-.L3295:
+.L3610:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
 	add	x3, x3, x26	// tmp716, _722, _717
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
 	str	x3, [x21, 8]	// tmp716, MEM[base: __cur_1354, offset: 8B]
-	add	x22, x22, 24	// ivtmp.2189, ivtmp.2189,
+	add	x22, x22, 24	// ivtmp.2346, ivtmp.2346,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
 	add	x21, x21, 24	// __cur, __cur,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
-	cmp	x23, x22	// pretmp_1658, ivtmp.2189
-	bne	.L3296		//,
-.L3290:
+	cmp	x23, x22	// pretmp_1658, ivtmp.2346
+	bne	.L3611		//,
+.L3605:
 // bitmapdecoding.cpp:538:   std::vector<unsigned long long> mins = compute_mins(allresults);
 	add	x8, sp, 240	//,,
 	add	x0, sp, 288	// tmp911,,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
 	str	x21, [sp, 296]	// __cur, D.48773.D.46492._M_impl.D.45827._M_finish
-.LEHB116:
+.LEHB145:
 // bitmapdecoding.cpp:538:   std::vector<unsigned long long> mins = compute_mins(allresults);
 	bl	_Z12compute_minsSt6vectorIS_IySaIyEESaIS1_EE		//
-.LEHE116:
+.LEHE145:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldp	x21, x22, [sp, 288]	// __first, pretmp_1666, D.48773.D.46492._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x21, x22	// __first, pretmp_1666
-	beq	.L3304		//,
+	beq	.L3619		//,
 	.p2align 3,,7
-.L3306:
+.L3621:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x21]	// _739, MEM[base: __first_657, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3305	// _739,
+	cbz	x0, .L3620	// _739,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3305:
+.L3620:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x21, x21, 24	// __first, __first,
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x22, x21	// pretmp_1666, __first
-	bne	.L3306		//,
+	bne	.L3621		//,
 	ldr	x22, [sp, 288]	// pretmp_1666, MEM[(struct _Vector_base *)&D.48773]._M_impl.D.45827._M_start
-.L3304:
+.L3619:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x22, .L3307	// pretmp_1666,
+	cbz	x22, .L3622	// pretmp_1666,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x22	//, pretmp_1666
 	bl	_ZdlPv		//
-.L3307:
+.L3622:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:552: 	_Alloc_traits::_S_select_on_copy(__x._M_get_Tp_allocator()))
 	ldp	x22, x23, [sp, 192]	// pretmp_1668, pretmp_1670, MEM[(struct vector * *)&allresults]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
@@ -27009,20 +28198,20 @@ _Z8fasttestPKcc:
 	asr	x0, x21, 3	// tmp724, _726,
 	mul	x0, x0, x1	// tmp725, tmp724, tmp726
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	cbz	x0, .L3309	// tmp725,
+	cbz	x0, .L3624	// tmp725,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x1, 6148914691236517205	// tmp727,
 	movk	x1, 0x555, lsl 48	// tmp727,,
 	cmp	x0, x1	// tmp725, tmp727
-	bhi	.L3482		//,
+	bhi	.L3797		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x21	//, _726
-.LEHB117:
+.LEHB146:
 	bl	_Znwm		//
-.LEHE117:
+.LEHE146:
 	ldp	x22, x23, [sp, 192]	// pretmp_1668, pretmp_1670, MEM[(struct vector * *)&allresults]
 	mov	x24, x0	// __first, tmp843
-.L3309:
+.L3624:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x21, x24, x21	// tmp729, __first, _726
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -27034,11 +28223,11 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:79: 	  _ForwardIterator __cur = __result;
 	mov	x21, x24	// __cur, __first
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
-	beq	.L3311		//,
+	beq	.L3626		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	mov	x25, 1152921504606846975	// tmp807,
 	.p2align 3,,7
-.L3317:
+.L3632:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	ldp	x0, x26, [x22]	// MEM[base: _1363, offset: 0B], MEM[base: _1363, offset: 8B], MEM[base: _1363, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:95: 	: _M_start(), _M_finish(), _M_end_of_storage()
@@ -27054,17 +28243,17 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:916:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
 	asr	x0, x26, 3	// tmp732, _759,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
-	beq	.L3313		//,
+	beq	.L3628		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:104: 	if (__n > this->max_size())
 	cmp	x0, x25	// tmp732, tmp807
-	bhi	.L3483		//,
+	bhi	.L3798		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:114: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
 	mov	x0, x26	//, _759
-.LEHB118:
+.LEHB147:
 	bl	_Znwm		//
-.LEHE118:
+.LEHE147:
 	mov	x3, x0	// _772, tmp844
-.L3313:
+.L3628:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:360: 	this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
 	add	x26, x3, x26	// tmp735, _772, _759
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:359: 	this->_M_impl._M_finish = this->_M_impl._M_start;
@@ -27078,60 +28267,60 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:384: 	  const ptrdiff_t _Num = __last - __first;
 	sub	x26, x0, x1	// _767, _766, _765
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:385: 	  if (_Num)
-	beq	.L3316		//,
+	beq	.L3631		//,
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:386: 	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
 	mov	x0, x3	//, _772
 	mov	x2, x26	//, _767
 	bl	memmove		//
 	mov	x3, x0	// _772,
-.L3316:
+.L3631:
 // /usr/local/include/c++/9.1.0/bits/stl_algobase.h:387: 	  return __result + _Num;
 	add	x3, x3, x26	// tmp736, _772, _767
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
 	str	x3, [x21, 8]	// tmp736, MEM[base: __cur_654, offset: 8B]
-	add	x22, x22, 24	// ivtmp.2174, ivtmp.2174,
+	add	x22, x22, 24	// ivtmp.2331, ivtmp.2331,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
 	add	x21, x21, 24	// __cur, __cur,
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:82: 	      for (; __first != __last; ++__first, (void)++__cur)
-	cmp	x23, x22	// pretmp_1670, ivtmp.2174
-	bne	.L3317		//,
-.L3311:
+	cmp	x23, x22	// pretmp_1670, ivtmp.2331
+	bne	.L3632		//,
+.L3626:
 // bitmapdecoding.cpp:539:   std::vector<double> avg = compute_averages(allresults);
 	add	x8, sp, 264	//,,
 	add	x0, sp, 288	// tmp912,,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:554: 	this->_M_impl._M_finish =
 	str	x21, [sp, 296]	// __cur, D.48776.D.46492._M_impl.D.45827._M_finish
-.LEHB119:
+.LEHB148:
 // bitmapdecoding.cpp:539:   std::vector<double> avg = compute_averages(allresults);
 	bl	_Z16compute_averagesSt6vectorIS_IySaIyEESaIS1_EE		//
-.LEHE119:
+.LEHE148:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldp	x21, x22, [sp, 288]	// __first, pretmp_1678, D.48776.D.46492._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x21, x22	// __first, pretmp_1678
-	beq	.L3326		//,
+	beq	.L3641		//,
 	.p2align 3,,7
-.L3328:
+.L3643:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x21]	// _777, MEM[base: __first_330, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3327	// _777,
+	cbz	x0, .L3642	// _777,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3327:
+.L3642:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x21, x21, 24	// __first, __first,
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x22, x21	// pretmp_1678, __first
-	bne	.L3328		//,
+	bne	.L3643		//,
 	ldr	x22, [sp, 288]	// pretmp_1678, MEM[(struct _Vector_base *)&D.48776]._M_impl.D.45827._M_start
-.L3326:
+.L3641:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x22, .L3329	// pretmp_1678,
+	cbz	x22, .L3644	// pretmp_1678,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x22	//, pretmp_1678
 	bl	_ZdlPv		//
-.L3329:
+.L3644:
 // bitmapdecoding.cpp:544:          double(mins[1]) / mins[0], double(mins[0]) / matches,
 	ldr	x1, [sp, 240]	// _152, MEM[(long long unsigned int * *)&mins]
 // bitmapdecoding.cpp:540:   printf("instructions per cycle %4.2f, cycles per value set:  "
@@ -27151,7 +28340,7 @@ _Z8fasttestPKcc:
 	fdiv	d4, d5, d4	//, _22, _29
 	fdiv	d2, d5, d8	//, _22, _11
 	fdiv	d0, d5, d0	//, _22, _24
-.LEHB120:
+.LEHB149:
 	bl	printf		//
 // bitmapdecoding.cpp:548:          double(mins[0]) / (64 * wordcount),
 	ldr	x2, [sp, 240]	// _153, MEM[(long long unsigned int * *)&mins]
@@ -27196,88 +28385,88 @@ _Z8fasttestPKcc:
 // bitmapdecoding.cpp:557:   printf("\n");
 	mov	w0, 10	//,
 	bl	putchar		//
-.LEHE120:
+.LEHE149:
 // bitmapdecoding.cpp:558:   delete[] array;
-	cbz	x20, .L3330	// _66,
+	cbz	x20, .L3645	// _66,
 // bitmapdecoding.cpp:558:   delete[] array;
 	mov	x0, x20	//, _66
 	bl	_ZdaPv		//
-.L3330:
+.L3645:
 // bitmapdecoding.cpp:559:   delete[] bigarray;
 	mov	x0, x19	//, _71
 	bl	_ZdaPv		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 264]	// _167, avg.D.47664._M_impl.D.46999._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3331	// _167,
+	cbz	x0, .L3646	// _167,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3331:
+.L3646:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 240]	// _166, mins.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3332	// _166,
+	cbz	x0, .L3647	// _166,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3332:
+.L3647:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldp	x19, x20, [sp, 192]	// __first, pretmp_1680, allresults.D.46492._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x19, x20	// __first, pretmp_1680
-	beq	.L3333		//,
+	beq	.L3648		//,
 	.p2align 3,,7
-.L3335:
+.L3650:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x19]	// _783, MEM[base: __first_1353, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3334	// _783,
+	cbz	x0, .L3649	// _783,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3334:
+.L3649:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x19, x19, 24	// __first, __first,
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x20, x19	// pretmp_1680, __first
-	bne	.L3335		//,
+	bne	.L3650		//,
 	ldr	x20, [sp, 192]	// pretmp_1680, MEM[(struct _Vector_base *)&allresults]._M_impl.D.45827._M_start
-.L3333:
+.L3648:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x20, .L3336	// pretmp_1680,
+	cbz	x20, .L3651	// pretmp_1680,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x20	//, pretmp_1680
 	bl	_ZdlPv		//
-.L3336:
+.L3651:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 168]	// _165, results.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3337	// _165,
+	cbz	x0, .L3652	// _165,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3337:
+.L3652:
 // linux-perf-events.h:59:   ~LinuxEvents() { close(fd); }
 	ldr	w0, [sp, 320]	//, unified.fd
 	bl	close		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 472]	// _787, MEM[(struct vector *)&unified + 152B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3338	// _787,
+	cbz	x0, .L3653	// _787,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3338:
+.L3653:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 448]	// _788, MEM[(struct vector *)&unified + 128B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3339	// _788,
+	cbz	x0, .L3654	// _788,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3339:
+.L3654:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 144]	// _164, evts.D.44271._M_impl.D.43606._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3161	// _164,
+	cbz	x0, .L3476	// _164,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3161:
+.L3476:
 // bitmapdecoding.cpp:560: }
 	ldp	x19, x20, [sp, 16]	//,,
 	ldp	x21, x22, [sp, 32]	//,,
@@ -27302,7 +28491,7 @@ _Z8fasttestPKcc:
 	.cfi_restore 20
 	.cfi_def_cfa_offset 0
 	ret	
-.L3476:
+.L3791:
 	.cfi_restore_state
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	mov	x3, 29	// tmp631,
@@ -27314,21 +28503,21 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	str	x3, [sp, 264]	// tmp631, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x22, [sp, 288]	// tmp813, MEM[(struct _Alloc_hider *)&D.67556]._M_p
-.LEHB121:
+	str	x22, [sp, 288]	// tmp813, MEM[(struct _Alloc_hider *)&D.67770]._M_p
+.LEHB150:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE121:
+.LEHE150:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	adrp	x3, .LC15	// tmp636,
 	add	x3, x3, :lo12:.LC15	// tmp635, tmp636,
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	mov	x2, x0	// _639, tmp835
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x2, [sp, 288]	// _639, MEM[(char * *)&D.67556]
+	str	x2, [sp, 288]	// _639, MEM[(char * *)&D.67770]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	ldr	x0, [sp, 264]	// __dnew, __dnew
-	str	x0, [sp, 304]	// __dnew, MEM[(size_type *)&D.67556 + 16B]
+	str	x0, [sp, 304]	// __dnew, MEM[(size_type *)&D.67770 + 16B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	x0, [x3, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"]
 	str	x0, [x2, 16]	// MEM[(void *)"ioctl(PERF_EVENT_IOC_DISABLE)"], MEM[(void *)_639]
@@ -27344,24 +28533,24 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
 	ldr	x2, [sp, 264]	// __dnew.49_643, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 296]	// __dnew.49_643, MEM[(size_type *)&D.67556 + 8B]
+	str	x2, [sp, 296]	// __dnew.49_643, MEM[(size_type *)&D.67770 + 8B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 288]	// MEM[(char * *)&D.67556], MEM[(char * *)&D.67556]
+	ldr	x3, [sp, 288]	// MEM[(char * *)&D.67770], MEM[(char * *)&D.67770]
 	strb	wzr, [x3, x2]	//, MEM[(char_type &)_645]
-.LEHB122:
+.LEHB151:
 // linux-perf-events.h:73:       report_error("ioctl(PERF_EVENT_IOC_DISABLE)");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE122:
+.LEHE151:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 288]	// _350, MEM[(char * *)&D.67556]
+	ldr	x0, [sp, 288]	// _350, MEM[(char * *)&D.67770]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x22	// _350, tmp813
-	beq	.L3269		//,
+	beq	.L3584		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L3269		//
-.L3474:
+	b	.L3584		//
+.L3789:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	mov	x3, 27	// tmp574,
 	add	x27, sp, 192	// tmp883,,
@@ -27372,20 +28561,20 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	str	x3, [sp, 264]	// tmp574, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x22, [sp, 288]	// tmp813, MEM[(struct _Alloc_hider *)&D.67521]._M_p
-.LEHB123:
+	str	x22, [sp, 288]	// tmp813, MEM[(struct _Alloc_hider *)&D.67735]._M_p
+.LEHB152:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE123:
+.LEHE152:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	adrp	x2, .LC13	// tmp579,
 	add	x2, x2, :lo12:.LC13	// tmp578, tmp579,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	ldr	x1, [sp, 264]	// __dnew, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x0, [sp, 288]	// _328, MEM[(char * *)&D.67521]
+	str	x0, [sp, 288]	// _328, MEM[(char * *)&D.67735]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	str	x1, [sp, 304]	// __dnew, MEM[(size_type *)&D.67521 + 16B]
+	str	x1, [sp, 304]	// __dnew, MEM[(size_type *)&D.67735 + 16B]
 // linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
 	add	x1, sp, 288	// tmp886,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
@@ -27400,19 +28589,19 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
 	ldr	x2, [sp, 264]	// __dnew.49_332, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 296]	// __dnew.49_332, MEM[(size_type *)&D.67521 + 8B]
+	str	x2, [sp, 296]	// __dnew.49_332, MEM[(size_type *)&D.67735 + 8B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 288]	// MEM[(char * *)&D.67521], MEM[(char * *)&D.67521]
+	ldr	x3, [sp, 288]	// MEM[(char * *)&D.67735], MEM[(char * *)&D.67735]
 	strb	wzr, [x3, x2]	//, MEM[(char_type &)_334]
-.LEHB124:
+.LEHB153:
 // linux-perf-events.h:63:       report_error("ioctl(PERF_EVENT_IOC_RESET)");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE124:
+.LEHE153:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 288]	// _316, MEM[(char * *)&D.67521]
+	ldr	x0, [sp, 288]	// _316, MEM[(char * *)&D.67735]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x22	// _316, tmp813
-	beq	.L3191		//,
+	beq	.L3506		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
@@ -27422,8 +28611,8 @@ _Z8fasttestPKcc:
 	bl	ioctl		//
 // linux-perf-events.h:66:     if (ioctl(fd, PERF_EVENT_IOC_ENABLE, PERF_IOC_FLAG_GROUP) == -1) {
 	cmn	w0, #1	// tmp830,
-	bne	.L3193		//,
-.L3475:
+	bne	.L3508		//,
+.L3790:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	mov	x3, 28	// tmp593,
 	add	x27, sp, 192	// tmp888,,
@@ -27434,22 +28623,22 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:215: 	size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
 	str	x3, [sp, 264]	// tmp593, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:157: 	: allocator_type(__a), _M_p(__dat) { }
-	str	x22, [sp, 288]	// tmp813, MEM[(struct _Alloc_hider *)&D.67520]._M_p
-.LEHB125:
+	str	x22, [sp, 288]	// tmp813, MEM[(struct _Alloc_hider *)&D.67734]._M_p
+.LEHB154:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:219: 	    _M_data(_M_create(__dnew, size_type(0)));
 	bl	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm		//
-.LEHE125:
+.LEHE154:
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	adrp	x2, .LC14	// tmp598,
 	add	x2, x2, :lo12:.LC14	// tmp597, tmp598,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
 	ldr	x1, [sp, 264]	// __dnew, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:179:       { _M_dataplus._M_p = __p; }
-	str	x0, [sp, 288]	// _341, MEM[(char * *)&D.67520]
+	str	x0, [sp, 288]	// _341, MEM[(char * *)&D.67734]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
 	ldr	w3, [x2, 24]	//, MEM[(void *)"ioctl(PERF_EVENT_IOC_ENABLE)"]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:211:       { _M_allocated_capacity = __capacity; }
-	str	x1, [sp, 304]	// __dnew, MEM[(size_type *)&D.67520 + 16B]
+	str	x1, [sp, 304]	// __dnew, MEM[(size_type *)&D.67734 + 16B]
 // linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
 	add	x1, sp, 288	// tmp891,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
@@ -27463,322 +28652,322 @@ _Z8fasttestPKcc:
 // /usr/local/include/c++/9.1.0/bits/basic_string.tcc:232: 	_M_set_length(__dnew);
 	ldr	x2, [sp, 264]	// __dnew.49_345, __dnew
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
-	str	x2, [sp, 296]	// __dnew.49_345, MEM[(size_type *)&D.67520 + 8B]
+	str	x2, [sp, 296]	// __dnew.49_345, MEM[(size_type *)&D.67734 + 8B]
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	ldr	x3, [sp, 288]	// MEM[(char * *)&D.67520], MEM[(char * *)&D.67520]
+	ldr	x3, [sp, 288]	// MEM[(char * *)&D.67734], MEM[(char * *)&D.67734]
 	strb	wzr, [x3, x2]	//, MEM[(char_type &)_347]
-.LEHB126:
+.LEHB155:
 // linux-perf-events.h:67:       report_error("ioctl(PERF_EVENT_IOC_ENABLE)");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE126:
+.LEHE155:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 288]	// _319, MEM[(char * *)&D.67520]
+	ldr	x0, [sp, 288]	// _319, MEM[(char * *)&D.67734]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x22	// _319, tmp813
-	beq	.L3193		//,
+	beq	.L3508		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L3193		//
-.L3279:
+	b	.L3508		//
+.L3594:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1195: 	  _M_realloc_insert(end(), __x);
 	add	x27, sp, 192	// tmp907,,
 	mov	x1, x25	//, _659
 	add	x2, sp, 168	//,,
 	mov	x0, x27	// tmp908, tmp907
-.LEHB127:
+.LEHB156:
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_		//
-.LEHE127:
-	b	.L3285		//
-.L3477:
+.LEHE156:
+	b	.L3600		//
+.L3792:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:183:       { _M_string_length = __length; }
 	mov	x2, 4	// tmp655,
-	stp	x22, x2, [sp, 288]	// tmp813, tmp655, MEM[(struct _Alloc_hider *)&D.67555]._M_p
+	stp	x22, x2, [sp, 288]	// tmp813, tmp655, MEM[(struct _Alloc_hider *)&D.67769]._M_p
 // linux-perf-events.h:77:       report_error("read");
 	add	x1, sp, 288	// tmp902,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:300:       { __c1 = __c2; }
-	strb	wzr, [sp, 308]	//, MEM[(char_type &)&D.67555 + 20]
+	strb	wzr, [sp, 308]	//, MEM[(char_type &)&D.67769 + 20]
 // linux-perf-events.h:77:       report_error("read");
 	add	x0, sp, 320	// tmp903,,
 // /usr/local/include/c++/9.1.0/bits/char_traits.h:365: 	return static_cast<char_type*>(__builtin_memcpy(__s1, __s2, __n));
-	str	w23, [x22]	// tmp816, MEM[(void *)&D.67555 + 16B]
-.LEHB128:
+	str	w23, [x22]	// tmp816, MEM[(void *)&D.67769 + 16B]
+.LEHB157:
 // linux-perf-events.h:77:       report_error("read");
 	bl	_ZN11LinuxEventsILi0EE12report_errorERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE		//
-.LEHE128:
+.LEHE157:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x0, [sp, 288]	// _357, MEM[(char * *)&D.67555]
+	ldr	x0, [sp, 288]	// _357, MEM[(char * *)&D.67769]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	cmp	x0, x22	// _357, tmp813
-	beq	.L3271		//,
+	beq	.L3586		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:237:       { _Alloc_traits::deallocate(_M_get_allocator(), _M_data(), __size + 1); }
-	b	.L3271		//
-.L3479:
+	b	.L3586		//
+.L3794:
 // bitmapdecoding.cpp:534:     printf("bogus\n.");
 	adrp	x0, .LC16	// tmp689,
 	add	x27, sp, 192	// tmp798,,
 	add	x0, x0, :lo12:.LC16	//, tmp689,
-.LEHB129:
+.LEHB158:
 	bl	printf		//
-.LEHE129:
-	b	.L3286		//
-.L3473:
+.LEHE158:
+	b	.L3601		//
+.L3788:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:939: 	  _M_erase_at_end(this->_M_impl._M_start + __new_size);
 	add	x0, x3, x0, lsl 3	// _305, _298, _272,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1791: 	if (size_type __n = this->_M_impl._M_finish - __pos)
 	cmp	x2, x0	// _299, _305
-	beq	.L3177		//,
+	beq	.L3492		//,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:1795: 	    this->_M_impl._M_finish = __pos;
 	str	x0, [sp, 456]	// _305, MEM[(long unsigned int * *)&unified + 136B]
-	b	.L3177		//
-.L3472:
+	b	.L3492		//
+.L3787:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:937: 	  _M_default_append(__new_size - size());
 	sub	x1, x0, x1	//, _272, tmp524
 	add	x0, sp, 448	//,,
-.LEHB130:
+.LEHB159:
 	bl	_ZNSt6vectorImSaImEE17_M_default_appendEm		//
-.LEHE130:
-	b	.L3177		//
-.L3188:
+.LEHE159:
+	b	.L3492		//
+.L3503:
 	add	x27, sp, 192	// tmp798,,
 	add	x0, sp, 168	//,,
-.LEHB131:
+.LEHB160:
 	bl	_ZNSt6vectorIySaIyEE17_M_default_appendEm		//
-.LEHE131:
-	b	.L3190		//
-.L3167:
+.LEHE160:
+	b	.L3505		//
+.L3482:
 	mov	x1, x21	//, _1385
 	add	x0, sp, 472	//,,
-.LEHB132:
+.LEHB161:
 	bl	_ZNSt6vectorImSaImEE17_M_default_appendEm		//
-.LEHE132:
-	b	.L3170		//
-.L3349:
+.LEHE161:
+	b	.L3485		//
+.L3664:
 	mov	x22, 0	// _1383,
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:343: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
 	str	xzr, [sp, 120]	//, %sfp
-	b	.L3164		//
-.L3471:
-.LEHB133:
+	b	.L3479		//
+.L3786:
+.LEHB162:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:105: 	  std::__throw_bad_alloc();
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE133:
-.L3478:
-.LEHB134:
+.LEHE162:
+.L3793:
+.LEHB163:
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE134:
-.L3483:
-.LEHB135:
+.LEHE163:
+.L3798:
+.LEHB164:
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE135:
-.L3482:
-.LEHB136:
+.LEHE164:
+.L3797:
+.LEHB165:
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE136:
-.L3481:
-.LEHB137:
+.LEHE165:
+.L3796:
+.LEHB166:
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE137:
-.L3480:
-.LEHB138:
+.LEHE166:
+.L3795:
+.LEHB167:
 	bl	_ZSt17__throw_bad_allocv		//
-.LEHE138:
-.L3357:
+.LEHE167:
+.L3672:
 	mov	x19, x0	// tmp784, tmp846
 	add	x27, sp, 192	// tmp798,,
 	add	x0, sp, 288	// tmp914,,
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-.L3198:
+.L3513:
 // bitmapdecoding.cpp:515:   std::vector<std::vector<unsigned long long>> allresults;
 	mov	x0, x27	//, tmp798
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 168]	// _171, results.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbnz	x0, .L3484	// _171,
-.L3347:
+	cbnz	x0, .L3799	// _171,
+.L3662:
 // bitmapdecoding.cpp:513:   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
 	add	x0, sp, 320	// tmp916,,
 	bl	_ZN11LinuxEventsILi0EED1Ev		//
-.L3341:
+.L3656:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 144]	// _172, evts.D.44271._M_impl.D.43606._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3348	// _172,
+	cbz	x0, .L3663	// _172,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3348:
+.L3663:
 	mov	x0, x19	//, tmp781
-.LEHB139:
+.LEHB168:
 	bl	_Unwind_Resume		//
-.LEHE139:
-.L3368:
+.LEHE168:
+.L3683:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
 	bl	__cxa_begin_catch		//
-.L3301:
+.L3616:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x24, x21	// __first, __cur
-	bne	.L3485		//,
-.LEHB140:
+	bne	.L3800		//,
+.LEHB169:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:89: 	      __throw_exception_again;
 	bl	__cxa_rethrow		//
-.LEHE140:
-.L3370:
+.LEHE169:
+.L3685:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
 	bl	__cxa_begin_catch		//
-.L3322:
+.L3637:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	cmp	x21, x24	// __cur, __first
-	bne	.L3486		//,
-.LEHB141:
+	bne	.L3801		//,
+.LEHB170:
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:89: 	      __throw_exception_again;
 	bl	__cxa_rethrow		//
-.LEHE141:
-.L3485:
+.LEHE170:
+.L3800:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x24]	// _705, MEM[base: __first_704, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3300	// _705,
+	cbz	x0, .L3615	// _705,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3300:
+.L3615:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x24, x24, 24	// __first, __first,
-	b	.L3301		//
-.L3367:
+	b	.L3616		//
+.L3682:
 	mov	x19, x0	// tmp721, tmp842
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
 	bl	__cxa_end_catch		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:332: 	_M_deallocate(_M_impl._M_start,
 	ldr	x0, [sp, 288]	// _691, MEM[(struct _Vector_base *)&D.48773]._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3346	// _691,
+	cbz	x0, .L3661	// _691,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3346:
+.L3661:
 	add	x27, sp, 192	// tmp798,,
-	b	.L3198		//
-.L3162:
-.LEHB142:
+	b	.L3513		//
+.L3477:
+.LEHB171:
 // bitmapdecoding.cpp:504:   uint32_t *bigarray = new uint32_t[wordcount * 64];
 	bl	__cxa_throw_bad_array_new_length		//
-.LEHE142:
-.L3365:
-.L3468:
+.LEHE171:
+.L3680:
+.L3783:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
 	ldr	x1, [sp, 288]	// _375,
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x2, sp, 304	// tmp672,,
 	mov	x19, x0	// tmp673, tmp838
 	cmp	x1, x2	// _375, tmp672
-	beq	.L3346		//,
+	beq	.L3661		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x1	//, _375
 	add	x27, sp, 192	// tmp798,,
 	bl	_ZdlPv		//
-	b	.L3198		//
-.L3358:
+	b	.L3513		//
+.L3673:
 	mov	x19, x0	// tmp744, tmp849
-	b	.L3325		//
-.L3366:
-	b	.L3468		//
-.L3484:
+	b	.L3640		//
+.L3681:
+	b	.L3783		//
+.L3799:
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L3347		//
-.L3486:
+	b	.L3662		//
+.L3801:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [x24]	// _755, MEM[base: __first_754, offset: 0B]
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3321	// _755,
+	cbz	x0, .L3636	// _755,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3321:
+.L3636:
 // /usr/local/include/c++/9.1.0/bits/stl_construct.h:107: 	  for (; __first != __last; ++__first)
 	add	x24, x24, 24	// __first, __first,
-	b	.L3322		//
-.L3369:
+	b	.L3637		//
+.L3684:
 	mov	x19, x0	// tmp741, tmp845
 // /usr/local/include/c++/9.1.0/bits/stl_uninitialized.h:86: 	  __catch(...)
 	bl	__cxa_end_catch		//
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:332: 	_M_deallocate(_M_impl._M_start,
 	ldr	x0, [sp, 288]	// _735, MEM[(struct _Vector_base *)&D.48776]._M_impl.D.45827._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3325	// _735,
-.L3463:
+	cbz	x0, .L3640	// _735,
+.L3778:
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3325:
+.L3640:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 240]	// _170, mins.D.45414._M_impl.D.44749._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3346	// _170,
+	cbz	x0, .L3661	// _170,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-	b	.L3346		//
-.L3356:
+	b	.L3661		//
+.L3671:
 	mov	x19, x0	// tmp611, tmp850
-	b	.L3198		//
-.L3362:
+	b	.L3513		//
+.L3677:
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:222:       { return _M_data() == _M_local_data(); }
-	ldr	x2, [sp, 288]	// _273, MEM[(char * *)&D.67494]
+	ldr	x2, [sp, 288]	// _273, MEM[(char * *)&D.67708]
 // /usr/local/include/c++/9.1.0/bits/basic_string.h:231: 	if (!_M_is_local())
 	add	x1, sp, 304	// tmp554,,
 	mov	x19, x0	// tmp556, tmp826
 	cmp	x2, x1	// _273, tmp554
-	beq	.L3183		//,
+	beq	.L3498		//,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x2	//, _273
 	bl	_ZdlPv		//
-.L3183:
+.L3498:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 472]	// _274, MEM[(struct vector *)&unified + 152B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3184	// _274,
+	cbz	x0, .L3499	// _274,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3184:
+.L3499:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x0, [sp, 448]	// _275, MEM[(struct vector *)&unified + 128B].D.43213._M_impl.D.42516._M_start
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x0, .L3185	// _275,
+	cbz	x0, .L3500	// _275,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	bl	_ZdlPv		//
-.L3185:
+.L3500:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
 	ldr	x0, [sp, 120]	// _240, %sfp
-	cbz	x0, .L3341	// _240,
+	cbz	x0, .L3656	// _240,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	ldr	x0, [sp, 120]	//, %sfp
 	bl	_ZdlPv		//
 // /usr/local/include/c++/9.1.0/bits/alloc_traits.h:470:       { __a.deallocate(__p, __n); }
-	b	.L3341		//
-.L3355:
+	b	.L3656		//
+.L3670:
 	mov	x19, x0	// tmp781, tmp851
-	b	.L3341		//
-.L3363:
-	b	.L3468		//
-.L3364:
-	b	.L3468		//
-.L3359:
+	b	.L3656		//
+.L3678:
+	b	.L3783		//
+.L3679:
+	b	.L3783		//
+.L3674:
 	mov	x19, x0	// tmp847,
 	add	x0, sp, 288	// tmp915,,
 	bl	_ZNSt6vectorIS_IySaIyEESaIS1_EED1Ev		//
-	b	.L3325		//
-.L3360:
+	b	.L3640		//
+.L3675:
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:677: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
 	ldr	x1, [sp, 264]	// _169, avg.D.47664._M_impl.D.46999._M_start
 	mov	x19, x0	// tmp789, tmp848
 // /usr/local/include/c++/9.1.0/bits/stl_vector.h:350: 	if (__p)
-	cbz	x1, .L3325	// _169,
+	cbz	x1, .L3640	// _169,
 // /usr/local/include/c++/9.1.0/ext/new_allocator.h:128: 	::operator delete(__p);
 	mov	x0, x1	//, _169
-	b	.L3463		//
-.L3361:
+	b	.L3778		//
+.L3676:
 	mov	x19, x0	// tmp555, tmp827
-	b	.L3183		//
+	b	.L3498		//
 	.cfi_endproc
 .LFE1997:
 	.section	.gcc_except_table
@@ -27791,132 +28980,132 @@ _Z8fasttestPKcc:
 	.byte	0x1
 	.uleb128 .LLSDACSE1997-.LLSDACSB1997
 .LLSDACSB1997:
-	.uleb128 .LEHB111-.LFB1997
-	.uleb128 .LEHE111-.LEHB111
-	.uleb128 0
-	.uleb128 0
-	.uleb128 .LEHB112-.LFB1997
-	.uleb128 .LEHE112-.LEHB112
-	.uleb128 .L3355-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB113-.LFB1997
-	.uleb128 .LEHE113-.LEHB113
-	.uleb128 .L3362-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB114-.LFB1997
-	.uleb128 .LEHE114-.LEHB114
-	.uleb128 .L3356-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB115-.LFB1997
-	.uleb128 .LEHE115-.LEHB115
-	.uleb128 .L3368-.LFB1997
-	.uleb128 0x1
-	.uleb128 .LEHB116-.LFB1997
-	.uleb128 .LEHE116-.LEHB116
-	.uleb128 .L3357-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB117-.LFB1997
-	.uleb128 .LEHE117-.LEHB117
-	.uleb128 .L3358-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB118-.LFB1997
-	.uleb128 .LEHE118-.LEHB118
-	.uleb128 .L3370-.LFB1997
-	.uleb128 0x1
-	.uleb128 .LEHB119-.LFB1997
-	.uleb128 .LEHE119-.LEHB119
-	.uleb128 .L3359-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB120-.LFB1997
-	.uleb128 .LEHE120-.LEHB120
-	.uleb128 .L3360-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB121-.LFB1997
-	.uleb128 .LEHE121-.LEHB121
-	.uleb128 .L3356-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB122-.LFB1997
-	.uleb128 .LEHE122-.LEHB122
-	.uleb128 .L3366-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB123-.LFB1997
-	.uleb128 .LEHE123-.LEHB123
-	.uleb128 .L3356-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB124-.LFB1997
-	.uleb128 .LEHE124-.LEHB124
-	.uleb128 .L3364-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB125-.LFB1997
-	.uleb128 .LEHE125-.LEHB125
-	.uleb128 .L3356-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB126-.LFB1997
-	.uleb128 .LEHE126-.LEHB126
-	.uleb128 .L3363-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB127-.LFB1997
-	.uleb128 .LEHE127-.LEHB127
-	.uleb128 .L3356-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB128-.LFB1997
-	.uleb128 .LEHE128-.LEHB128
-	.uleb128 .L3365-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB129-.LFB1997
-	.uleb128 .LEHE129-.LEHB129
-	.uleb128 .L3356-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB130-.LFB1997
-	.uleb128 .LEHE130-.LEHB130
-	.uleb128 .L3361-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB131-.LFB1997
-	.uleb128 .LEHE131-.LEHB131
-	.uleb128 .L3356-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB132-.LFB1997
-	.uleb128 .LEHE132-.LEHB132
-	.uleb128 .L3361-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB133-.LFB1997
-	.uleb128 .LEHE133-.LEHB133
-	.uleb128 .L3355-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB134-.LFB1997
-	.uleb128 .LEHE134-.LEHB134
-	.uleb128 .L3356-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB135-.LFB1997
-	.uleb128 .LEHE135-.LEHB135
-	.uleb128 .L3370-.LFB1997
-	.uleb128 0x1
-	.uleb128 .LEHB136-.LFB1997
-	.uleb128 .LEHE136-.LEHB136
-	.uleb128 .L3358-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB137-.LFB1997
-	.uleb128 .LEHE137-.LEHB137
-	.uleb128 .L3368-.LFB1997
-	.uleb128 0x1
-	.uleb128 .LEHB138-.LFB1997
-	.uleb128 .LEHE138-.LEHB138
-	.uleb128 .L3356-.LFB1997
-	.uleb128 0
-	.uleb128 .LEHB139-.LFB1997
-	.uleb128 .LEHE139-.LEHB139
-	.uleb128 0
-	.uleb128 0
 	.uleb128 .LEHB140-.LFB1997
 	.uleb128 .LEHE140-.LEHB140
-	.uleb128 .L3367-.LFB1997
+	.uleb128 0
 	.uleb128 0
 	.uleb128 .LEHB141-.LFB1997
 	.uleb128 .LEHE141-.LEHB141
-	.uleb128 .L3369-.LFB1997
+	.uleb128 .L3670-.LFB1997
 	.uleb128 0
 	.uleb128 .LEHB142-.LFB1997
 	.uleb128 .LEHE142-.LEHB142
+	.uleb128 .L3677-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB143-.LFB1997
+	.uleb128 .LEHE143-.LEHB143
+	.uleb128 .L3671-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB144-.LFB1997
+	.uleb128 .LEHE144-.LEHB144
+	.uleb128 .L3683-.LFB1997
+	.uleb128 0x1
+	.uleb128 .LEHB145-.LFB1997
+	.uleb128 .LEHE145-.LEHB145
+	.uleb128 .L3672-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB146-.LFB1997
+	.uleb128 .LEHE146-.LEHB146
+	.uleb128 .L3673-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB147-.LFB1997
+	.uleb128 .LEHE147-.LEHB147
+	.uleb128 .L3685-.LFB1997
+	.uleb128 0x1
+	.uleb128 .LEHB148-.LFB1997
+	.uleb128 .LEHE148-.LEHB148
+	.uleb128 .L3674-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB149-.LFB1997
+	.uleb128 .LEHE149-.LEHB149
+	.uleb128 .L3675-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB150-.LFB1997
+	.uleb128 .LEHE150-.LEHB150
+	.uleb128 .L3671-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB151-.LFB1997
+	.uleb128 .LEHE151-.LEHB151
+	.uleb128 .L3681-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB152-.LFB1997
+	.uleb128 .LEHE152-.LEHB152
+	.uleb128 .L3671-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB153-.LFB1997
+	.uleb128 .LEHE153-.LEHB153
+	.uleb128 .L3679-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB154-.LFB1997
+	.uleb128 .LEHE154-.LEHB154
+	.uleb128 .L3671-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB155-.LFB1997
+	.uleb128 .LEHE155-.LEHB155
+	.uleb128 .L3678-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB156-.LFB1997
+	.uleb128 .LEHE156-.LEHB156
+	.uleb128 .L3671-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB157-.LFB1997
+	.uleb128 .LEHE157-.LEHB157
+	.uleb128 .L3680-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB158-.LFB1997
+	.uleb128 .LEHE158-.LEHB158
+	.uleb128 .L3671-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB159-.LFB1997
+	.uleb128 .LEHE159-.LEHB159
+	.uleb128 .L3676-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB160-.LFB1997
+	.uleb128 .LEHE160-.LEHB160
+	.uleb128 .L3671-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB161-.LFB1997
+	.uleb128 .LEHE161-.LEHB161
+	.uleb128 .L3676-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB162-.LFB1997
+	.uleb128 .LEHE162-.LEHB162
+	.uleb128 .L3670-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB163-.LFB1997
+	.uleb128 .LEHE163-.LEHB163
+	.uleb128 .L3671-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB164-.LFB1997
+	.uleb128 .LEHE164-.LEHB164
+	.uleb128 .L3685-.LFB1997
+	.uleb128 0x1
+	.uleb128 .LEHB165-.LFB1997
+	.uleb128 .LEHE165-.LEHB165
+	.uleb128 .L3673-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB166-.LFB1997
+	.uleb128 .LEHE166-.LEHB166
+	.uleb128 .L3683-.LFB1997
+	.uleb128 0x1
+	.uleb128 .LEHB167-.LFB1997
+	.uleb128 .LEHE167-.LEHB167
+	.uleb128 .L3671-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB168-.LFB1997
+	.uleb128 .LEHE168-.LEHB168
+	.uleb128 0
+	.uleb128 0
+	.uleb128 .LEHB169-.LFB1997
+	.uleb128 .LEHE169-.LEHB169
+	.uleb128 .L3682-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB170-.LFB1997
+	.uleb128 .LEHE170-.LEHB170
+	.uleb128 .L3684-.LFB1997
+	.uleb128 0
+	.uleb128 .LEHB171-.LFB1997
+	.uleb128 .LEHE171-.LEHB171
 	.uleb128 0
 	.uleb128 0
 .LLSDACSE1997:
@@ -27954,21 +29143,21 @@ main:
 	.cfi_offset 29, -32
 	.cfi_offset 30, -24
 // bitmapdecoding.cpp:567:   if(argc>1)fasttest("nfl.csv", ',');
-	cmp	w0, 1	// tmp109,
+	cmp	w0, 1	// tmp113,
 // bitmapdecoding.cpp:566: int main(int argc, char** argv) {
 	mov	x29, sp	//,
 	str	x19, [sp, 16]	//,
 	.cfi_offset 19, -16
 // bitmapdecoding.cpp:567:   if(argc>1)fasttest("nfl.csv", ',');
-	adrp	x19, .LC12	// tmp106,
-	add	x19, x19, :lo12:.LC12	// tmp107, tmp106,
+	adrp	x19, .LC12	// tmp110,
+	add	x19, x19, :lo12:.LC12	// tmp111, tmp110,
 // bitmapdecoding.cpp:567:   if(argc>1)fasttest("nfl.csv", ',');
-	ble	.L3488		//,
+	ble	.L3803		//,
 // bitmapdecoding.cpp:567:   if(argc>1)fasttest("nfl.csv", ',');
-	mov	x0, x19	//, tmp107
+	mov	x0, x19	//, tmp111
 	mov	w1, 44	//,
 	bl	_Z8fasttestPKcc		//
-.L3488:
+.L3803:
 // bitmapdecoding.cpp:568:   printf("fast_decoder:\n");
 	adrp	x0, .LC23	// tmp96,
 	add	x0, x0, :lo12:.LC23	//, tmp96,
@@ -27982,27 +29171,31 @@ main:
 	add	x0, x0, :lo12:.LC24	//, tmp98,
 	bl	puts		//
 // bitmapdecoding.cpp:572:   unit<simdjson_decoder>();
-	bl	_Z4unitIXadL_ZL16simdjson_decoderPjRjjmEEEbv		//
+	bl	_Z4unitIXadL_Z16simdjson_decoderPjRjjmEEEbv		//
 // bitmapdecoding.cpp:573:   test<simdjson_decoder>("nfl.csv", ',');
-	bl	_Z4testIXadL_ZL16simdjson_decoderPjRjjmEEEvPKcc.constprop.0		//
+	mov	w1, 44	//,
+	mov	x0, x19	//, tmp111
+	bl	_Z4testIXadL_Z16simdjson_decoderPjRjjmEEEvPKcc		//
 // bitmapdecoding.cpp:574:   printf("basic_decoder:\n");
-	adrp	x0, .LC25	// tmp100,
-	add	x0, x0, :lo12:.LC25	//, tmp100,
+	adrp	x0, .LC25	// tmp102,
+	add	x0, x0, :lo12:.LC25	//, tmp102,
 	bl	puts		//
 // bitmapdecoding.cpp:575:   unit<basic_decoder>();
 	bl	_Z4unitIXadL_Z13basic_decoderPjRjjmEEEbv		//
 // bitmapdecoding.cpp:576:   test<basic_decoder>("nfl.csv", ',');
 	mov	w1, 44	//,
-	mov	x0, x19	//, tmp107
+	mov	x0, x19	//, tmp111
 	bl	_Z4testIXadL_Z13basic_decoderPjRjjmEEEvPKcc		//
 // bitmapdecoding.cpp:577:   printf("faster_decoder:\n");
-	adrp	x0, .LC26	// tmp104,
-	add	x0, x0, :lo12:.LC26	//, tmp104,
+	adrp	x0, .LC26	// tmp106,
+	add	x0, x0, :lo12:.LC26	//, tmp106,
 	bl	puts		//
 // bitmapdecoding.cpp:578:   unit<faster_decoder>();
-	bl	_Z4unitIXadL_ZL14faster_decoderPjRjjmEEEbv		//
+	bl	_Z4unitIXadL_Z14faster_decoderPjRjjmEEEbv		//
 // bitmapdecoding.cpp:579:   test<faster_decoder>("nfl.csv", ',');
-	bl	_Z4testIXadL_ZL14faster_decoderPjRjjmEEEvPKcc.constprop.0		//
+	mov	w1, 44	//,
+	mov	x0, x19	//, tmp111
+	bl	_Z4testIXadL_Z14faster_decoderPjRjjmEEEvPKcc		//
 // bitmapdecoding.cpp:580:   printf("\n");
 	mov	w0, 10	//,
 	bl	putchar		//
