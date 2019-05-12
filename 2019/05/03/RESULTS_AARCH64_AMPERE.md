@@ -1,3 +1,47 @@
+CLANG8:
+``
+fast_decoder:
+Tests passed.
+matches = 129996 words = 21322 1-bit density 9.526 %
+bytes per index = 10.497
+instructions per cycle 1.14, cycles per value set:  8.659, instructions per value set: 9.901, cycles per word: 52.794, instructions per word: 60.365
+ cycles per input byte 0.82 instructions per input byte 0.94
+min:  1125675 cycles,  1287100 instructions,       14082 branch mis.,   168647 cache ref.,     2667 cache mis.
+avg: 1130474.7 cycles, 1287100.0 instructions,   14261.3 branch mis., 168786.7 cache ref.,   2669.3 cache mis.
+
+simdjson_decoder:
+Tests passed.
+matches = 129996 words = 21322 1-bit density 9.526 %
+bytes per index = 10.497
+instructions per cycle 1.37, cycles per value set:  9.618, instructions per value set: 13.224, cycles per word: 58.637, instructions per word: 80.625
+ cycles per input byte 0.92 instructions per input byte 1.26
+min:  1250256 cycles,  1719083 instructions,        9115 branch mis.,   230735 cache ref.,     2668 cache mis.
+avg: 1252167.6 cycles, 1719083.0 instructions,    9181.2 branch mis., 230791.9 cache ref.,   2669.3 cache mis.
+
+basic_decoder:
+Tests passed.
+matches = 129996 words = 21322 1-bit density 9.526 %
+bytes per index = 10.497
+instructions per cycle 1.01, cycles per value set:  11.780, instructions per value set: 11.882, cycles per word: 71.821, instructions per word: 72.440
+ cycles per input byte 1.12 instructions per input byte 1.13
+min:  1531360 cycles,  1544557 instructions,       21621 branch mis.,   161523 cache ref.,     2667 cache mis.
+avg: 1533487.6 cycles, 1544557.0 instructions,   21761.9 branch mis., 161700.8 cache ref.,   2668.5 cache mis.
+
+faster_decoder:
+Tests passed.
+matches = 129996 words = 21322 1-bit density 9.526 %
+bytes per index = 10.497
+instructions per cycle 1.30, cycles per value set:  11.628, instructions per value set: 15.112, cycles per word: 70.892, instructions per word: 92.135
+ cycles per input byte 1.11 instructions per input byte 1.44
+min:  1511550 cycles,  1964493 instructions,        9327 branch mis.,   484279 cache ref.,     2670 cache mis.
+avg: 1565331.1 cycles, 1964493.0 instructions,    9391.9 branch mis., 484726.4 cache ref.,   2672.0 cache mis.
+
+```
+
+
+
+GCC-9
+
 ```
 fast_decoder:
 Tests passed.
