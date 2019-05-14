@@ -110,49 +110,52 @@ static inline void aarch64_simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
                                             uint64_t bitspopcnt) {
   uint64_t cnt = bitspopcnt;
   uint32_t next_base = base + cnt;
+  base_ptr += base;
   //  while (bits != 0u) {
   if (true) {
-    base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base += 8;
+    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr += 8;
   }
   if (cnt > 8) {
-    base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 18] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base += 8;
+    base_ptr += 8;
   }
-  if (cnt > 16) {
-    while (bits != 0) {
-      base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+  if (cnt > 16) { // unluckly
+    do {
+      base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
       bits = bits & (bits - 1);
-      base++;
-    }
+      base_ptr++;
+    } while(bits != 0);
   }
   base = next_base;
 }
@@ -273,33 +276,60 @@ static inline void simdjson_decoder_2(uint32_t *base_ptr, uint32_t &base,
   }
   base = next_base;
 }
-
 static inline void simdjson_decoder_3(uint32_t *base_ptr, uint32_t &base,
-                                      uint32_t idx, uint64_t bits) {
+                                            uint32_t idx, uint64_t bits) {
   uint32_t cnt = hamming(bits);
   uint32_t next_base = base + cnt;
   base_ptr += base;
-  while (bits != 0u) {
+  //  while (bits != 0u) {
+  if (true) {
     base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    uint64_t bits1 = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits1);
-    uint64_t bits2 = bits1 & (bits1 - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits2);
-    uint64_t bits3 = bits2 & (bits2 - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits3);
-    uint64_t bits4 = bits3 & (bits3 - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits4);
-    uint64_t bits5 = bits4 & (bits4 - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits5);
-    uint64_t bits6 = bits5 & (bits5 - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits6);
-    uint64_t bits7 = bits6 & (bits6 - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits7);
-    bits = bits7 & (bits7 - 1);
+    bits = bits & (bits - 1);
+    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
     base_ptr += 8;
+  }
+  if (cnt > 8) {
+    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr += 8;
+  }
+  if (cnt > 16) { // unluckly
+    do {
+      base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+      bits = bits & (bits - 1);
+      base_ptr++;
+    } while(bits != 0);
   }
   base = next_base;
 }
+
 static inline void faster_decoder(uint32_t *base_ptr, uint32_t &base,
                                   uint32_t idx, uint64_t bits) {
   if (bits != 0u) {
