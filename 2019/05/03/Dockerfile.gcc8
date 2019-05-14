@@ -10,5 +10,6 @@ COPY . /usr/src/myapp
 WORKDIR /usr/src/myapp
 RUN make clean
 RUN make
+RUN make bitmapdecoding.s
 CMD ["./bitmapdecoding", "test"]
 

@@ -20,4 +20,4 @@ bitmapdecoding: bitmapdecoding.cpp
 sanibitmapdecoding : bitmapdecoding.cpp
 	$(CXX) -g3 $(arch) -fsanitize=address -fno-omit-frame-pointer   -std=c++14 -o sanibitmapdecoding bitmapdecoding.cpp -Wall -I.
 clean:
-	rm -r -f bitmapdecoding bitmapdecoding_countbranch sanibitmapdecoding
+	rm -r -f bitmapdecoding bitmapdecoding.s bitmapdecoding_countbranch sanibitmapdecoding
