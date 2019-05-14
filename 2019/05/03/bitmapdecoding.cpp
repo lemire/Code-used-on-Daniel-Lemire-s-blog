@@ -19,6 +19,7 @@
 #elif defined(__aarch64__)
 #include <arm_neon.h>
 #endif
+#define ITERATIONS 10
 
 /* result might be undefined when input_num is zero */
 static inline int trailingzeroes(uint64_t input_num) {
@@ -92,416 +93,8 @@ void basic_decoder(uint32_t *base_ptr, uint32_t &base, uint32_t idx,
   }
 }
 
-#ifdef __aarch64__
-
-// this has something like six cycles of latency?
-static inline uint64x2_t aarch64_twocounts(const uint64_t *bits) {
-  // https://developer.arm.com/architectures/instruction-sets/simd-isas/neon/intrinsics
-  uint8x16_t words = vld1q_u8((const uint8_t *)bits); // read in two words
-  uint8x16_t cnts = vcntq_u8(words);                  // compute counts
-  uint16x8_t cnts16 = vpaddlq_u8(cnts);               // sum successive cnts
-  uint32x4_t cnts32 = vpaddlq_u16(cnts16);
-  uint64x2_t cnts64 = vpaddlq_u32(cnts32);
-  return cnts64;
-}
-
-static inline void aarch64_simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
-                                            uint32_t idx, uint64_t bits,
-                                            uint64_t bitspopcnt) {
-  uint64_t cnt = bitspopcnt;
-  uint32_t next_base = base + cnt;
-  base_ptr += base;
-  //  while (bits != 0u) {
-  if (true) {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr += 8;
-  }
-  if (cnt > 8) {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr += 8;
-  }
-  if (cnt > 16) { // unluckly
-    do {
-      base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-      bits = bits & (bits - 1);
-      base_ptr++;
-    } while (bits != 0);
-  }
-  base = next_base;
-}
-void neontest(const char *filename, char target) {
-  size_t wordcount;
-  uint64_t *array = build_bitmap(filename, target, &wordcount);
-  uint32_t *bigarray = new uint32_t[wordcount * 64];
-
-  size_t iterations = 10;
-  std::vector<int> evts;
-  evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
-  evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
-  evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
-  evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
-  evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
-  LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
-  std::vector<unsigned long long> results;
-  std::vector<std::vector<unsigned long long>> allresults;
-  results.resize(evts.size());
-  uint32_t matches = 0;
-  for (uint32_t i = 0; i < iterations; i++) {
-    matches = 0;
-    unified.start();
-    for (size_t idx = 0; idx + 1 < wordcount; idx += 2) {
-      uint64x2_t cnts = aarch64_twocounts(array + idx);
-      aarch64_simdjson_decoder(bigarray, matches, idx, array[idx],
-                               vgetq_lane_u64(cnts, 0));
-      aarch64_simdjson_decoder(bigarray, matches, idx + 1, array[idx + 1],
-                               vgetq_lane_u64(cnts, 1));
-    }
-    unified.end(results);
-    allresults.push_back(results);
-  }
-  if (bigarray[0] == 0)
-    printf("bogus\n.");
-  printf(
-      "matches = %u words = %zu 1-bit density %4.3f %% 1-bit per word %4.3f\n",
-      matches, wordcount, double(matches) / (64 * wordcount) * 100,
-      matches * 1.0 / wordcount);
-  printf("bytes per index = %4.3f \n", wordcount * 64.0 / matches);
-  std::vector<unsigned long long> mins = compute_mins(allresults);
-  std::vector<double> avg = compute_averages(allresults);
-  printf("instructions per cycle %4.2f, cycles per value set:  "
-         "%4.3f, "
-         "instructions per value set: %4.3f, cycles per word: %4.3f, "
-         "instructions per word: %4.3f \n",
-         double(mins[1]) / mins[0], double(mins[0]) / matches,
-         double(mins[1]) / matches, double(mins[0]) / wordcount,
-         double(mins[1]) / wordcount);
-  printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
-         double(mins[0]) / (64 * wordcount),
-         double(mins[1]) / (64 * wordcount));
-  // first we display mins
-  printf("min: %8llu cycles, %8llu instructions, \t%8llu branch mis., %8llu "
-         "cache ref., %8llu cache mis.\n",
-         mins[0], mins[1], mins[2], mins[3], mins[4]);
-  printf("avg: %8.1f cycles, %8.1f instructions, \t%8.1f branch mis., %8.1f "
-         "cache ref., %8.1f cache mis.\n",
-         avg[0], avg[1], avg[2], avg[3], avg[4]);
-  printf("\n");
-  delete[] array;
-  delete[] bigarray;
-}
-
-// static inline void aarch64_decoder(uint32_t *base_ptr, uint32_t &base,
-//                                   uint32_t idx, uint64_t *bits) {
-//}
-
-#endif
-
 static inline void simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
-                                    uint32_t idx, uint64_t bits) {
-  uint32_t cnt = hamming(bits);
-  uint32_t next_base = base + cnt;
-  while (bits != 0u) {
-    base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[base + 2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[base + 3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[base + 4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[base + 5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base += 8;
-  }
-  base = next_base;
-}
-static inline void simdjson_decoder_alt(uint32_t *base_ptr, uint32_t &base,
-                                        uint32_t idx, uint64_t bits) {
-  uint32_t cnt = hamming(bits);
-  uint32_t next_base = base + cnt;
-  base_ptr += base;
-  do {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr += 8;
-  } while (bits != 0u);
-  base = next_base;
-}
-
-static inline void simdjson_decoder_alt2(uint32_t *base_ptr, uint32_t &base,
-                                         uint32_t idx, uint64_t bits) {
-  uint32_t cnt = hamming(bits);
-  uint32_t next_base = base + cnt;
-  base_ptr += base;
-  {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr += 8;
-  }
-  while (bits != 0) {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr++;
-  }
-  while (bits != 0)
-    ;
-  base = next_base;
-}
-
-typedef struct branch_stat_s {
-  size_t decoder2_branch1_count;
-  size_t decoder2_branch1_true;
-
-  size_t decoder3_branch1_count;
-  size_t decoder3_branch1_true;
-
-  size_t decoder3_branch2_count;
-  size_t decoder3_branch2_true;
-
-  size_t decoder3_branch3_count;
-  size_t decoder3_branch3_true;
-
-  size_t decoder4_branch0_count;
-  size_t decoder4_branch0_true;
-
-  size_t decoder4_branch1_count;
-  size_t decoder4_branch1_true;
-
-  size_t decoder4_branch2_count;
-  size_t decoder4_branch2_true;
-
-  size_t decoder4_branch3_count;
-  size_t decoder4_branch3_true;
-
-} branch_stat_t;
-
-branch_stat_t s;
-
-void clear_branch() { memset(&s, 0, sizeof(s)); }
-#define ITERATIONS 10
-void print_branch() {
-  printf("decoder2 %zu / %zu \n", s.decoder2_branch1_true / ITERATIONS,
-         s.decoder2_branch1_count / ITERATIONS);
-  printf("decoder3 branch1 %zu / %zu \n", s.decoder3_branch1_true / ITERATIONS,
-         s.decoder3_branch1_count / ITERATIONS);
-  printf("decoder3 branch2 %zu / %zu \n", s.decoder3_branch2_true / ITERATIONS,
-         s.decoder3_branch2_count / ITERATIONS);
-  printf("decoder3 branch3 %zu / %zu \n", s.decoder3_branch3_true / ITERATIONS,
-         s.decoder3_branch3_count / ITERATIONS);
-  printf("decoder4 branch0 %zu / %zu \n", s.decoder4_branch0_true / ITERATIONS,
-         s.decoder4_branch0_count / ITERATIONS);
-  printf("decoder4 branch1 %zu / %zu \n", s.decoder4_branch1_true / ITERATIONS,
-         s.decoder4_branch1_count / ITERATIONS);
-  printf("decoder4 branch2 %zu / %zu \n", s.decoder4_branch2_true / ITERATIONS,
-         s.decoder4_branch2_count / ITERATIONS);
-  printf("decoder4 branch3 %zu / %zu \n", s.decoder4_branch3_true / ITERATIONS,
-         s.decoder4_branch3_count / ITERATIONS);
-}
-
-static inline void simdjson_decoder_2(uint32_t *base_ptr, uint32_t &base,
                                       uint32_t idx, uint64_t bits) {
-  uint32_t cnt = hamming(bits);
-  uint32_t next_base = base + cnt;
-  base_ptr += base;
-#ifdef COUNT_BRANCH
-  s.decoder2_branch1_count++;
-  s.decoder2_branch1_true += (bits != 0);
-#endif
-  while (bits != 0u) {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr += 8;
-#ifdef COUNT_BRANCH
-    s.decoder2_branch1_count++;
-    s.decoder2_branch1_true += (bits != 0);
-#endif
-  }
-  base = next_base;
-}
-
-static inline void simdjson_decoder_3(uint32_t *base_ptr, uint32_t &base,
-                                      uint32_t idx, uint64_t bits) {
-  uint32_t cnt = hamming(bits);
-  uint32_t next_base = base + cnt;
-  base_ptr += base;
-  if (true) {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr += 8;
-  }
-#ifdef COUNT_BRANCH
-  s.decoder3_branch1_count++;
-  s.decoder3_branch1_true += (cnt > 8);
-#endif
-  if (cnt > 8) {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr += 8;
-#ifdef COUNT_BRANCH
-    s.decoder3_branch2_count++;
-    s.decoder3_branch2_true += (cnt > 16);
-#endif
-    if (cnt > 16) { // unluckly
-      do {
-        base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-        bits = bits & (bits - 1);
-        base_ptr++;
-#ifdef COUNT_BRANCH
-        s.decoder3_branch3_count++;
-        s.decoder3_branch3_true += (bits != 0);
-#endif
-      } while (bits != 0);
-    }
-  }
-  base = next_base;
-}
-
-static inline void simdjson_decoder_3b(uint32_t *base_ptr, uint32_t &base,
-                                       uint32_t idx, uint64_t bits) {
-  uint32_t cnt = hamming(bits);
-  uint32_t next_base = base + cnt;
-  base_ptr += base;
-  if (true) {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr += 8;
-  }
-  if (cnt > 8) { // unluckly
-    do {
-      base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-      bits = bits & (bits - 1);
-      base_ptr++;
-    } while (bits != 0);
-  }
-  base = next_base;
-}
-
-static inline void simdjson_decoder_4(uint32_t *base_ptr, uint32_t &base,
-                                      uint32_t idx, uint64_t bits) {
-#ifdef COUNT_BRANCH
-  s.decoder4_branch0_count++;
-  s.decoder4_branch0_true += (bits != 0);
-#endif
   if (bits == 0)
     return;
   uint32_t cnt = hamming(bits);
@@ -526,10 +119,6 @@ static inline void simdjson_decoder_4(uint32_t *base_ptr, uint32_t &base,
     bits = bits & (bits - 1);
     base_ptr += 8;
   }
-#ifdef COUNT_BRANCH
-  s.decoder4_branch1_count++;
-  s.decoder4_branch1_true += (cnt > 8);
-#endif
   if (cnt > 8) {
     base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
@@ -548,19 +137,11 @@ static inline void simdjson_decoder_4(uint32_t *base_ptr, uint32_t &base,
     base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
     base_ptr += 8;
-#ifdef COUNT_BRANCH
-    s.decoder4_branch2_count++;
-    s.decoder4_branch2_true += (cnt > 16);
-#endif
     if (cnt > 16) { // unluckly
       do {
         base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
         bits = bits & (bits - 1);
         base_ptr++;
-#ifdef COUNT_BRANCH
-        s.decoder4_branch3_count++;
-        s.decoder4_branch3_true += (bits != 0);
-#endif
       } while (bits != 0);
     }
   }
@@ -1018,44 +599,19 @@ end of insanity
 ***/
 
 int main(int argc, char **argv) {
-  clear_branch();
-  if (argc > 1)
-    fasttest("nfl.csv", ',');
-  printf("fast_decoder:\n");
-  unit<fast_decoder>();
-  test<fast_decoder>("nfl.csv", ',');
+  //if (argc > 1)
+   //   fasttest("nfl.csv", ',');
+  //printf("fast_decoder:\n");
+  //unit<fast_decoder>();
+  //test<fast_decoder>("nfl.csv", ',');
   printf("simdjson_decoder:\n");
   unit<simdjson_decoder>();
   test<simdjson_decoder>("nfl.csv", ',');
-  printf("simdjson_decoder_alt:\n");
-  unit<simdjson_decoder_alt>();
-  test<simdjson_decoder_alt>("nfl.csv", ',');
-  printf("simdjson_decoder_alt2:\n");
-  unit<simdjson_decoder_alt2>();
-  test<simdjson_decoder_alt2>("nfl.csv", ',');
-  printf("simdjson_decoder_2:\n");
-  unit<simdjson_decoder_2>();
-  test<simdjson_decoder_2>("nfl.csv", ',');
-  printf("simdjson_decoder_3:\n");
-  unit<simdjson_decoder_3>();
-  test<simdjson_decoder_3>("nfl.csv", ',');
-  printf("simdjson_decoder_3b:\n");
-  unit<simdjson_decoder_3b>();
-  test<simdjson_decoder_3b>("nfl.csv", ',');
-  printf("simdjson_decoder_4:\n");
-  unit<simdjson_decoder_4>();
-  test<simdjson_decoder_4>("nfl.csv", ',');
   printf("basic_decoder:\n");
   unit<basic_decoder>();
   test<basic_decoder>("nfl.csv", ',');
-  printf("faster_decoder:\n");
-  unit<faster_decoder>();
-  test<faster_decoder>("nfl.csv", ',');
+  //printf("faster_decoder:\n");
+  //unit<faster_decoder>();
+  //test<faster_decoder>("nfl.csv", ',');
   printf("\n");
-#ifdef __aarch64__
-  neontest("nfl.csv", ',');
-#endif
-#ifdef COUNT_BRANCH
-  print_branch();
-#endif
 }
