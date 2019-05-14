@@ -14,7 +14,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstring>
-#ifdef  __x86_64__
+#ifdef __x86_64__
 #include <x86intrin.h> // assume GCC/clang
 #elif defined(__aarch64__)
 #include <arm_neon.h>
@@ -83,8 +83,8 @@ uint64_t *build_bitmap(const char *filename, char target, size_t *wordcount) {
   return data;
 }
 
-void basic_decoder(uint32_t *base_ptr, uint32_t &base,
-                                 uint32_t idx, uint64_t bits) {
+void basic_decoder(uint32_t *base_ptr, uint32_t &base, uint32_t idx,
+                   uint64_t bits) {
   while (bits != 0) {
     base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
@@ -96,20 +96,22 @@ void basic_decoder(uint32_t *base_ptr, uint32_t &base,
 
 // this has something like six cycles of latency?
 static inline uint64x2_t aarch64_twocounts(const uint64_t *bits) {
-       // https://developer.arm.com/architectures/instruction-sets/simd-isas/neon/intrinsics
-       uint8x16_t words = vld1q_u8((const uint8_t *)bits); // read in two words
-       uint8x16_t cnts = vcntq_u8(words); // compute counts
-       uint16x8_t cnts16 = vpaddlq_u8(cnts); // sum successive cnts
-       uint32x4_t cnts32 = vpaddlq_u16(cnts16);
-       uint64x2_t cnts64 = vpaddlq_u32(cnts32); 
-       return cnts64;
- }
+  // https://developer.arm.com/architectures/instruction-sets/simd-isas/neon/intrinsics
+  uint8x16_t words = vld1q_u8((const uint8_t *)bits); // read in two words
+  uint8x16_t cnts = vcntq_u8(words);                  // compute counts
+  uint16x8_t cnts16 = vpaddlq_u8(cnts);               // sum successive cnts
+  uint32x4_t cnts32 = vpaddlq_u16(cnts16);
+  uint64x2_t cnts64 = vpaddlq_u32(cnts32);
+  return cnts64;
+}
 
 static inline void aarch64_simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
-                                    uint32_t idx, uint64_t bits, uint64_t bitspopcnt) {
+                                            uint32_t idx, uint64_t bits,
+                                            uint64_t bitspopcnt) {
   uint64_t cnt = bitspopcnt;
   uint32_t next_base = base + cnt;
-  while (bits != 0u) {
+  //  while (bits != 0u) {
+  if (true) {
     base_ptr[base + 0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
     base_ptr[base + 1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
@@ -124,9 +126,33 @@ static inline void aarch64_simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
     bits = bits & (bits - 1);
     base_ptr[base + 6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[base + 7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base += 8;
+  }
+  if (cnt > 8) {
+    base_ptr[base + 8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[base + 9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[base + 10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[base + 11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[base + 12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[base + 13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[base + 14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[base + 18] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
     base += 8;
+  }
+  if (cnt > 16) {
+    while (bits != 0) {
+      base_ptr[base] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+      bits = bits & (bits - 1);
+      base++;
+    }
   }
   base = next_base;
 }
@@ -144,16 +170,18 @@ void neontest(const char *filename, char target) {
   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
   std::vector<unsigned long long> results;
-  std::vector<std::vector<unsigned long long>> allresults;
+  std::vector<std::vector<unsigned long long> > allresults;
   results.resize(evts.size());
   uint32_t matches = 0;
   for (uint32_t i = 0; i < iterations; i++) {
     matches = 0;
     unified.start();
-    for (size_t idx = 0; idx + 1 < wordcount; idx+=2) {
+    for (size_t idx = 0; idx + 1 < wordcount; idx += 2) {
       uint64x2_t cnts = aarch64_twocounts(array + idx);
-      aarch64_simdjson_decoder(bigarray,matches,idx,array[idx], vgetq_lane_u64(cnts,0));
-      aarch64_simdjson_decoder(bigarray,matches,idx + 1,array[idx + 1], vgetq_lane_u64(cnts,1));
+      aarch64_simdjson_decoder(bigarray, matches, idx, array[idx],
+                               vgetq_lane_u64(cnts, 0));
+      aarch64_simdjson_decoder(bigarray, matches, idx + 1, array[idx + 1],
+                               vgetq_lane_u64(cnts, 1));
     }
     unified.end(results);
     allresults.push_back(results);
@@ -187,8 +215,7 @@ void neontest(const char *filename, char target) {
   delete[] bigarray;
 }
 
-
-//static inline void aarch64_decoder(uint32_t *base_ptr, uint32_t &base,
+// static inline void aarch64_decoder(uint32_t *base_ptr, uint32_t &base,
 //                                   uint32_t idx, uint64_t *bits) {
 //}
 
@@ -221,7 +248,7 @@ static inline void simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
 }
 
 static inline void simdjson_decoder_2(uint32_t *base_ptr, uint32_t &base,
-                                    uint32_t idx, uint64_t bits) {
+                                      uint32_t idx, uint64_t bits) {
   uint32_t cnt = hamming(bits);
   uint32_t next_base = base + cnt;
   base_ptr += base;
@@ -248,7 +275,7 @@ static inline void simdjson_decoder_2(uint32_t *base_ptr, uint32_t &base,
 }
 
 static inline void simdjson_decoder_3(uint32_t *base_ptr, uint32_t &base,
-                                    uint32_t idx, uint64_t bits) {
+                                      uint32_t idx, uint64_t bits) {
   uint32_t cnt = hamming(bits);
   uint32_t next_base = base + cnt;
   base_ptr += base;
@@ -374,7 +401,7 @@ void test(const char *filename, char target) {
   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
   std::vector<unsigned long long> results;
-  std::vector<std::vector<unsigned long long>> allresults;
+  std::vector<std::vector<unsigned long long> > allresults;
   results.resize(evts.size());
   uint32_t matches = 0;
   for (uint32_t i = 0; i < iterations; i++) {
@@ -511,8 +538,9 @@ void destroy_buf(buf_t *b) {
 }
 
 template <uint32_t width>
-__attribute__((optimize("unroll-loops"))) static void
-unpack(lead_t *begin, lead_t *end, uint32_t *out) {
+__attribute__((optimize("unroll-loops"))) static void unpack(lead_t *begin,
+                                                             lead_t *end,
+                                                             uint32_t *out) {
   for (lead_t *j = begin; j != end; j++) {
     uint64_t bits = j->word;
     uint32_t *o = out + j->location;
@@ -669,7 +697,7 @@ void fasttest(const char *filename, char target) {
   evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
   std::vector<unsigned long long> results;
-  std::vector<std::vector<unsigned long long>> allresults;
+  std::vector<std::vector<unsigned long long> > allresults;
   results.resize(evts.size());
   uint32_t matches = 0;
   buf_t b;
@@ -721,8 +749,9 @@ void fasttest(const char *filename, char target) {
 end of insanity
 ***/
 
-int main(int argc, char** argv) {
-  if(argc>1)fasttest("nfl.csv", ',');
+int main(int argc, char **argv) {
+  if (argc > 1)
+    fasttest("nfl.csv", ',');
   printf("fast_decoder:\n");
   unit<fast_decoder>();
   test<fast_decoder>("nfl.csv", ',');
@@ -745,5 +774,4 @@ int main(int argc, char** argv) {
 #ifdef __aarch64__
   neontest("nfl.csv", ',');
 #endif
-
 }
