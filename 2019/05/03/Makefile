@@ -7,7 +7,7 @@ arch =
 else
 arch = -march=native
 endif
-all: bitmapdecoding
+all: bitmapdecoding bitmapdecoding_countbranch
 
 bitmapdecoding.s: bitmapdecoding.cpp
 	$(CXX) -O2 $(arch) -S -fverbose-asm -std=c++14 -o bitmapdecoding.s bitmapdecoding.cpp 
@@ -17,7 +17,11 @@ bitmapdecoding: bitmapdecoding.cpp
 	$(CXX) --version
 	$(CXX) -O2 $(arch) -std=c++14 -o bitmapdecoding bitmapdecoding.cpp -Wall -I.
 
+bitmapdecoding_countbranch: bitmapdecoding.cpp
+	$(CXX) -O2 $(arch) -DCOUNT_BRANCH -std=c++14 -o bitmapdecoding_countbranch bitmapdecoding.cpp -Wall -I.
+
+
 sanibitmapdecoding : bitmapdecoding.cpp
 	$(CXX) -g3 $(arch) -fsanitize=address -fno-omit-frame-pointer   -std=c++14 -o sanibitmapdecoding bitmapdecoding.cpp -Wall -I.
 clean:
-	rm -r -f bitmapdecoding
+	rm -r -f bitmapdecoding bitmapdecoding_countbranch sanibitmapdecoding
