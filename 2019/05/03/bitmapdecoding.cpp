@@ -93,13 +93,20 @@ void basic_decoder(uint32_t *base_ptr, uint32_t &base, uint32_t idx,
   }
 }
 
+static inline void just(uint32_t *base_ptr, uint32_t & base, uint32_t idx, uint64_t bits) {
+  uint32_t cnt = hamming(bits);
+  base_ptr += base;
+  base += cnt;
+  base_ptr[0] = idx;
+}
+
 static inline void simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
                                       uint32_t idx, uint64_t bits) {
   if (bits == 0)
     return;
   uint32_t cnt = hamming(bits);
-  uint32_t next_base = base + cnt;
   base_ptr += base;
+  base += cnt;
   if (true) {
     base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
@@ -117,27 +124,26 @@ static inline void simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
     bits = bits & (bits - 1);
     base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr += 8;
   }
   if (cnt > 8) {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    base_ptr[15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
-    base_ptr += 8;
     if (cnt > 16) { // unluckly
+      base_ptr += 16;
       do {
         base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
         bits = bits & (bits - 1);
@@ -145,7 +151,6 @@ static inline void simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
       } while (bits != 0);
     }
   }
-  base = next_base;
 }
 
 static inline void faster_decoder(uint32_t *base_ptr, uint32_t &base,
@@ -261,7 +266,7 @@ void test(const char *filename, char target) {
     unified.end(results);
     allresults.push_back(results);
   }
-  if (bigarray[0] == 0)
+  if ((bigarray[0] == 0) && (bigarray[117] == 0))
     printf("bogus\n.");
   printf(
       "matches = %u words = %zu 1-bit density %4.3f %% 1-bit per word %4.3f \n",
@@ -599,19 +604,13 @@ end of insanity
 ***/
 
 int main(int argc, char **argv) {
-  //if (argc > 1)
-   //   fasttest("nfl.csv", ',');
-  //printf("fast_decoder:\n");
-  //unit<fast_decoder>();
-  //test<fast_decoder>("nfl.csv", ',');
+  printf("just scanning:\n");
+  test<just>("nfl.csv", ',');
   printf("simdjson_decoder:\n");
   unit<simdjson_decoder>();
   test<simdjson_decoder>("nfl.csv", ',');
   printf("basic_decoder:\n");
   unit<basic_decoder>();
   test<basic_decoder>("nfl.csv", ',');
-  //printf("faster_decoder:\n");
-  //unit<faster_decoder>();
-  //test<faster_decoder>("nfl.csv", ',');
   printf("\n");
 }
