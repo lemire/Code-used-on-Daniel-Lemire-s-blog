@@ -41,8 +41,8 @@ double measure_frequency() {
       std::chrono::duration_cast<std::chrono::nanoseconds>(end2 - begin2)
           .count();
   double nanoseconds = (nanoseconds1 - nanoseconds2);
-  if ((fabs(nanoseconds - nanoseconds1 / 2) > 0.01 * nanoseconds) or
-      (fabs(nanoseconds - nanoseconds2) > 0.01 * nanoseconds)) {
+  if ((fabs(nanoseconds - nanoseconds1 / 2) > 0.05 * nanoseconds) or
+      (fabs(nanoseconds - nanoseconds2) > 0.05 * nanoseconds)) {
     return 0;
   }
 
@@ -61,6 +61,11 @@ int main(int argc,char** argv) {
     double freq = measure_frequency();
     if(freq > 0) freqs.push_back(freq);
   }
+  if(freqs.size() == 0) {
+    std::cout << "could not collect a measure" << std::endl;
+    return EXIT_FAILURE;
+  }
+  std::cout << "Got " << freqs.size() << " measures." << std::endl;
   std::sort(freqs.begin(),freqs.end());
-  std::cout << "median frequency detected: " << freqs[freqs.size() / 2] << " GHz" << std::endl;
+  std::cout << "Median frequency detected: " << freqs[freqs.size() / 2] << " GHz" << std::endl;
 }
