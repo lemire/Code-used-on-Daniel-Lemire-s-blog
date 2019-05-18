@@ -6,11 +6,11 @@
 #include <algorithm>
 
 // tries to estimate the frequency, returns false on failure
+ __attribute__ ((noinline))
 double measure_frequency() {
   const size_t test_duration_in_cycles =
      65536;// 1048576; 
   // travis feels strongly about the measure-twice-and-subtract trick.
-  static_assert(test_duration_in_cycles / 16 * 16 == test_duration_in_cycles);
   auto begin1 = std::chrono::high_resolution_clock::now();
   size_t cycles = 2 * test_duration_in_cycles;
 #ifdef __x86_64__
@@ -19,7 +19,6 @@ double measure_frequency() {
   __asm volatile("cyclemeasure1:\n dec %[counter] \n jnz cyclemeasure1 \n"
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
-  // trying to bring the loop overhead down?
   __asm volatile(
       "cyclemeasure1:\nsubs %[counter],%[counter],#1\nbne cyclemeasure1\n "
       : /* read/write reg */ [counter] "+r"(cycles));
@@ -35,7 +34,6 @@ double measure_frequency() {
   __asm volatile("cyclemeasure2:\n dec %[counter] \n jnz cyclemeasure2 \n"
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
-  // I think that this will have a 2-cycle latency on ARM?
   __asm volatile(
       "cyclemeasure2:\nsubs %[counter],%[counter],#1\nbne cyclemeasure2\n "
       : /* read/write reg */ [counter] "+r"(cycles));
@@ -52,7 +50,7 @@ double measure_frequency() {
 
   double frequency = double(test_duration_in_cycles) / nanoseconds;
 #ifdef __aarch64__
-  frequency *= 2; // no macrofusion? 
+  frequency *= 2; // Many ARM processors need 2 cycles per iteration due to lack or flag renaming and fusion
 #endif
   return frequency;
 }
