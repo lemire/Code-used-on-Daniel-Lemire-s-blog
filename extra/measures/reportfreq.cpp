@@ -14,6 +14,8 @@ double measure_frequency() {
   auto begin1 = std::chrono::high_resolution_clock::now();
   size_t cycles = 2 * test_duration_in_cycles;
 #ifdef __x86_64__
+   // dec/jnz macro-fuse into a single uop on recent Intel processors
+   // and hopefully on AMD too?
   __asm volatile("cyclemeasure1:\n dec %[counter] \n jnz cyclemeasure1 \n"
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
@@ -29,7 +31,7 @@ double measure_frequency() {
   auto begin2 = std::chrono::high_resolution_clock::now();
   cycles = test_duration_in_cycles;
 #ifdef __x86_64__
-  // This should have a one cycle latency
+  // dec/jnz macro-fuse into a single uop on recent Intel processors
   __asm volatile("cyclemeasure2:\n dec %[counter] \n jnz cyclemeasure2 \n"
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
@@ -50,7 +52,7 @@ double measure_frequency() {
 
   double frequency = double(test_duration_in_cycles) / nanoseconds;
 #ifdef __aarch64__
-  frequency *= 2; 
+  frequency *= 2; // no macrofusion? 
 #endif
   return frequency;
 }
