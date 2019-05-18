@@ -2,6 +2,8 @@
 #include <cmath>
 #include <cstdint>
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 // tries to estimate the frequency, returns false on failure
 double measure_frequency() {
@@ -39,8 +41,8 @@ double measure_frequency() {
       std::chrono::duration_cast<std::chrono::nanoseconds>(end2 - begin2)
           .count();
   double nanoseconds = (nanoseconds1 - nanoseconds2);
-  if ((fabs(nanoseconds - nanoseconds1 / 2) > 0.05 * nanoseconds) or
-      (fabs(nanoseconds - nanoseconds2) > 0.05 * nanoseconds)) {
+  if ((fabs(nanoseconds - nanoseconds1 / 2) > 0.01 * nanoseconds) or
+      (fabs(nanoseconds - nanoseconds2) > 0.01 * nanoseconds)) {
     return 0;
   }
 
@@ -49,17 +51,16 @@ double measure_frequency() {
 }
 
 int main(int argc,char** argv) {
-  int attempt = 100;
+  int attempt = 1000;
   if(argc > 1) {
       attempt = atoi(argv[1]);
   }
   if(attempt <= 0) attempt = 1;
-  double maxfreq = 0;
+  std::vector<double> freqs;
   for (int i = 0; i < attempt; i++) {
     double freq = measure_frequency();
-    //if(freq != 0) 
-    //std::cout << freq << " GHz" << std::endl;
-    if(maxfreq < freq) maxfreq = freq;
+    if(freq > 0) freqs.push_back(freq);
   }
-  std::cout << "maximum frequency detected : " << maxfreq << " GHz" << std::endl;
+  std::sort(freqs.begin(),freqs.end());
+  std::cout << "median frequency detected: " << freqs[freqs.size() / 2] << " GHz" << std::endl;
 }
