@@ -19,7 +19,7 @@ double measure_frequency() {
 #elif defined(__aarch64__)
   // trying to bring the loop overhead down?
   __asm volatile(
-      "cyclemeasure1:\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsubs %[counter],%[counter],#1\nbne cyclemeasure1\n "
+      "cyclemeasure1:\nsubs %[counter],%[counter],#1\nbne cyclemeasure1\n "
       : /* read/write reg */ [counter] "+r"(cycles));
 #endif
   auto end1 = std::chrono::high_resolution_clock::now();
@@ -29,11 +29,13 @@ double measure_frequency() {
   auto begin2 = std::chrono::high_resolution_clock::now();
   cycles = test_duration_in_cycles;
 #ifdef __x86_64__
+  // This should have a one cycle latency
   __asm volatile("cyclemeasure2:\n dec %[counter] \n jnz cyclemeasure2 \n"
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
+  // I think that this will have a 2-cycle latency on ARM?
   __asm volatile(
-      "cyclemeasure2:\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsubs %[counter],%[counter],#1\nbne cyclemeasure2\n "
+      "cyclemeasure2:\nsubs %[counter],%[counter],#1\nbne cyclemeasure2\n "
       : /* read/write reg */ [counter] "+r"(cycles));
 #endif
   auto end2 = std::chrono::high_resolution_clock::now();
@@ -47,11 +49,14 @@ double measure_frequency() {
   }
 
   double frequency = double(test_duration_in_cycles) / nanoseconds;
+#ifdef __aarch64__
+  frequency *= 2; 
+#endif
   return frequency;
 }
 
 int main(int argc,char** argv) {
-  int attempt = 1000;
+  int attempt = 10000;
   if(argc > 1) {
       attempt = atoi(argv[1]);
   }
