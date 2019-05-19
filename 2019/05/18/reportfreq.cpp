@@ -20,7 +20,7 @@ double measure_frequency_daniel() {
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
   __asm volatile(
-      ".align:4\ncyclemeasure1:\nssubs %[counter],%[counter],#1\nbne cyclemeasure1\n "
+      ".align 4\ncyclemeasure1:\nsubs %[counter],%[counter],#1\nbne cyclemeasure1\n "
       : /* read/write reg */ [counter] "+r"(cycles));
 #endif
   auto end1 = std::chrono::high_resolution_clock::now();
@@ -35,7 +35,7 @@ double measure_frequency_daniel() {
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
   __asm volatile(
-      ".align:4\ncyclemeasure2:\nsubs %[counter],%[counter],#1\nbne cyclemeasure2\n "
+      ".align 4\ncyclemeasure2:\nsubs %[counter],%[counter],#1\nbne cyclemeasure2\n "
       : /* read/write reg */ [counter] "+r"(cycles));
 #endif
   auto end2 = std::chrono::high_resolution_clock::now();
@@ -70,7 +70,7 @@ double measure_frequency_travis() {
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
   __asm volatile(
-      ".align:4\ncyclemeasure3:\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsubs %[counter],%[counter],#1\nbne cyclemeasure3\n "
+      ".align 4\ncyclemeasure3:\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsubs %[counter],%[counter],#1\nbne cyclemeasure3\n "
       : /* read/write reg */ [counter] "+r"(cycles));
 #endif
   auto end1 = std::chrono::high_resolution_clock::now();
@@ -85,7 +85,7 @@ double measure_frequency_travis() {
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
   __asm volatile(
-      ".align:4\ncyclemeasure4:\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsubs %[counter],%[counter],#1\nbne cyclemeasure4\n "
+      ".align 4\ncyclemeasure4:\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsubs %[counter],%[counter],#1\nbne cyclemeasure4\n "
       : /* read/write reg */ [counter] "+r"(cycles));
 #endif
   auto end2 = std::chrono::high_resolution_clock::now();
