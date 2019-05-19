@@ -9,18 +9,18 @@
  __attribute__ ((noinline))
 double measure_frequency() {
   const size_t test_duration_in_cycles =
-     65536;// 1048576; 
+     65536;
+  static_assert(test_duration_in_cycles / 8 * 8 == test_duration_in_cycles, "instruction counts needs to be a multiple of 8");
   // travis feels strongly about the measure-twice-and-subtract trick.
   auto begin1 = std::chrono::high_resolution_clock::now();
   size_t cycles = 2 * test_duration_in_cycles;
 #ifdef __x86_64__
    // dec/jnz macro-fuse into a single uop on recent Intel processors
-   // and hopefully on AMD too?
-  __asm volatile("cyclemeasure1:\n dec %[counter] \n jnz cyclemeasure1 \n"
+  __asm volatile("cyclemeasure1:\n dec %[counter] \n dec %[counter] \n dec %[counter] \n dec %[counter] \n dec %[counter] \n dec %[counter] \n dec %[counter] \n dec %[counter] \n jnz cyclemeasure1 \n"
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
   __asm volatile(
-      "cyclemeasure1:\nsubs %[counter],%[counter],#1\nbne cyclemeasure1\n "
+      ".align:4\ncyclemeasure1:\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsubs %[counter],%[counter],#1\nbne cyclemeasure1\n "
       : /* read/write reg */ [counter] "+r"(cycles));
 #endif
   auto end1 = std::chrono::high_resolution_clock::now();
@@ -31,11 +31,11 @@ double measure_frequency() {
   cycles = test_duration_in_cycles;
 #ifdef __x86_64__
   // dec/jnz macro-fuse into a single uop on recent Intel processors
-  __asm volatile("cyclemeasure2:\n dec %[counter] \n jnz cyclemeasure2 \n"
+  __asm volatile("cyclemeasure2:\n dec %[counter] \n dec %[counter] \n dec %[counter] \n dec %[counter] \n dec %[counter] \n dec %[counter] \n dec %[counter] \n dec %[counter] \n jnz cyclemeasure2 \n"
                  : /* read/write reg */ [counter] "+r"(cycles));
 #elif defined(__aarch64__)
   __asm volatile(
-      "cyclemeasure2:\nsubs %[counter],%[counter],#1\nbne cyclemeasure2\n "
+      ".align:4\ncyclemeasure2:\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsub %[counter],%[counter],#1\nsubs %[counter],%[counter],#1\nbne cyclemeasure2\n "
       : /* read/write reg */ [counter] "+r"(cycles));
 #endif
   auto end2 = std::chrono::high_resolution_clock::now();
