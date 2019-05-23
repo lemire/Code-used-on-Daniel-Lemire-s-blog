@@ -203,6 +203,48 @@ int bitmap_decode_avx2_turbo_nopopcnt(uint64_t * array, size_t sizeinwords, uint
 	return out - initout;
 }
 
+uint32_t get_nth_bits(int a) {
+	uint32_t out = 0;
+	int c = 0;
+	for (int i = 0; i < 8; ++i) {
+		int set = (a >> i) & 1;
+		if (set) {
+			out |= (i << (c * 3));
+			c++;
+		}
+	}
+	return out;
+}
+uint8_t g_pack_left_table_u8x3[256 * 3 + 1];
+
+void BuildPackMask() {
+	for (int i = 0; i < 256; ++i) {
+		*(uint32_t*)(&g_pack_left_table_u8x3[i * 3]) = get_nth_bits(i);
+	}
+}
+
+int bitmap_decode_avx2_vpermd(uint64_t* input64, size_t n64, uint32_t* out32) {
+	size_t outpos = 0;
+	uint8_t* bytes = (uint8_t*)(input64);
+	size_t n8 = n64 * 8;
+	const __m256i eight = _mm256_set1_epi32(8);
+	const __m256i bitsToLo3 = _mm256_set_epi32(21, 18, 15, 12, 9, 6, 3, 0);
+	__m256i indices = _mm256_set_epi32(7, 6, 5, 4, 3, 2, 1, 0);
+	for (size_t k = 0; k < n8; k++) {
+		uint8_t bitset = bytes[k];
+		uint8_t *adr = g_pack_left_table_u8x3 + bitset * 3;
+		__m256i packed_lut = _mm256_set1_epi32(*(uint32_t*)(adr)); // lower 24 bits has our LUT
+		// shift each lane so desired 3 bits are at bottom
+		// There is leftover data in the lane, but vpermd only examines the first 3 bits
+		__m256i shufmask = _mm256_srlv_epi32(packed_lut, bitsToLo3);
+		__m256i set = _mm256_permutevar8x32_epi32(indices, shufmask);
+		_mm256_storeu_si256((__m256i*)(&out32[outpos]), set);
+		outpos += _mm_popcnt_u64(bitset);
+		indices = _mm256_add_epi32(indices, eight);
+	}
+	return outpos;
+}
+
 #ifdef  __AVX512BW__
 size_t bitmap_decode_bmi2_avx512(uint64_t *bitmap, size_t bitmapsize, uint32_t *out) {
 	size_t pos = 0;
@@ -272,6 +314,7 @@ void defaultcallback(int x) { globalcount += x; }
 
 void bitmap_decoding() {
   printf("[bitmap decoding]\n");
+  BuildPackMask(); // for vpermd version
   int repeat = 50;
   size_t N = 1000;
   uint64_t *bitmap = malloc(N * sizeof(uint64_t));
@@ -308,6 +351,8 @@ void bitmap_decoding() {
     BEST_TIME(bitmap_decode_avx2_turbo_thin(bitmap, N, receiver), bitcount, , repeat,
               bitcount, true);
     BEST_TIME(bitmap_decode_avx2_turbo_nopopcnt(bitmap, N, receiver), bitcount, , repeat,
+              bitcount, true);
+    BEST_TIME(bitmap_decode_avx2_vpermd(bitmap, N, receiver), bitcount, , repeat,
               bitcount, true);
 
 #ifdef  __AVX512BW__
