@@ -41,6 +41,6 @@ void get_line_benchmark(size_t size) {
 }
 
 int main(int argc, char** argv) {
-  get_line_benchmark(100000);
+  get_line_benchmark(10000000);
   return EXIT_SUCCESS;
 }

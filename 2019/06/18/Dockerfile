@@ -5,7 +5,7 @@
 # docker build -t my-gcc-app .
 # docker run --privileged my-gcc-app
 
-FROM gcc:8.3
+FROM gcc:9.1
 COPY . /usr/src/myapp
 WORKDIR /usr/src/myapp
 RUN make clean
