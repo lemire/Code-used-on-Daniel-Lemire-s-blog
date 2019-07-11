@@ -1,3 +1,4 @@
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +18,8 @@ uint16_t wyhash16(void) {
     return hash16(wyhash16_x, 0x2ab);
 }
 
+// Fast Random Integer Generation in an Interval
+// https://arxiv.org/abs/1805.10941
 uint16_t rand_range16(const uint16_t s) {
     uint16_t x = wyhash16();
     uint32_t m = (uint32_t)x * (uint32_t)s;
