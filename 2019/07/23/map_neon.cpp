@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "benchmark.h"
+__attribute__ ((noinline))
 void transform(const uint8_t * map, uint8_t * values, size_t volume) {
   for(size_t i = 0; i < volume; i++) {
     values[i] = map[values[i]];
@@ -29,6 +30,7 @@ static inline uint8x16x4_t neon_load4(const uint8_t * map)  {
   return answer;
 }
 
+__attribute__ ((noinline))
 void neon_transform(const uint8_t * map, uint8_t * values, size_t volume) {
   uint8x16x4_t table[4];
   table[0] = neon_load4(map);
