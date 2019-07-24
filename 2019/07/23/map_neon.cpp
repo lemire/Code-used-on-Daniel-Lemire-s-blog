@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "benchmark.h"
+
 __attribute__ ((noinline))
 void transform(const uint8_t * map, uint8_t * values, size_t volume) {
   for(size_t i = 0; i < volume; i++) {
@@ -27,6 +28,15 @@ static inline uint8x16_t simd_transform16x(uint8x16x4_t * table, uint8x16_t inpu
   t1 = vqtbx4q_u8(t1, table[3],  veorq_u8(input, vdupq_n_u8(0xc0)));
   return t1;
 }
+
+uint8x16_t simd_transform16x2(uint8x16x4_t * table, uint8x16_t input) {
+  uint8x16_t t1 = vqtbl4q_u8(table[0], input);
+  t1 = vqtbx4q_u8(t1, table[1], veorq_u8(input, vdupq_n_u8(0x40)));
+  uint8x16_t t3 = vqtbl4q_u8(table[2], veorq_u8(input, vdupq_n_u8(0x80)));
+  t3 = vqtbx4q_u8(t3, table[3], veorq_u8(input, vdupq_n_u8(0xc0)));
+  return vorrq_u8(t1, t3);
+}
+
 static inline uint8x16_t simd_transform16_ascii(uint8x16x4_t * table, uint8x16_t input) {
   uint8x16_t  t1 = vqtbl4q_u8(table[0],  input);
   uint8x16_t  t2 = vqtbl4q_u8(table[1],  veorq_u8(input, vdupq_n_u8(0x40)));
@@ -77,6 +87,22 @@ void neon_transformx(const uint8_t * map, uint8_t * values, size_t volume) {
 }
 
 __attribute__ ((noinline))
+void neon_transformx2(const uint8_t * map, uint8_t * values, size_t volume) {
+  uint8x16x4_t table[4];
+  table[0] = neon_load4(map);
+  table[1] = neon_load4(map + 0x40);
+  table[2] = neon_load4(map + 0x80);
+  table[3] = neon_load4(map + 0xc0);
+  size_t i = 0;
+  for(;i + 16 <=  volume; i+= 16) {
+    vst1q_u8(values + i, simd_transform16x2(table,vld1q_u8(values + i)));
+  }
+  for(; i < volume; i++) {
+    values[i] = map[values[i]];
+  } 
+}
+
+__attribute__ ((noinline))
 void neon_transform_ascii(const uint8_t * map, uint8_t * values, size_t volume) {
   uint8x16x4_t table[2];
   table[0] = neon_load4(map);
@@ -105,6 +131,10 @@ bool test() {
   neon_transformx(map, values2, 256);
   for(size_t i = 0; i < 256; i++) 
      if(values2[i] != values1[i]) return false;
+  for(size_t i = 0; i < 256; i++) values2[i] = i;
+  neon_transformx2(map, values2, 256);
+  for(size_t i = 0; i < 256; i++) 
+     if(values2[i] != values1[i]) return false;
   return true;
 }
 
@@ -118,6 +148,7 @@ void demo() {
   BEST_TIME_NS(transform(map, values,volume), , repeat, volume, true);
   BEST_TIME_NS(neon_transform(map, values,volume), , repeat, volume, true);
   BEST_TIME_NS(neon_transformx(map, values,volume), , repeat, volume, true);
+  BEST_TIME_NS(neon_transformx2(map, values,volume), , repeat, volume, true);
   BEST_TIME_NS(neon_transform_ascii(map, values,volume), , repeat, volume, true);
     
   free(values);
