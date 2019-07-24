@@ -21,7 +21,7 @@ static inline uint8x16_t simd_transform16(uint8x16x4_t * table, uint8x16_t input
 }
 
 static inline uint8x16_t simd_transform16x(uint8x16x4_t * table, uint8x16_t input) {
-  uint8x16_t  t1 = vqtbx4q_u8(input, table[0],  input);
+  uint8x16_t  t1 = vqtbl4q_u8(table[0],  input);
   t1 = vqtbx4q_u8(t1, table[1],  veorq_u8(input, vdupq_n_u8(0x40)));
   t1 = vqtbx4q_u8(t1, table[2],  veorq_u8(input, vdupq_n_u8(0x80)));
   t1 = vqtbx4q_u8(t1, table[3],  veorq_u8(input, vdupq_n_u8(0xc0)));
