@@ -116,6 +116,52 @@ void neon_transform_ascii(const uint8_t * map, uint8_t * values, size_t volume) 
   } 
 }
 
+__attribute__ ((noinline))
+void neon_transform_ascii64(const uint8_t * map, uint8_t * values, size_t volume) {
+  uint8x16x4_t table[2];
+  table[0] = neon_load4(map);
+  size_t i = 0;
+  for(;i + 16 <=  volume; i+= 16) {
+    vst1q_u8(values + i, vqtbl4q_u8(table[0],vld1q_u8(values + i)));
+  }
+  for(; i < volume; i++) {
+    values[i] = map[values[i]];
+  } 
+}
+ 
+__attribute__ ((noinline))
+void neon_transform_nada(uint8_t * map, uint8_t * values, size_t volume) {
+  uint8x16x4_t table[2];
+  table[0] = neon_load4(map);
+  size_t i = 0;
+  uint8x16_t x1 = vld1q_u8(values + 0); 
+  uint8x16_t x2 = vld1q_u8(values + 16); 
+  uint8x16_t x3 = vld1q_u8(values + 16*2); 
+  uint8x16_t x4 = vld1q_u8(values + 16*3); 
+  uint8x16_t x5 = vld1q_u8(values + 16*4); 
+  uint8x16_t x6 = vld1q_u8(values + 16*5); 
+  uint8x16_t x7 = vld1q_u8(values + 16*6); 
+  uint8x16_t x8 = vld1q_u8(values + 16*7); 
+  for(;i  <  volume; i++) {
+	  x1 = vqtbl4q_u8(table[0],x1); 
+  	  x2 = vqtbl4q_u8(table[0],x2); 
+	  x3 = vqtbl4q_u8(table[0],x3); 
+  	  x4 = vqtbl4q_u8(table[0],x4); 
+ 	  x5 = vqtbl4q_u8(table[0],x5); 
+  	  x6 = vqtbl4q_u8(table[0],x6); 
+  	  x7 = vqtbl4q_u8(table[0],x7); 
+  	  x8 = vqtbl4q_u8(table[0],x8); 
+   }
+  vst1q_u8(values + 0,    x1); 
+  vst1q_u8(values + 16,   x2); 
+  vst1q_u8(values + 16*2, x3); 
+  vst1q_u8(values + 16*3, x4); 
+  vst1q_u8(values + 16*4, x5); 
+  vst1q_u8(values + 16*5, x6); 
+  vst1q_u8(values + 16*6, x7); 
+  vst1q_u8(values + 16*7, x8); 
+}
+
 bool test() {
   uint8_t map[256];
   for(size_t i = 0; i < 256; i++) map[i] = (i ^ 127);
@@ -150,7 +196,10 @@ void demo() {
   BEST_TIME_NS(neon_transformx(map, values,volume), , repeat, volume, true);
   BEST_TIME_NS(neon_transformx2(map, values,volume), , repeat, volume, true);
   BEST_TIME_NS(neon_transform_ascii(map, values,volume), , repeat, volume, true);
-    
+  BEST_TIME_NS(neon_transform_ascii64(map, values,volume), , repeat, volume, true);
+  BEST_TIME_NS(neon_transform_nada(map, values,1000), , repeat, 1000, true);
+  BEST_TIME_NS(neon_transform_nada(map, values,10000), , repeat, 10000, true);
+       
   free(values);
 }
 
