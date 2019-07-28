@@ -17,7 +17,7 @@ public class oldschoolreadlines {
         FileReader fr = new FileReader(location);
         BufferedReader bf = new BufferedReader(fr);
         StringBuffer sb = new StringBuffer();
-        bf.lines().forEach(s -> sb.append(s));
+        bf.lines().forEach(s -> sb.append(s+"\n"));
         bf.close();
         return sb;
     }
@@ -34,14 +34,14 @@ public class oldschoolreadlines {
 
     public static void main(String[] args)  throws IOException  {
         String data = scanFile(args[0]).toString();
-        for(int k = 0; k < 10; k++) {
+        for(int k = 0; k < 19; k++) {
           oldschoolreadlines d = new oldschoolreadlines();
           long bef = System.currentTimeMillis();
           d.readString(data);
           long aft = System.currentTimeMillis();
           long fz = new File(args[0]).length();
            // we need the leave time for the JIT
-          if(k >= 7)
+          if(k >= 17)
             System.out.format("speed: %.3f GB/s\n",fz/(1024.0*1024.0*1024.0)/((aft-bef)/1000.0));
         }
     }
