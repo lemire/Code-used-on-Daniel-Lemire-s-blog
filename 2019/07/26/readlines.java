@@ -16,7 +16,7 @@ public class readlines {
         FileReader fr = new FileReader(location);
         BufferedReader bf = new BufferedReader(fr);
         StringBuffer sb = new StringBuffer();
-        bf.lines().forEach(s -> sb.append(s));
+        bf.lines().forEach(s -> sb.append(s+"\n"));
         bf.close();
         return sb;
     }
