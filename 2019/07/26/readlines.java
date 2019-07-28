@@ -1,6 +1,7 @@
 import java.util.*;
 import java.io.*;
 import java.util.stream.*; 
+import java.nio.file.*;
 
 public class readlines {
     long volume = 0;
@@ -12,13 +13,9 @@ public class readlines {
     public void parseLine(String s) {
         volume += s.length();
     }
-    public static StringBuffer scanFile(String location)  throws IOException {
-        FileReader fr = new FileReader(location);
-        BufferedReader bf = new BufferedReader(fr);
-        StringBuffer sb = new StringBuffer();
-        bf.lines().forEach(s -> sb.append(s+"\n"));
-        bf.close();
-        return sb;
+
+    public static String scanFile(String location)  throws IOException {
+        return new String(Files.readAllBytes(FileSystems.getDefault().getPath(location)));
     }
 
     public void readString(String data) throws IOException {				
@@ -29,7 +26,7 @@ public class readlines {
     }
 
     public static void main(String[] args)  throws IOException  {
-        String data = scanFile(args[0]).toString();
+        String data = scanFile(args[0]);
         for(int k = 0; k < 19; k++) {
           readlines d = new readlines();
           long bef = System.currentTimeMillis();
