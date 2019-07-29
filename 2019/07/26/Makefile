@@ -8,7 +8,7 @@ all: test.txt getlines  readlines.class oldschoolreadlines.class
 	@./getlines test.txt
 
 getlines: getlines.cpp
-	c++ -O2 -o getlines getlines.cpp -Wall
+	c++ -O2 -o getlines getlines.cpp -Wall -std=c++11
 
 
 readlines.class: readlines.java
