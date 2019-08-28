@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
+#include <immintrin.h>
 
 // textbook scancount
 __attribute__((noinline)) void
@@ -53,6 +54,133 @@ fastscancount(std::vector<uint8_t> &counters,
   }
 }
 
+static inline size_t find_next_gt(uint8_t* array, size_t size, uint8_t threshold) {
+  size_t vsize = size / 32;
+  __m256i* varray = (__m256i *)array;
+  const __m256i comprand = _mm256_set1_epi8(threshold);
+  int bits = 0;
+
+  for (size_t i = 0; i < vsize; i++) {
+    __m256i v = _mm256_loadu_si256(varray + i);
+    __m256i cmp = _mm256_cmpgt_epi8(v, comprand);
+    if ((bits = _mm256_movemask_epi8(cmp))) {
+      return i * 32 + __builtin_ctz(bits);
+    }
+  }
+
+  // tail handling
+  for (size_t i = vsize * 32; i < size; i++) {
+    auto v = array[i];
+    if (v > threshold) return i;
+  }
+
+  return SIZE_MAX;
+}
+
+__attribute__((noinline))
+void populate_hits_avx(std::vector<uint8_t> &counters, size_t range,
+    size_t threshold, size_t start, std::vector<uint32_t> &out) {
+  uint8_t* array = counters.data();
+  size_t ro = range;
+  while (true) {
+    size_t next = find_next_gt(array, range, (uint8_t)threshold);
+    if (next == SIZE_MAX) break;
+    out.push_back(start + next);
+    range -= (next + 1);
+    array += (next + 1);
+  }
+}
+
+__attribute__((noinline))
+void update_counters(const uint32_t*& it_, uint8_t* counters, uint32_t range_end) {
+  const uint32_t* it = it_;
+  for (uint32_t e; (e = *it) < range_end; ++it) {
+    counters[e]++;
+  }
+  it_ = it;
+}
+
+__attribute__((noinline))
+void update_counters_final(const uint32_t*& it_, const uint32_t *end, uint8_t* counters) {
+  uint64_t e;
+  const uint32_t* it = it_;
+  for (; it != end; it++) {
+    counters[*it]++;
+  }
+  it_ = end;
+}
+
+// even faster scancount
+//
+template <size_t cache_size>
+__attribute__((noinline))
+void fasterscancount(std::vector<uint8_t> &counters,
+              std::vector<std::vector<uint32_t>> &data,
+              std::vector<uint32_t> &out, size_t threshold) {
+  out.clear();
+  const size_t dsize = data.size();
+
+  struct data_info {
+    const uint32_t *cur; // current pointer into data
+    const uint32_t *end; // pointer to end
+    uint32_t last;       // value of last element
+    data_info(const uint32_t *cur, const uint32_t *end, uint32_t last) : cur{cur}, end{end}, last{last} {}
+  };
+
+  std::vector<data_info> iter_data;
+  iter_data.reserve(dsize);
+  for (auto& d : data) {
+    iter_data.emplace_back(d.data(), d.data() + d.size(), d.back());
+  }
+
+  uint32_t csize = counters.size();
+  auto cdata = counters.data();
+  for (uint32_t start = 0; start < csize; start += cache_size) {
+    memset(cdata, 0, cache_size * sizeof(counters[0]));
+    for (auto& id : iter_data) {
+      // determine if the loop will end because we get to the end of
+      // data, or because we get to the end of the range
+      if (__builtin_expect(id.last >= start + cache_size, 1)) {
+        // the iteration is guaranteed to end because an element becomes >=
+        // range_end, so we don't need to check for end of data
+        update_counters(id.cur, cdata - start, start + cache_size);
+      } else {
+        // the iteration is guaranteed to end because we get to the end of the data
+        update_counters_final(id.cur, id.end, cdata - start);
+      }
+    }
+
+    populate_hits_avx(counters, cache_size, threshold, start, out);
+  }
+}
+
+template <typename F>
+void bench(F f,
+          const std::string& name,
+          LinuxEvents<PERF_TYPE_HARDWARE>& unified,
+          std::vector<unsigned long long>& results,
+          std::vector<uint32_t>& answer,
+          size_t sum,
+          size_t expected,
+          bool print) {
+    unified.start();
+    f(answer);
+    unified.end(results);
+    if (answer.size() != expected) std::cerr << "bug: expected " << expected
+        << " but got " << answer.size() << "\n";
+    if (print) {
+      std::cout << name << std::endl;
+      std::cout << double(results[0]) / sum << " cycles/element " << std::endl;
+    }
+}
+
+#define REPEATS 100
+#define CACHE_SIZE 262144 // roughly my L2
+
+#ifndef CACHE_SIZEB
+#define CACHE_SIZEB 40000
+#endif
+
 void demo(size_t N, size_t length, size_t array_count, size_t threshold) {
   std::vector<std::vector<uint32_t>> data(array_count);
   std::vector<uint8_t> counters(N);
@@ -60,7 +188,7 @@ void demo(size_t N, size_t length, size_t array_count, size_t threshold) {
   answer.reserve(N);
   std::cout << "size of the counter array "
             << double(counters.size()) / (1024 * 1024) << " MB" << std::endl;
-  size_t cache_size = 262144; // roughly my L2
+  size_t cache_size = CACHE_SIZE;
   std::cout << "size of the small counter array (cache-sized) "
             << double(cache_size) / 1024 << " kB" << std::endl;
   size_t sum = 0;
@@ -82,24 +210,23 @@ void demo(size_t N, size_t length, size_t array_count, size_t threshold) {
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
   std::vector<unsigned long long> results;
   results.resize(evts.size());
-  for (size_t t = 0; t < 3; t++) {
-    unified.start();
-    scancount(counters, data, answer, threshold);
-    unified.end(results);
-    size_t expected = answer.size();
-    if (t == 2) {
-      std::cout << "naive scancount " << std::endl;
-      std::cout << double(results[0]) / sum << " cycles/hit " << std::endl;
-    }
-    unified.start();
-    fastscancount(counters, data, answer, threshold, cache_size);
-    unified.end(results);
-    if(answer.size() != expected) std::cerr << "bug" << std::endl;
-    if (t == 2) {
-      std::cout << "cache-sensitive scancount " << std::endl;
-      std::cout << double(results[0]) / sum << " cycles/hit " << std::endl;
-    }
+  scancount(counters, data, answer, threshold);
+  const size_t expected = answer.size();
+  std::cout << "Got " << expected << " hits\n";
+  for (size_t t = 0; t < REPEATS; t++) {
+
+    bool last = (t == REPEATS - 1);
+
+    bench([&](std::vector<uint32_t>& ans) { scancount(counters, data, ans, threshold); },
+        "naive scancount", unified, results, answer, sum, expected, last);
+
+    bench([&](std::vector<uint32_t>& ans) { fastscancount(counters, data, answer, threshold, cache_size); },
+        "cache-sensitive scancount", unified, results, answer, sum, expected, last);
+
+    bench([&](std::vector<uint32_t>& ans) { fasterscancount<CACHE_SIZEB>(counters, data, answer, threshold); },
+        "even faster scancount", unified, results, answer, sum, expected, last);
   }
+
 }
 int main() {
   demo(20000000, 50000, 100, 3);
