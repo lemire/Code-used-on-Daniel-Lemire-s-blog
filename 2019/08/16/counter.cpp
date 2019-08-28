@@ -174,7 +174,7 @@ void bench(F f,
     }
 }
 
-#define REPEATS 100
+#define REPEATS 10
 #define CACHE_SIZE 262144 // roughly my L2
 
 #ifndef CACHE_SIZEB
