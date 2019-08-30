@@ -1,5 +1,8 @@
+OPT := -O3
+CXXFLAGS := -std=c++11 $(OPT) -mavx2
+
 counter: counter.cpp
-	c++ -std=c++11  -O3  -o counter counter.cpp -Wall -Wextra
+	$(CXX) $(CXXFLAGS) $(CXXEXTRA) -o counter counter.cpp
 
 clean:
-	rm counter
+	rm -f counter
