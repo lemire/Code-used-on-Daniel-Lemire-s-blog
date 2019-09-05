@@ -33,6 +33,14 @@ __attribute__((noinline)) void increment(uint64_t &i, uint64_t *x) {
   i = copyi;
 }
 
+__attribute__((noinline)) int classic_increment(uint64_t i, uint64_t *x) {
+  for (int k = 0; k < SIZE; k++) {
+    x[k] += i++;
+  }
+  return i;
+}
+
+
 void test() {
   uint64_t *bigarray = new uint64_t[SIZE];
   memset(bigarray, 0, SIZE * sizeof(uint64_t));
@@ -46,6 +54,8 @@ void test() {
   results2.resize(evts.size());
   std::vector<unsigned long long> results3;
   results3.resize(evts.size());
+  std::vector<unsigned long long> results4;
+  results4.resize(evts.size());
   uint64_t counter = 0;
   unified.start();
   increment(counter, bigarray);
@@ -56,12 +66,17 @@ void test() {
   unified.start();
   incrementp(&counter, bigarray);
   unified.end(results3);
+  unified.start();
+  counter = classic_increment(counter, bigarray);
+  unified.end(results4);
   printf("standard  %.2f cycles/value %.2f instructions/value\n",
          results1[0] * 1.0 / SIZE, results1[1] * 1.0 / SIZE);
   printf("reference %.2f cycles/value %.2f instructions/value\n",
          results2[0] * 1.0 / SIZE, results2[1] * 1.0 / SIZE);
   printf("pointer   %.2f cycles/value %.2f instructions/value\n",
          results3[0] * 1.0 / SIZE, results3[1] * 1.0 / SIZE);
+  printf("classic   %.2f cycles/value %.2f instructions/value\n",
+         results4[0] * 1.0 / SIZE, results4[1] * 1.0 / SIZE);
   delete[] bigarray;
 }
 
