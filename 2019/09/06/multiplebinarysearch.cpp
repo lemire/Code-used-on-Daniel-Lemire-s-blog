@@ -379,78 +379,78 @@ void demo(size_t howmany, size_t N) {
   std::vector<unsigned long long> results_branchless16;
   results_branchless16.resize(evts.size());
   //
-  for(size_t trial = 0; trial < 5; trial++) {
-      printf("\n ==== trial %zu\n", trial);
-  unified.start();
-  branchy(data, targets, solution);
-  unified.end(results_branchy);
+  for (size_t trial = 0; trial < 5; trial++) {
+    printf("\n ==== trial %zu\n", trial);
+    unified.start();
+    branchy(data, targets, solution);
+    unified.end(results_branchy);
 
-  unified.start();
-  branchy(data, targets, solution);
-  unified.end(results_branchy);
+    unified.start();
+    branchy(data, targets, solution);
+    unified.end(results_branchy);
 
-  unified.start();
-  branchless(data, targets, solution);
-  unified.end(results_branchless);
+    unified.start();
+    branchless(data, targets, solution);
+    unified.end(results_branchless);
 
-  unified.start();
-  branchless(data, targets, solution);
-  unified.end(results_branchless);
-  unified.start();
-  branchless2(data, targets, solution);
-  unified.end(results_branchless2);
+    unified.start();
+    branchless(data, targets, solution);
+    unified.end(results_branchless);
+    unified.start();
+    branchless2(data, targets, solution);
+    unified.end(results_branchless2);
 
-  unified.start();
-  branchless4(data, targets, solution);
-  unified.end(results_branchless4);
+    unified.start();
+    branchless4(data, targets, solution);
+    unified.end(results_branchless4);
 
-  unified.start();
-  branchless8(data, targets, solution);
-  unified.end(results_branchless8);
-  
-  unified.start();
-  branchless16(data, targets, solution);
-  unified.end(results_branchless16);
+    unified.start();
+    branchless8(data, targets, solution);
+    unified.end(results_branchless8);
 
-  printf("branchy       %.2f cycles/value %.2f instructions/value\n",
-         results_branchy[0] * 1.0 / howmany,
-         results_branchy[1] * 1.0 / howmany);
-  printf("branchless    %.2f cycles/value %.2f instructions/value\n",
-         results_branchless[0] * 1.0 / howmany,
-         results_branchless[1] * 1.0 / howmany);
-  printf("branchless2   %.2f cycles/value %.2f instructions/value\n",
-         results_branchless2[0] * 1.0 / howmany,
-         results_branchless2[1] * 1.0 / howmany);
-  printf("branchless4   %.2f cycles/value %.2f instructions/value\n",
-         results_branchless4[0] * 1.0 / howmany,
-         results_branchless4[1] * 1.0 / howmany);
-  printf("branchless8   %.2f cycles/value %.2f instructions/value\n",
-         results_branchless8[0] * 1.0 / howmany,
-         results_branchless8[1] * 1.0 / howmany);
-  printf("branchless16  %.2f cycles/value %.2f instructions/value\n",
-         results_branchless16[0] * 1.0 / howmany,
-         results_branchless16[1] * 1.0 / howmany);
-  double ele_level = levels * howmany;
-  printf("\n");
-  printf("branchy       %.2f cycles/level %.2f instructions/level\n",
-         results_branchy[0] * 1.0 / ele_level,
-         results_branchy[1] * 1.0 / ele_level);
-  printf("branchless    %.2f cycles/level %.2f instructions/level\n",
-         results_branchless[0] * 1.0 / ele_level,
-         results_branchless[1] * 1.0 / ele_level);
-  printf("branchless2   %.2f cycles/level %.2f instructions/level\n",
-         results_branchless2[0] * 1.0 / ele_level,
-         results_branchless2[1] * 1.0 / ele_level);
-  printf("branchless4   %.2f cycles/level %.2f instructions/level\n",
-         results_branchless4[0] * 1.0 / ele_level,
-         results_branchless4[1] * 1.0 / ele_level);
-  printf("branchless8   %.2f cycles/level %.2f instructions/level\n",
-         results_branchless8[0] * 1.0 / ele_level,
-         results_branchless8[1] * 1.0 / ele_level);
-  printf("branchless16  %.2f cycles/level %.2f instructions/level\n",
-         results_branchless16[0] * 1.0 / ele_level,
-         results_branchless16[1] * 1.0 / ele_level);
-         }
+    unified.start();
+    branchless16(data, targets, solution);
+    unified.end(results_branchless16);
+
+    printf("branchy       %.2f cycles/value %.2f instructions/value\n",
+           results_branchy[0] * 1.0 / howmany,
+           results_branchy[1] * 1.0 / howmany);
+    printf("branchless    %.2f cycles/value %.2f instructions/value\n",
+           results_branchless[0] * 1.0 / howmany,
+           results_branchless[1] * 1.0 / howmany);
+    printf("branchless2   %.2f cycles/value %.2f instructions/value\n",
+           results_branchless2[0] * 1.0 / howmany,
+           results_branchless2[1] * 1.0 / howmany);
+    printf("branchless4   %.2f cycles/value %.2f instructions/value\n",
+           results_branchless4[0] * 1.0 / howmany,
+           results_branchless4[1] * 1.0 / howmany);
+    printf("branchless8   %.2f cycles/value %.2f instructions/value\n",
+           results_branchless8[0] * 1.0 / howmany,
+           results_branchless8[1] * 1.0 / howmany);
+    printf("branchless16  %.2f cycles/value %.2f instructions/value\n",
+           results_branchless16[0] * 1.0 / howmany,
+           results_branchless16[1] * 1.0 / howmany);
+    double ele_level = levels * howmany;
+    printf("\n");
+    printf("branchy       %.2f cycles/level %.2f instructions/level\n",
+           results_branchy[0] * 1.0 / ele_level,
+           results_branchy[1] * 1.0 / ele_level);
+    printf("branchless    %.2f cycles/level %.2f instructions/level\n",
+           results_branchless[0] * 1.0 / ele_level,
+           results_branchless[1] * 1.0 / ele_level);
+    printf("branchless2   %.2f cycles/level %.2f instructions/level\n",
+           results_branchless2[0] * 1.0 / ele_level,
+           results_branchless2[1] * 1.0 / ele_level);
+    printf("branchless4   %.2f cycles/level %.2f instructions/level\n",
+           results_branchless4[0] * 1.0 / ele_level,
+           results_branchless4[1] * 1.0 / ele_level);
+    printf("branchless8   %.2f cycles/level %.2f instructions/level\n",
+           results_branchless8[0] * 1.0 / ele_level,
+           results_branchless8[1] * 1.0 / ele_level);
+    printf("branchless16  %.2f cycles/level %.2f instructions/level\n",
+           results_branchless16[0] * 1.0 / ele_level,
+           results_branchless16[1] * 1.0 / ele_level);
+  }
 }
 
 int main() { demo(1024, 64000); }
