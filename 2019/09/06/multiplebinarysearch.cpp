@@ -543,4 +543,4 @@ void demo(size_t howmany, size_t N) {
   }
 }
 
-int main() { demo(1024, 65000); }
+int main() { demo(1024, 262144); }
