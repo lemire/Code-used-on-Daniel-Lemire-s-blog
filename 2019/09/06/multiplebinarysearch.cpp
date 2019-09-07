@@ -27,6 +27,7 @@ size_t branchy_search(const int *source, size_t n, int target) {
   return hi;
 }
 
+__attribute__ ((noinline))
 void branchy(const std::vector<std::vector<int>> &data,
              const std::vector<int> &targets, std::vector<size_t> &solution) {
   for (size_t i = 0; i < targets.size(); i++) {
@@ -48,6 +49,7 @@ size_t branchfree_search(const int *source, size_t n, int target) {
   return (*base < target) + base - source;
 }
 
+__attribute__ ((noinline))
 void branchless(const std::vector<std::vector<int>> &data,
                 const std::vector<int> &targets,
                 std::vector<size_t> &solution) {
@@ -73,6 +75,7 @@ void branchfree_search2(const int *source1, const int *source2, size_t n,
   *index2 = (*base2 < target2) + base2 - source2;
 }
 
+__attribute__ ((noinline))
 void branchless2(const std::vector<std::vector<int>> &data,
                  const std::vector<int> &targets,
                  std::vector<size_t> &solution) {
@@ -114,6 +117,7 @@ void branchfree_search4(const int *source1, const int *source2,
   *index4 = (*base4 < target4) + base4 - source4;
 }
 
+__attribute__ ((noinline))
 void branchless4(const std::vector<std::vector<int>> &data,
                  const std::vector<int> &targets,
                  std::vector<size_t> &solution) {
@@ -179,6 +183,7 @@ void branchfree_search8(const int *source1, const int *source2,
   *index8 = (*base8 < target8) + base8 - source8;
 }
 
+__attribute__ ((noinline))
 void branchless8(const std::vector<std::vector<int>> &data,
                  const std::vector<int> &targets,
                  std::vector<size_t> &solution) {
@@ -283,6 +288,7 @@ void branchfree_search16(
   *index16 = (*base16 < target16) + base16 - source16;
 }
 
+__attribute__ ((noinline))
 void branchless16(const std::vector<std::vector<int>> &data,
                   const std::vector<int> &targets,
                   std::vector<size_t> &solution) {
@@ -331,6 +337,36 @@ void branchless16(const std::vector<std::vector<int>> &data,
     solution[i] = branchfree_search(data[i].data(), data[i].size(), targets[i]);
   }
 }
+
+__attribute__ ((noinline))
+size_t cacheline_access(const std::vector<std::vector<int>> &data, int * __restrict counter) {
+    size_t hw = 0;
+    for(size_t i = 0; i < data.size(); i++) {
+        const int * __restrict z = data[i].data();
+        const size_t len = data[i].size();
+        for(size_t c = 0; c < len; c += 64 / sizeof(int)) {
+            *counter += z[c];
+            hw++;
+        }
+    }
+    return hw;
+}
+
+
+__attribute__ ((noinline))
+size_t element_access(const std::vector<std::vector<int>> &data, int * __restrict counter) {
+    size_t hw = 0;
+    for(size_t i = 0; i < data.size(); i++) {
+        const int * __restrict z = data[i].data();
+        const size_t len = data[i].size();
+        for(size_t c = 0; c < len; c += 1) {
+            *counter += z[c];
+            hw++;
+        }
+    }
+    return hw;
+}
+
 inline uint64_t splitmix64_stateless(uint64_t index) {
   uint64_t z = (index + UINT64_C(0x9E3779B97F4A7C15));
   z = (z ^ (z >> 30)) * UINT64_C(0xBF58476D1CE4E5B9);
@@ -346,6 +382,11 @@ void demo(size_t howmany, size_t N) {
     levels++;
   }
   std::cout << "binary search over " << levels << " steps " << std::endl;
+  int cl_levels = 0;
+  while((sizeof(int) << cl_levels) < 64) {
+      cl_levels++;
+  }
+  std::cout << "cache line levels " << cl_levels << std::endl;
   std::vector<std::vector<int>> data;
   std::vector<int> targets;
   for (size_t i = 0; i < howmany; i++) {
@@ -357,15 +398,18 @@ void demo(size_t howmany, size_t N) {
     std::sort(data[i].begin(), data[i].end());
   }
   std::vector<size_t> solution(howmany);
-  std::vector<size_t> solutionref(howmany);
 
   std::cout << "Starting benchmark..." << std::endl;
 
-  //
   std::vector<int> evts;
   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
+
+  std::vector<unsigned long long> results_cacheline;
+  results_cacheline.resize(evts.size());
+  std::vector<unsigned long long> results_element;
+  results_element.resize(evts.size());
   std::vector<unsigned long long> results_branchy;
   results_branchy.resize(evts.size());
   std::vector<unsigned long long> results_branchless;
@@ -381,6 +425,16 @@ void demo(size_t howmany, size_t N) {
   //
   for (size_t trial = 0; trial < 5; trial++) {
     printf("\n ==== trial %zu\n", trial);
+    int counter = 0;
+
+    unified.start();
+    size_t cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+
+    unified.start();
+    size_t el = element_access(data, &counter);
+    unified.end(results_element);
+
     unified.start();
     branchy(data, targets, solution);
     unified.end(results_branchy);
@@ -412,9 +466,6 @@ void demo(size_t howmany, size_t N) {
     branchless16(data, targets, solution);
     unified.end(results_branchless16);
 
-    printf("branchy       %.2f cycles/value %.2f instructions/value\n",
-           results_branchy[0] * 1.0 / howmany,
-           results_branchy[1] * 1.0 / howmany);
     printf("branchless    %.2f cycles/value %.2f instructions/value\n",
            results_branchless[0] * 1.0 / howmany,
            results_branchless[1] * 1.0 / howmany);
@@ -430,8 +481,17 @@ void demo(size_t howmany, size_t N) {
     printf("branchless16  %.2f cycles/value %.2f instructions/value\n",
            results_branchless16[0] * 1.0 / howmany,
            results_branchless16[1] * 1.0 / howmany);
-    double ele_level = levels * howmany;
+    double ele_level = (levels - cl_levels) * howmany;
     printf("\n");
+    printf("cacheline     %.2f cycles/value %.2f instructions/value\n",
+           results_cacheline[0] * 1.0 / cl,
+           results_cacheline[1] * 1.0 / cl);
+    printf("element       %.2f cycles/value %.2f instructions/value\n",
+           results_element[0] * 1.0 / el,
+           results_element[1] * 1.0 / el);
+    printf("branchy       %.2f cycles/level %.2f instructions/level\n",
+           results_branchy[0] * 1.0 / ele_level,
+           results_branchy[1] * 1.0 / ele_level);
     printf("branchy       %.2f cycles/level %.2f instructions/level\n",
            results_branchy[0] * 1.0 / ele_level,
            results_branchy[1] * 1.0 / ele_level);
@@ -450,6 +510,9 @@ void demo(size_t howmany, size_t N) {
     printf("branchless16  %.2f cycles/level %.2f instructions/level\n",
            results_branchless16[0] * 1.0 / ele_level,
            results_branchless16[1] * 1.0 / ele_level);
+    double bound = (results_branchless16[0] * 1.0 / ele_level) / (results_cacheline[0] * 1.0 / cl);
+
+    printf("Optimality bound : %.2f \n", bound);
   }
 }
 
