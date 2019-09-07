@@ -376,7 +376,7 @@ inline uint64_t splitmix64_stateless(uint64_t index) {
 
 void demo(size_t howmany, size_t N) {
   std::cout << "Initializing... " << howmany * N * sizeof(int) / (1024 * 1024)
-            << "MB" << std::endl;
+            << " MB" << std::endl;
   int levels = 0;
   while ((1ULL << levels) < N) {
     levels++;
@@ -387,6 +387,9 @@ void demo(size_t howmany, size_t N) {
       cl_levels++;
   }
   std::cout << "cache line levels " << cl_levels << std::endl;
+  std::cout << "approx. cache lines accesses " << howmany * (levels - cl_levels) << std::endl;
+  std::cout << "approx. access volume " << howmany * (levels - cl_levels) * 64 / (1024 * 1024) << " MB" << std::endl;
+
   std::vector<std::vector<int>> data;
   std::vector<int> targets;
   for (size_t i = 0; i < howmany; i++) {
@@ -396,7 +399,10 @@ void demo(size_t howmany, size_t N) {
     }
     targets.push_back(data[i][0]);
     std::sort(data[i].begin(), data[i].end());
+    printf(".");
+    fflush(NULL);
   }
+  printf("\n");
   std::vector<size_t> solution(howmany);
 
   std::cout << "Starting benchmark..." << std::endl;
@@ -408,8 +414,6 @@ void demo(size_t howmany, size_t N) {
 
   std::vector<unsigned long long> results_cacheline;
   results_cacheline.resize(evts.size());
-  std::vector<unsigned long long> results_element;
-  results_element.resize(evts.size());
   std::vector<unsigned long long> results_branchy;
   results_branchy.resize(evts.size());
   std::vector<unsigned long long> results_branchless;
@@ -423,7 +427,10 @@ void demo(size_t howmany, size_t N) {
   std::vector<unsigned long long> results_branchless16;
   results_branchless16.resize(evts.size());
   //
-  for (size_t trial = 0; trial < 5; trial++) {
+  for (size_t trial = 0; trial < 3; trial++) {
+    for (size_t i = 0; i < howmany; i++) {
+        targets[i] = rand();// reset
+    }
     printf("\n ==== trial %zu\n", trial);
     int counter = 0;
 
@@ -431,9 +438,6 @@ void demo(size_t howmany, size_t N) {
     size_t cl = cacheline_access(data, &counter);
     unified.end(results_cacheline);
 
-    unified.start();
-    size_t el = element_access(data, &counter);
-    unified.end(results_element);
 
     unified.start();
     branchy(data, targets, solution);
@@ -444,23 +448,52 @@ void demo(size_t howmany, size_t N) {
     unified.end(results_branchy);
 
     unified.start();
-    branchless(data, targets, solution);
-    unified.end(results_branchless);
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
 
     unified.start();
     branchless(data, targets, solution);
     unified.end(results_branchless);
+
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+
+
+    unified.start();
+    branchless(data, targets, solution);
+    unified.end(results_branchless);
+
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+
+
     unified.start();
     branchless2(data, targets, solution);
     unified.end(results_branchless2);
+
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+
 
     unified.start();
     branchless4(data, targets, solution);
     unified.end(results_branchless4);
 
     unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+
+
+    unified.start();
     branchless8(data, targets, solution);
     unified.end(results_branchless8);
+    
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
 
     unified.start();
     branchless16(data, targets, solution);
@@ -483,15 +516,9 @@ void demo(size_t howmany, size_t N) {
            results_branchless16[1] * 1.0 / howmany);
     double ele_level = (levels - cl_levels) * howmany;
     printf("\n");
-    printf("cacheline     %.2f cycles/value %.2f instructions/value\n",
+    printf("cacheline     %.2f cycles/cacheline %.2f instructions/cacheline\n",
            results_cacheline[0] * 1.0 / cl,
            results_cacheline[1] * 1.0 / cl);
-    printf("element       %.2f cycles/value %.2f instructions/value\n",
-           results_element[0] * 1.0 / el,
-           results_element[1] * 1.0 / el);
-    printf("branchy       %.2f cycles/level %.2f instructions/level\n",
-           results_branchy[0] * 1.0 / ele_level,
-           results_branchy[1] * 1.0 / ele_level);
     printf("branchy       %.2f cycles/level %.2f instructions/level\n",
            results_branchy[0] * 1.0 / ele_level,
            results_branchy[1] * 1.0 / ele_level);
@@ -516,4 +543,4 @@ void demo(size_t howmany, size_t N) {
   }
 }
 
-int main() { demo(1024, 64000); }
+int main() { demo(1024, 65000); }
