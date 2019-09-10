@@ -39,7 +39,7 @@ size_t branchfree_search(const int *source, size_t n, int target) {
   if (n == 0)
     return 0;
   const int *base = source;
-
+#pragma GCC unroll 10
   while (n > 1) {
     size_t half = n >> 1;
 
@@ -48,6 +48,7 @@ size_t branchfree_search(const int *source, size_t n, int target) {
   }
   return (*base < target) + base - source;
 }
+
 
 __attribute__ ((noinline))
 void branchless(const std::vector<std::vector<int>> &data,
@@ -65,6 +66,7 @@ void branchfree_search2(const int *source1, const int *source2, size_t n,
   const int *base2 = source2;
   if (n == 0)
     return;
+#pragma GCC unroll 10
   while (n > 1) {
     size_t half = n >> 1;
     base1 = (base1[half] < target1) ? &base1[half] : base1;
@@ -101,7 +103,7 @@ void branchfree_search4(const int *source1, const int *source2,
   const int *base4 = source4;
   if (n == 0)
     return;
-
+#pragma GCC unroll 10
   while (n > 1) {
     size_t half = n >> 1;
 
@@ -109,6 +111,33 @@ void branchfree_search4(const int *source1, const int *source2,
     base2 = (base2[half] < target2) ? &base2[half] : base2;
     base3 = (base3[half] < target3) ? &base3[half] : base3;
     base4 = (base4[half] < target4) ? &base4[half] : base4;
+    n -= half;
+  }
+  *index1 = (*base1 < target1) + base1 - source1;
+  *index2 = (*base2 < target2) + base2 - source2;
+  *index3 = (*base3 < target3) + base3 - source3;
+  *index4 = (*base4 < target4) + base4 - source4;
+}
+
+void fake_branchfree_search4(const int *source1, const int *source2,
+                        const int *source3, const int *source4, size_t n,
+                        int target1, int target2, int target3, int target4,
+                        size_t *__restrict index1, size_t *__restrict index2,
+                        size_t *__restrict index3, size_t *__restrict index4, int *__restrict bogus) {
+  const int *base1 = source1;
+  const int *base2 = source2;
+  const int *base3 = source3;
+  const int *base4 = source4;
+  if (n == 0)
+    return;
+  #pragma GCC unroll 10
+  while (n > 1) {
+    size_t half = n >> 1;
+    *bogus ^= *base1 ^ *base2 ^ *base3 ^ *base4;
+    base1 = &base1[half];
+    base2 = &base2[half];
+    base3 = &base3[half];
+    base4 = &base4[half];
     n -= half;
   }
   *index1 = (*base1 < target1) + base1 - source1;
@@ -139,6 +168,23 @@ void branchless4(const std::vector<std::vector<int>> &data,
   }
 }
 
+__attribute__ ((noinline))
+void fake_branchless4(const std::vector<std::vector<int>> &data,
+                 const std::vector<int> &targets,
+                 std::vector<size_t> &solution) {
+  size_t i = 0;
+  int bogus = 0;
+  for (; i + 3 < targets.size(); i += 4) {
+    fake_branchfree_search4(data[i].data(), data[i + 1].data(), data[i + 2].data(),
+                       data[i + 3].data(), data[i].size(), targets[i],
+                       targets[i + 1], targets[i + 2], targets[i + 3],
+                       &solution[i], &solution[i + 1], &solution[i + 2],
+                       &solution[i + 3], &bogus);
+  }
+  if((bogus & 0xFCA6) == 0xFCA6) printf("bogus\n");
+}
+
+
 void branchfree_search8(const int *source1, const int *source2,
                         const int *source3, const int *source4,
                         const int *source5, const int *source6,
@@ -158,7 +204,7 @@ void branchfree_search8(const int *source1, const int *source2,
   const int *base8 = source8;
   if (n == 0)
     return;
-
+#pragma GCC unroll 10
   while (n > 1) {
     size_t half = n >> 1;
 
@@ -181,6 +227,77 @@ void branchfree_search8(const int *source1, const int *source2,
   *index6 = (*base6 < target6) + base6 - source6;
   *index7 = (*base7 < target7) + base7 - source7;
   *index8 = (*base8 < target8) + base8 - source8;
+}
+
+void fake_branchfree_search8(const int *source1, const int *source2,
+                        const int *source3, const int *source4,
+                        const int *source5, const int *source6,
+                        const int *source7, const int *source8, size_t n,
+                        int target1, int target2, int target3, int target4,
+                        int target5, int target6, int target7, int target8,
+                        size_t *index1, size_t *index2, size_t *index3,
+                        size_t *index4, size_t *index5, size_t *index6,
+                        size_t *index7, size_t *index8, int *__restrict bogus) {
+  const int *base1 = source1;
+  const int *base2 = source2;
+  const int *base3 = source3;
+  const int *base4 = source4;
+  const int *base5 = source5;
+  const int *base6 = source6;
+  const int *base7 = source7;
+  const int *base8 = source8;
+  if (n == 0)
+    return;
+#pragma GCC unroll 10
+  while (n > 1) {
+    *bogus ^= *base1 ^ *base2 ^ *base3 ^ *base4 ^ *base5 ^ *base6 ^ *base7 ^ *base8;
+    size_t half = n >> 1;
+
+    base1 = &base1[half];
+    base2 = &base2[half];
+    base3 = &base3[half];
+    base4 = &base4[half];
+    base5 = &base5[half];
+    base6 = &base6[half];
+    base7 = &base7[half];
+    base8 = &base8[half];
+
+    n -= half;
+  }
+  *index1 = (*base1 < target1) + base1 - source1;
+  *index2 = (*base2 < target2) + base2 - source2;
+  *index3 = (*base3 < target3) + base3 - source3;
+  *index4 = (*base4 < target4) + base4 - source4;
+  *index5 = (*base5 < target5) + base5 - source5;
+  *index6 = (*base6 < target6) + base6 - source6;
+  *index7 = (*base7 < target7) + base7 - source7;
+  *index8 = (*base8 < target8) + base8 - source8;
+}
+
+__attribute__ ((noinline))
+void fake_branchless8(const std::vector<std::vector<int>> &data,
+                 const std::vector<int> &targets,
+                 std::vector<size_t> &solution) {
+  size_t i = 0;
+  int bogus = 0;
+  for (; i + 7 < targets.size(); i += 8) {
+    fake_branchfree_search8(
+        data[i].data(), data[i + 1].data(), data[i + 2].data(),
+        data[i + 3].data(), data[i + 4].data(), data[i + 5].data(),
+        data[i + 6].data(), data[i + 7].data(), data[i].size(), targets[i],
+        targets[i + 1], targets[i + 2], targets[i + 3], targets[i + 4],
+        targets[i + 5], targets[i + 6], targets[i + 7], &solution[i],
+        &solution[i + 1], &solution[i + 2], &solution[i + 3], &solution[i + 4],
+        &solution[i + 5], &solution[i + 6], &solution[i + 7], &bogus);
+  }
+  for (; i + 3 < targets.size(); i += 4) {
+    fake_branchfree_search4(data[i].data(), data[i + 1].data(), data[i + 2].data(),
+                       data[i + 3].data(), data[i].size(), targets[i],
+                       targets[i + 1], targets[i + 2], targets[i + 3],
+                       &solution[i], &solution[i + 1], &solution[i + 2],
+                       &solution[i + 3], &bogus);
+  }
+  if((bogus & 0xFCA6) == 0xFCA6) printf("bogus\n");
 }
 
 __attribute__ ((noinline))
@@ -215,6 +332,7 @@ void branchless8(const std::vector<std::vector<int>> &data,
   }
 }
 
+__attribute__ ((noinline))
 void branchfree_search16(
     const int *source1, const int *source2, const int *source3,
     const int *source4, const int *source5, const int *source6,
@@ -247,10 +365,9 @@ void branchfree_search16(
   const int *base16 = source16;
   if (n == 0)
     return;
-
+#pragma GCC unroll 10
   while (n > 1) {
     size_t half = n >> 1;
-
     base1 = (base1[half] < target1) ? &base1[half] : base1;
     base2 = (base2[half] < target2) ? &base2[half] : base2;
     base3 = (base3[half] < target3) ? &base3[half] : base3;
@@ -338,6 +455,126 @@ void branchless16(const std::vector<std::vector<int>> &data,
   }
 }
 
+
+
+
+void fake_branchfree_search16(
+    const int *source1, const int *source2, const int *source3,
+    const int *source4, const int *source5, const int *source6,
+    const int *source7, const int *source8, const int *source9,
+    const int *source10, const int *source11, const int *source12,
+    const int *source13, const int *source14, const int *source15,
+    const int *source16, size_t n, int target1, int target2, int target3,
+    int target4, int target5, int target6, int target7, int target8,
+    int target9, int target10, int target11, int target12, int target13,
+    int target14, int target15, int target16, size_t *index1, size_t *index2,
+    size_t *index3, size_t *index4, size_t *index5, size_t *index6,
+    size_t *index7, size_t *index8, size_t *index9, size_t *index10,
+    size_t *index11, size_t *index12, size_t *index13, size_t *index14,
+    size_t *index15, size_t *index16, int *__restrict bogus ) {
+  const int *base1 = source1;
+  const int *base2 = source2;
+  const int *base3 = source3;
+  const int *base4 = source4;
+  const int *base5 = source5;
+  const int *base6 = source6;
+  const int *base7 = source7;
+  const int *base8 = source8;
+  const int *base9 = source9;
+  const int *base10 = source10;
+  const int *base11 = source11;
+  const int *base12 = source12;
+  const int *base13 = source13;
+  const int *base14 = source14;
+  const int *base15 = source15;
+  const int *base16 = source16;
+  if (n == 0)
+    return;
+#pragma GCC unroll 10
+  while (n > 1) {
+    size_t half = n >> 1;
+    *bogus ^= *base1 ^ *base2 ^ *base3 ^ *base4 ^ *base5 ^ *base6 ^ *base7 ^ *base8 ^ *base9 ^ *base10 ^ *base11 ^ *base12 ^ *base13 ^ *base14 ^ *base15 ^ *base16;
+
+    base1 = &base1[half];
+    base2 = &base2[half];
+    base3 = &base3[half];
+    base4 = &base4[half];
+    base5 = &base5[half];
+    base6 = &base6[half];
+    base7 = &base7[half];
+    base8 = &base8[half];
+    base9 = &base9[half];
+    base10 = &base10[half];
+    base11 = &base11[half];
+    base12 = &base12[half];
+    base13 = &base13[half];
+    base14 = &base14[half];
+    base15 = &base15[half];
+    base16 = &base16[half];
+
+    n -= half;
+  }
+  *index1 = (*base1 < target1) + base1 - source1;
+  *index2 = (*base2 < target2) + base2 - source2;
+  *index3 = (*base3 < target3) + base3 - source3;
+  *index4 = (*base4 < target4) + base4 - source4;
+  *index5 = (*base5 < target5) + base5 - source5;
+  *index6 = (*base6 < target6) + base6 - source6;
+  *index7 = (*base7 < target7) + base7 - source7;
+  *index8 = (*base8 < target8) + base8 - source8;
+  *index9 = (*base9 < target9) + base9 - source9;
+  *index10 = (*base10 < target10) + base10 - source10;
+  *index11 = (*base11 < target11) + base11 - source11;
+  *index12 = (*base12 < target12) + base12 - source12;
+  *index13 = (*base13 < target13) + base13 - source13;
+  *index14 = (*base14 < target14) + base14 - source14;
+  *index15 = (*base15 < target15) + base15 - source15;
+  *index16 = (*base16 < target16) + base16 - source16;
+}
+
+__attribute__ ((noinline))
+void fake_branchless16(const std::vector<std::vector<int>> &data,
+                  const std::vector<int> &targets,
+                  std::vector<size_t> &solution) {
+  size_t i = 0;
+  int bogus = 0;
+  for (; i + 15 < targets.size(); i += 16) {
+    fake_branchfree_search16(
+        data[i].data(), data[i + 1].data(), data[i + 2].data(),
+        data[i + 3].data(), data[i + 4].data(), data[i + 5].data(),
+        data[i + 6].data(), data[i + 7].data(), data[i + 8].data(),
+        data[i + 9].data(), data[i + 10].data(), data[i + 11].data(),
+        data[i + 12].data(), data[i + 13].data(), data[i + 14].data(),
+        data[i + 15].data(), data[i].size(), targets[i], targets[i + 1],
+        targets[i + 2], targets[i + 3], targets[i + 4], targets[i + 5],
+        targets[i + 6], targets[i + 7], targets[i + 8], targets[i + 9],
+        targets[i + 10], targets[i + 11], targets[i + 12], targets[i + 13],
+        targets[i + 14], targets[i + 15], &solution[i], &solution[i + 1],
+        &solution[i + 2], &solution[i + 3], &solution[i + 4], &solution[i + 5],
+        &solution[i + 6], &solution[i + 7], &solution[i + 8], &solution[i + 9],
+        &solution[i + 10], &solution[i + 11], &solution[i + 12],
+        &solution[i + 13], &solution[i + 14], &solution[i + 15], &bogus);
+  }
+
+  for (; i + 7 < targets.size(); i += 8) {
+    fake_branchfree_search8(
+        data[i].data(), data[i + 1].data(), data[i + 2].data(),
+        data[i + 3].data(), data[i + 4].data(), data[i + 5].data(),
+        data[i + 6].data(), data[i + 7].data(), data[i].size(), targets[i],
+        targets[i + 1], targets[i + 2], targets[i + 3], targets[i + 4],
+        targets[i + 5], targets[i + 6], targets[i + 7], &solution[i],
+        &solution[i + 1], &solution[i + 2], &solution[i + 3], &solution[i + 4],
+        &solution[i + 5], &solution[i + 6], &solution[i + 7], &bogus);
+  }
+  for (; i + 3 < targets.size(); i += 4) {
+    fake_branchfree_search4(data[i].data(), data[i + 1].data(), data[i + 2].data(),
+                       data[i + 3].data(), data[i].size(), targets[i],
+                       targets[i + 1], targets[i + 2], targets[i + 3],
+                       &solution[i], &solution[i + 1], &solution[i + 2],
+                       &solution[i + 3], &bogus);
+  }
+  if((bogus & 0xFCA6) == 0xFCA6) printf("bogus\n");
+}
 __attribute__ ((noinline))
 size_t cacheline_access(const std::vector<std::vector<int>> &data, int * __restrict counter) {
     size_t hw = 0;
@@ -422,10 +659,16 @@ void demo(size_t howmany, size_t N) {
   results_branchless2.resize(evts.size());
   std::vector<unsigned long long> results_branchless4;
   results_branchless4.resize(evts.size());
+  std::vector<unsigned long long> results_fake_branchless4;
+  results_fake_branchless4.resize(evts.size());
+  std::vector<unsigned long long> results_fake_branchless8;
+  results_fake_branchless8.resize(evts.size());
   std::vector<unsigned long long> results_branchless8;
   results_branchless8.resize(evts.size());
   std::vector<unsigned long long> results_branchless16;
   results_branchless16.resize(evts.size());
+  std::vector<unsigned long long> results_fake_branchless16;
+  results_fake_branchless16.resize(evts.size());
   //
   for (size_t trial = 0; trial < 3; trial++) {
     for (size_t i = 0; i < howmany; i++) {
@@ -488,6 +731,16 @@ void demo(size_t howmany, size_t N) {
 
 
     unified.start();
+    fake_branchless4(data, targets, solution);
+    unified.end(results_fake_branchless4);
+
+
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+
+
+    unified.start();
     branchless8(data, targets, solution);
     unified.end(results_branchless8);
     
@@ -495,25 +748,45 @@ void demo(size_t howmany, size_t N) {
     cl = cacheline_access(data, &counter);
     unified.end(results_cacheline);
 
+
+    unified.start();
+    fake_branchless8(data, targets, solution);
+    unified.end(results_fake_branchless8);
+
+
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+
+
     unified.start();
     branchless16(data, targets, solution);
     unified.end(results_branchless16);
+    
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+
+
+    unified.start();
+    fake_branchless16(data, targets, solution);
+    unified.end(results_fake_branchless16);
 
     printf("branchless    %.2f cycles/value %.2f instructions/value\n",
            results_branchless[0] * 1.0 / howmany,
            results_branchless[1] * 1.0 / howmany);
-    printf("branchless2   %.2f cycles/value %.2f instructions/value\n",
+    printf("branchless2   %.2f cycles/value %.2f instructions/value ratio: %.2f\n",
            results_branchless2[0] * 1.0 / howmany,
-           results_branchless2[1] * 1.0 / howmany);
-    printf("branchless4   %.2f cycles/value %.2f instructions/value\n",
+           results_branchless2[1] * 1.0 / howmany, results_branchless[0] * 1.0 / results_branchless2[0]);
+    printf("branchless4   %.2f cycles/value %.2f instructions/value ratio: %.2f\n",
            results_branchless4[0] * 1.0 / howmany,
-           results_branchless4[1] * 1.0 / howmany);
-    printf("branchless8   %.2f cycles/value %.2f instructions/value\n",
+           results_branchless4[1] * 1.0 / howmany, results_branchless[0] * 1.0 / results_branchless4[0]);
+    printf("branchless8   %.2f cycles/value %.2f instructions/value ratio: %.2f\n",
            results_branchless8[0] * 1.0 / howmany,
-           results_branchless8[1] * 1.0 / howmany);
-    printf("branchless16  %.2f cycles/value %.2f instructions/value\n",
+           results_branchless8[1] * 1.0 / howmany, results_branchless[0] * 1.0 / results_branchless8[0]);
+    printf("branchless16  %.2f cycles/value %.2f instructions/value ratio: %.2f\n",
            results_branchless16[0] * 1.0 / howmany,
-           results_branchless16[1] * 1.0 / howmany);
+           results_branchless16[1] * 1.0 / howmany, results_branchless[0] * 1.0 / results_branchless16[0]);
     double ele_level = (levels - cl_levels) * howmany;
     printf("\n");
     printf("cacheline     %.2f cycles/cacheline %.2f instructions/cacheline\n",
@@ -528,19 +801,29 @@ void demo(size_t howmany, size_t N) {
     printf("branchless2   %.2f cycles/level %.2f instructions/level\n",
            results_branchless2[0] * 1.0 / ele_level,
            results_branchless2[1] * 1.0 / ele_level);
+    printf("fake_branchless4   %.2f cycles/level %.2f instructions/level\n",
+           results_fake_branchless4[0] * 1.0 / ele_level,
+           results_fake_branchless4[1] * 1.0 / ele_level);
     printf("branchless4   %.2f cycles/level %.2f instructions/level\n",
            results_branchless4[0] * 1.0 / ele_level,
            results_branchless4[1] * 1.0 / ele_level);
+    printf("fake_branchless8   %.2f cycles/level %.2f instructions/level\n",
+           results_fake_branchless8[0] * 1.0 / ele_level,
+           results_fake_branchless8[1] * 1.0 / ele_level);
+
     printf("branchless8   %.2f cycles/level %.2f instructions/level\n",
            results_branchless8[0] * 1.0 / ele_level,
            results_branchless8[1] * 1.0 / ele_level);
     printf("branchless16  %.2f cycles/level %.2f instructions/level\n",
            results_branchless16[0] * 1.0 / ele_level,
            results_branchless16[1] * 1.0 / ele_level);
+    printf("fake_branchless16  %.2f cycles/level %.2f instructions/level\n",
+           results_fake_branchless16[0] * 1.0 / ele_level,
+           results_fake_branchless16[1] * 1.0 / ele_level);
     double bound = (results_branchless16[0] * 1.0 / ele_level) / (results_cacheline[0] * 1.0 / cl);
 
     printf("Optimality bound : %.2f \n", bound);
   }
 }
 
-int main() { demo(1024, 262144); }
+int main() { demo(1024, 262144+1324); }
