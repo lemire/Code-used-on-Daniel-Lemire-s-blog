@@ -10,6 +10,7 @@
 //#include <x86intrin.h>
 #include <algorithm>
 #include <vector>
+#include <climits>
 
 size_t branchy_search(const int *source, size_t n, int target) {
   size_t lo = 0;
@@ -133,17 +134,9 @@ void fake_branchfree_search4(const int *source1, const int *source2,
   #pragma GCC unroll 10
   while (n > 1) {
     size_t half = n >> 1;
-    *bogus ^= *base1 ^ *base2 ^ *base3 ^ *base4;
-    base1 = &base1[half];
-    base2 = &base2[half];
-    base3 = &base3[half];
-    base4 = &base4[half];
+    *bogus ^= base1[half] ^ base2[half] ^ base3[half] ^ base4[half];
     n -= half;
   }
-  *index1 = (*base1 < target1) + base1 - source1;
-  *index2 = (*base2 < target2) + base2 - source2;
-  *index3 = (*base3 < target3) + base3 - source3;
-  *index4 = (*base4 < target4) + base4 - source4;
 }
 
 __attribute__ ((noinline))
@@ -246,32 +239,15 @@ void fake_branchfree_search8(const int *source1, const int *source2,
   const int *base6 = source6;
   const int *base7 = source7;
   const int *base8 = source8;
+
   if (n == 0)
     return;
 #pragma GCC unroll 10
   while (n > 1) {
-    *bogus ^= *base1 ^ *base2 ^ *base3 ^ *base4 ^ *base5 ^ *base6 ^ *base7 ^ *base8;
     size_t half = n >> 1;
-
-    base1 = &base1[half];
-    base2 = &base2[half];
-    base3 = &base3[half];
-    base4 = &base4[half];
-    base5 = &base5[half];
-    base6 = &base6[half];
-    base7 = &base7[half];
-    base8 = &base8[half];
-
+    *bogus ^= base1[half] ^ base2[half] ^ base3[half] ^ base4[half] ^ base5[half] ^ base6[half] ^ base7[half] ^ base8[half];
     n -= half;
   }
-  *index1 = (*base1 < target1) + base1 - source1;
-  *index2 = (*base2 < target2) + base2 - source2;
-  *index3 = (*base3 < target3) + base3 - source3;
-  *index4 = (*base4 < target4) + base4 - source4;
-  *index5 = (*base5 < target5) + base5 - source5;
-  *index6 = (*base6 < target6) + base6 - source6;
-  *index7 = (*base7 < target7) + base7 - source7;
-  *index8 = (*base8 < target8) + base8 - source8;
 }
 
 __attribute__ ((noinline))
@@ -332,7 +308,7 @@ void branchless8(const std::vector<std::vector<int>> &data,
   }
 }
 
-__attribute__ ((noinline))
+
 void branchfree_search16(
     const int *source1, const int *source2, const int *source3,
     const int *source4, const int *source5, const int *source6,
@@ -490,46 +466,12 @@ void fake_branchfree_search16(
   const int *base16 = source16;
   if (n == 0)
     return;
-#pragma GCC unroll 10
   while (n > 1) {
     size_t half = n >> 1;
-    *bogus ^= *base1 ^ *base2 ^ *base3 ^ *base4 ^ *base5 ^ *base6 ^ *base7 ^ *base8 ^ *base9 ^ *base10 ^ *base11 ^ *base12 ^ *base13 ^ *base14 ^ *base15 ^ *base16;
-
-    base1 = &base1[half];
-    base2 = &base2[half];
-    base3 = &base3[half];
-    base4 = &base4[half];
-    base5 = &base5[half];
-    base6 = &base6[half];
-    base7 = &base7[half];
-    base8 = &base8[half];
-    base9 = &base9[half];
-    base10 = &base10[half];
-    base11 = &base11[half];
-    base12 = &base12[half];
-    base13 = &base13[half];
-    base14 = &base14[half];
-    base15 = &base15[half];
-    base16 = &base16[half];
-
+   *bogus ^= base1[half] ^ base2[half] ^ base3[half] ^ base4[half] ^ base5[half] ^ base6[half] ^ base7[half] ^ base8[half] ^ base9[half] ^ base10[half] ^ base11[half] ^ base12[half] ^ base13[half] ^ base14[half] ^ base15[half] ^ base16[half];
     n -= half;
   }
-  *index1 = (*base1 < target1) + base1 - source1;
-  *index2 = (*base2 < target2) + base2 - source2;
-  *index3 = (*base3 < target3) + base3 - source3;
-  *index4 = (*base4 < target4) + base4 - source4;
-  *index5 = (*base5 < target5) + base5 - source5;
-  *index6 = (*base6 < target6) + base6 - source6;
-  *index7 = (*base7 < target7) + base7 - source7;
-  *index8 = (*base8 < target8) + base8 - source8;
-  *index9 = (*base9 < target9) + base9 - source9;
-  *index10 = (*base10 < target10) + base10 - source10;
-  *index11 = (*base11 < target11) + base11 - source11;
-  *index12 = (*base12 < target12) + base12 - source12;
-  *index13 = (*base13 < target13) + base13 - source13;
-  *index14 = (*base14 < target14) + base14 - source14;
-  *index15 = (*base15 < target15) + base15 - source15;
-  *index16 = (*base16 < target16) + base16 - source16;
+
 }
 
 __attribute__ ((noinline))
@@ -625,7 +567,7 @@ void demo(size_t howmany, size_t N) {
   }
   std::cout << "cache line levels " << cl_levels << std::endl;
   std::cout << "approx. cache lines accesses " << howmany * (levels - cl_levels) << std::endl;
-  std::cout << "approx. access volume " << howmany * (levels - cl_levels) * 64 / (1024 * 1024) << " MB" << std::endl;
+  std::cout << "approx. access volume " << howmany * (levels - cl_levels) * 64 / (1024 ) << " kB" << std::endl;
 
   std::vector<std::vector<int>> data;
   std::vector<int> targets;
@@ -647,6 +589,9 @@ void demo(size_t howmany, size_t N) {
   std::vector<int> evts;
   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
+  evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
+  evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
+  evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
 
   std::vector<unsigned long long> results_cacheline;
@@ -701,6 +646,9 @@ void demo(size_t howmany, size_t N) {
     unified.start();
     cl = cacheline_access(data, &counter);
     unified.end(results_cacheline);
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
 
 
     unified.start();
@@ -713,9 +661,15 @@ void demo(size_t howmany, size_t N) {
 
 
     unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+    unified.start();
     branchless2(data, targets, solution);
     unified.end(results_branchless2);
 
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
     unified.start();
     cl = cacheline_access(data, &counter);
     unified.end(results_cacheline);
@@ -729,6 +683,9 @@ void demo(size_t howmany, size_t N) {
     cl = cacheline_access(data, &counter);
     unified.end(results_cacheline);
 
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
 
     unified.start();
     fake_branchless4(data, targets, solution);
@@ -739,6 +696,9 @@ void demo(size_t howmany, size_t N) {
     cl = cacheline_access(data, &counter);
     unified.end(results_cacheline);
 
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
 
     unified.start();
     branchless8(data, targets, solution);
@@ -748,6 +708,9 @@ void demo(size_t howmany, size_t N) {
     cl = cacheline_access(data, &counter);
     unified.end(results_cacheline);
 
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
 
     unified.start();
     fake_branchless8(data, targets, solution);
@@ -758,6 +721,9 @@ void demo(size_t howmany, size_t N) {
     cl = cacheline_access(data, &counter);
     unified.end(results_cacheline);
 
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
 
     unified.start();
     branchless16(data, targets, solution);
@@ -767,6 +733,9 @@ void demo(size_t howmany, size_t N) {
     cl = cacheline_access(data, &counter);
     unified.end(results_cacheline);
 
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
 
     unified.start();
     fake_branchless16(data, targets, solution);
@@ -820,9 +789,6 @@ void demo(size_t howmany, size_t N) {
     printf("fake_branchless16  %.2f cycles/level %.2f instructions/level\n",
            results_fake_branchless16[0] * 1.0 / ele_level,
            results_fake_branchless16[1] * 1.0 / ele_level);
-    double bound = (results_branchless16[0] * 1.0 / ele_level) / (results_cacheline[0] * 1.0 / cl);
-
-    printf("Optimality bound : %.2f \n", bound);
   }
 }
 
