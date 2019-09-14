@@ -1491,9 +1491,7 @@ void demo(size_t howmany, size_t N) {
 }
 
 int main() {
-  size_t large = 64 * 1024 * 1024;
+  size_t large = 64 * 1000 * 1000;
   size_t small = 1024;
   demo(small, large / small);
-  // demo(small, large / small);} // 262144+1324);
-  // demo(1024,45426);
 }
