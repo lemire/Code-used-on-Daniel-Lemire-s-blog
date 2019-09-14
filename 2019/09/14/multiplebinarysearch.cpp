@@ -58,6 +58,16 @@ branchless(const std::vector<std::vector<int>> &data,
 }
 
 __attribute__((noinline)) void
+branchless_linked(const std::vector<std::vector<int>> &data,
+           const std::vector<int> &targets, std::vector<size_t> &solution) {
+  solution[0] = branchfree_search(data[0].data(), data[0].size(), targets[0]);
+  for (size_t i = 1; i < targets.size(); i++) {
+    solution[i] = branchfree_search(data[i].data(), data[i].size(), (targets[i] ^ solution[i - 1]) % data[i].size());
+  }
+}
+
+
+__attribute__((noinline)) void
 branchless_lfence(const std::vector<std::vector<int>> &data,
                   const std::vector<int> &targets,
                   std::vector<size_t> &solution) {
@@ -1145,6 +1155,8 @@ void demo(size_t howmany, size_t N) {
   results_fake_branchless8.resize(evts.size());
   std::vector<unsigned long long> results_branchless;
   results_branchless.resize(evts.size());
+  std::vector<unsigned long long> results_branchless_linked;
+  results_branchless_linked.resize(evts.size());
   std::vector<unsigned long long> results_branchless2;
   results_branchless2.resize(evts.size());
   std::vector<unsigned long long> results_branchless4;
@@ -1182,8 +1194,8 @@ void demo(size_t howmany, size_t N) {
     unified.end(results_cacheline);
 
     unified.start();
-    branchy(data, targets, solution);
-    unified.end(results_branchy);
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
 
     unified.start();
     branchy(data, targets, solution);
@@ -1200,6 +1212,18 @@ void demo(size_t howmany, size_t N) {
     unified.start();
     branchless(data, targets, solution);
     unified.end(results_branchless);
+
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+
+    unified.start();
+    cl = cacheline_access(data, &counter);
+    unified.end(results_cacheline);
+
+    unified.start();
+    branchless_linked(data, targets, solution);
+    unified.end(results_branchless_linked);
 
     unified.start();
     cl = cacheline_access(data, &counter);
@@ -1481,6 +1505,10 @@ void demo(size_t howmany, size_t N) {
     printvec(results_fake_branchless16, howmany);*/
     printf("branchy          : ");
     printvec(results_branchy, howmany);
+    printf("branchless_linked: ");
+    printvec(results_branchless_linked, howmany);
+    printf("branchless_lfence: ");
+    printvec(results_branchless_lfence, howmany);
     printf("branchless       : ");
     printvec(results_branchless, howmany);
     printf("branchless2      : ");
