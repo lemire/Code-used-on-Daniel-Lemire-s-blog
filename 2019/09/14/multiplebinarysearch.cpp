@@ -10,7 +10,19 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
+#if defined(__x86_64__) || defined(_M_AMD64)
+#define IS_X86_64 1
+#endif
+#if defined(__aarch64__) || defined(_M_ARM64)
+#define IS_ARM64 1
+#endif
+
+#ifdef IS_X86_64
 #include <x86intrin.h>
+#else
+void _mm_lfence() {}
+#endif
+
 
 size_t branchy_search(const int *source, size_t n, int target) {
   size_t lo = 0;
