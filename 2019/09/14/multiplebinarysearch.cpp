@@ -477,26 +477,6 @@ branchless8_lfence(const std::vector<std::vector<int>> &data,
   }
 }
 
-__attribute__((noinline)) void
-super_branchless(const std::vector<std::vector<int>> &data,
-                 const std::vector<int> &targets,
-                 std::vector<size_t> &solution) {
-  size_t n = data[0].size();
-  if (n == 0)
-    return;
-  for (size_t i = 0; i < data.size(); i++)
-    solution[i] = 0;
-  while (n > 1) {
-    size_t half = n >> 1;
-    for (size_t i = 0; i < data.size(); i++) {
-      solution[i] = (data[i][solution[i] + half] < targets[i])
-                        ? solution[i] + half
-                        : solution[i];
-    }
-    n -= half;
-  }
-}
-
 __attribute__((always_inline)) inline void branchfree_search16(
     const int *source1, const int *source2, const int *source3,
     const int *source4, const int *source5, const int *source6,
@@ -1189,8 +1169,6 @@ void demo(size_t howmany, size_t N) {
   results_branchless32_lfence.resize(evts.size());
   std::vector<unsigned long long> results_branchless32;
   results_branchless32.resize(evts.size());
-  std::vector<unsigned long long> results_super_branchless;
-  results_super_branchless.resize(evts.size());
   //
   for (size_t trial = 0; trial < 5; trial++) {
     for (size_t i = 0; i < howmany; i++) {
@@ -1411,9 +1389,6 @@ void demo(size_t howmany, size_t N) {
     cl = cacheline_access(data, &counter);
     unified.end(results_cacheline);
 
-    unified.start();
-    super_branchless(data, targets, solution);
-    unified.end(results_super_branchless);
 
     printf("branchless    %.2f cycles/value %.2f instructions/value\n",
            results_branchless[0] * 1.0 / howmany,
@@ -1438,6 +1413,11 @@ void demo(size_t howmany, size_t N) {
         results_branchless16[0] * 1.0 / howmany,
         results_branchless16[1] * 1.0 / howmany,
         results_branchless[0] * 1.0 / results_branchless16[0]);
+    printf(
+        "branchless32  %.2f cycles/value %.2f instructions/value ratio: %.2f\n",
+        results_branchless32[0] * 1.0 / howmany,
+        results_branchless32[1] * 1.0 / howmany,
+        results_branchless[0] * 1.0 / results_branchless32[0]);
     double ele_level = (levels - cl_levels) * howmany;
     printf("\n");
     printf("cacheline     %.2f cycles/cacheline %.2f instructions/cacheline\n",
@@ -1495,12 +1475,18 @@ void demo(size_t howmany, size_t N) {
     printf("branchless32 lfence %.2f cycles/level %.2f instructions/level\n",
            results_branchless32_lfence[0] * 1.0 / ele_level,
            results_branchless32_lfence[1] * 1.0 / ele_level);
-    printf("super_branchless  %.2f cycles/level %.2f instructions/level\n",
-           results_super_branchless[0] * 1.0 / ele_level,
-           results_super_branchless[1] * 1.0 / ele_level);
+    printf("fake_branchless4 : ");
     printvec(results_fake_branchless4, howmany);
-    printvec(results_fake_branchless8, howmany);
-    printvec(results_fake_branchless16, howmany);
+    /*printvec(results_fake_branchless8, howmany);
+    printvec(results_fake_branchless16, howmany);*/
+    printf("branchless4      : ");
+    printvec(results_branchless4, howmany);
+    printf("branchless8      : ");
+    printvec(results_branchless8, howmany);
+    printf("branchless16     : ");
+    printvec(results_branchless16, howmany);
+    printf("branchless32     : ");
+    printvec(results_branchless32, howmany);
   }
 }
 
