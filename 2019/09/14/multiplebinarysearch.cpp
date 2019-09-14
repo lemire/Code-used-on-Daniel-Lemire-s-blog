@@ -1479,6 +1479,12 @@ void demo(size_t howmany, size_t N) {
     printvec(results_fake_branchless4, howmany);
     /*printvec(results_fake_branchless8, howmany);
     printvec(results_fake_branchless16, howmany);*/
+    printf("branchy          : ");
+    printvec(results_branchy, howmany);
+    printf("branchless       : ");
+    printvec(results_branchless, howmany);
+    printf("branchless2      : ");
+    printvec(results_branchless2, howmany);
     printf("branchless4      : ");
     printvec(results_branchless4, howmany);
     printf("branchless8      : ");
