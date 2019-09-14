@@ -1,4 +1,4 @@
-Linux required.
+Linux required. GNU GCC is *almost* required.
 
 Run: `make`.
 
