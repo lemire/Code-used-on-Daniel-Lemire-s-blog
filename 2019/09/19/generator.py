@@ -18,6 +18,8 @@ print("""
 #endif
 #endif
 
+
+
 inline uint64_t splitmix64_stateless(uint64_t index) {
   uint64_t z = (index + UINT64_C(0x9E3779B97F4A7C15));
   z = (z ^ (z >> 30)) * UINT64_C(0xBF58476D1CE4E5B9);
@@ -76,7 +78,14 @@ size_t branchfree_search(const int *source, size_t n, int target) {
   }
   return (*base < target) + base - source;
 }
-
+__attribute__((noinline)) void
+branchless_linked(const std::vector<std::vector<int>> &data,
+           const std::vector<int> &targets, std::vector<size_t> &solution) {
+  solution[0] = branchfree_search(data[0].data(), data[0].size(), targets[0]);
+  for (size_t i = 1; i < targets.size(); i++) {
+    solution[i] = branchfree_search(data[i].data(), data[i].size(), (targets[i] ^ solution[i - 1]) % data[i].size());
+  }
+}
 __attribute__((noinline)) void
 branchless(const std::vector<std::vector<int>> &data,
            const std::vector<int> &targets, std::vector<size_t> &solution) {
@@ -150,12 +159,20 @@ int main() {
   int counter = 0;
 
 """)
+print("  for(int z = 0; z < 5; z++) element_access(datavec, & counter);")
+print("  auto startref = std::chrono::high_resolution_clock::now();".format(width=i))
+print("  branchless_linked(datavec, targets, solution);")
+print("  auto finishref = std::chrono::high_resolution_clock::now();".format(width=i))
+print("  std::cout <<  \" ref : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() << std::endl;")
+
+
 for i in range(2,MAX+1):
     print("  for(int z = 0; z < 5; z++) element_access(datavec, & counter);")
     print("  auto start{width} = std::chrono::high_resolution_clock::now();".format(width=i))
     print("  binsearch{width}(data, small, large, targets.data(), solution.data());".format(width=i))
     print("  auto finish{width} = std::chrono::high_resolution_clock::now();".format(width=i))
     print("  std::cout <<  \" {width} : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << std::endl;".format(width=i))
+    print("  std::cout <<  \" gain \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << std::endl;".format(width=i))
 
 print("""
   delete[] data;
