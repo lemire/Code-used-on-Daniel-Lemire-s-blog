@@ -28,13 +28,12 @@ inline uint64_t splitmix64_stateless(uint64_t index) {
 }
 
 __attribute__((noinline)) size_t
-element_access(const std::vector<std::vector<int>> &data,
+element_access(int **__restrict data, size_t howmany, size_t arraysize,
                int *__restrict counter) {
   size_t hw = 0;
-  for (size_t i = 0; i < data.size(); i++) {
-    const int *__restrict z = data[i].data();
-    const size_t len = data[i].size();
-    for (size_t c = 0; c < len; c += 1) {
+  for (size_t i = 0; i < howmany; i++) {
+    const int *__restrict z = data[i];
+    for (size_t c = 0; c < arraysize; c += 1) {
       *counter += z[c];
       hw++;
     }
@@ -59,10 +58,9 @@ size_t branchy_search(const int *source, size_t n, int target) {
 }
 
 __attribute__((noinline)) void
-branchy(const std::vector<std::vector<int>> &data,
-        const std::vector<int> &targets, std::vector<size_t> &solution) {
-  for (size_t i = 0; i < targets.size(); i++) {
-    solution[i] = branchy_search(data[i].data(), data[i].size(), targets[i]);
+branchy(int **__restrict data, size_t howmany, size_t arraysize, const int* targets, size_t * __restrict solutions) {
+  for (size_t i = 0; i < howmany; i++) {
+    solutions[i] = branchy_search(data[i], arraysize, targets[i]);
   }
 }
 
@@ -79,18 +77,16 @@ size_t branchfree_search(const int *source, size_t n, int target) {
   return (*base < target) + base - source;
 }
 __attribute__((noinline)) void
-branchless_linked(const std::vector<std::vector<int>> &data,
-           const std::vector<int> &targets, std::vector<size_t> &solution) {
-  solution[0] = branchfree_search(data[0].data(), data[0].size(), targets[0]);
-  for (size_t i = 1; i < targets.size(); i++) {
-    solution[i] = branchfree_search(data[i].data(), data[i].size(), (targets[i] ^ solution[i - 1]) % data[i].size());
+branchless_linked(int **__restrict data, size_t howmany, size_t arraysize, const int* targets, size_t * __restrict solutions) {
+  solutions[0] = branchfree_search(data[0], arraysize, targets[0]);
+  for (size_t i = 1; i < howmany; i++) {
+    solutions[i] = branchfree_search(data[i], arraysize, (targets[i] ^ solutions[i - 1]) % arraysize);
   }
 }
 __attribute__((noinline)) void
-branchless(const std::vector<std::vector<int>> &data,
-           const std::vector<int> &targets, std::vector<size_t> &solution) {
-  for (size_t i = 0; i < targets.size(); i++) {
-    solution[i] = branchfree_search(data[i].data(), data[i].size(), targets[i]);
+branchless(int **__restrict data, size_t howmany, size_t arraysize, const int* targets, size_t * __restrict solutions) {
+  for (size_t i = 0; i < howmany; i++) {
+    solutions[i] = branchfree_search(data[i], arraysize, targets[i]);
   }
 }
 """)
@@ -138,15 +134,14 @@ int main() {
   size_t large = 64 * 1000 * 1000 / small;
 
   printf("Initializing random data.\\n");
-  std::vector<std::vector<int>> datavec;
+  std::vector<int> datavec(small * large); // important: memory is consecutive
   std::vector<int> targets;
   for (size_t i = 0; i < small; i++) {
-    datavec.emplace_back(std::vector<int>(large));
     for (size_t z = 0; z < large; z++) {
-      datavec[i][z] = splitmix64_stateless(i * large + z);
+      datavec[i * large + z] = splitmix64_stateless(i * large + z);
     }
-    targets.push_back(datavec[i][0]);
-    std::sort(datavec[i].begin(), datavec[i].end());
+    targets.push_back(datavec[i * large]);
+    std::sort(&datavec[i * large], &datavec[i * large] + large);
     if((i % (small / 10)) == 0) printf(".");
     fflush(NULL);
   }
@@ -154,20 +149,20 @@ int main() {
   std::vector<size_t> solution(small);
   int ** data = new int*[small];
   for (size_t i = 0; i < small; i++) {
-      data[i] = datavec[i].data();
+      data[i] = datavec.data() + i * large;;
   }
   int counter = 0;
 
 """)
-print("  for(int z = 0; z < 5; z++) element_access(datavec, & counter);")
+print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);")
 print("  auto startref = std::chrono::high_resolution_clock::now();".format(width=i))
-print("  branchless_linked(datavec, targets, solution);")
+print("  branchless_linked(data, small, large, targets.data(), solution.data());")
 print("  auto finishref = std::chrono::high_resolution_clock::now();".format(width=i))
 print("  std::cout <<  \" ref : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() << std::endl;")
 
 
 for i in range(2,MAX+1):
-    print("  for(int z = 0; z < 5; z++) element_access(datavec, & counter);")
+    print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);")
     print("  auto start{width} = std::chrono::high_resolution_clock::now();".format(width=i))
     print("  binsearch{width}(data, small, large, targets.data(), solution.data());".format(width=i))
     print("  auto finish{width} = std::chrono::high_resolution_clock::now();".format(width=i))

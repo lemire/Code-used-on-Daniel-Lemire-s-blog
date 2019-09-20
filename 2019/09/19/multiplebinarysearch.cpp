@@ -27,13 +27,12 @@ inline uint64_t splitmix64_stateless(uint64_t index) {
 }
 
 __attribute__((noinline)) size_t
-element_access(const std::vector<std::vector<int>> &data,
+element_access(int **__restrict data, size_t howmany, size_t arraysize,
                int *__restrict counter) {
   size_t hw = 0;
-  for (size_t i = 0; i < data.size(); i++) {
-    const int *__restrict z = data[i].data();
-    const size_t len = data[i].size();
-    for (size_t c = 0; c < len; c += 1) {
+  for (size_t i = 0; i < howmany; i++) {
+    const int *__restrict z = data[i];
+    for (size_t c = 0; c < arraysize; c += 1) {
       *counter += z[c];
       hw++;
     }
@@ -58,10 +57,9 @@ size_t branchy_search(const int *source, size_t n, int target) {
 }
 
 __attribute__((noinline)) void
-branchy(const std::vector<std::vector<int>> &data,
-        const std::vector<int> &targets, std::vector<size_t> &solution) {
-  for (size_t i = 0; i < targets.size(); i++) {
-    solution[i] = branchy_search(data[i].data(), data[i].size(), targets[i]);
+branchy(int **__restrict data, size_t howmany, size_t arraysize, const int* targets, size_t * __restrict solutions) {
+  for (size_t i = 0; i < howmany; i++) {
+    solutions[i] = branchy_search(data[i], arraysize, targets[i]);
   }
 }
 
@@ -78,18 +76,16 @@ size_t branchfree_search(const int *source, size_t n, int target) {
   return (*base < target) + base - source;
 }
 __attribute__((noinline)) void
-branchless_linked(const std::vector<std::vector<int>> &data,
-           const std::vector<int> &targets, std::vector<size_t> &solution) {
-  solution[0] = branchfree_search(data[0].data(), data[0].size(), targets[0]);
-  for (size_t i = 1; i < targets.size(); i++) {
-    solution[i] = branchfree_search(data[i].data(), data[i].size(), (targets[i] ^ solution[i - 1]) % data[i].size());
+branchless_linked(int **__restrict data, size_t howmany, size_t arraysize, const int* targets, size_t * __restrict solutions) {
+  solutions[0] = branchfree_search(data[0], arraysize, targets[0]);
+  for (size_t i = 1; i < howmany; i++) {
+    solutions[i] = branchfree_search(data[i], arraysize, (targets[i] ^ solutions[i - 1]) % arraysize);
   }
 }
 __attribute__((noinline)) void
-branchless(const std::vector<std::vector<int>> &data,
-           const std::vector<int> &targets, std::vector<size_t> &solution) {
-  for (size_t i = 0; i < targets.size(); i++) {
-    solution[i] = branchfree_search(data[i].data(), data[i].size(), targets[i]);
+branchless(int **__restrict data, size_t howmany, size_t arraysize, const int* targets, size_t * __restrict solutions) {
+  for (size_t i = 0; i < howmany; i++) {
+    solutions[i] = branchfree_search(data[i], arraysize, targets[i]);
   }
 }
 
@@ -7344,15 +7340,14 @@ int main() {
   size_t large = 64 * 1000 * 1000 / small;
 
   printf("Initializing random data.\n");
-  std::vector<std::vector<int>> datavec;
+  std::vector<int> datavec(small * large); // important: memory is consecutive
   std::vector<int> targets;
   for (size_t i = 0; i < small; i++) {
-    datavec.emplace_back(std::vector<int>(large));
     for (size_t z = 0; z < large; z++) {
-      datavec[i][z] = splitmix64_stateless(i * large + z);
+      datavec[i * large + z] = splitmix64_stateless(i * large + z);
     }
-    targets.push_back(datavec[i][0]);
-    std::sort(datavec[i].begin(), datavec[i].end());
+    targets.push_back(datavec[i * large]);
+    std::sort(&datavec[i * large], &datavec[i * large] + large);
     if((i % (small / 10)) == 0) printf(".");
     fflush(NULL);
   }
@@ -7360,389 +7355,389 @@ int main() {
   std::vector<size_t> solution(small);
   int ** data = new int*[small];
   for (size_t i = 0; i < small; i++) {
-      data[i] = datavec[i].data();
+      data[i] = datavec.data() + i * large;;
   }
   int counter = 0;
 
 
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto startref = std::chrono::high_resolution_clock::now();
-  branchless_linked(datavec, targets, solution);
+  branchless_linked(data, small, large, targets.data(), solution.data());
   auto finishref = std::chrono::high_resolution_clock::now();
   std::cout <<  " ref : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start2 = std::chrono::high_resolution_clock::now();
   binsearch2(data, small, large, targets.data(), solution.data());
   auto finish2 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 2 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish2-start2).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish2-start2).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start3 = std::chrono::high_resolution_clock::now();
   binsearch3(data, small, large, targets.data(), solution.data());
   auto finish3 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 3 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish3-start3).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish3-start3).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start4 = std::chrono::high_resolution_clock::now();
   binsearch4(data, small, large, targets.data(), solution.data());
   auto finish4 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 4 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish4-start4).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish4-start4).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start5 = std::chrono::high_resolution_clock::now();
   binsearch5(data, small, large, targets.data(), solution.data());
   auto finish5 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 5 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish5-start5).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish5-start5).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start6 = std::chrono::high_resolution_clock::now();
   binsearch6(data, small, large, targets.data(), solution.data());
   auto finish6 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 6 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish6-start6).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish6-start6).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start7 = std::chrono::high_resolution_clock::now();
   binsearch7(data, small, large, targets.data(), solution.data());
   auto finish7 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 7 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish7-start7).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish7-start7).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start8 = std::chrono::high_resolution_clock::now();
   binsearch8(data, small, large, targets.data(), solution.data());
   auto finish8 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 8 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish8-start8).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish8-start8).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start9 = std::chrono::high_resolution_clock::now();
   binsearch9(data, small, large, targets.data(), solution.data());
   auto finish9 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 9 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish9-start9).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish9-start9).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start10 = std::chrono::high_resolution_clock::now();
   binsearch10(data, small, large, targets.data(), solution.data());
   auto finish10 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 10 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish10-start10).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish10-start10).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start11 = std::chrono::high_resolution_clock::now();
   binsearch11(data, small, large, targets.data(), solution.data());
   auto finish11 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 11 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish11-start11).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish11-start11).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start12 = std::chrono::high_resolution_clock::now();
   binsearch12(data, small, large, targets.data(), solution.data());
   auto finish12 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 12 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish12-start12).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish12-start12).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start13 = std::chrono::high_resolution_clock::now();
   binsearch13(data, small, large, targets.data(), solution.data());
   auto finish13 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 13 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish13-start13).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish13-start13).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start14 = std::chrono::high_resolution_clock::now();
   binsearch14(data, small, large, targets.data(), solution.data());
   auto finish14 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 14 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish14-start14).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish14-start14).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start15 = std::chrono::high_resolution_clock::now();
   binsearch15(data, small, large, targets.data(), solution.data());
   auto finish15 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 15 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish15-start15).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish15-start15).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start16 = std::chrono::high_resolution_clock::now();
   binsearch16(data, small, large, targets.data(), solution.data());
   auto finish16 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 16 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish16-start16).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish16-start16).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start17 = std::chrono::high_resolution_clock::now();
   binsearch17(data, small, large, targets.data(), solution.data());
   auto finish17 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 17 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish17-start17).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish17-start17).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start18 = std::chrono::high_resolution_clock::now();
   binsearch18(data, small, large, targets.data(), solution.data());
   auto finish18 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 18 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish18-start18).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish18-start18).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start19 = std::chrono::high_resolution_clock::now();
   binsearch19(data, small, large, targets.data(), solution.data());
   auto finish19 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 19 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish19-start19).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish19-start19).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start20 = std::chrono::high_resolution_clock::now();
   binsearch20(data, small, large, targets.data(), solution.data());
   auto finish20 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 20 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish20-start20).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish20-start20).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start21 = std::chrono::high_resolution_clock::now();
   binsearch21(data, small, large, targets.data(), solution.data());
   auto finish21 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 21 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish21-start21).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish21-start21).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start22 = std::chrono::high_resolution_clock::now();
   binsearch22(data, small, large, targets.data(), solution.data());
   auto finish22 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 22 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish22-start22).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish22-start22).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start23 = std::chrono::high_resolution_clock::now();
   binsearch23(data, small, large, targets.data(), solution.data());
   auto finish23 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 23 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish23-start23).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish23-start23).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start24 = std::chrono::high_resolution_clock::now();
   binsearch24(data, small, large, targets.data(), solution.data());
   auto finish24 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 24 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish24-start24).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish24-start24).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start25 = std::chrono::high_resolution_clock::now();
   binsearch25(data, small, large, targets.data(), solution.data());
   auto finish25 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 25 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish25-start25).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish25-start25).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start26 = std::chrono::high_resolution_clock::now();
   binsearch26(data, small, large, targets.data(), solution.data());
   auto finish26 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 26 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish26-start26).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish26-start26).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start27 = std::chrono::high_resolution_clock::now();
   binsearch27(data, small, large, targets.data(), solution.data());
   auto finish27 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 27 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish27-start27).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish27-start27).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start28 = std::chrono::high_resolution_clock::now();
   binsearch28(data, small, large, targets.data(), solution.data());
   auto finish28 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 28 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish28-start28).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish28-start28).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start29 = std::chrono::high_resolution_clock::now();
   binsearch29(data, small, large, targets.data(), solution.data());
   auto finish29 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 29 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish29-start29).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish29-start29).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start30 = std::chrono::high_resolution_clock::now();
   binsearch30(data, small, large, targets.data(), solution.data());
   auto finish30 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 30 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish30-start30).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish30-start30).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start31 = std::chrono::high_resolution_clock::now();
   binsearch31(data, small, large, targets.data(), solution.data());
   auto finish31 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 31 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish31-start31).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish31-start31).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start32 = std::chrono::high_resolution_clock::now();
   binsearch32(data, small, large, targets.data(), solution.data());
   auto finish32 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 32 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish32-start32).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish32-start32).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start33 = std::chrono::high_resolution_clock::now();
   binsearch33(data, small, large, targets.data(), solution.data());
   auto finish33 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 33 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish33-start33).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish33-start33).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start34 = std::chrono::high_resolution_clock::now();
   binsearch34(data, small, large, targets.data(), solution.data());
   auto finish34 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 34 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish34-start34).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish34-start34).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start35 = std::chrono::high_resolution_clock::now();
   binsearch35(data, small, large, targets.data(), solution.data());
   auto finish35 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 35 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish35-start35).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish35-start35).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start36 = std::chrono::high_resolution_clock::now();
   binsearch36(data, small, large, targets.data(), solution.data());
   auto finish36 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 36 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish36-start36).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish36-start36).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start37 = std::chrono::high_resolution_clock::now();
   binsearch37(data, small, large, targets.data(), solution.data());
   auto finish37 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 37 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish37-start37).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish37-start37).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start38 = std::chrono::high_resolution_clock::now();
   binsearch38(data, small, large, targets.data(), solution.data());
   auto finish38 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 38 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish38-start38).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish38-start38).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start39 = std::chrono::high_resolution_clock::now();
   binsearch39(data, small, large, targets.data(), solution.data());
   auto finish39 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 39 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish39-start39).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish39-start39).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start40 = std::chrono::high_resolution_clock::now();
   binsearch40(data, small, large, targets.data(), solution.data());
   auto finish40 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 40 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish40-start40).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish40-start40).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start41 = std::chrono::high_resolution_clock::now();
   binsearch41(data, small, large, targets.data(), solution.data());
   auto finish41 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 41 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish41-start41).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish41-start41).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start42 = std::chrono::high_resolution_clock::now();
   binsearch42(data, small, large, targets.data(), solution.data());
   auto finish42 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 42 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish42-start42).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish42-start42).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start43 = std::chrono::high_resolution_clock::now();
   binsearch43(data, small, large, targets.data(), solution.data());
   auto finish43 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 43 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish43-start43).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish43-start43).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start44 = std::chrono::high_resolution_clock::now();
   binsearch44(data, small, large, targets.data(), solution.data());
   auto finish44 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 44 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish44-start44).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish44-start44).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start45 = std::chrono::high_resolution_clock::now();
   binsearch45(data, small, large, targets.data(), solution.data());
   auto finish45 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 45 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish45-start45).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish45-start45).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start46 = std::chrono::high_resolution_clock::now();
   binsearch46(data, small, large, targets.data(), solution.data());
   auto finish46 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 46 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish46-start46).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish46-start46).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start47 = std::chrono::high_resolution_clock::now();
   binsearch47(data, small, large, targets.data(), solution.data());
   auto finish47 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 47 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish47-start47).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish47-start47).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start48 = std::chrono::high_resolution_clock::now();
   binsearch48(data, small, large, targets.data(), solution.data());
   auto finish48 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 48 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish48-start48).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish48-start48).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start49 = std::chrono::high_resolution_clock::now();
   binsearch49(data, small, large, targets.data(), solution.data());
   auto finish49 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 49 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish49-start49).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish49-start49).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start50 = std::chrono::high_resolution_clock::now();
   binsearch50(data, small, large, targets.data(), solution.data());
   auto finish50 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 50 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish50-start50).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish50-start50).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start51 = std::chrono::high_resolution_clock::now();
   binsearch51(data, small, large, targets.data(), solution.data());
   auto finish51 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 51 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish51-start51).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish51-start51).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start52 = std::chrono::high_resolution_clock::now();
   binsearch52(data, small, large, targets.data(), solution.data());
   auto finish52 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 52 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish52-start52).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish52-start52).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start53 = std::chrono::high_resolution_clock::now();
   binsearch53(data, small, large, targets.data(), solution.data());
   auto finish53 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 53 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish53-start53).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish53-start53).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start54 = std::chrono::high_resolution_clock::now();
   binsearch54(data, small, large, targets.data(), solution.data());
   auto finish54 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 54 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish54-start54).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish54-start54).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start55 = std::chrono::high_resolution_clock::now();
   binsearch55(data, small, large, targets.data(), solution.data());
   auto finish55 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 55 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish55-start55).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish55-start55).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start56 = std::chrono::high_resolution_clock::now();
   binsearch56(data, small, large, targets.data(), solution.data());
   auto finish56 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 56 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish56-start56).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish56-start56).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start57 = std::chrono::high_resolution_clock::now();
   binsearch57(data, small, large, targets.data(), solution.data());
   auto finish57 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 57 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish57-start57).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish57-start57).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start58 = std::chrono::high_resolution_clock::now();
   binsearch58(data, small, large, targets.data(), solution.data());
   auto finish58 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 58 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish58-start58).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish58-start58).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start59 = std::chrono::high_resolution_clock::now();
   binsearch59(data, small, large, targets.data(), solution.data());
   auto finish59 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 59 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish59-start59).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish59-start59).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start60 = std::chrono::high_resolution_clock::now();
   binsearch60(data, small, large, targets.data(), solution.data());
   auto finish60 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 60 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish60-start60).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish60-start60).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start61 = std::chrono::high_resolution_clock::now();
   binsearch61(data, small, large, targets.data(), solution.data());
   auto finish61 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 61 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish61-start61).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish61-start61).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start62 = std::chrono::high_resolution_clock::now();
   binsearch62(data, small, large, targets.data(), solution.data());
   auto finish62 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 62 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish62-start62).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish62-start62).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start63 = std::chrono::high_resolution_clock::now();
   binsearch63(data, small, large, targets.data(), solution.data());
   auto finish63 = std::chrono::high_resolution_clock::now();
   std::cout <<  " 63 : " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish63-start63).count() << std::endl;
   std::cout <<  " gain " << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish63-start63).count() << std::endl;
-  for(int z = 0; z < 5; z++) element_access(datavec, & counter);
+  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);
   auto start64 = std::chrono::high_resolution_clock::now();
   binsearch64(data, small, large, targets.data(), solution.data());
   auto finish64 = std::chrono::high_resolution_clock::now();
