@@ -200,8 +200,6 @@ for i in range(2,MAX+1):
     print("  auto start{width} = std::chrono::high_resolution_clock::now();".format(width=i))
     print("  binsearch{width}(data, small, large, targets.data(), solution.data());".format(width=i))
     print("  auto finish{width} = std::chrono::high_resolution_clock::now();".format(width=i))
-    print("  std::cout <<  \"# {width}  \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << \" \" ;".format(width=i))
-    print("  std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << std::endl;".format(width=i))
     print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);")
     print("  for(size_t i = 0; i < small; i++) targets[i] = rand();")
     print("  start{width} = std::chrono::high_resolution_clock::now();".format(width=i))
