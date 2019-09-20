@@ -156,19 +156,60 @@ int main(int argc, char** argv) {
 
 """)
 print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);")
+print("  for(size_t i = 0; i < small; i++) targets[i] = rand();")
+print("  auto startref2 = std::chrono::high_resolution_clock::now();".format(width=i))
+print("  branchless_linked(data, small, large, targets.data(), solution.data());")
+print("  auto finishref2 = std::chrono::high_resolution_clock::now();".format(width=i))
+print("  std::cout <<  \"# refbis : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref2-startref2).count() << std::endl;")
+
+print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);")
+print("  for(size_t i = 0; i < small; i++) targets[i] = rand();")
 print("  auto startref = std::chrono::high_resolution_clock::now();".format(width=i))
 print("  branchless_linked(data, small, large, targets.data(), solution.data());")
 print("  auto finishref = std::chrono::high_resolution_clock::now();".format(width=i))
 print("  std::cout <<  \"# ref : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() << std::endl;")
 
 
+print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);")
+print("  for(size_t i = 0; i < small; i++) targets[i] = rand();")
+print("  startref = std::chrono::high_resolution_clock::now();".format(width=i))
+print("  branchless_linked(data, small, large, targets.data(), solution.data());")
+print("  finishref = std::chrono::high_resolution_clock::now();".format(width=i))
+print("  std::cout <<  \"# ref : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() << std::endl;")
+
+print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);")
+print("  for(size_t i = 0; i < small; i++) targets[i] = rand();")
+print("  startref = std::chrono::high_resolution_clock::now();".format(width=i))
+print("  branchless_linked(data, small, large, targets.data(), solution.data());")
+print("  finishref = std::chrono::high_resolution_clock::now();".format(width=i))
+print("  std::cout <<  \"# ref : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() << std::endl;")
+
+
+print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);")
+print("  for(size_t i = 0; i < small; i++) targets[i] = rand();")
+print("  startref = std::chrono::high_resolution_clock::now();".format(width=i))
+print("  branchless_linked(data, small, large, targets.data(), solution.data());")
+print("  finishref = std::chrono::high_resolution_clock::now();".format(width=i))
+print("  std::cout <<  \"# ref : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() << std::endl;")
+
+
+
 for i in range(2,MAX+1):
     print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);")
+    print("  for(size_t i = 0; i < small; i++) targets[i] = rand();")
     print("  auto start{width} = std::chrono::high_resolution_clock::now();".format(width=i))
     print("  binsearch{width}(data, small, large, targets.data(), solution.data());".format(width=i))
     print("  auto finish{width} = std::chrono::high_resolution_clock::now();".format(width=i))
+    print("  std::cout <<  \"# {width}  \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << \" \" ;".format(width=i))
+    print("  std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << std::endl;".format(width=i))
+    print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter);")
+    print("  for(size_t i = 0; i < small; i++) targets[i] = rand();")
+    print("  start{width} = std::chrono::high_resolution_clock::now();".format(width=i))
+    print("  binsearch{width}(data, small, large, targets.data(), solution.data());".format(width=i))
+    print("  finish{width} = std::chrono::high_resolution_clock::now();".format(width=i))
     print("  std::cout <<  \" {width}  \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << \" \" ;".format(width=i))
     print("  std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << std::endl;".format(width=i))
+
 
 print("""
   delete[] data;
