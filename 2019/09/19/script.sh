@@ -9,9 +9,9 @@ if [ $SUDO_USER ]; then
 else
     real_user=$(whoami)
 fi
-
+echo "Real user: "$real_user
 origval=$(sudo cat /sys/kernel/mm/transparent_hugepage/enabled)
-sudo -u $real_user echo $origval
+#sudo -u $real_user echo $origval
 set -e
 function cleanup {
   echo "Restauring hugepages to madvise"
@@ -20,9 +20,9 @@ function cleanup {
 trap cleanup EXIT
 
 for mode in "always" "never" ; do
-  sudo -u $real_user echo "mode: " $mode
+  #sudo -u $real_user echo "mode: " $mode
   echo $mode > /sys/kernel/mm/transparent_hugepage/enabled
   echo $(sudo cat /sys/kernel/mm/transparent_hugepage/enabled)
-  ./multiplebinarysearch  
+  ./multiplebinarysearch 8000000 
 done
 echo "Done."

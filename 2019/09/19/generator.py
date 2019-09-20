@@ -129,13 +129,14 @@ for i in range(2,MAX+1):
   print(generatesearch(i))
 
 print("""
-int main() {
+int main(int argc, char** argv) {
   size_t small = 1024;
-  size_t large = 64 * 1000 * 1000 / small;
-
-  printf("Initializing random data.\\n");
+  size_t large = 4 * 1000 * 1000 / small;
+  if (argc >= 2) large = atol(argv[1]) / small;
+  printf("# Initializing random data.\\n");
   std::vector<int> datavec(small * large); // important: memory is consecutive
   std::vector<int> targets;
+  printf("#");
   for (size_t i = 0; i < small; i++) {
     for (size_t z = 0; z < large; z++) {
       datavec[i * large + z] = splitmix64_stateless(i * large + z);
@@ -158,7 +159,7 @@ print("  for(int z = 0; z < 5; z++) element_access(data, small, large, & counter
 print("  auto startref = std::chrono::high_resolution_clock::now();".format(width=i))
 print("  branchless_linked(data, small, large, targets.data(), solution.data());")
 print("  auto finishref = std::chrono::high_resolution_clock::now();".format(width=i))
-print("  std::cout <<  \" ref : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() << std::endl;")
+print("  std::cout <<  \"# ref : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() << std::endl;")
 
 
 for i in range(2,MAX+1):
@@ -166,8 +167,8 @@ for i in range(2,MAX+1):
     print("  auto start{width} = std::chrono::high_resolution_clock::now();".format(width=i))
     print("  binsearch{width}(data, small, large, targets.data(), solution.data());".format(width=i))
     print("  auto finish{width} = std::chrono::high_resolution_clock::now();".format(width=i))
-    print("  std::cout <<  \" {width} : \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << std::endl;".format(width=i))
-    print("  std::cout <<  \" gain \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << std::endl;".format(width=i))
+    print("  std::cout <<  \" {width}  \" << std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << \" \" ;".format(width=i))
+    print("  std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(finishref-startref).count() * 1.0 / std::chrono::duration_cast<std::chrono::nanoseconds>(finish{width}-start{width}).count() << std::endl;".format(width=i))
 
 print("""
   delete[] data;
