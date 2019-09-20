@@ -23,6 +23,6 @@ for mode in "always" "never" ; do
   #sudo -u $real_user echo "mode: " $mode
   echo $mode > /sys/kernel/mm/transparent_hugepage/enabled
   echo $(sudo cat /sys/kernel/mm/transparent_hugepage/enabled)
-  ./multiplebinarysearch 8000000 
+  ./multiplebinarysearch 64000000 
 done
 echo "Done."
