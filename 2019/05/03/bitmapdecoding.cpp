@@ -99,9 +99,9 @@ void basic_arm_decoder(uint32_t *base_ptr, uint32_t &base, uint32_t idx,
   __asm volatile ("rbit %0, %1" : "=r" (rev_bits) : "r" (bits) );
   while (rev_bits != 0) {
     int lz = __builtin_clzll(rev_bits);
-    base_ptr[base] = static_cast<uint32_t>(idx) + lz;
-    rev_bits = rev_bits & ~(int64_t(0x1000000000000000) >> lz);
-    base++;
+     base_ptr[base] = static_cast<uint32_t>(idx) + lz;
+    rev_bits = rev_bits & ~(int64_t(0x8000000000000000) >> lz);
+     base++;
   }
 }
 #endif
@@ -622,12 +622,12 @@ int main(int argc, char **argv) {
   printf("simdjson_decoder:\n");
   unit<simdjson_decoder>();
   test<simdjson_decoder>("nfl.csv", ',');
-  printf("basic_decoder:\n");
   unit<basic_decoder>();
 #if defined(__aarch64__)
-  // does not work:
-  //test<basic_arm_decoder>("nfl.csv", ',');
+  printf("basic_arm_decoder:\n");
+  test<basic_arm_decoder>("nfl.csv", ',');
 #endif
+  printf("basic_decoder:\n");
   test<basic_decoder>("nfl.csv", ',');
   printf("\n");
 }
