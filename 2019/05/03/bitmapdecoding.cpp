@@ -93,6 +93,7 @@ void basic_decoder(uint32_t *base_ptr, uint32_t &base, uint32_t idx,
   }
 }
 #if defined(__aarch64__)
+// based on an idea by Samuel Lee
 void basic_arm_decoder(uint32_t *base_ptr, uint32_t &base, uint32_t idx,
                    uint64_t bits) {
   uint64_t rev_bits;
