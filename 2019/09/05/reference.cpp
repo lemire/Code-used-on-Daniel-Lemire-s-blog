@@ -40,6 +40,12 @@ __attribute__((noinline)) int classic_increment(uint64_t i, uint64_t *x) {
   return i;
 }
 
+__attribute__((noinline)) void incrementrr(uint64_t &i, uint64_t * __restrict__ x) {
+  for (int k = 0; k < SIZE; k++) {
+    x[k] += i++;
+  }
+}
+
 
 void test() {
   uint64_t *bigarray = new uint64_t[SIZE];
@@ -56,6 +62,8 @@ void test() {
   results3.resize(evts.size());
   std::vector<unsigned long long> results4;
   results4.resize(evts.size());
+  std::vector<unsigned long long> results5;
+  results5.resize(evts.size());
   uint64_t counter = 0;
   unified.start();
   increment(counter, bigarray);
@@ -69,6 +77,9 @@ void test() {
   unified.start();
   counter = classic_increment(counter, bigarray);
   unified.end(results4);
+  unified.start();
+  incrementrr(counter, bigarray);
+  unified.end(results5);
   printf("standard  %.2f cycles/value %.2f instructions/value\n",
          results1[0] * 1.0 / SIZE, results1[1] * 1.0 / SIZE);
   printf("reference %.2f cycles/value %.2f instructions/value\n",
@@ -77,6 +88,8 @@ void test() {
          results3[0] * 1.0 / SIZE, results3[1] * 1.0 / SIZE);
   printf("classic   %.2f cycles/value %.2f instructions/value\n",
          results4[0] * 1.0 / SIZE, results4[1] * 1.0 / SIZE);
+  printf("restrict   %.2f cycles/value %.2f instructions/value\n",
+         results5[0] * 1.0 / SIZE, results5[1] * 1.0 / SIZE);
   delete[] bigarray;
 }
 
