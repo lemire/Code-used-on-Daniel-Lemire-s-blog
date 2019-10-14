@@ -111,7 +111,7 @@ static inline size_t neon_despace(char *bytes, size_t howmany) {
       }
     }
   }
-  while (i < howmany) {
+  for (;i < howmany; i++) {
     char c = bytes[i];
     if (c == '\r' || c == '\n' || c == ' ') {
       continue;
