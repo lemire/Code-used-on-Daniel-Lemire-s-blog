@@ -62,8 +62,8 @@ void demo(uint64_t howmany) {
   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
-  evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
-  evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
+  //evts.push_back(PERF_COUNT_HW_CACHE_REFERENCES);
+  //evts.push_back(PERF_COUNT_HW_CACHE_MISSES);
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
 
   std::vector<unsigned long long> results;
