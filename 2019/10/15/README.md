@@ -1,0 +1,4 @@
+Linux required. 
+
+Run: `make`.
+
