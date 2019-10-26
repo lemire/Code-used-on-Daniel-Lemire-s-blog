@@ -107,6 +107,7 @@ void demo(uint64_t howmany) {
   std::string s = randomfloats(howmany);
   double volume = s.size() / (1024. * 1024); 
   printf("volume %.2f GB\n", volume);
+  printf("bytes per number %.2f\n", s.size() * 1. / howmany);
   for (size_t trial = 0; trial < 3; trial++) {
     printf("\n ==== trial %zu\n", trial);
 
@@ -143,6 +144,8 @@ void demoints(uint64_t howmany) {
   std::string s = randomints(howmany);
   double volume = s.size() / (1024. * 1024); 
   printf("volume %.2f GB\n", volume);
+
+  printf("bytes per number %.2f\n", s.size() * 1. / howmany);
   for (size_t trial = 0; trial < 3; trial++) {
     printf("\n ==== trial %zu\n", trial);
 
