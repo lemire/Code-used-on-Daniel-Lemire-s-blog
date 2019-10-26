@@ -105,6 +105,8 @@ void demo(uint64_t howmany) {
   results_mask.resize(evts.size());
   //
   std::string s = randomfloats(howmany);
+  double volume = s.size() / (1024. * 1024); 
+  printf("volume %.2f GB\n", volume);
   for (size_t trial = 0; trial < 3; trial++) {
     printf("\n ==== trial %zu\n", trial);
 
@@ -114,12 +116,11 @@ void demo(uint64_t howmany) {
     unified.end(results);
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     if(ts == 0) printf("bug\n");
-    double dif = std::chrono::duration_cast<std::chrono::seconds>( t2 - t1 ).count();
-    size_t volume = s.size() / (1024 * 1024); 
+    double dif = std::chrono::duration_cast<std::chrono::nanoseconds>( t2 - t1 ).count();
     printf("basic    %.2f cycles/value %.2f instructions/value branch "
            "misses/value %.2f  MB/s %.2f \n",
            results[0] * 1.0 / howmany, results[1] * 1.0 / howmany,
-           results[2] * 1.0 / howmany, volume / dif);
+           results[2] * 1.0 / howmany, volume * 1000000000/ dif);
   }
 }
 void demoints(uint64_t howmany) {
@@ -140,6 +141,8 @@ void demoints(uint64_t howmany) {
   results_mask.resize(evts.size());
   //
   std::string s = randomints(howmany);
+  double volume = s.size() / (1024. * 1024); 
+  printf("volume %.2f GB\n", volume);
   for (size_t trial = 0; trial < 3; trial++) {
     printf("\n ==== trial %zu\n", trial);
 
@@ -149,13 +152,12 @@ void demoints(uint64_t howmany) {
     unified.end(results);
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     if(ts == 0) printf("bug\n");
-    double dif = std::chrono::duration_cast<std::chrono::seconds>( t2 - t1 ).count();
-    size_t volume = s.size() / (1024 * 1024); 
+    double dif = std::chrono::duration_cast<std::chrono::nanoseconds>( t2 - t1 ).count();
  
     printf("basic    %.2f cycles/value %.2f instructions/value branch "
            "misses/value %.2f MB/s %.2f \n",
            results[0] * 1.0 / howmany, results[1] * 1.0 / howmany,
-           results[2] * 1.0 / howmany, volume / dif);
+           results[2] * 1.0 / howmany, volume *1000000000/ dif);
   }
 }
 
