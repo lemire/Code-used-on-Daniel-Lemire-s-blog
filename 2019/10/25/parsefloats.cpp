@@ -118,9 +118,9 @@ void demo(uint64_t howmany) {
     if(ts == 0) printf("bug\n");
     double dif = std::chrono::duration_cast<std::chrono::nanoseconds>( t2 - t1 ).count();
     printf("basic    %.2f cycles/value %.2f instructions/value branch "
-           "misses/value %.2f  MB/s %.2f \n",
+           "misses/value %.2f  MB/s %.2f cycles/byte %.2f \n",
            results[0] * 1.0 / howmany, results[1] * 1.0 / howmany,
-           results[2] * 1.0 / howmany, volume * 1000000000/ dif);
+           results[2] * 1.0 / howmany, volume * 1000000000/ dif, results[0]/(s.size() * 1.));
   }
 }
 void demoints(uint64_t howmany) {
@@ -155,9 +155,9 @@ void demoints(uint64_t howmany) {
     double dif = std::chrono::duration_cast<std::chrono::nanoseconds>( t2 - t1 ).count();
  
     printf("basic    %.2f cycles/value %.2f instructions/value branch "
-           "misses/value %.2f MB/s %.2f \n",
+           "misses/value %.2f MB/s %.2f cycles/byte %.2f \n",
            results[0] * 1.0 / howmany, results[1] * 1.0 / howmany,
-           results[2] * 1.0 / howmany, volume *1000000000/ dif);
+           results[2] * 1.0 / howmany, volume *1000000000/ dif, results[0]/(s.size()*1.));
   }
 }
 
