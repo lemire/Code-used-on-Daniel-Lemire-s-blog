@@ -14,6 +14,7 @@
 #include <cstring>
 #include <iomanip>
 #include <cmath>
+#include <chrono>
 
 // randomizer
 static inline uint64_t rng(uint64_t h) {
@@ -107,15 +108,18 @@ void demo(uint64_t howmany) {
   for (size_t trial = 0; trial < 3; trial++) {
     printf("\n ==== trial %zu\n", trial);
 
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     unified.start();
     double ts = sum(s, howmany);
     unified.end(results);
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     if(ts == 0) printf("bug\n");
-
+    double dif = std::chrono::duration_cast<std::chrono::seconds>( t2 - t1 ).count();
+    size_t volume = s.size() / (1024 * 1024); 
     printf("basic    %.2f cycles/value %.2f instructions/value branch "
-           "misses/value %.2f \n",
+           "misses/value %.2f  MB/s %.2f \n",
            results[0] * 1.0 / howmany, results[1] * 1.0 / howmany,
-           results[2] * 1.0 / howmany);
+           results[2] * 1.0 / howmany, volume / dif);
   }
 }
 void demoints(uint64_t howmany) {
@@ -139,15 +143,19 @@ void demoints(uint64_t howmany) {
   for (size_t trial = 0; trial < 3; trial++) {
     printf("\n ==== trial %zu\n", trial);
 
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     unified.start();
     uint64_t ts = sumints(s, howmany);
     unified.end(results);
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     if(ts == 0) printf("bug\n");
-
+    double dif = std::chrono::duration_cast<std::chrono::seconds>( t2 - t1 ).count();
+    size_t volume = s.size() / (1024 * 1024); 
+ 
     printf("basic    %.2f cycles/value %.2f instructions/value branch "
-           "misses/value %.2f \n",
+           "misses/value %.2f MB/s %.2f \n",
            results[0] * 1.0 / howmany, results[1] * 1.0 / howmany,
-           results[2] * 1.0 / howmany);
+           results[2] * 1.0 / howmany, volume / dif);
   }
 }
 
