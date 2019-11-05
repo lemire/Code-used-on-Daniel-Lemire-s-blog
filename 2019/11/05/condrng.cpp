@@ -26,7 +26,7 @@ __attribute__((noinline)) void cond_sum_random_extra(uint64_t howmany,
                                                uint64_t *out) {
   while (howmany != 0) {
     uint64_t randomval = rng(howmany);
-    if(randomval == 4132412421) abort();
+    if(randomval == 4132412420) break;
     if ((randomval & 1) == 1)
       *out++ = randomval;
     howmany--;
@@ -75,30 +75,22 @@ void demo(uint64_t howmany) {
 #define NUMBER_TRIAL 10
   double extramisses[NUMBER_TRIAL];
   double condmisses[NUMBER_TRIAL];
+for(size_t i = 0; i < 1000;i++) {
   for (size_t trial = 0; trial < NUMBER_TRIAL; trial++) {
-    printf("# ==== trial %zu\n", trial);
     unified.start();
     cond_sum_random_extra(howmany, buffer);
     unified.end(results_cond_extra);
-    printf("#extra    %.2f cycles/value %.2f instructions/value branch "
-           "misses/value %.2f \n",
-           results_cond_extra[0] * 1.0 / howmany, results_cond_extra[1] * 1.0 / howmany,
-           results_cond_extra[2] * 1.0 / howmany);
     extramisses[trial] = results_cond_extra[2] * 1.0 / howmany;
 
   } 
   for (size_t trial = 0; trial < NUMBER_TRIAL; trial++) {
-    printf("# ==== trial %zu\n", trial);
     unified.start();
     cond_sum_random(howmany, buffer);
     unified.end(results_cond);
-    printf("#cond    %.2f cycles/value %.2f instructions/value branch "
-           "misses/value %.2f \n",
-           results_cond[0] * 1.0 / howmany, results_cond[1] * 1.0 / howmany,
-           results_cond[2] * 1.0 / howmany);
     condmisses[trial] = results_cond[2] * 1.0 / howmany;
 
   }
+}
   for (size_t trial = 0; trial < NUMBER_TRIAL; trial++) {
    printf("%zu %.3f %.3f \n", trial, extramisses[trial], condmisses[trial]);
   }
@@ -106,6 +98,8 @@ void demo(uint64_t howmany) {
 }
 
 int main() {
-  uint64_t large = 1000; 
+  uint64_t large = 2000; 
+  demo(large);
+  demo(large);
   demo(large);
 }
