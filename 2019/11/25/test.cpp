@@ -6,7 +6,7 @@
 #include <chrono> 
 #include <vector>
 int main() {
-  for(size_t size = 1024; size < 128 * 1024 * 1024; size*=2) {
+  for(size_t size = 1024; size <  1024 * 1024; size*=2) {
     std::list<int> l;
     std::vector<int> v;
     for(int z = 0; z < (int) size; z++) l.push_back(z);
@@ -20,6 +20,6 @@ int main() {
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
     double dif = std::chrono::duration_cast<std::chrono::nanoseconds>( t2 - t1 ).count();
     double div = std::chrono::duration_cast<std::chrono::nanoseconds>( t3 - t2 ).count();
-    std::cout << size << " " << dif / size << " " << div /size << std::endl; 
+    std::cout << size << " " << dif / size << " " << div /size << " " << dif / div<< std::endl; 
   }
 }
