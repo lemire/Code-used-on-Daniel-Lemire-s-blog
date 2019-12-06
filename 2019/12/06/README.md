@@ -1,4 +1,4 @@
-Linux required. 
+Linux and required. 
 
-Run: `make`.
+Run: `script.sh`.
 
