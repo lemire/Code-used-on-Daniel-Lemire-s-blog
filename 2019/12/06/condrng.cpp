@@ -52,16 +52,18 @@ void demo(uint64_t howmany) {
   results_cond.resize(evts.size());
   //
   for (size_t trial = 0; trial < 5; trial++) {
-    printf("\n ==== trial %zu\n", trial);
+    if (trial > 0)
+      printf("\n ==== trial %zu\n", trial);
 
     unified.start();
     cond_sum_random(howmany, buffer);
     unified.end(results_cond);
 
-   printf("cond    %.2f cycles/value %.2f instructions/value branch "
-           "misses/value %.2f \n",
-           results_cond[0] * 1.0 / howmany, results_cond[1] * 1.0 / howmany,
-           results_cond[2] * 1.0 / howmany);
+    if (trial > 0)
+      printf("cond    %.2f cycles/value %.2f instructions/value branch "
+             "misses/value %.2f \n",
+             results_cond[0] * 1.0 / howmany, results_cond[1] * 1.0 / howmany,
+             results_cond[2] * 1.0 / howmany);
   }
   delete[] buffer;
 }
