@@ -21,6 +21,16 @@ static inline uint64_t rng(uint64_t h) {
   return h;
 }
 
+__attribute__((noinline)) void cond_sum_random_basic(uint64_t howmany,
+                                               uint64_t *out) {
+  while (howmany != 0) {
+    uint64_t randomval = rng(howmany);
+    *out++ = randomval;
+    howmany--;
+  }
+}
+
+
 __attribute__((noinline)) void cond_sum_random(uint64_t howmany,
                                                uint64_t *out) {
   while (howmany != 0) {
@@ -41,13 +51,16 @@ void printvec(std::vector<unsigned long long> evts, size_t volume) {
 }
 
 void demo(uint64_t howmany) {
-  uint64_t *buffer = new uint64_t[howmany];
+  uint64_t *buffer = new uint64_t[2 * howmany];
   std::vector<int> evts;
   evts.push_back(PERF_COUNT_HW_CPU_CYCLES);
   evts.push_back(PERF_COUNT_HW_INSTRUCTIONS);
   evts.push_back(PERF_COUNT_HW_BRANCH_MISSES);
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
 
+  std::vector<unsigned long long> results_basic_cond;
+  results_basic_cond.resize(evts.size());
+ 
   std::vector<unsigned long long> results_cond;
   results_cond.resize(evts.size());
   //
@@ -55,6 +68,16 @@ void demo(uint64_t howmany) {
     if (trial > 0)
       printf("\n ==== trial %zu\n", trial);
 
+    unified.start();
+    cond_sum_random_basic(howmany, buffer);
+    unified.end(results_basic_cond);
+
+    if (trial > 0)
+      printf("cond    %.2f cycles/value %.2f instructions/value branch "
+             "misses/value %.2f \n",
+             results_basic_cond[0] * 1.0 / howmany, results_basic_cond[1] * 1.0 / howmany,
+             results_basic_cond[2] * 1.0 / howmany);
+ 
     unified.start();
     cond_sum_random(howmany, buffer);
     unified.end(results_cond);
