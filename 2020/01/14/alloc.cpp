@@ -1,6 +1,6 @@
 #include <chrono>
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
 __attribute__((noinline)) char *bench(size_t s) {
   std::chrono::time_point<std::chrono::steady_clock> start_clock =
