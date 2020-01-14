@@ -13,6 +13,18 @@ __attribute__((noinline)) char *bench(size_t s) {
   return buf1;
 }
 
+__attribute__((noinline))void benchmemset(size_t s,  char * buf) {
+  std::chrono::time_point<std::chrono::steady_clock> start_clock =
+      std::chrono::steady_clock::now();
+  memset(buf,0,s);
+  std::chrono::time_point<std::chrono::steady_clock> end_clock =
+      std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = end_clock - start_clock;
+  std::cout << "memset: " << (s / (1024. * 1024 * 1024.)) / elapsed.count() << " GB/s"
+            << std::endl;
+}
+
+
 int main() {
   for (size_t i = 268435456; i < 1073741824; i *= 2) {
     std::cout << "page count: " << i / 4096
@@ -21,6 +33,7 @@ int main() {
 
     for (int z = 0; z < 3; z++) {
       char *b = bench(i);
+      benchmemset(i, b);
       delete[] b;
     }
   }
