@@ -1,7 +1,25 @@
 #include <chrono>
 #include <cstring>
+#include <cstdlib>
 #include <iostream>
-
+__attribute__((noinline)) char *benchcalloc(size_t s) {
+  std::chrono::time_point<std::chrono::steady_clock> start_clock =
+      std::chrono::steady_clock::now();
+  char *buf1 = (char*)calloc(s, sizeof(char));
+  // we need to touch the memory because calloc will cheat
+  for (size_t i = 0; i < s; i += 4096) {
+   buf1[i] = 0;
+  }
+  buf1[s - 1] = 0;
+  asm volatile ("" : : : "memory"); // memory fence because we are paranoid
+  std::chrono::time_point<std::chrono::steady_clock> end_clock =
+      std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = end_clock - start_clock;
+  std::cout << "calloc             : "
+            << (s / (1024. * 1024 * 1024.)) / elapsed.count() << " GB/s"
+            << std::endl;
+  return buf1;
+}
 __attribute__((noinline)) char *bench(size_t s) {
   std::chrono::time_point<std::chrono::steady_clock> start_clock =
       std::chrono::steady_clock::now();
@@ -35,8 +53,9 @@ __attribute__((noinline)) char *benchallocandtouch(size_t s) {
       std::chrono::steady_clock::now();
   char *buf1 = new char[s];
   for (size_t i = 0; i < s; i += 4096) {
-    buf1[i] = 0;
+   buf1[i] = 0;
   }
+  buf1[s - 1] = 0;
   asm volatile ("" : : : "memory");
   std::chrono::time_point<std::chrono::steady_clock> end_clock =
       std::chrono::steady_clock::now();
@@ -80,6 +99,8 @@ int main() {
               << ", volume:" << (i / (1024. * 1024)) << " MB" << std::endl;
 
     for (int z = 0; z < 3; z++) {
+      char *bc = benchcalloc(i);
+      free(bc);
       char *b0 = benchallocandtouch(i);
       char *bz = benchnothrow(i);
       char *b = bench(i);
@@ -95,6 +116,9 @@ int main() {
     std::cout << std::endl;
     std::cout << std::endl;
   }
-  char *buftmp = new char[10000000000000L]; // just to show that it can be done
+  char *buftmp = new(std::nothrow) char[10000000000000L]; // just to show that it can be done
+  if(buftmp != nullptr) {
+    std::cout << "I just allocated a gigantic array." << std::endl;
+  }
   delete[] buftmp;
 }
