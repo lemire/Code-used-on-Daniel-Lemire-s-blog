@@ -75,4 +75,6 @@ int main() {
     std::cout << std::endl;
     std::cout << std::endl;
   }
+  char *buftmp = new char[10000000000000L]; // just to show that it can be done
+  delete[] buftmp;
 }
