@@ -4,7 +4,10 @@
 #include <iomanip>
 #include <iostream>
 
-#define MEMORY_FENCE asm volatile("" : : : "memory");
+static void escape(void* p) { asm volatile("" : : "g"(p) : "memory"); }
+
+// if needed
+// static void clobber() { asm volatile("" : : : "memory"); }
 
 constexpr std::size_t MB        = 1024 * 1024;
 constexpr std::size_t page_size = 4096;
@@ -16,91 +19,102 @@ using std::chrono::duration_cast;
 
 class Timer {
 public:
-  Timer(size_t size, const std::string& cmd) : _size{size}, _cmd{cmd}, _start_clock{clk::now()} {};
+  Timer(size_t size, const std::string& cmd) : _size{size}, _cmd{cmd}, _start{clk::now()} {};
 
   ~Timer() {
-    auto duration  = clk::now() - _start_clock;
+    auto duration  = clk::now() - _start;
     auto elapsed_s = duration_cast<dur_double>(duration).count();
-    // waiting for std::format!
     std::printf("%7lu pages %5lu MB   %-30s %9.3f ms  %7.1f GB/s \n", _size / page_size, _size / MB,
                 _cmd.data(), elapsed_s * 1000, _size / (1024. * 1024 * 1024.) / elapsed_s);
     ;
   };
 
 private:
-  time_point  _start_clock;
   size_t      _size;
   std::string _cmd;
+  time_point  _start;
 };
 
-__attribute__((noinline)) char* benchcalloc(size_t s) {
-  auto  t    = Timer{s, "calloc"};
-  char* buf1 = (char*)calloc(s, sizeof(char));
-  // we need to touch the memory because calloc will cheat
-  for (size_t i = 0; i < s; i += page_size) buf1[i] = 0;
-  buf1[s - 1] = 0;
-  MEMORY_FENCE
-  return buf1;
+void calloc(size_t size) {
+  char* buf;
+  {
+    auto  t   = Timer{size, __FUNCTION__};
+    buf = (char*)calloc(size, sizeof(char));
+    for (size_t i = 0; i < size; i += page_size) buf[i] = 0;
+    buf[size - 1] = 0;
+    escape(&buf);
+  }
+  free(buf);
 }
 
-__attribute__((noinline)) char* bench(size_t s) {
-  auto  t    = Timer{s, "new char[s]()"};
-  char* buf1 = new char[s]();
-  MEMORY_FENCE
-  return buf1;
+void new_and_touch(size_t size) {
+  char* buf;
+  {
+    auto  t   = Timer{size, __FUNCTION__};
+    buf = new char[size];
+    for (size_t i = 0; i < size; i += page_size) buf[i] = 0;
+    buf[size - 1] = 0;
+    escape(&buf);
+  }
+  delete[] buf;
 }
 
-__attribute__((noinline)) char* benchnothrow(size_t s) {
-  auto  t    = Timer{s, "new(std::nothrow) char[s]()"};
-  char* buf1 = new (std::nothrow) char[s]();
-  MEMORY_FENCE
-  return buf1;
+void new_and_value_init(size_t size) {
+  char* buf;
+  {
+    auto  t   = Timer{size, __FUNCTION__};
+    buf = new char[size]();
+    escape(&buf);
+  }
+  delete[] buf;
 }
 
-__attribute__((noinline)) char* benchallocandtouch(size_t s) {
-  auto  t    = Timer{s, "new char[s] + touch"};
-  char* buf1 = new char[s];
-  for (size_t i = 0; i < s; i += page_size) buf1[i] = 0;
-  buf1[s - 1] = 0;
-  MEMORY_FENCE
-  return buf1;
+void new_and_value_init_nothrow(size_t size) {
+  char* buf;
+  {
+    auto  t   = Timer{size, __FUNCTION__};
+    buf = new (std::nothrow) char[size]();
+    escape(&buf);
+  }
+  delete[] buf;
 }
 
-__attribute__((noinline)) void benchmemset(size_t s, char* buf) {
-  auto t = Timer{s, "memset"};
-  memset(buf, 0, s);
-  MEMORY_FENCE
+void memset_existing_allocation(size_t size) {
+  // note that we are NOT timing the value initialization of buf
+  char* buf = new char[size]();
+  escape(&buf);
+  {
+    auto t = Timer{size, __FUNCTION__};
+    memset(buf, 1, size);  // overwriting existing initialized allocation with `1`s
+    escape(&buf);
+  }
+  delete[] buf;
 }
 
-__attribute__((noinline)) char* benchmemcpy(size_t s, char* buf) {
-  char* newbuf = new char[s]();
-  MEMORY_FENCE
-  auto t = Timer{s, "memcpy"};
-  memcpy(newbuf, buf, s);
-  MEMORY_FENCE
-  return newbuf;
+void mempy_into_existing_allocation(size_t size) {
+  char* buf = new char[size]();
+  escape(&buf);
+  // note that we are NOT timing the value initialization of buf or newbuf
+  char* newbuf = new char[size]();
+  escape(&newbuf);
+  {
+    auto t = Timer{size, __FUNCTION__};
+     // copying from existing initialized allocation into another existing initialized allocation
+    memcpy(newbuf, buf, size);
+    escape(&newbuf);
+  }
+  delete[] buf;
+  delete[] newbuf;
 }
 
 int main() {
   for (size_t i = 256 * MB; i <= 1024 * MB; i *= 2) {
-    for (int z = 0; z < 1; z++) {
-      char* bc = benchcalloc(i);
-      free(bc);
-      char* b0 = benchallocandtouch(i);
-      char* bz = benchnothrow(i);
-      char* b  = bench(i);
-      benchmemset(i, b);
-      char* b2 = benchmemcpy(i, b);
-      delete[] b;
-      delete[] b2;
-      delete[] b0;
-      delete[] bz;
-      std::cout << '\n';
-    }
+    calloc(i);
+    new_and_touch(i);
+    new_and_value_init(i);
+    new_and_value_init_nothrow(i);
+    memset_existing_allocation(i);
+    mempy_into_existing_allocation(i);
+    std::cout << '\n';
   }
-  char* buftmp = new (std::nothrow) char[10'000'000'000'000L]; // just to show that it can be done
-  if (buftmp != nullptr) {
-    std::cout << "I just allocated a gigantic array." << '\n';
-  }
-  delete[] buftmp;
 }
