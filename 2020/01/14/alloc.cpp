@@ -6,7 +6,8 @@
 
 static void escape(void* p) { asm volatile("" : : "g"(p) : "memory"); }
 
-static void clobber() { asm volatile("" : : : "memory"); }
+// if needed
+// static void clobber() { asm volatile("" : : : "memory"); }
 
 constexpr std::size_t MB        = 1024 * 1024;
 constexpr std::size_t page_size = 4096;
@@ -29,16 +30,16 @@ public:
   };
 
 private:
-  time_point  _start;
   size_t      _size;
   std::string _cmd;
+  time_point  _start;
 };
 
 void calloc(size_t size) {
   char* buf;
   {
     auto  t   = Timer{size, __FUNCTION__};
-    char* buf = (char*)calloc(size, sizeof(char));
+    buf = (char*)calloc(size, sizeof(char));
     for (size_t i = 0; i < size; i += page_size) buf[i] = 0;
     buf[size - 1] = 0;
     escape(&buf);
@@ -50,7 +51,7 @@ void new_and_touch(size_t size) {
   char* buf;
   {
     auto  t   = Timer{size, __FUNCTION__};
-    char* buf = new char[size];
+    buf = new char[size];
     for (size_t i = 0; i < size; i += page_size) buf[i] = 0;
     buf[size - 1] = 0;
     escape(&buf);
@@ -62,7 +63,7 @@ void new_and_value_init(size_t size) {
   char* buf;
   {
     auto  t   = Timer{size, __FUNCTION__};
-    char* buf = new char[size]();
+    buf = new char[size]();
     escape(&buf);
   }
   delete[] buf;
@@ -72,7 +73,7 @@ void new_and_value_init_nothrow(size_t size) {
   char* buf;
   {
     auto  t   = Timer{size, __FUNCTION__};
-    char* buf = new (std::nothrow) char[size]();
+    buf = new (std::nothrow) char[size]();
     escape(&buf);
   }
   delete[] buf;
@@ -93,7 +94,7 @@ void memset_existing_allocation(size_t size) {
 void mempy_into_existing_allocation(size_t size) {
   char* buf = new char[size]();
   escape(&buf);
-  // note that we are NOT timing the value initialization of buf
+  // note that we are NOT timing the value initialization of buf or newbuf
   char* newbuf = new char[size]();
   escape(&newbuf);
   {
@@ -110,8 +111,8 @@ int main() {
   for (size_t i = 256 * MB; i <= 1024 * MB; i *= 2) {
     calloc(i);
     new_and_touch(i);
-    new_and_value_init_nothrow(i);
     new_and_value_init(i);
+    new_and_value_init_nothrow(i);
     memset_existing_allocation(i);
     mempy_into_existing_allocation(i);
     std::cout << '\n';
