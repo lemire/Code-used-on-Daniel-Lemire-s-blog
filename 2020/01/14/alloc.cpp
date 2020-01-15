@@ -4,7 +4,13 @@
 #include <iomanip>
 #include <iostream>
 
-#define MEMORY_FENCE asm volatile("" : : : "memory");
+static void escape (void *p) {
+  asm volatile ("" : : "g"(p) : "memory");
+}
+
+static void clobber () {
+  asm volatile ("" : : : "memory");
+}
 
 constexpr std::size_t MB        = 1024 * 1024;
 constexpr std::size_t page_size = 4096;
@@ -16,19 +22,18 @@ using std::chrono::duration_cast;
 
 class Timer {
 public:
-  Timer(size_t size, const std::string& cmd) : _size{size}, _cmd{cmd}, _start_clock{clk::now()} {};
+  Timer(size_t size, const std::string& cmd) : _size{size}, _cmd{cmd}, _start{clk::now()} {};
 
   ~Timer() {
-    auto duration  = clk::now() - _start_clock;
+    auto duration  = clk::now() - _start;
     auto elapsed_s = duration_cast<dur_double>(duration).count();
-    // waiting for std::format!
     std::printf("%7lu pages %5lu MB   %-30s %9.3f ms  %7.1f GB/s \n", _size / page_size, _size / MB,
                 _cmd.data(), elapsed_s * 1000, _size / (1024. * 1024 * 1024.) / elapsed_s);
     ;
   };
 
 private:
-  time_point  _start_clock;
+  time_point  _start;
   size_t      _size;
   std::string _cmd;
 };
@@ -39,21 +44,21 @@ __attribute__((noinline)) char* benchcalloc(size_t s) {
   // we need to touch the memory because calloc will cheat
   for (size_t i = 0; i < s; i += page_size) buf1[i] = 0;
   buf1[s - 1] = 0;
-  MEMORY_FENCE
+  escape(&buf1);
   return buf1;
 }
 
 __attribute__((noinline)) char* bench(size_t s) {
   auto  t    = Timer{s, "new char[s]()"};
   char* buf1 = new char[s]();
-  MEMORY_FENCE
+  escape(&buf1);
   return buf1;
 }
 
 __attribute__((noinline)) char* benchnothrow(size_t s) {
   auto  t    = Timer{s, "new(std::nothrow) char[s]()"};
   char* buf1 = new (std::nothrow) char[s]();
-  MEMORY_FENCE
+  escape(&buf1);
   return buf1;
 }
 
@@ -62,22 +67,22 @@ __attribute__((noinline)) char* benchallocandtouch(size_t s) {
   char* buf1 = new char[s];
   for (size_t i = 0; i < s; i += page_size) buf1[i] = 0;
   buf1[s - 1] = 0;
-  MEMORY_FENCE
+  escape(&buf1);
   return buf1;
 }
 
 __attribute__((noinline)) void benchmemset(size_t s, char* buf) {
   auto t = Timer{s, "memset"};
   memset(buf, 0, s);
-  MEMORY_FENCE
+  escape(&buf);
 }
 
 __attribute__((noinline)) char* benchmemcpy(size_t s, char* buf) {
   char* newbuf = new char[s]();
-  MEMORY_FENCE
+  escape(&newbuf);
   auto t = Timer{s, "memcpy"};
   memcpy(newbuf, buf, s);
-  MEMORY_FENCE
+  escape(&newbuf);
   return newbuf;
 }
 
