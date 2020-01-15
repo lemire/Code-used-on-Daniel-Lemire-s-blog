@@ -4,13 +4,9 @@
 #include <iomanip>
 #include <iostream>
 
-static void escape (void *p) {
-  asm volatile ("" : : "g"(p) : "memory");
-}
+static void escape(void* p) { asm volatile("" : : "g"(p) : "memory"); }
 
-static void clobber () {
-  asm volatile ("" : : : "memory");
-}
+static void clobber() { asm volatile("" : : : "memory"); }
 
 constexpr std::size_t MB        = 1024 * 1024;
 constexpr std::size_t page_size = 4096;
@@ -38,74 +34,84 @@ private:
   std::string _cmd;
 };
 
-__attribute__((noinline)) char* benchcalloc(size_t s) {
-  auto  t    = Timer{s, "calloc"};
-  char* buf1 = (char*)calloc(s, sizeof(char));
-  // we need to touch the memory because calloc will cheat
-  for (size_t i = 0; i < s; i += page_size) buf1[i] = 0;
-  buf1[s - 1] = 0;
-  escape(&buf1);
-  return buf1;
+void bench_calloc(size_t s) {
+  char* buf;
+  {
+    auto  t   = Timer{s, std::string(__FUNCTION__).substr(6)};
+    char* buf = (char*)calloc(s, sizeof(char));
+    // we need to touch the memory because calloc will cheat
+    for (size_t i = 0; i < s; i += page_size) buf[i] = 0;
+    buf[s - 1] = 0;
+    escape(&buf);
+  }
+  free(buf);
 }
 
-__attribute__((noinline)) char* bench(size_t s) {
-  auto  t    = Timer{s, "new char[s]()"};
-  char* buf1 = new char[s]();
-  escape(&buf1);
-  return buf1;
+void bench_new_and_touch(size_t s) {
+  char* buf;
+  {
+    auto  t   = Timer{s, std::string(__FUNCTION__).substr(6)};
+    char* buf = new char[s];
+    for (size_t i = 0; i < s; i += page_size) buf[i] = 0;
+    buf[s - 1] = 0;
+    escape(&buf);
+  }
+  delete[] buf;
 }
 
-__attribute__((noinline)) char* benchnothrow(size_t s) {
-  auto  t    = Timer{s, "new(std::nothrow) char[s]()"};
-  char* buf1 = new (std::nothrow) char[s]();
-  escape(&buf1);
-  return buf1;
+void bench_new_and_value_init(size_t s) {
+  char* buf;
+  {
+    auto  t   = Timer{s, std::string(__FUNCTION__).substr(6)};
+    char* buf = new char[s]();
+    escape(&buf);
+  }
+  delete[] buf;
 }
 
-__attribute__((noinline)) char* benchallocandtouch(size_t s) {
-  auto  t    = Timer{s, "new char[s] + touch"};
-  char* buf1 = new char[s];
-  for (size_t i = 0; i < s; i += page_size) buf1[i] = 0;
-  buf1[s - 1] = 0;
-  escape(&buf1);
-  return buf1;
+void bench_new_and_value_init_nothrow(size_t s) {
+  char* buf;
+  {
+    auto  t   = Timer{s, std::string(__FUNCTION__).substr(6)};
+    char* buf = new (std::nothrow) char[s]();
+    escape(&buf);
+  }
+  delete[] buf;
 }
 
-__attribute__((noinline)) void benchmemset(size_t s, char* buf) {
-  auto t = Timer{s, "memset"};
-  memset(buf, 0, s);
+void bench_memset_existing_allocation(size_t s) {
+  char* buf = new char[s]();
   escape(&buf);
+  {
+    auto t = Timer{s, std::string(__FUNCTION__).substr(6)};
+    memset(buf, 1, s);
+    escape(&buf);
+  }
+  delete[] buf;
 }
 
-__attribute__((noinline)) char* benchmemcpy(size_t s, char* buf) {
+void bench_mempy_into_existing_allocation(size_t s) {
+  char* buf = new char[s]();
+  escape(&buf);
   char* newbuf = new char[s]();
   escape(&newbuf);
-  auto t = Timer{s, "memcpy"};
-  memcpy(newbuf, buf, s);
-  escape(&newbuf);
-  return newbuf;
+  {
+    auto t = Timer{s, std::string(__FUNCTION__).substr(6)};
+    memcpy(newbuf, buf, s);
+    escape(&newbuf);
+  }
+  delete[] buf;
+  delete[] newbuf;
 }
 
 int main() {
   for (size_t i = 256 * MB; i <= 1024 * MB; i *= 2) {
-    for (int z = 0; z < 1; z++) {
-      char* bc = benchcalloc(i);
-      free(bc);
-      char* b0 = benchallocandtouch(i);
-      char* bz = benchnothrow(i);
-      char* b  = bench(i);
-      benchmemset(i, b);
-      char* b2 = benchmemcpy(i, b);
-      delete[] b;
-      delete[] b2;
-      delete[] b0;
-      delete[] bz;
-      std::cout << '\n';
-    }
+    bench_calloc(i);
+    bench_new_and_touch(i);
+    bench_new_and_value_init_nothrow(i);
+    bench_new_and_value_init(i);
+    bench_memset_existing_allocation(i);
+    bench_mempy_into_existing_allocation(i);
+    std::cout << '\n';
   }
-  char* buftmp = new (std::nothrow) char[10'000'000'000'000L]; // just to show that it can be done
-  if (buftmp != nullptr) {
-    std::cout << "I just allocated a gigantic array." << '\n';
-  }
-  delete[] buftmp;
 }
