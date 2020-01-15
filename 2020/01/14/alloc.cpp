@@ -34,10 +34,10 @@ private:
   std::string _cmd;
 };
 
-void bench_calloc(size_t s) {
+void calloc(size_t s) {
   char* buf;
   {
-    auto  t   = Timer{s, std::string(__FUNCTION__).substr(6)};
+    auto  t   = Timer{s, __FUNCTION__};
     char* buf = (char*)calloc(s, sizeof(char));
     // we need to touch the memory because calloc will cheat
     for (size_t i = 0; i < s; i += page_size) buf[i] = 0;
@@ -47,10 +47,10 @@ void bench_calloc(size_t s) {
   free(buf);
 }
 
-void bench_new_and_touch(size_t s) {
+void new_and_touch(size_t s) {
   char* buf;
   {
-    auto  t   = Timer{s, std::string(__FUNCTION__).substr(6)};
+    auto  t   = Timer{s, __FUNCTION__};
     char* buf = new char[s];
     for (size_t i = 0; i < s; i += page_size) buf[i] = 0;
     buf[s - 1] = 0;
@@ -59,44 +59,44 @@ void bench_new_and_touch(size_t s) {
   delete[] buf;
 }
 
-void bench_new_and_value_init(size_t s) {
+void new_and_value_init(size_t s) {
   char* buf;
   {
-    auto  t   = Timer{s, std::string(__FUNCTION__).substr(6)};
+    auto  t   = Timer{s, __FUNCTION__};
     char* buf = new char[s]();
     escape(&buf);
   }
   delete[] buf;
 }
 
-void bench_new_and_value_init_nothrow(size_t s) {
+void new_and_value_init_nothrow(size_t s) {
   char* buf;
   {
-    auto  t   = Timer{s, std::string(__FUNCTION__).substr(6)};
+    auto  t   = Timer{s, __FUNCTION__};
     char* buf = new (std::nothrow) char[s]();
     escape(&buf);
   }
   delete[] buf;
 }
 
-void bench_memset_existing_allocation(size_t s) {
+void memset_existing_allocation(size_t s) {
   char* buf = new char[s]();
   escape(&buf);
   {
-    auto t = Timer{s, std::string(__FUNCTION__).substr(6)};
+    auto t = Timer{s, __FUNCTION__};
     memset(buf, 1, s);
     escape(&buf);
   }
   delete[] buf;
 }
 
-void bench_mempy_into_existing_allocation(size_t s) {
+void mempy_into_existing_allocation(size_t s) {
   char* buf = new char[s]();
   escape(&buf);
   char* newbuf = new char[s]();
   escape(&newbuf);
   {
-    auto t = Timer{s, std::string(__FUNCTION__).substr(6)};
+    auto t = Timer{s, __FUNCTION__};
     memcpy(newbuf, buf, s);
     escape(&newbuf);
   }
@@ -106,12 +106,12 @@ void bench_mempy_into_existing_allocation(size_t s) {
 
 int main() {
   for (size_t i = 256 * MB; i <= 1024 * MB; i *= 2) {
-    bench_calloc(i);
-    bench_new_and_touch(i);
-    bench_new_and_value_init_nothrow(i);
-    bench_new_and_value_init(i);
-    bench_memset_existing_allocation(i);
-    bench_mempy_into_existing_allocation(i);
+    calloc(i);
+    new_and_touch(i);
+    new_and_value_init_nothrow(i);
+    new_and_value_init(i);
+    memset_existing_allocation(i);
+    mempy_into_existing_allocation(i);
     std::cout << '\n';
   }
 }
