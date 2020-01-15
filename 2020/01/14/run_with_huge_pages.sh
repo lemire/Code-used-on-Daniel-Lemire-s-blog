@@ -14,15 +14,15 @@ origval=$(sudo cat /sys/kernel/mm/transparent_hugepage/enabled)
 sudo -u $real_user echo $origval
 set -e
 function cleanup {
-  echo "Restauring hugepages to madvise"
+  echo "Restoring hugepages to madvise"
   echo "madvise" > /sys/kernel/mm/transparent_hugepage/enabled
 }
 trap cleanup EXIT
 
-for mode in "always" "never" ; do
+for mode in "always" ; do # "never
   sudo -u $real_user echo "mode: " $mode
   echo $mode > /sys/kernel/mm/transparent_hugepage/enabled
   echo $(sudo cat /sys/kernel/mm/transparent_hugepage/enabled)
-  $@ 
+  $@
 done
 echo "Done."
