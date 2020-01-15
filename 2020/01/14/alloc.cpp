@@ -34,70 +34,69 @@ private:
   std::string _cmd;
 };
 
-void calloc(size_t s) {
+void calloc(size_t size) {
   char* buf;
   {
-    auto  t   = Timer{s, __FUNCTION__};
-    char* buf = (char*)calloc(s, sizeof(char));
-    // we need to touch the memory because calloc will cheat
-    for (size_t i = 0; i < s; i += page_size) buf[i] = 0;
-    buf[s - 1] = 0;
+    auto  t   = Timer{size, __FUNCTION__};
+    char* buf = (char*)calloc(size, sizeof(char));
+    for (size_t i = 0; i < size; i += page_size) buf[i] = 0;
+    buf[size - 1] = 0;
     escape(&buf);
   }
   free(buf);
 }
 
-void new_and_touch(size_t s) {
+void new_and_touch(size_t size) {
   char* buf;
   {
-    auto  t   = Timer{s, __FUNCTION__};
-    char* buf = new char[s];
-    for (size_t i = 0; i < s; i += page_size) buf[i] = 0;
-    buf[s - 1] = 0;
+    auto  t   = Timer{size, __FUNCTION__};
+    char* buf = new char[size];
+    for (size_t i = 0; i < size; i += page_size) buf[i] = 0;
+    buf[size - 1] = 0;
     escape(&buf);
   }
   delete[] buf;
 }
 
-void new_and_value_init(size_t s) {
+void new_and_value_init(size_t size) {
   char* buf;
   {
-    auto  t   = Timer{s, __FUNCTION__};
-    char* buf = new char[s]();
+    auto  t   = Timer{size, __FUNCTION__};
+    char* buf = new char[size]();
     escape(&buf);
   }
   delete[] buf;
 }
 
-void new_and_value_init_nothrow(size_t s) {
+void new_and_value_init_nothrow(size_t size) {
   char* buf;
   {
-    auto  t   = Timer{s, __FUNCTION__};
-    char* buf = new (std::nothrow) char[s]();
+    auto  t   = Timer{size, __FUNCTION__};
+    char* buf = new (std::nothrow) char[size]();
     escape(&buf);
   }
   delete[] buf;
 }
 
-void memset_existing_allocation(size_t s) {
-  char* buf = new char[s]();
+void memset_existing_allocation(size_t size) {
+  char* buf = new char[size]();
   escape(&buf);
   {
-    auto t = Timer{s, __FUNCTION__};
-    memset(buf, 1, s);
+    auto t = Timer{size, __FUNCTION__};
+    memset(buf, 1, size);
     escape(&buf);
   }
   delete[] buf;
 }
 
-void mempy_into_existing_allocation(size_t s) {
-  char* buf = new char[s]();
+void mempy_into_existing_allocation(size_t size) {
+  char* buf = new char[size]();
   escape(&buf);
-  char* newbuf = new char[s]();
+  char* newbuf = new char[size]();
   escape(&newbuf);
   {
-    auto t = Timer{s, __FUNCTION__};
-    memcpy(newbuf, buf, s);
+    auto t = Timer{size, __FUNCTION__};
+    memcpy(newbuf, buf, size);
     escape(&newbuf);
   }
   delete[] buf;
