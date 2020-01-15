@@ -79,11 +79,12 @@ void new_and_value_init_nothrow(size_t size) {
 }
 
 void memset_existing_allocation(size_t size) {
+  // note that we are NOT timing the value initialization of buf
   char* buf = new char[size]();
   escape(&buf);
   {
     auto t = Timer{size, __FUNCTION__};
-    memset(buf, 1, size);
+    memset(buf, 1, size);  // overwriting existing initialized allocation with `1`s
     escape(&buf);
   }
   delete[] buf;
@@ -92,10 +93,12 @@ void memset_existing_allocation(size_t size) {
 void mempy_into_existing_allocation(size_t size) {
   char* buf = new char[size]();
   escape(&buf);
+  // note that we are NOT timing the value initialization of buf
   char* newbuf = new char[size]();
   escape(&newbuf);
   {
     auto t = Timer{size, __FUNCTION__};
+     // copying from existing initialized allocation into another existing initialized allocation
     memcpy(newbuf, buf, size);
     escape(&newbuf);
   }
