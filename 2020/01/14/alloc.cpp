@@ -3,11 +3,11 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
+#ifdef __linux__
+#include <sys/mman.h>
+#endif
 
 static void escape(void* p) { asm volatile("" : : "g"(p) : "memory"); }
-
-// if needed
-// static void clobber() { asm volatile("" : : : "memory"); }
 
 constexpr std::size_t MB        = 1024 * 1024;
 constexpr std::size_t page_size = 4096;
@@ -50,6 +50,20 @@ void calloc(size_t size) {
   }
   free(buf);
 }
+
+#ifdef __linux__
+void mmap_populate(size_t size) {
+  char* buf;
+  {
+    auto t = Timer{size, __FUNCTION__};
+    buf    = (char *) mmap (NULL, size, PROT_READ|PROT_WRITE,
+	      MAP_PRIVATE|MAP_POPULATE|MAP_ANONYMOUS, -1, 0);
+    escape(&buf);
+  }
+  munmap(buf, size);
+}
+#endif
+
 
 void new_and_touch(size_t size) {
   char* buf;
@@ -119,6 +133,9 @@ int main() {
     new_and_value_init_nothrow(i);
     memset_existing_allocation(i);
     mempy_into_existing_allocation(i);
+#ifdef __linux__
+    mmap_populate(i);
+#endif
     std::cout << '\n';
   }
 }
