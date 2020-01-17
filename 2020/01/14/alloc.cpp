@@ -77,6 +77,16 @@ void new_and_touch(size_t size) {
   delete[] buf;
 }
 
+void new_and_memset(size_t size) {
+  char* buf;
+  {
+    auto t = Timer{size, __FUNCTION__};
+    buf    = new char[size];
+    memset(buf,0,size);
+    escape(&buf);
+  }
+  delete[] buf;
+}
 void new_and_value_init(size_t size) {
   char* buf;
   {
@@ -129,6 +139,7 @@ int main() {
   for (size_t i = 256 * MB; i <= 1024 * MB; i *= 2) {
     calloc(i);
     new_and_touch(i);
+    new_and_memset(i);
     new_and_value_init(i);
     new_and_value_init_nothrow(i);
     memset_existing_allocation(i);
