@@ -69,7 +69,7 @@ int main() {
   }
   double meanval = mean(timings);
   double stde = std_error(timings, meanval);
-  std::cout.precision(5);
+  std::cout.precision(6);
   std::cout << meanval << " ns +/- " << stde << std::endl;
   std::cout << "min: " << *min_element(timings.begin(), timings.end()) << std::endl;
   std::cout << "max: " << *max_element(timings.begin(), timings.end()) << std::endl;
