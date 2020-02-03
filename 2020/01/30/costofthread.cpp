@@ -40,7 +40,7 @@ double startemptythread() {
 
 double startasync() {
   auto t = Timer{ __FUNCTION__ };
-  auto f = std::async(std::launch::deferred, []{counter++;});
+  auto f = std::async(std::launch::async, []{counter++;});
   f.get();
   return t.time_ns();
 }
