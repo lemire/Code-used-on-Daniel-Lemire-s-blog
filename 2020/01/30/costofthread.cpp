@@ -6,7 +6,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
-
+#include <future>
 using clk = std::chrono::high_resolution_clock;
 using time_point = std::chrono::time_point<clk>;
 using dur_double = std::chrono::duration<double>;
@@ -30,6 +30,21 @@ private:
 };
 
 size_t counter{ 0 };
+
+double startemptythread() {
+  auto t = Timer{ __FUNCTION__ };
+  auto mythread = std::thread([] { });
+  mythread.join();
+  return t.time_ns();
+}
+
+double startasync() {
+  auto t = Timer{ __FUNCTION__ };
+  auto f = std::async(std::launch::deferred, []{counter++;});
+  f.get();
+  return t.time_ns();
+}
+
 
 double startthread() {
   auto t = Timer{ __FUNCTION__ };
@@ -61,10 +76,12 @@ double std_error(const std::vector<double> &v, double meanval) {
 
   return std::sqrt(s / v.size());
 }
-int main() {
+
+template <class F>
+void printtime(F f) {
   std::vector<double> timings;
   for (size_t i = 0; i <= 1000; i += 1) {
-    timings.push_back(startthread());
+    timings.push_back(f());
   }
   double meanval = mean(timings);
   double stde = std_error(timings, meanval);
@@ -74,4 +91,13 @@ int main() {
             << std::endl;
   std::cout << "max: " << *max_element(timings.begin(), timings.end())
             << std::endl;
+}
+
+int main() {
+  std::cout << "async" << std::endl;
+  printtime(startasync);
+  std::cout << "emptythread" << std::endl;
+  printtime(startemptythread);
+  std::cout << "thread" << std::endl;
+  printtime(startthread);
 }
