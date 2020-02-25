@@ -47,9 +47,17 @@ def naivebincoef(n,k):
         bottom *= k-i
     return top//bottom
 
-n = 900
-k=80
-print(math.comb(n, k), byprime(n,k), naivebincoef(n,k))
+
+
+def naivebincoefnooverflow(n,k):
+    answer = 1
+    for i in range(k-1,-1,-1):
+        answer = (answer * (n-i))// (k-i)
+    return answer
+
+n = 10
+k = 8
+print(math.comb(n, k), byprime(n,k), naivebincoef(n,k), naivebincoefnooverflow(n,k))
 
 import timeit
 print(timeit.timeit(lambda : math.comb(n, k), number=1000))
