@@ -55,11 +55,49 @@ def naivebincoefnooverflow(n,k):
         answer = (answer * (n-i))// (k-i)
     return answer
 
-n = 10
-k = 8
-print(math.comb(n, k), byprime(n,k), naivebincoef(n,k), naivebincoefnooverflow(n,k))
+def naivebincoefnooverflow_verbose(n,k):
+    answer = 1
+    maxval = answer
+    for i in range(k-1,-1,-1):
+        if(answer*(n-i)>maxval): maxval =answer*(n-i) 
+        answer = (answer * (n-i))// (k-i)
+    print("maxval", maxval)
+    return answer
 
-import timeit
-print(timeit.timeit(lambda : math.comb(n, k), number=1000))
-print(timeit.timeit(lambda : byprime(n,k), number=1000))
-print(timeit.timeit(lambda : naivebincoef(n,k), number=1000))
+n = 70
+k = 8
+#for k in range(1,9):
+#    print(naivebincoefnooverflow_verbose(n,k))
+
+#print(math.comb(n, k), byprime(n,k), naivebincoef(n,k), naivebincoefnooverflow(n,k))
+
+#import timeit
+#print(timeit.timeit(lambda : math.comb(n, k), number=1000))
+#print(timeit.timeit(lambda : byprime(n,k), number=1000))
+#print(timeit.timeit(lambda : naivebincoef(n,k), number=1000))
+def f64(x, y) :
+  return  (y * ( (2 - y * x )%(1<<64)))%(1<<64)
+
+
+def findInverse64(x) :
+   y = x; 
+   y = f64(x,y)
+   y = f64(x,y)
+   y = f64(x,y)
+   y = f64(x,y)
+   y = f64(x,y)
+   return y
+
+
+for i in range(1,64):
+    val = i
+    evenness = 0
+    while val & 1 == 0:
+        val >>= 1
+        evenness +=1
+    #print(i,evenness, val)
+    print(evenness,hex(findInverse64(val)) )
+    #print(evenness)
+
+for k in range(1,9):
+    print(naivebincoef(n,k))
