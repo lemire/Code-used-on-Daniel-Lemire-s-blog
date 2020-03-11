@@ -2,15 +2,16 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-void demo() {
-  char * array = new char[20]; 
+void demo(int p) {
+  char * array = new char[p]; 
   delete[] array; 
-  char * newarray = new char[21];
-  if(newarray == array) {
-    std::cout << "they are the same!" << std::endl;
+  char * newarray = new char[p+1];
+  if(newarray != array) {
+    std::cout << p << std::endl;
   }
 }
 
 int main() {
-  demo();
+  for(int p = 1; p < 2000; p++)
+    demo(p);
 }
