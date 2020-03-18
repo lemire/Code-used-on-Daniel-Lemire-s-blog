@@ -12,9 +12,10 @@
 
 #include "align_alloc.h"
 
-void demo() {
+void demo(size_t offset) {
   // allocate cache-page aligned block
   size_t N = 256 * 1024;
+  std::cout << "offset = " << offset << std::endl;
   char *buffer = (char *)aligned_malloc(64, N);
   memset(buffer, 1, N);
   size_t hits = (N - 64) / 64;
@@ -27,7 +28,7 @@ void demo() {
   // if you hit unlucky, unlucky + 64,
   // you are exactly 16 bytes away from the
   // cache-line boundary
-  char * const unlucky = buffer + 48;
+  char * const unlucky = buffer + offset;
   __m256i vec = _mm256_setzero_si256();
   std::chrono::time_point<std::chrono::steady_clock> start_clock, end_clock;
   std::chrono::duration<double> elapsed = std::chrono::duration<double>::max();
@@ -84,9 +85,10 @@ void demo() {
 }
 
 int main() {
-  for (int k = 0; k < 10; k++) {
+  for (int k = 0; k < 5; k++) {
     std::cout << "trial " << k << std::endl;
-    demo();
+    demo(48);
+    demo(0);
   }
   return EXIT_SUCCESS;
 }
