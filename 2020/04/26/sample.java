@@ -13,11 +13,11 @@ public class sample {
         while(sum > 0) {
             int y = r.nextInt(sum);
             // select the key in linear time
-            int sofar = 0;
+            int runningsum = 0;
             int z = 0;
             for(; z < runninghisto.length; z++) {
-                sofar += runninghisto[z];
-                if(y < sofar) { break; }
+                runningsum += runninghisto[z];
+                if(y < runningsum) { break; }
             }
             output[pos++] = z;
             runninghisto[z] -= 1;
