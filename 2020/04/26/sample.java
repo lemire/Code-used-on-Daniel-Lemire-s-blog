@@ -11,7 +11,7 @@ public class sample {
         for(int z = 0; z < histo.length; z++) { sum += histo[z]; }
         int pos = 0;
         while(sum > 0) {
-            int y = r.nextInt(sum);
+            int y = r.nextInt(sum); // random integer in [0,sum)
             // select the key in linear time
             int runningsum = 0;
             int z = 0;
@@ -34,19 +34,19 @@ public class sample {
         int l = 0;
         while((1<<l) <  histo.length) { l++; }
         int[] runninghisto = Arrays.copyOf(histo, histo.length);
-        int g = 1;
-        for(;(1<<g) < runninghisto.length; g++) {
-            for(int z = 0; z + g < runninghisto.length; z += 2*g) {
-                runninghisto[z + g] += runninghisto[z];
+        int level = 1;
+        for(;(1<<level) < runninghisto.length; level++) {
+            for(int z = 0; z + (1<<level) < runninghisto.length; z += 2*(1<<level)) {
+                runninghisto[z + (1<<level)] += runninghisto[z];
             }
         }
-        int maxlevel = g - 1;
+        int maxlevel = level - 1;
 
         int pos = 0;
         while(sum > 0) {
-            int y = r.nextInt(sum);
+            int y = r.nextInt(sum); // random integer in [0,sum)
             // select logarithmic time
-            int level = maxlevel;
+            level = maxlevel;
             int offset = 0;
             for(; level >= 0; level -= 1) {
                 if(y >= runninghisto[offset + (1<<level)]) {
