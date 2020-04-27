@@ -26,7 +26,7 @@ public class sample {
         return pos;
     }
 
-
+// Note: this code is buggy, it is only a proof of concept TODO: debug it
     public static int smarterRandomSample(int[] histo, int[] output) {
         int sum = 0;
         for(int z = 0; z < histo.length; z++) { sum += histo[z]; }
