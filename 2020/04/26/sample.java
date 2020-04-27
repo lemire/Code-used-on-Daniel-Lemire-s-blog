@@ -38,10 +38,6 @@ public class sample {
             sum += histo[z];
         }
         // build tree
-        int l = 0;
-        while ((1 << l) < histo.length) {
-            l++;
-        }
         int[] runninghisto = Arrays.copyOf(histo, histo.length);
         int level = 0;
         for (;
@@ -77,8 +73,8 @@ public class sample {
     }
 
     public static void demo() {
-        int N = 16;
-        int M = 16 * 2;
+        int N = 1024;
+        int M = 1000000;
         int[] histo = new int[N];
         int s = 0;
         for (int z = 0; z < histo.length; z++) {
