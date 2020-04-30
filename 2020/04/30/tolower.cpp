@@ -84,6 +84,49 @@ bool is_ascii_equal_ignoring_case(const char *input1, const char *input2,
   return true;
 }
 
+bool compare_ascii(uint64_t w1, uint64_t w2) {
+    const uint64_t diff = w1 ^ w2; // only valid diff at 0x20
+    if ((diff & 0xdfdfdfdfdfdfdfdf) != 0) //  ~0x20 = 0xdf
+        return false;
+
+    // check if any non-ascii
+    const uint64_t any_non_ascii = (w1 | w2) & packed_byte(0x80);
+    if (any_non_ascii)
+        return false;
+
+    // validate if w1 contains on only A-Z/a-z chars (then w2 must also be in this range)
+    w1 |= packed_byte(0x20);
+    
+    const uint64_t A = w1 + packed_byte(128 - 'A');
+    const uint64_t Z = w1 + packed_byte(128 - 'Z' - 1);
+    const uint64_t mask_lower = (A ^ Z) & packed_byte(0x80);
+
+    return mask_lower == packed_byte(0x80);
+}
+
+bool is_ascii_equal_ignoring_case_mula(const char *input1, const char *input2,
+                                  size_t len) {
+  size_t i = 0;
+  for (; i + sizeof(uint64_t) <= len; i += sizeof(uint64_t)) {
+    uint64_t w1, w2;
+    memcpy(&w1, input1 + i, sizeof(w1));
+    memcpy(&w2, input2 + i, sizeof(w2));
+    if (compare_ascii(w1, w1)) {
+      return false;
+    }
+  }
+  // handle tail
+  uint64_t w1 = 0;
+  uint64_t w2 = 0;
+  memcpy(&w1, input1 + i, len - i);
+  memcpy(&w2, input2 + i, len - i);
+  if (compare_ascii(w1, w1)) {
+    return false;
+  }
+  return true;
+}
+
+
 void demo() {
   srand(time(NULL));
 
@@ -127,6 +170,15 @@ void demo() {
         break;
       }
     }
+    if (!is_the_same) {
+      std::cerr << "bug" << std::endl;
+      abort();
+    }
+    std::cout << t.time_ns() / N << std::endl;
+    std::cout << "mula ";
+    t = Timer{"mula"};
+    is_the_same = (strncasecmp((const char *)random.data(),
+                               (const char *)randomlower.data(), N) == 0);
     if (!is_the_same) {
       std::cerr << "bug" << std::endl;
       abort();
