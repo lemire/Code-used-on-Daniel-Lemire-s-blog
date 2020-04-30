@@ -88,7 +88,7 @@ void demo() {
   srand(time(NULL));
 
   std::vector<uint8_t> random;
-  size_t N = 1000000;
+  size_t N = 10000000;
   for (size_t z = 0; z < N; z++) {
     uint8_t c = (rand() % 94) + 32;
     random.push_back(c);
@@ -100,34 +100,40 @@ void demo() {
     uint64_t w2 = to_lower_ascii(w);
     memcpy(randomlower.data() + z, &w2, sizeof(w2));
   }
-  auto t = Timer{"fast"};
-  bool is_the_same = is_ascii_equal_ignoring_case(
-      (const char *)random.data(), (const char *)randomlower.data(), N);
-  if (!is_the_same) {
-    std::cerr << "bug" << std::endl;
-    abort();
-  }
-  std::cout << t.time_ns() / N << std::endl;
-  t = Timer{"slow"};
-  is_the_same = (strncasecmp((const char *)random.data(),
-                             (const char *)randomlower.data(), N) == 0);
-  if (!is_the_same) {
-    std::cerr << "bug" << std::endl;
-    abort();
-  }
-  std::cout << t.time_ns() / N << std::endl;
-  t = Timer{"slow!"};
-  for (size_t i = 0; i < N; i++) {
-    if (tolower(random[i]) != tolower(randomlower[i])) {
-      is_the_same = false;
-      break;
+  for (size_t trial = 0; trial < 5; trial++) {
+    std::cout << "hand rolled ";
+    auto t = Timer{"fast"};
+    bool is_the_same = is_ascii_equal_ignoring_case(
+        (const char *)random.data(), (const char *)randomlower.data(), N);
+    if (!is_the_same) {
+      std::cerr << "bug" << std::endl;
+      abort();
     }
+    std::cout << t.time_ns() / N << std::endl;
+    std::cout << "strncasecmp ";
+    t = Timer{"slow"};
+    is_the_same = (strncasecmp((const char *)random.data(),
+                               (const char *)randomlower.data(), N) == 0);
+    if (!is_the_same) {
+      std::cerr << "bug" << std::endl;
+      abort();
+    }
+    std::cout << t.time_ns() / N << std::endl;
+    std::cout << "tolower ";
+    t = Timer{"slow!"};
+    for (size_t i = 0; i < N; i++) {
+      if (tolower(random[i]) != tolower(randomlower[i])) {
+        is_the_same = false;
+        break;
+      }
+    }
+    if (!is_the_same) {
+      std::cerr << "bug" << std::endl;
+      abort();
+    }
+    std::cout << t.time_ns() / N << std::endl;
+    std::cout << std::endl;
   }
-  if (!is_the_same) {
-    std::cerr << "bug" << std::endl;
-    abort();
-  }
-  std::cout << t.time_ns() / N << std::endl;
 }
 
 int main() { demo(); }
