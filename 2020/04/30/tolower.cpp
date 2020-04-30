@@ -129,11 +129,12 @@ bool is_ascii_equal_ignoring_case_mula(const char *input1, const char *input2,
   }
   return true;
 }
-// are they ASCII *and* identical up to case, or not empty?
+
+// If there is any change, it must be [a-z]<=>[A-Z]. Yes? If so return true.
 bool equal_ascii_ignore_case(uint64_t w1, uint64_t w2) {
   const uint64_t diff = w1 ^ w2;        // only valid diff at 0x20
   // is_diff is where we have a difference, any bit set outside 0x80 will get a false return
-  const uint64_t is_diff = (diff << 2) | (diff >> (64 - 2 ));
+  const uint64_t is_diff = (diff << 2) | (diff >> (64 - 2)); // rotate
   // check if any non-ascii
   const uint64_t non_ascii = (w1 | w2) & packed_byte(0x80);
   const uint64_t ascii = ~non_ascii;
