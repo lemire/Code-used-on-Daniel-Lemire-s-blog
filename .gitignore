@@ -1,3 +1,18 @@
+# Ignore all
+*
+
+# Unignore all dirs
+!*/
+
+# Unignore all with extensions
+!*.*
+
+# Unignore .gitignore file
+!.gitignore
+
+# Ignore object files
+*.o
+
 # vscode files
 .vscode
 
@@ -6,8 +21,6 @@
 .project
 .classpath
 .settings
-
-*.o
 
 # perf output
 perf.data*
