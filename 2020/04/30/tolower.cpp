@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <float.h>
 #include <future>
 #include <iomanip>
 #include <iostream>
@@ -132,13 +133,15 @@ bool is_ascii_equal_ignoring_case_mula(const char *input1, const char *input2,
 
 // If there is any change, it must be [a-z]<=>[A-Z]. Yes? If so return true.
 bool equal_ascii_ignore_case(uint64_t w1, uint64_t w2) {
-  const uint64_t diff = w1 ^ w2;        // only valid diff at 0x20
-  // is_diff is where we have a difference, any bit set outside 0x80 will get a false return
+  const uint64_t diff = w1 ^ w2; // only valid diff at 0x20
+  // is_diff is where we have a difference, any bit set outside 0x80 will get a
+  // false return
   const uint64_t is_diff = (diff << 2) | (diff >> (64 - 2)); // rotate
   // check if any non-ascii
   const uint64_t non_ascii = (w1 | w2) & packed_byte(0x80);
   const uint64_t ascii = ~non_ascii;
-  w1 |= packed_byte(0x20); // if it were in A-Z, it becomes a-z, otherwise, a-z is unchanged
+  w1 |= packed_byte(
+      0x20); // if it were in A-Z, it becomes a-z, otherwise, a-z is unchanged
   w1 &= packed_byte(0x7f); // set high bits to zero so the following work
   const uint64_t A = w1 + packed_byte(128 - 'a');
   const uint64_t Z = w1 + packed_byte(128 - 'z' - 1);
@@ -169,74 +172,95 @@ bool is_ascii_equal_ignoring_case_mula2(const char *input1, const char *input2,
   return true;
 }
 
-void demo() {
+void demo(size_t N) {
+  std::cout << " N = " << N << std::endl;
   srand(time(NULL));
+  double t1 = DBL_MAX;
+  double t2 = DBL_MAX;
+  double t3 = DBL_MAX;
+  double t4 = DBL_MAX;
+  double t5 = DBL_MAX;
 
-  std::vector<uint8_t> random;
-  size_t N = 10000000;
-  for (size_t z = 0; z < N; z++) {
-    uint8_t c = (rand() % 94) + 32;
-    random.push_back(c);
-  }
-  std::vector<uint8_t> randomlower(random);
-  for (size_t z = 0; z + sizeof(uint64_t) <= N; z += sizeof(uint64_t)) {
-    uint64_t w;
-    memcpy(&w, randomlower.data() + z, sizeof(w));
-    uint64_t w2 = to_lower_ascii(w);
-    memcpy(randomlower.data() + z, &w2, sizeof(w2));
-  }
-  for (size_t trial = 0; trial < 5; trial++) {
-    std::cout << "hand rolled ";
-    auto t = Timer{"fast"};
-    bool is_the_same = is_ascii_equal_ignoring_case(
-        (const char *)random.data(), (const char *)randomlower.data(), N);
-    if (!is_the_same) {
-      std::cerr << "bug" << std::endl;
-      abort();
+  double tz;
+
+  for (size_t z = 0; z < 10; z++) {
+    std::vector<uint8_t> random;
+    for (size_t z = 0; z < N; z++) {
+      uint8_t c = (rand() % 94) + 32;
+      random.push_back(c);
     }
-    std::cout << t.time_ns() / N << std::endl;
-    std::cout << "strncasecmp ";
-    t = Timer{"slow"};
-    is_the_same = (strncasecmp((const char *)random.data(),
-                               (const char *)randomlower.data(), N) == 0);
-    if (!is_the_same) {
-      std::cerr << "bug" << std::endl;
-      abort();
+    std::vector<uint8_t> randomlower(random);
+    for (size_t z = 0; z + sizeof(uint64_t) <= N; z += sizeof(uint64_t)) {
+      uint64_t w;
+      memcpy(&w, randomlower.data() + z, sizeof(w));
+      uint64_t w2 = to_lower_ascii(w);
+      memcpy(randomlower.data() + z, &w2, sizeof(w2));
     }
-    std::cout << t.time_ns() / N << std::endl;
-    std::cout << "tolower ";
-    t = Timer{"slow!"};
-    for (size_t i = 0; i < N; i++) {
-      if (tolower(random[i]) != tolower(randomlower[i])) {
-        is_the_same = false;
-        break;
+    for (size_t trial = 0; trial < 5; trial++) {
+      auto t = Timer{"fast"};
+      bool is_the_same = is_ascii_equal_ignoring_case(
+          (const char *)random.data(), (const char *)randomlower.data(), N);
+      if (!is_the_same) {
+        std::cerr << "bug" << std::endl;
+        abort();
       }
+      tz = t.time_ns() / N;
+      if (tz < t1)
+        t1 = tz;
+      t = Timer{"slow"};
+      is_the_same = (strncasecmp((const char *)random.data(),
+                                 (const char *)randomlower.data(), N) == 0);
+      if (!is_the_same) {
+        std::cerr << "bug" << std::endl;
+        abort();
+      }
+      tz = t.time_ns() / N;
+      if (tz < t2)
+        t2 = tz;
+      t = Timer{"slow!"};
+      for (size_t i = 0; i < N; i++) {
+        if (tolower(random[i]) != tolower(randomlower[i])) {
+          is_the_same = false;
+          break;
+        }
+      }
+      if (!is_the_same) {
+        std::cerr << "bug" << std::endl;
+        abort();
+      }
+      tz = t.time_ns() / N;
+      if (tz < t3)
+        t3 = tz;
+      t = Timer{"mula"};
+      is_the_same = (is_ascii_equal_ignoring_case_mula(
+          (const char *)random.data(), (const char *)randomlower.data(), N));
+      if (!is_the_same) {
+        std::cerr << "bug" << std::endl;
+        abort();
+      }
+      if (tz < t4)
+        t4 = tz;
+      t = Timer{"mula (2) "};
+      is_the_same = (is_ascii_equal_ignoring_case_mula2(
+          (const char *)random.data(), (const char *)randomlower.data(), N));
+      if (!is_the_same) {
+        std::cerr << "bug" << std::endl;
+        abort();
+      }
+      tz = t.time_ns() / N;
+      if (tz < t5)
+        t5 = tz;
     }
-    if (!is_the_same) {
-      std::cerr << "bug" << std::endl;
-      abort();
-    }
-    std::cout << t.time_ns() / N << std::endl;
-    std::cout << "mula ";
-    t = Timer{"mula"};
-    is_the_same = (is_ascii_equal_ignoring_case_mula(
-        (const char *)random.data(), (const char *)randomlower.data(), N));
-    if (!is_the_same) {
-      std::cerr << "bug" << std::endl;
-      abort();
-    }
-    std::cout << t.time_ns() / N << std::endl;
-    std::cout << "mula (2) ";
-    t = Timer{"mula (2) "};
-    is_the_same = (is_ascii_equal_ignoring_case_mula2(
-        (const char *)random.data(), (const char *)randomlower.data(), N));
-    if (!is_the_same) {
-      std::cerr << "bug" << std::endl;
-      abort();
-    }
-    std::cout << t.time_ns() / N << std::endl;
-    std::cout << std::endl;
   }
+  std::cout << "hand rolled " << t1 << std::endl;
+  std::cout << "strncasecmp " << t2 << std::endl;
+  std::cout << "tolower " << t3 << std::endl;
+  std::cout << "mula " << t4 << std::endl;
+  std::cout << "mula (2) " << t5 << std::endl;
+  std::cout << std::endl;
 }
 
-int main() { demo(); }
+int main() {
+  demo(12);
+  demo(10000);
+}
