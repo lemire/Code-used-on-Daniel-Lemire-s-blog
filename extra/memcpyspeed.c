@@ -1,5 +1,6 @@
 // gcc -O3 -march=native -std=c99 -o memcpyspeed memcpyspeed.c
 
+#define _POSIX_C_SOURCE (200112L)
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
