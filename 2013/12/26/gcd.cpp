@@ -441,4 +441,5 @@ int main() {
     unsigned int bogus = 0;
     bogus += test(0);
     bogus += test(1000*1000*1000);
+    if(bogus == 0) abort();
 }
