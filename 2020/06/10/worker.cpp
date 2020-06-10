@@ -84,12 +84,11 @@ private:
 
 worker w;
 
-
 struct eager_worker {
   eager_worker() = default;
   inline ~eager_worker() { stop_thread(); }
   inline void stop_thread() {
-    has_work.store(true);
+
     exiting.store(true);
     if (thread.joinable()) {
       thread.join();
@@ -97,18 +96,18 @@ struct eager_worker {
   }
 
   inline void work() {
-    if(!thread_started.load()) {
+    if (!thread_started.load()) {
       abort();
     }
     has_work.store(true);
   }
 
   inline void finish() {
-    while(has_work.load()) {}
+    while (has_work.load()) {
+    }
   }
 
 private:
-
   std::atomic<bool> has_work{false};
 
   std::atomic<bool> exiting{false};
@@ -117,7 +116,8 @@ private:
   std::thread thread = std::thread([this] {
     thread_started.store(true);
     while (!exiting.load()) {
-      while(!has_work.load()) {}
+      while (!has_work.load() && !exiting.load()) {
+      }
       if (exiting.load()) {
         break;
       }
@@ -132,7 +132,6 @@ double startnothing() {
   auto t = Timer{__FUNCTION__};
   return t.time_ns();
 }
-
 
 double startemptythread() {
   auto t = Timer{__FUNCTION__};
