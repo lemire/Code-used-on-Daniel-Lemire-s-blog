@@ -84,6 +84,52 @@ private:
 
 worker w;
 
+
+struct eager_worker {
+  eager_worker() = default;
+  inline ~eager_worker() { stop_thread(); }
+  inline void stop_thread() {
+    has_work.store(true);
+    exiting.store(true);
+    if (thread.joinable()) {
+      thread.join();
+    }
+  }
+
+  inline void work() {
+    if(!thread_started.load()) {
+      abort();
+    }
+    has_work.store(true);
+  }
+
+  inline void finish() {
+    while(has_work.load()) {}
+  }
+
+private:
+
+  std::atomic<bool> has_work{false};
+
+  std::atomic<bool> exiting{false};
+  std::atomic<bool> thread_started{false};
+
+  std::thread thread = std::thread([this] {
+    thread_started.store(true);
+    while (!exiting.load()) {
+      while(!has_work.load()) {}
+      if (exiting.load()) {
+        break;
+      }
+      counter++;
+      has_work.store(false);
+    }
+  });
+};
+
+eager_worker ew;
+
+
 double startemptythread() {
   auto t = Timer{__FUNCTION__};
   auto mythread = std::thread([] {});
@@ -102,6 +148,13 @@ double startworker() {
   auto t = Timer{__FUNCTION__};
   w.work();   // issue the work
   w.finish(); // wait for it to finish
+  return t.time_ns();
+}
+
+double starteagerworker() {
+  auto t = Timer{__FUNCTION__};
+  ew.work();   // issue the work
+  ew.finish(); // wait for it to finish
   return t.time_ns();
 }
 
@@ -150,6 +203,8 @@ template <class F> void printtime(F f) {
 }
 
 int main() {
+  std::cout << "eagerworker" << std::endl;
+  printtime(starteagerworker);
   std::cout << "worker" << std::endl;
   printtime(startworker);
   std::cout << "async" << std::endl;
