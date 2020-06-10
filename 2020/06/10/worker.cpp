@@ -120,9 +120,6 @@ private:
           return;
         }
       }
-      if (exiting.load()) {
-        break;
-      }
       counter++;
       has_work.store(false);
     }
