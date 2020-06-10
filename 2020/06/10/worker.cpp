@@ -84,6 +84,12 @@ private:
 
 worker w;
 
+double startnothing() {
+  auto t = Timer{__FUNCTION__};
+  return t.time_ns();
+}
+
+
 double startemptythread() {
   auto t = Timer{__FUNCTION__};
   auto mythread = std::thread([] {});
@@ -150,6 +156,8 @@ template <class F> void printtime(F f) {
 }
 
 int main() {
+  std::cout << "nothing" << std::endl;
+  printtime(startnothing);
   std::cout << "worker" << std::endl;
   printtime(startworker);
   std::cout << "async" << std::endl;
