@@ -88,7 +88,6 @@ struct eager_worker {
   eager_worker() = default;
   inline ~eager_worker() { stop_thread(); }
   inline void stop_thread() {
-
     exiting.store(true);
     if (thread.joinable()) {
       thread.join();
@@ -115,8 +114,11 @@ private:
 
   std::thread thread = std::thread([this] {
     thread_started.store(true);
-    while (!exiting.load()) {
-      while (!has_work.load() && !exiting.load()) {
+    while (true) {
+      while (!has_work.load()) {
+        if (exiting.load()) {
+          return;
+        }
       }
       if (exiting.load()) {
         break;
