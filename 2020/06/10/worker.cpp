@@ -128,6 +128,10 @@ private:
 };
 
 eager_worker ew;
+double startnothing() {
+  auto t = Timer{__FUNCTION__};
+  return t.time_ns();
+}
 
 
 double startemptythread() {
@@ -203,6 +207,8 @@ template <class F> void printtime(F f) {
 }
 
 int main() {
+  std::cout << "nothing" << std::endl;
+  printtime(startnothing);
   std::cout << "eagerworker" << std::endl;
   printtime(starteagerworker);
   std::cout << "worker" << std::endl;
