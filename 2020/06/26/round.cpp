@@ -12,6 +12,7 @@ int main() {
   double ratio = x/y;
   printf("x/y                          = %18.18f\n", x / y);
   printf("expected x/y (round to even) = %18.18f\n", 0.501782303180000055);
+  printf("Expected assumes FLT_EVAL_METHOD = 1\n");
   printf("                              ");
   bool is_correct = (50178230318.0 / 100000000000.0 == 0.501782303180000055);
   std::cout << (is_correct ? " Equal" : "Not equal") << std::endl;
