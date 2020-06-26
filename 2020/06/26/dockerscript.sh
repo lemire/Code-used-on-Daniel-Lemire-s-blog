@@ -5,3 +5,6 @@ apt-get install -y g++
 echo "compiling round"
 g++ -o round round.cpp
 ./round
+echo "compiling round with -O2"
+g++ -o round -O2 round.cpp
+./round

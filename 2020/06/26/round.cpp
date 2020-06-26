@@ -1,6 +1,6 @@
 
 #include <fenv.h>
-
+#include <float.h>
 #include <iostream>
 
 #pragma STDC FENV_ACCESS ON
@@ -30,7 +30,8 @@ int main() {
   fesetround(FE_UPWARD);
   printf("FE_UPWARD    : %18.18f\n", x / y);
 
-  fesetround(FE_TONEAREST);
 
+  fesetround(FE_TONEAREST);
+  printf("FLT_EVAL_METHOD = %d \n", FLT_EVAL_METHOD);
   return 0;
 }
