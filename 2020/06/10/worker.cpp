@@ -84,31 +84,27 @@ private:
 
 worker w;
 
-
 struct eager_worker {
   eager_worker() = default;
   inline ~eager_worker() { stop_thread(); }
   inline void stop_thread() {
-    has_work.store(true);
     exiting.store(true);
+    has_work.store(true);
     if (thread.joinable()) {
       thread.join();
     }
   }
 
   inline void work() {
-    if(!thread_started.load()) {
-      abort();
-    }
     has_work.store(true);
   }
 
   inline void finish() {
-    while(has_work.load()) {}
+    while (has_work.load()) {
+    }
   }
 
 private:
-
   std::atomic<bool> has_work{false};
 
   std::atomic<bool> exiting{false};
@@ -116,10 +112,11 @@ private:
 
   std::thread thread = std::thread([this] {
     thread_started.store(true);
-    while (!exiting.load()) {
-      while(!has_work.load()) {}
-      if (exiting.load()) {
-        break;
+    while (true) {
+      while (!has_work.load()) {
+        if (exiting.load()) {
+          return;
+        }
       }
       counter++;
       has_work.store(false);
@@ -128,11 +125,53 @@ private:
 };
 
 eager_worker ew;
+
+struct yield_worker {
+  yield_worker() = default;
+  inline ~yield_worker() { stop_thread(); }
+  inline void stop_thread() {
+    exiting.store(true);
+    has_work.store(true);
+    if (thread.joinable()) {
+      thread.join();
+    }
+  }
+
+  inline void work() {
+    has_work.store(true);
+  }
+
+  inline void finish() {
+    while (has_work.load()) {
+    }
+  }
+
+private:
+  std::atomic<bool> has_work{false};
+
+  std::atomic<bool> exiting{false};
+  std::atomic<bool> thread_started{false};
+
+  std::thread thread = std::thread([this] {
+    thread_started.store(true);
+    while (true) {
+      while (!has_work.load()) {
+        if (exiting.load()) {
+          return;
+        }
+        std::this_thread::yield();
+      }
+      counter++;
+      has_work.store(false);
+    }
+  });
+};
+
+yield_worker yw;
 double startnothing() {
   auto t = Timer{__FUNCTION__};
   return t.time_ns();
 }
-
 
 double startemptythread() {
   auto t = Timer{__FUNCTION__};
@@ -159,6 +198,13 @@ double starteagerworker() {
   auto t = Timer{__FUNCTION__};
   ew.work();   // issue the work
   ew.finish(); // wait for it to finish
+  return t.time_ns();
+}
+
+double startyieldworker() {
+  auto t = Timer{__FUNCTION__};
+  yw.work();   // issue the work
+  yw.finish(); // wait for it to finish
   return t.time_ns();
 }
 
@@ -209,6 +255,8 @@ template <class F> void printtime(F f) {
 int main() {
   std::cout << "nothing" << std::endl;
   printtime(startnothing);
+  std::cout << "yieldworker" << std::endl;
+  printtime(startyieldworker);
   std::cout << "eagerworker" << std::endl;
   printtime(starteagerworker);
   std::cout << "worker" << std::endl;
