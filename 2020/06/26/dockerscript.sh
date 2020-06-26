@@ -8,3 +8,6 @@ g++ -o round round.cpp
 echo "compiling round with -O2"
 g++ -o round -O2 round.cpp
 ./round
+echo "compiling round with -mfpmath=sse"
+g++ -o round -msse -mfpmath=sse round.cpp
+./round
