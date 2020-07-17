@@ -126,7 +126,7 @@ void direct(int &counter) {
   active_implementation->operate(counter);
   auto duration = clk::now() - start;
   auto elapsed_s = duration_cast<dur_double>(duration).count();
-  std::cout << "reset:" << elapsed_s * 1000 * 1000 * 1000 << " ns" << std::endl;
+  std::cout << "direct:" << elapsed_s * 1000 * 1000 * 1000 << " ns" << std::endl;
 }
 
 int main() {
