@@ -111,6 +111,16 @@ void nothing() {
             << std::endl;
 }
 
+
+void justquery(uint32_t &counter) {
+  auto start = clk::now();
+  counter += detect_supported_architectures();
+  auto duration = clk::now() - start;
+  auto elapsed_s = duration_cast<dur_double>(duration).count();
+  std::cout << "justquery:" << elapsed_s * 1000 * 1000 * 1000 << " ns"
+            << std::endl;
+}
+
 void direct(int &counter) {
   auto start = clk::now();
   active_implementation->operate(counter);
@@ -123,11 +133,14 @@ int main() {
   printf("%s\n", active_implementation->name().c_str());
   for (size_t i = 0; i < 10; i++)
     nothing();
+  uint32_t c;
+  for (size_t i = 0; i < 10; i++)
+    justquery(c);
   for (size_t i = 0; i < 10; i++)
     reset();
   int counter;
   for (size_t i = 0; i < 10; i++)
     direct(counter);
   printf("%s\n", active_implementation->name().c_str());
-  printf("%d\n", counter);
+  printf("%d %u\n", counter, c);
 }
