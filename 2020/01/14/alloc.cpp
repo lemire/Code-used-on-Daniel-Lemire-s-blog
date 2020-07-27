@@ -64,6 +64,16 @@ void mmap_populate(size_t size) {
   munmap(buf, size);
 }
 #endif
+void just_malloc(size_t size) {
+  char* buf;
+  {
+    auto t = Timer{size, __FUNCTION__};
+    buf    = (char*)malloc(size);
+    escape(&buf);
+  }
+  free(buf);
+}
+
 
 void just_new(size_t size) {
   char* buf;
@@ -160,6 +170,7 @@ int main() {
   for (size_t i = 34588; i <= 34588; i *= 2) {
     for(size_t j = 0; j < 10; j++) {
       calloc(i);
+      just_malloc(i);
       just_new(i);
       just_memalign(i);
       new_and_touch(i);
