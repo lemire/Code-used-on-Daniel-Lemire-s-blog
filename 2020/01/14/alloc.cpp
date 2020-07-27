@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
+
 #ifdef __linux__
 #include <sys/mman.h>
 #endif
@@ -64,6 +65,25 @@ void mmap_populate(size_t size) {
 }
 #endif
 
+void just_new(size_t size) {
+  char* buf;
+  {
+    auto t = Timer{size, __FUNCTION__};
+    buf    = new(std::nothrow) char[size];
+    escape(&buf);
+  }
+  delete[] buf;
+}
+
+void just_memalign(size_t size) {
+  char* buf;
+  {
+    auto t = Timer{size, __FUNCTION__};
+    posix_memalign((void**)&buf,64,size);
+    escape(&buf);
+  }
+  free(buf);
+}
 
 void new_and_touch(size_t size) {
   char* buf;
@@ -136,17 +156,23 @@ void mempy_into_existing_allocation(size_t size) {
 }
 
 int main() {
-  for (size_t i = 256 * MB; i <= 1024 * MB; i *= 2) {
-    calloc(i);
-    new_and_touch(i);
-    new_and_memset(i);
-    new_and_value_init(i);
-    new_and_value_init_nothrow(i);
-    memset_existing_allocation(i);
-    mempy_into_existing_allocation(i);
+  // for (size_t i = 256 * MB; i <= 1024 * MB; i *= 2) {
+  for (size_t i = 34588; i <= 34588; i *= 2) {
+    for(size_t j = 0; j < 10; j++) {
+      calloc(i);
+      just_new(i);
+      just_memalign(i);
+      new_and_touch(i);
+      new_and_memset(i);
+      new_and_value_init(i);
+      new_and_value_init_nothrow(i);
+      memset_existing_allocation(i);
+      mempy_into_existing_allocation(i);
 #ifdef __linux__
-    mmap_populate(i);
+      mmap_populate(i);
 #endif
+      printf("=======\n");
+    }
     std::cout << '\n';
   }
 }

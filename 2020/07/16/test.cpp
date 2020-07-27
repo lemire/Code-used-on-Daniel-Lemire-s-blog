@@ -95,6 +95,9 @@ const implementation *detect_best_supported() noexcept {
   return &legacy_singleton;
 }
 
+const char * data = R"({"level":"INFO","message":"This is a log message that is long enough to be representative of an actual message.","msgType":1,"source":"Test","thread":"main","timestamp":1400000000000000000,"version":1})";
+
+
 void reset() {
   auto start = clk::now();
   active_implementation = detect_best_supported();
