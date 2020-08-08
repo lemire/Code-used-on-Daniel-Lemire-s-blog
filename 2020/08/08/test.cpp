@@ -56,28 +56,35 @@ std::vector<char> build_large_random(size_t N) {
 }
 
 std::vector<std::string_view>
-build_string_view_stream(size_t N, std::vector<char> &source) {
-  size_t safeN = source.size() - 128;
+build_string_view_stream(size_t N, std::vector<char> &source, size_t max_size) {
+  size_t safeN = source.size() - max_size;
   std::vector<std::string_view> answer(N);
   std::cout << "Creating " << N << " strings" << std::endl;
   for (size_t i = 0; i < N; i++) {
-    std::string_view sv(source.data() + (rand() % safeN), rand() % 128);
+    std::string_view sv(source.data() + (rand() % safeN), rand() % max_size);
     answer[i] = sv;
   }
   return answer;
 }
 int main() {
   size_t N = 10000;
+  size_t M = 100000;
+  size_t max_size = 16;
+  std::cout << "max_size: " << max_size << std::endl;
   auto random_source = build_large_random(N);
   std::vector<std::string_view> sv_source =
-      build_string_view_stream(N, random_source);
+      build_string_view_stream(M, random_source, max_size);
   std::vector<std::string> string_source;
   for (auto sv : sv_source) {
     string_source.emplace_back(sv);
   }
+  std::vector<std::vector<uint8_t>> vector_source;
+  for (auto sv : sv_source) {
+    vector_source.emplace_back(std::vector<uint8_t>(sv.begin(), sv.end()));
+  }
   std::cout << "Number of strings: " << string_source.size() << std::endl;
-  std::cout << "Volume (KB)      : " << volume(string_source)/1024 << std::endl;
-
+  std::cout << "Volume (KB)      : " << volume(string_source) / 1024
+            << std::endl;
 
   // warming up
   cost_of_copy(sv_source, false);
@@ -89,8 +96,12 @@ int main() {
     cost_of_copy(sv_source);
 
     std::cout << "string      :";
-    cost_of_copy(string_source, false);  // warm up
+    cost_of_copy(string_source, false); // warm up
     cost_of_copy(string_source);
+
+    std::cout << "vector      :";
+    cost_of_copy(vector_source, false); // warm up
+    cost_of_copy(vector_source);
     std::cout << std::endl;
   }
 }
