@@ -61,7 +61,7 @@ int main(void) {
       recipient[i + 1] = lehmer64_2();
     }
     gettimeofday(&end, NULL);
-    cerr << "lehmer64 (3)\t"
+    cerr << "lehmer64 (2)\t"
          << (end.tv_sec - beg.tv_sec) + 1e-6 * (end.tv_usec - beg.tv_usec)
          << " s" << endl;
     cout << "bogus:" << recipient[312] << endl;
