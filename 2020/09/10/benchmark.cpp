@@ -47,7 +47,7 @@ double findmax_strtod(std::vector<std::string> &s) {
     static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
     x = strtod_l(st.data(), &pr,  c_locale);
 #endif
-    if ((pr == nullptr) || (pr == st.data())) {
+    if (pr == st.data()) {
       throw std::runtime_error("bug in findmax_strtod");
     }
     answer = answer > x ? answer : x;
