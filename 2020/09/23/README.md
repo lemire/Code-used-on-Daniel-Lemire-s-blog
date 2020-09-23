@@ -11,6 +11,6 @@ cmake --build build
 It is interesting to run this benchmark using different compilers:
 
 ```
-cmake -B build_clang -DCMAKE_CXX_COMPILER=clang++-9 . && cmake --build build_clang && ./build_clang/benchmark
-cmake -B build_gcc -DCMAKE_CXX_COMPILER=g++ . && cmake --build build_gcc && ./build_gcc/benchmark
+cmake -B build_clang -DCMAKE_CXX_COMPILER=clang++-9 . && cmake --build build_clang && ./build_clang/benchmark_trap
+cmake -B build_gcc -DCMAKE_CXX_COMPILER=g++ . && cmake --build build_gcc && ./build_gcc/benchmark_trap
 ```

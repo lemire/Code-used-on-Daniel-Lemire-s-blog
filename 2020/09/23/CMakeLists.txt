@@ -9,6 +9,6 @@ if (NOT CMAKE_BUILD_TYPE)
   message(STATUS "No build type selected, default to Release")
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 endif()
-
 add_executable(benchmark benchmark.cpp)
-target_compile_options(benchmark PUBLIC -ftrapv)
+add_executable(benchmark_trap benchmark.cpp)
+target_compile_options(benchmark_trap PUBLIC -ftrapv)
