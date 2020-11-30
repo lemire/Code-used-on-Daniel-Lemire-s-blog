@@ -32,6 +32,8 @@ public class MyBenchmark {
             }
             System.out.println("is backed by array: "+buffer.hasArray());
             System.out.println("is backed by array: "+buffer_crazy.hasArray());     
+            System.out.println("buffer.order: "+buffer.order());
+            System.out.println("buffer_crazy.order: "+buffer_crazy.order());   
         }
 
     }
