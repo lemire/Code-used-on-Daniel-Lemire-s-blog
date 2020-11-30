@@ -21,14 +21,17 @@ public class MyBenchmark {
         int N = 50000;
         int[] array = new int[N];
         IntBuffer buffer = IntBuffer.allocate(N);
+        IntBuffer buffer_crazy = ByteBuffer.allocate(N * Integer.BYTES).order(ByteOrder.nativeOrder()).asIntBuffer();
 
 
         public BenchmarkState() {
             for(int k = 0; k  < array.length; k++) { 
                 array[k] = k;
                 buffer.put(k, k);
+                buffer_crazy.put(k, k);
             }
-              
+            System.out.println("is backed by array: "+buffer.hasArray());
+            System.out.println("is backed by array: "+buffer_crazy.hasArray());     
         }
 
     }
@@ -47,4 +50,10 @@ public class MyBenchmark {
         }
     }
 
+    @Benchmark
+    public void buffer_crazy(BenchmarkState s) throws IOException {
+        for(int k = 0; k  < s.buffer_crazy.limit(); k++) { 
+            s.buffer_crazy.put(k, s.buffer_crazy.get(k) + 1);
+        }
+    }
 }
