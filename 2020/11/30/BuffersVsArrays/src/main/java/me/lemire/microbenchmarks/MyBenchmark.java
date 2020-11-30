@@ -8,10 +8,10 @@ import java.util.concurrent.TimeUnit;
 
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 
-@Warmup(iterations = 2, time = 200, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(iterations = 3,  time = 200, timeUnit = TimeUnit.MILLISECONDS)
+@Warmup(iterations = 5, time = 1000000, timeUnit = TimeUnit.MICROSECONDS)
+@Measurement(iterations = 3,  time = 1000000, timeUnit = TimeUnit.MICROSECONDS)
 @Threads(value = 1)
 public class MyBenchmark {
 
