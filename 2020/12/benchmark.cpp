@@ -31,8 +31,12 @@ double time_validate(const char * some_string, size_t length) {
 }
 
 int main(int argc, char** argv) {
+  std::cout << "simdjson v" << STRINGIFY(SIMDJSON_VERSION) << std::endl;
+  std::cout << "Detected the best implementation for your machine: " << simdjson::active_implementation->name();
+  std::cout << " (" << simdjson::active_implementation->description() << ")" << std::endl;
   const char * filename = "twitter.json";
-  if(argc == 1) { filename = argv[0]; }
+  if(argc > 1) { filename = argv[1]; }
+  std::cout << "loading " << filename << std::endl;
   std::ifstream ifs(filename);
   if(!ifs) {
       std::cerr << "error reading " << filename << std::endl;
