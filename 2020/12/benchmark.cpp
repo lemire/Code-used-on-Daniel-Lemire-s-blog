@@ -1,4 +1,10 @@
+#ifdef __ARM_NEON
+#define SIMDJSON_IMPLEMENTATION_ARM64 1
+#endif
+
 #include "simdjson.h"
+#include "simdjson.cpp"
+
 #include <fstream>
 #include <string>
 #include <cstdlib>
