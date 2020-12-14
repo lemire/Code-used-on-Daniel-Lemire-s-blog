@@ -104,6 +104,7 @@ static uint32_t productOfAllPrimeDivisors(uint32_t val) {
         val /= pot;
       }
     }
+    pot++;
   }
   return answer;
 }
