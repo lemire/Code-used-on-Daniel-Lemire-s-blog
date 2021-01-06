@@ -38,7 +38,7 @@ int compute_three(char * array, size_t N, int * random) {
 }
 
 int main(int argc, const char ** val) {
-  size_t N = 100000000;
+  size_t N = 1000000000;
   if(argc > 1) {
     N = atoll(val[1]);
   }
