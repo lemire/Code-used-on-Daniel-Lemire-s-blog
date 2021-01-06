@@ -11,8 +11,8 @@ set xtics nomirror
 set ytics nomirror
 
 set term pngcairo fontscale 1.3
-set ylabel "bandwidth (GB/s, one core)"
+set ylabel "bandwidth speedup (1 = one lane)"
 set xlabel "number of lanes"
 set key top left
 set out "results.png"
-plot "rome.txt" using 1:($3/1024) with lines lw 3 ti "AMD Rome", "skylake-x.txt" using 1:($3/1024) with lines lw 3 ti "Intel Skylake X"
+plot "data.txt" using 1:6 with lines lw 3 ti "Apple M1"
