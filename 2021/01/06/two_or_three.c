@@ -49,9 +49,10 @@ int main(int argc, const char ** val) {
   for(size_t i = 0; i < 3 * M; i++) { 
     random[i] = rand() % (N-1); 
   }
+  printf("starting experiments.\n");
   struct timespec start, stop;
   int answer = 0;
-  size_t total_trials = 100;
+  size_t total_trials = 200;
 
   size_t ns2 = 0;
   size_t ns2p = 0;
