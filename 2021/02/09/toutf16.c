@@ -4,7 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-
+#include <stdint.h>
 __attribute__((noinline)) void copy(const uint8_t *array, size_t N,
                                     uint16_t *out) {
   memcpy(out, array, N);
