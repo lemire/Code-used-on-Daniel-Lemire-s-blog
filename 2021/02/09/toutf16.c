@@ -18,7 +18,7 @@ __attribute__((noinline)) void toutf16(const uint8_t *array, size_t N,
 }
 
 int main(int argc, const char **val) {
-  size_t N = 1000000;
+  size_t N = 10000;
   if (argc > 1) {
     N = atoll(val[1]);
   }
