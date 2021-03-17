@@ -26,7 +26,7 @@ struct wyrng_generator {
   inline uint64_t operator()() {
     state += 0x60bee2bee120fc15ull;
     __uint128_t tmp = (__uint128_t)(state)*0xa3b195354a39b70dull;
-    unsigned long long m1 = (tmp >> 64) ^ tmp;
+    uint64_t m1 = (tmp >> 64) ^ tmp;
     tmp = (__uint128_t)m1 * 0x1b03738712fad5c9ull;
     return (tmp >> 64) ^ tmp;
   }
