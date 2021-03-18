@@ -38,7 +38,7 @@ __attribute__((noinline)) void populate(uint64_t *out, size_t N,
   generator g;
   g.state = seed;
   for (size_t i = 0; i < N; i++) {
-    out[i++] = g();
+    out[i] = g();
   }
 }
 
@@ -66,7 +66,7 @@ time_populate(uint64_t *out, size_t N, size_t trials) {
 }
 
 void print(std::pair<double, double> val) {
-  std::cout << std::setprecision(3);
+  std::cout << std::setprecision(4);
   std::cout << val.first << " ns/value ("
             << (val.second - val.first) / val.first * 100.0 << " %) \n";
 }
