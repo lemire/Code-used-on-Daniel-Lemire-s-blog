@@ -144,6 +144,8 @@ extern performance_counters get_counters(void) {
     }
     return 1;
   }
+  // g_counters[3 + 2] gives you the number of instructions 'decoded'
+  // whereas g_counters[1] might give you the number of instructions 'retired'.
   return performance_counters{g_counters[0 + 2], g_counters[3 + 2],
                               g_counters[4 + 2], g_counters[5 + 2]};
 }
