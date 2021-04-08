@@ -71,7 +71,36 @@ public class PartialRadixSort {
 			Arrays.fill(histogram, 0);
 		}
 	}
-
+  public static void newnewUnrollPartialRadixSort(int[] primary) {
+    final int radix = 8;
+    int[] secondary = new int[primary.length];
+    int[] histogram = new int[(1 << radix) + 1];
+    {
+      final int shift = 16;
+      for (int i = 0; i < primary.length; ++i) {
+        ++histogram[((primary[i] >>> shift) & 0xFF) + 1];
+      }
+      for (int i = 0; i < 1 << radix; ++i) {
+        histogram[i + 1] += histogram[i];
+      }
+      for (int i = 0; i < primary.length; ++i) {
+        secondary[histogram[(primary[i] >>> shift) & 0xFF]++] = primary[i];
+      }
+    }
+    Arrays.fill(histogram, 0);
+    {
+      final int shift = 24;
+      for (int i = 0; i < secondary.length; ++i) {
+        ++histogram[((secondary[i] >>> shift) & 0xFF) + 1];
+      }
+      for (int i = 0; i < 1 << radix; ++i) {
+        histogram[i + 1] += histogram[i];
+      }
+      for (int i = 0; i < secondary.length; ++i) {
+        primary[histogram[(secondary[i] >>> shift) & 0xFF]++] = secondary[i];
+      }
+    }
+  }
 
 	public static void newnewPartialRadixSort(int[] data) {
 		final int radix = 8;
@@ -238,6 +267,11 @@ public class PartialRadixSort {
 		blackhole.consume(state.testArr);
 	}
 
+	@Benchmark
+	public void BM_newnewUnroll(Blackhole blackhole, BenchmarkState state) {
+		newnewUnrollPartialRadixSort(state.testArr);
+		blackhole.consume(state.testArr);
+	}
 
   public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
