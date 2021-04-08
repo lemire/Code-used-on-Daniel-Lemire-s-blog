@@ -154,7 +154,7 @@ public class PartialRadixSort {
 
 	@State(Scope.Benchmark)
 	public static class BenchmarkState {
-		@Param({"100", "10000", "1000000"})
+		@Param({"1000000"})
 		public int listSize;
 
 		private int[] origArr;
