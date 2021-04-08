@@ -250,7 +250,19 @@ public class PartialRadixSort {
 		blackhole.consume(state.testArr);
 	}
 	@Benchmark
+	public void BM_newnew2(Blackhole blackhole, BenchmarkState state) {
+		newnewPartialRadixSort(state.testArr);
+		blackhole.consume(state.testArr);
+	}
+
+	@Benchmark
 	public void BM_unroll(Blackhole blackhole, BenchmarkState state) {
+		unrollPartialRadixSort(state.testArr);
+		blackhole.consume(state.testArr);
+	}
+
+  @Benchmark
+	public void BM_unroll2(Blackhole blackhole, BenchmarkState state) {
 		unrollPartialRadixSort(state.testArr);
 		blackhole.consume(state.testArr);
 	}
@@ -269,6 +281,12 @@ public class PartialRadixSort {
 
 	@Benchmark
 	public void BM_newnewUnroll(Blackhole blackhole, BenchmarkState state) {
+		newnewUnrollPartialRadixSort(state.testArr);
+		blackhole.consume(state.testArr);
+	}
+
+  @Benchmark
+	public void BM_newnewUnroll2(Blackhole blackhole, BenchmarkState state) {
 		newnewUnrollPartialRadixSort(state.testArr);
 		blackhole.consume(state.testArr);
 	}
