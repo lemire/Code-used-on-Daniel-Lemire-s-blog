@@ -5,6 +5,8 @@
 <version>0.0.1</version>
 
 <properties>
+<maven.compiler.source>1.8</maven.compiler.source>
+<maven.compiler.target>1.8</maven.compiler.target>
 <jmh.version>1.15</jmh.version>
 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 <uberjar.name>benchmarks</uberjar.name>
