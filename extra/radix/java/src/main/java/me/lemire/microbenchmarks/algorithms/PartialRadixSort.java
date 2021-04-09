@@ -164,7 +164,33 @@ public class PartialRadixSort {
 			}
 		}
 	}
-
+  public static void minimalpartialRadixSort(int[] data) {
+    int[] copy = new int[data.length];
+    int[] low = new int[257];
+    int[] high = new int[257];
+    for (int value : data) {
+      ++low[((value >>> 16) & 0xFF) + 1];
+      ++high[(value >>> 24) + 1];
+    }
+    for (int i = 1; i < low.length; ++i) {
+      low[i] += low[i - 1];
+    }
+    for (int value : data) {
+      copy[low[(value >>> 16) & 0xFF]++] = value;
+    }
+    // avoid a pass over the data if it's not required
+    boolean sortTopLevel = high[1] < data.length;
+    if (sortTopLevel) {
+      for (int i = 1; i < high.length; ++i) {
+        high[i] += high[i - 1];
+      }
+      for (int value : copy) {
+        data[high[value >>> 24]++] = value;
+      }
+    } else {
+      System.arraycopy(copy, 0, data, 0, data.length);
+    }
+  }
 	public static void likeNewPartialRadixSort(int[] data) {
 		final int radix = 8;
 		int shift = 16;
@@ -249,20 +275,9 @@ public class PartialRadixSort {
 		newnewPartialRadixSort(state.testArr);
 		blackhole.consume(state.testArr);
 	}
-	@Benchmark
-	public void BM_newnew2(Blackhole blackhole, BenchmarkState state) {
-		newnewPartialRadixSort(state.testArr);
-		blackhole.consume(state.testArr);
-	}
 
 	@Benchmark
 	public void BM_unroll(Blackhole blackhole, BenchmarkState state) {
-		unrollPartialRadixSort(state.testArr);
-		blackhole.consume(state.testArr);
-	}
-
-  @Benchmark
-	public void BM_unroll2(Blackhole blackhole, BenchmarkState state) {
 		unrollPartialRadixSort(state.testArr);
 		blackhole.consume(state.testArr);
 	}
@@ -286,10 +301,11 @@ public class PartialRadixSort {
 	}
 
   @Benchmark
-	public void BM_newnewUnroll2(Blackhole blackhole, BenchmarkState state) {
-		newnewUnrollPartialRadixSort(state.testArr);
+	public void BM_minimal(Blackhole blackhole, BenchmarkState state) {
+		minimalpartialRadixSort(state.testArr);
 		blackhole.consume(state.testArr);
 	}
+  
 
   public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
