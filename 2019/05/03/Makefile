@@ -5,7 +5,10 @@ $(info $$uname_p is [${uname_p}])
 ifeq ($(uname_p),aarch64)
 arch = 
 else
+ifeq ($(uname_p),arm64)
+else
 arch = -march=native
+endif
 endif
 all: bitmapdecoding 
 
@@ -18,6 +21,6 @@ bitmapdecoding: bitmapdecoding.cpp
 	$(CXX) -O3 $(arch) -std=c++14 -o bitmapdecoding bitmapdecoding.cpp -Wall -I.
 
 sanibitmapdecoding : bitmapdecoding.cpp
-	$(CXX) -g3 $(arch) -fsanitize=address -fno-omit-frame-pointer   -std=c++14 -o sanibitmapdecoding bitmapdecoding.cpp -Wall -I.
+	$(CXX) -O0 -g3 $(arch) -fsanitize=address -fno-omit-frame-pointer   -std=c++14 -o sanibitmapdecoding bitmapdecoding.cpp -Wall -I.
 clean:
 	rm -r -f bitmapdecoding bitmapdecoding.s bitmapdecoding_countbranch sanibitmapdecoding
