@@ -119,7 +119,7 @@ static inline void simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
   uint32_t cnt = hamming(bits);
   base_ptr += base;
   base += cnt;
-  if (cnt > 0) {
+  if (bits != 0) {
     base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
     bits = bits & (bits - 1);
     base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
@@ -166,14 +166,14 @@ static inline void simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
   }
 }
 
-static inline void simdjson_decoder_unrolled(uint32_t *base_ptr, uint32_t &base,
+static inline void simdjson_decoder_rolled(uint32_t *base_ptr, uint32_t &base,
                                              uint32_t idx, uint64_t bits) {
   if (bits == 0)
     return;
   uint32_t cnt = hamming(bits);
   base_ptr += base;
   base += cnt;
-  if (cnt > 0) {
+  if (bits != 0) {
     for (int i = 0; i < 8; i++) {
       base_ptr[i] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
       bits = bits & (bits - 1);
@@ -441,9 +441,9 @@ int main(int argc, char **argv) {
   unit<simdjson_decoder>();
   test<simdjson_decoder>("nfl.csv", ',');
 
-  printf("simdjson_decoder_unrolled:\n");
-  unit<simdjson_decoder_unrolled>();
-  test<simdjson_decoder_unrolled>("nfl.csv", ',');
+  printf("simdjson_decoder_rolled:\n");
+  unit<simdjson_decoder_rolled>();
+  test<simdjson_decoder_rolled>("nfl.csv", ',');
 
   printf("faster_decoder:\n");
   unit<faster_decoder>();
