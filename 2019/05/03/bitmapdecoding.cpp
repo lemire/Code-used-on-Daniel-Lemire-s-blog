@@ -1,5 +1,5 @@
 #ifdef __linux__
-#include "liinux-perf-events.h"
+#include "linux-perf-events.h"
 #elif defined(__APPLE__) && defined(__aarch64__)
 #include "m1cycles.cpp"
 #include "m1cycles.h"
