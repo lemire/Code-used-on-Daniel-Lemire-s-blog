@@ -106,6 +106,39 @@ void basic_arm_decoder(uint32_t *base_ptr, uint32_t &base, uint32_t idx,
     base++;
   }
 }
+
+
+static inline void simdjson_decoder_new_arm(uint32_t *base_ptr, uint32_t &base,
+                                        uint32_t idx, uint64_t bits) {
+  if (bits == 0)
+    return;
+  uint32_t cnt = hamming(bits);
+  base_ptr += base;
+  base += cnt;
+  uint64_t rev_bits;
+  __asm volatile("rbit %0, %1" : "=r"(rev_bits) : "r"(bits));
+  int i = 0;
+  for (; i < 8; i++) {
+    int lz = __builtin_clzll(rev_bits);
+    base_ptr[i] = static_cast<uint32_t>(idx) + lz;
+    rev_bits = rev_bits ^ (uint64_t(0x8000000000000000) >> lz);
+  }
+  if (cnt > 8) {
+    i = 8;
+    for (; i < 16; i++) {
+      int lz = __builtin_clzll(rev_bits);
+      base_ptr[i] = static_cast<uint32_t>(idx) + lz;
+      rev_bits = rev_bits ^ (uint64_t(0x8000000000000000) >> lz);
+    }
+    if (cnt > 16) { // unluckly
+      do {
+        int lz = __builtin_clzll(rev_bits);
+        base_ptr[i++] = static_cast<uint32_t>(idx) + lz;
+        rev_bits = rev_bits ^ (uint64_t(0x8000000000000000) >> lz);
+      } while (rev_bits != 0);
+    }
+  }
+}
 #endif
 
 static inline void just(uint32_t *base_ptr, uint32_t &base, uint32_t idx,
@@ -510,6 +543,10 @@ int main(int argc, char **argv) {
   test<faster_decoder>("nfl.csv", ',');
 
 #if defined(__aarch64__)
+  unit<simdjson_decoder_new_arm>();
+  printf("simdjson_decoder_new_arm:\n");
+  test<simdjson_decoder_new_arm>("nfl.csv", ',');
+
   unit<basic_arm_decoder>();
   printf("basic_arm_decoder:\n");
   test<basic_arm_decoder>("nfl.csv", ',');
