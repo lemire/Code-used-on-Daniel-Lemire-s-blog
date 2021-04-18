@@ -36,6 +36,10 @@ static inline int trailingzeroes(uint64_t input_num) {
 #endif
 }
 
+static inline int leadingzeroes(uint64_t input_num) {
+  return __builtin_clzll(input_num);
+}
+
 /* result might be undefined when input_num is zero */
 static inline int hamming(uint64_t input_num) {
 #ifdef __POPCOUNT__
@@ -119,79 +123,116 @@ static inline void simdjson_decoder(uint32_t *base_ptr, uint32_t &base,
   uint32_t cnt = hamming(bits);
   base_ptr += base;
   base += cnt;
-  if (bits != 0) {
-    base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
-    base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-    bits = bits & (bits - 1);
+  base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+  bits = bits & (bits - 1);
+  base_ptr[1] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+  bits = bits & (bits - 1);
+  base_ptr[2] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+  bits = bits & (bits - 1);
+  base_ptr[3] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+  bits = bits & (bits - 1);
+  base_ptr[4] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+  bits = bits & (bits - 1);
+  base_ptr[5] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+  bits = bits & (bits - 1);
+  base_ptr[6] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+  bits = bits & (bits - 1);
+  base_ptr[7] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+  bits = bits & (bits - 1);
 
-    if (cnt > 8) {
-      base_ptr[8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-      bits = bits & (bits - 1);
-      base_ptr[9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-      bits = bits & (bits - 1);
-      base_ptr[10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-      bits = bits & (bits - 1);
-      base_ptr[11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-      bits = bits & (bits - 1);
-      base_ptr[12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-      bits = bits & (bits - 1);
-      base_ptr[13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-      bits = bits & (bits - 1);
-      base_ptr[14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-      bits = bits & (bits - 1);
-      base_ptr[15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-      bits = bits & (bits - 1);
-      if (cnt > 16) { // unluckly
-        base_ptr += 16;
-        do {
-          base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-          bits = bits & (bits - 1);
-          base_ptr++;
-        } while (bits != 0);
-      }
+  if (cnt > 8) {
+    base_ptr[8] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[9] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[10] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[11] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[12] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[13] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[14] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    base_ptr[15] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+    if (cnt > 16) { // unluckly
+      base_ptr += 16;
+      do {
+        base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+        bits = bits & (bits - 1);
+        base_ptr++;
+      } while (bits != 0);
     }
   }
 }
 
-static inline void simdjson_decoder_rolled(uint32_t *base_ptr, uint32_t &base,
-                                             uint32_t idx, uint64_t bits) {
+static inline void simdjson_decoder_alt(uint32_t *base_ptr, uint32_t &base,
+                                        uint32_t idx, uint64_t bits) {
   if (bits == 0)
     return;
   uint32_t cnt = hamming(bits);
   base_ptr += base;
   base += cnt;
-  if (bits != 0) {
-    for (int i = 0; i < 8; i++) {
+  uint64_t lowest = 0;
+
+  int i = 0;
+  for (; i < 8; i++) {
+    uint64_t tmp = lowest;
+    lowest = (lowest - bits);
+    bits = (bits - tmp);
+    lowest &= bits;
+    uint32_t lz = static_cast<uint32_t>(leadingzeroes(lowest));
+    base_ptr[i] = idx + 63 - lz;
+  }
+  if (cnt > 8) {
+    i = 8;
+    for (; i < 16; i++) {
+      uint64_t tmp = lowest;
+      lowest = (lowest - bits);
+      bits = (bits - tmp);
+      lowest &= bits;
+      uint32_t lz = static_cast<uint32_t>(leadingzeroes(lowest));
+      base_ptr[i] = idx + 63 - lz;
+    }
+    if (cnt > 16) { // unluckly
+      do {
+        uint64_t tmp = lowest;
+        lowest = (lowest - bits);
+        bits = (bits - tmp);
+        lowest &= bits;
+        uint32_t lz = static_cast<uint32_t>(leadingzeroes(lowest));
+        base_ptr[i++] = idx + 63 - lz;
+      } while (bits != 0);
+    }
+  }
+}
+
+static inline void simdjson_decoder_rolled(uint32_t *base_ptr, uint32_t &base,
+                                           uint32_t idx, uint64_t bits) {
+  if (bits == 0)
+    return;
+  uint32_t cnt = hamming(bits);
+  base_ptr += base;
+  base += cnt;
+  for (int i = 0; i < 8; i++) {
+    base_ptr[i] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    bits = bits & (bits - 1);
+  }
+
+  if (cnt > 8) {
+    for (int i = 8; i < 16; i++) {
       base_ptr[i] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
       bits = bits & (bits - 1);
     }
-
-    if (cnt > 8) {
-      for (int i = 8; i < 16; i++) {
-        base_ptr[i] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
+    if (cnt > 16) { // unluckly
+      base_ptr += 16;
+      do {
+        base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
         bits = bits & (bits - 1);
-      }
-      if (cnt > 16) { // unluckly
-        base_ptr += 16;
-        do {
-          base_ptr[0] = static_cast<uint32_t>(idx) + trailingzeroes(bits);
-          bits = bits & (bits - 1);
-          base_ptr++;
-        } while (bits != 0);
-      }
+        base_ptr++;
+      } while (bits != 0);
     }
   }
 }
@@ -308,7 +349,7 @@ void test(const char *filename, char target) {
          double(mins[1]) / mins[0], double(mins[0]) / matches,
          double(mins[1]) / matches, double(mins[0]) / wordcount,
          double(mins[1]) / wordcount);
-  printf(" cycles per input byte %4.2f instructions per input byte %4.2f \n",
+  printf(" cycles per input byte %4.2f instructions per input bit %4.2f \n",
          double(mins[0]) / (64 * wordcount),
          double(mins[1]) / (64 * wordcount));
   // first we display mins
@@ -320,11 +361,12 @@ void test(const char *filename, char target) {
          avg[0], avg[1], avg[2], avg[3], avg[4]);
 #elif defined(__APPLE__) && defined(__aarch64__)
   agg_avg /= iterations;
-  printf(" %8.2f instructions/match (+/- %3.1f %%) ",
-         agg_min.instructions / matches,
+  printf(" %8.2f instructions/word (+/- %3.1f %%) ",
+         agg_min.instructions / wordcount,
          (agg_avg.instructions - agg_min.instructions) / agg_avg.instructions);
-  printf(" %8.2f cycles/match (+/- %3.1f %%) ", agg_min.cycles / matches,
+  printf(" %8.2f cycles/word (+/- %3.1f %%) ", agg_min.cycles / wordcount,
          (agg_avg.cycles - agg_min.cycles) / agg_avg.cycles);
+  printf(" %8.2f instructions/cycle ", agg_min.instructions / agg_min.cycles);
 #endif
   printf("\n");
   delete[] array;
@@ -342,14 +384,21 @@ template <void (*F)(uint32_t *, uint32_t &, uint32_t, uint64_t)> bool unit() {
     uint32_t refmatches = 0;
     basic_decoder(refdecoded, refmatches, 0, x);
     if (refmatches != matches) {
-      printf("bug\n");
+      printf("bug bad counts %u != %u  \n", refmatches, matches);
       return false;
     }
-    for (size_t k = 0; k < matches; k++)
+    for (size_t k = 0; k < matches; k++) {
       if (decoded[k] != refdecoded[k]) {
         printf("bug\n");
+        printf("decoded[%zu]=%u; refdecoded[%zu]=%u  \n", k, decoded[k], k,
+               refdecoded[k]);
+        for (size_t kk = 0; kk <= k; kk++) {
+          printf("decoded[%zu]=%u; refdecoded[%zu]=%u  \n", kk, decoded[kk], kk,
+                 refdecoded[kk]);
+        }
         return false;
       }
+    }
   }
   for (size_t i = 0; i < 1000000; i++) {
     uint64_t x = rand();
@@ -360,16 +409,23 @@ template <void (*F)(uint32_t *, uint32_t &, uint32_t, uint64_t)> bool unit() {
     uint32_t refmatches = 0;
     basic_decoder(refdecoded, refmatches, 0, x);
     if (refmatches != matches) {
-      printf("bug\n");
+      printf("bug bad counts %u != %u  \n", refmatches, matches);
       return false;
     }
     for (size_t k = 0; k < matches; k++) {
       if (decoded[k] != refdecoded[k]) {
         printf("bug\n");
+        printf("decoded[%zu]=%u; refdecoded[%zu]=%u  \n", k, decoded[k], k,
+               refdecoded[k]);
+        for (size_t kk = 0; kk <= k; kk++) {
+          printf("decoded[%zu]=%u; refdecoded[%zu]=%u  \n", kk, decoded[kk], kk,
+                 refdecoded[kk]);
+        }
         return false;
       }
     }
   }
+
   return true;
 }
 
@@ -440,6 +496,10 @@ int main(int argc, char **argv) {
   printf("simdjson_decoder:\n");
   unit<simdjson_decoder>();
   test<simdjson_decoder>("nfl.csv", ',');
+
+  printf("simdjson_decoder_alt:\n");
+  unit<simdjson_decoder_alt>();
+  test<simdjson_decoder_alt>("nfl.csv", ',');
 
   printf("simdjson_decoder_rolled:\n");
   unit<simdjson_decoder_rolled>();
