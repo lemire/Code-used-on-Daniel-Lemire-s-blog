@@ -30,6 +30,11 @@ static void setintersection(hashset &h1, hashset &h2, hashset &answer) {
   }
 }
 
+static void setunion_alt(hashset &h1, hashset &h2, hashset &out) {
+  out = h1;
+  out.insert(h2.begin(), h2.end());
+}
+
 static void setunion(hashset &h1, hashset &h2, hashset &out) {
   out.clear();
   out.insert(h1.begin(), h1.end());
@@ -84,6 +89,7 @@ int demo(const int N) {
   treeset t;
   BEST_TIME_NOCHECK(setintersection(s1, s2, out), , repeat, 2 * N, true);
   BEST_TIME_NOCHECK(setunion(s1, s2, out), , repeat, 2 * N, true);
+  BEST_TIME_NOCHECK(setunion_alt(s1, s2, out), , repeat, 2 * N, true);
   BEST_TIME_NOCHECK(arrayintersection(v1, v2, v), , repeat, 2 * N, true);
   BEST_TIME_NOCHECK(arrayunion(v1, v2, v), , repeat, 2 * N, true);
   BEST_TIME_NOCHECK(treesetintersection(t1, t2, t), , repeat, 2 * N, true);
