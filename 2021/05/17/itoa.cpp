@@ -78,7 +78,7 @@ class CPUBenchmark {
 public:
   CPUBenchmark() : ticktime() { start(); }
 
-  std::chrono::steady_clock::time_point ticktime;
+  std::chrono::high_resolution_clock::time_point ticktime;
 
   void start() { ticktime = std::chrono::high_resolution_clock::now(); }
 

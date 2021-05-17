@@ -1,5 +1,3 @@
-// g++ -O3 -std=c++11 -o testvectorcpp11 testvectorcpp11.cpp
-
 #include <cassert>
 #include <chrono>
 #include <iostream>
@@ -21,7 +19,7 @@ class CPUBenchmark {
 public:
   CPUBenchmark() : ticktime() { start(); }
 
-  std::chrono::steady_clock::time_point ticktime;
+  std::chrono::high_resolution_clock::time_point ticktime;
 
   void start() { ticktime = std::chrono::high_resolution_clock::now(); }
 
