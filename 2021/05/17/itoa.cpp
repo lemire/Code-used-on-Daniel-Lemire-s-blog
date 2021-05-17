@@ -91,6 +91,25 @@ void run_neri(uint32_t N) {
   }
 }
 
+void run_std_th(uint32_t N) {
+  // We go from 20 * 1000 * 1000 to 40 * 1000 * 1000
+  // so that we have a flat number of digits (to ease analysis)
+  for (uint32_t i = N; i < 2 * N; i++) {
+    itoa_std(buffer + 10, i);
+  }
+}
+
+void run_fake_th(uint32_t N) {
+  for (uint32_t i = N; i < 2 * N; i++) {
+    fake_itoa_std(buffer + 10, i);
+  }
+}
+void run_neri_th(uint32_t N) {
+  for (uint32_t i = N; i < 2 * N; i++) {
+    itoa_neri(buffer + 10, i);
+  }
+}
+
 void demo() {
   CPUBenchmark time;
   const uint32_t N = 20 * 1000 * 1000;
@@ -191,6 +210,118 @@ void demo() {
   for (size_t i = 0; i < trials; i++) {
     time.start();
     run_neri(N);
+    auto result = time.stop() * 1.0 / N;
+    y += result;
+    if (result < x) {
+      x = result;
+    }
+  }
+  y = y / trials;
+  std::cout << "neri         : " << x << " (" << (y - x) * 100 / x << " %)"
+            << std::endl;
+}
+
+
+void demo_th() {
+  CPUBenchmark time;
+  const uint32_t N = 20 * 1000 * 1000;
+  double x, y;
+  size_t trials = 10;
+
+  std::cout.precision(3);
+  std::cout << " report speed indicator in nanoseconds per integer"
+            << std::endl;
+  x = 1e300;
+  y = 0;
+  {
+#ifdef __APPLE__
+    performance_counters agg_min{1e300};
+    performance_counters agg_avg{0.0};
+#endif
+    for (size_t i = 0; i < trials; i++) {
+#ifdef __APPLE__
+      performance_counters start = get_counters();
+#endif
+      time.start();
+      run_std_th(N);
+      auto result = time.stop() * 1.0 / N;
+#ifdef __APPLE__
+      performance_counters end = get_counters();
+      performance_counters diff = end - start;
+      agg_min = agg_min.min(diff);
+      agg_avg += diff;
+#endif
+      y += result;
+      if (result < x) {
+        x = result;
+      }
+    }
+#ifdef __APPLE__
+    agg_avg /= N * trials;
+    agg_min /= N;
+#endif
+    y = y / trials;
+    std::cout << "with std     : " << x << " (" << (y - x) * 100 / x << " %)"
+              << std::endl;
+#ifdef __APPLE__
+    printf(" %8.2f instructions/int (+/- %3.1f %%) ", agg_min.instructions,
+           (agg_avg.instructions - agg_min.instructions) * 100.0 /
+               agg_min.instructions);
+    printf("\n");
+    printf(" %8.2f cycles/int (+/- %3.1f %%) ", agg_min.cycles,
+           (agg_avg.cycles - agg_min.cycles) * 100.0 / agg_min.cycles);
+    printf("\n");
+#endif
+  }
+
+  x = 1e300;
+  y = 0;
+  {
+#ifdef __APPLE__
+    performance_counters agg_min{1e300};
+    performance_counters agg_avg{0.0};
+#endif
+    for (size_t i = 0; i < trials; i++) {
+#ifdef __APPLE__
+      performance_counters start = get_counters();
+#endif
+      time.start();
+      run_fake_th(N);
+      auto result = time.stop() * 1.0 / N;
+#ifdef __APPLE__
+      performance_counters end = get_counters();
+      performance_counters diff = end - start;
+      agg_min = agg_min.min(diff);
+      agg_avg += diff;
+#endif
+      y += result;
+      if (result < x) {
+        x = result;
+      }
+    }
+#ifdef __APPLE__
+    agg_avg /= N * trials;
+    agg_min /= N;
+#endif
+    y = y / trials;
+    std::cout << "fake         : " << x << " (" << (y - x) * 100 / x << " %)"
+              << std::endl;
+#ifdef __APPLE__
+    printf(" %8.2f instructions/int (+/- %3.1f %%) ", agg_min.instructions,
+           (agg_avg.instructions - agg_min.instructions) * 100.0 /
+               agg_min.instructions);
+    printf("\n");
+    printf(" %8.2f cycles/int (+/- %3.1f %%) ", agg_min.cycles,
+           (agg_avg.cycles - agg_min.cycles) * 100.0 / agg_min.cycles);
+    printf("\n");
+#endif
+  }
+
+  x = 1e300;
+  y = 0;
+  for (size_t i = 0; i < trials; i++) {
+    time.start();
+    run_neri_th(N);
     auto result = time.stop() * 1.0 / N;
     y += result;
     if (result < x) {
