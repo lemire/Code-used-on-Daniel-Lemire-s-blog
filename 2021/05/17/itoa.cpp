@@ -130,9 +130,9 @@ void demo() {
     agg_min /= N;
 #endif
     y = y / trials;
-#ifdef __APPLE__
     std::cout << "with std     : " << x << " (" << (y - x) * 100 / x << " %)"
               << std::endl;
+#ifdef __APPLE__
     printf(" %8.2f instructions/int (+/- %3.1f %%) ", agg_min.instructions,
            (agg_avg.instructions - agg_min.instructions) * 100.0 /
                agg_min.instructions);
@@ -173,9 +173,9 @@ void demo() {
     agg_min /= N;
 #endif
     y = y / trials;
-#ifdef __APPLE__
     std::cout << "fake         : " << x << " (" << (y - x) * 100 / x << " %)"
               << std::endl;
+#ifdef __APPLE__
     printf(" %8.2f instructions/int (+/- %3.1f %%) ", agg_min.instructions,
            (agg_avg.instructions - agg_min.instructions) * 100.0 /
                agg_min.instructions);
@@ -203,7 +203,9 @@ void demo() {
 }
 
 int main() {
+#ifdef __APPLE__
   setup_performance_counters();
+#endif
   demo();
   demo();
 }
