@@ -41,6 +41,17 @@ char *itoa_std(char *c, uint32_t n) {
   return c;
 }
 
+__attribute__ ((noinline))
+char *fake_itoa_std(char *c, uint32_t n) {
+  while (n >= 10) {
+    n /= 10;
+    c--;
+  }
+  c--;
+  *c = '0' + char(n);
+  return c;
+}
+
 class CPUBenchmark {
 public:
   CPUBenchmark() : ticktime() { start(); }
@@ -65,6 +76,11 @@ void run_std(uint32_t N) {
   }
 }
 
+void run_fake(uint32_t N) {
+  for (uint32_t i = 0; i < N; i++) {
+    fake_itoa_std(buffer + 10, i);
+  }
+}
 void run_neri(uint32_t N) {
   for (uint32_t i = 0; i < N; i++) {
     itoa_neri(buffer + 10, i);
@@ -94,7 +110,20 @@ void demo() {
   y = y / trials;
   std::cout << "with std     : " << x << " ("
             << (y - x) * 100 / x << " %)" << std::endl;
-
+  x = 1e300;
+  y = 0;
+  for (size_t i = 0; i < trials; i++) {
+    time.start();
+    run_fake(N);
+    auto result = time.stop() * 1.0 / N;
+    y += result;
+    if (result < x) {
+      x = result;
+    }
+  }
+  y = y / trials;
+  std::cout << "fake         : " << x << " (" << (y - x) * 100 / x
+            << " %)" << std::endl;
   x = 1e300;
   y = 0;
   for (size_t i = 0; i < trials; i++) {
