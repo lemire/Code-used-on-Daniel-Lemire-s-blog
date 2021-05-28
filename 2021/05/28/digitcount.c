@@ -12,6 +12,16 @@ int digit_count(uint32_t x) {
   return ans;
 }
 
+int digit_count_small_constants(uint32_t x) {
+  int l2 = int_log2(x);
+  int ans = ((77*l2)>>8)+1;
+
+  static uint32_t table[] = {0,      9,      99,      999,      9999,
+                             99999, 999999, 9999999, 99999999, 999999999, 0xFFFFFFFF};
+  if (x > table[ans]) { ans += 1; }
+  return ans;
+}
+
 int slow_digit_count(uint32_t x) {
     if(x == 0){return 1;}
     static uint32_t table[] = {1,      10,      100,      1000,      10000,
