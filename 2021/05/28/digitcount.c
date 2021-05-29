@@ -6,13 +6,11 @@ int int_log2(uint32_t x) { return 31 - __builtin_clz(x|1); }
 
 
 int digit_count(uint32_t x) {
-  int l2 = int_log2(x);
-  int ans = ((77*l2)>>8);
-  static uint32_t table[] = {9,      99,      999,      9999,
-                             99999, 999999, 9999999, 99999999, 
-                             999999999, 0xFFFFFFFF};
-  if (x > table[ans]) { ans += 1; }
-  return ans + 1;
+    static uint32_t table[] = {9, 99, 999, 9999, 99999, 
+    999999, 9999999, 99999999, 999999999};
+    int y = (9 * int_log2(x)) >> 5;
+    y += x > table[y];
+    return y + 1;
 }
 
 int slow_digit_count(uint32_t x) {
