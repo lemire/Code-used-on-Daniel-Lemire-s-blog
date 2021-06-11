@@ -63,8 +63,8 @@ double efficiency(double rate) {
     double bloom = - log(rate) / log(2);
     return 16.0 / bloom;
 }
- 
-int main() {
+
+void demo() {
   splitmix_generator  gen;
   gen.state = 132321311111;
   double best = 1;
@@ -82,4 +82,42 @@ int main() {
           std::cout << "a = " << std::hex << p.a << " b = " << p.b << " r " << std::dec << p.r << std::endl;
       }
   }
+}
+ 
+int main() {
+
+    std::function<size_t(uint64_t, size_t)> location = [](uint64_t x, size_t range) { return reduce(cheap_mix(x), range); };
+    std::function<uint64_t(uint64_t)> fingerprint1 = [](uint64_t x) { 
+        return uint64_t(1) << (x&63);
+    };
+    std::function<uint64_t(uint64_t)> fingerprint2 = [](uint64_t x) { 
+        return (uint64_t(1) << (x&63)) | (uint64_t(1) << ((x/64)&63));
+    };
+    std::function<uint64_t(uint64_t)> fingerprint3 = [](uint64_t x) { 
+        return (uint64_t(1) << (x&63)) | (uint64_t(1) << ((x/64)&63)) | (uint64_t(1) << ((x/4096)&63));
+    };
+    std::function<uint64_t(uint64_t)> fingerprint4 = [](uint64_t x) { 
+        return (uint64_t(1) << (x&63)) | (uint64_t(1) << ((x/64)&63)) | (uint64_t(1) << ((x/4096)&63)) | (uint64_t(1) << ((x/262144)&63));
+    };
+    std::function<uint64_t(uint64_t)> fingerprint5 = [](uint64_t x) { 
+        return (uint64_t(1) << (x&63)) | (uint64_t(1) << ((x/64)&63)) | (uint64_t(1) << ((x/4096)&63)) | (uint64_t(1) << ((x/262144)&63))| (uint64_t(1) << ((x/16777216)&63));
+    };
+    std::function<uint64_t(uint64_t)> fingerprint6 = [](uint64_t x) { 
+        return (uint64_t(1) << (x&63)) | (uint64_t(1) << ((x/64)&63)) | (uint64_t(1) << ((x/4096)&63)) | (uint64_t(1) << ((x/262144)&63))| (uint64_t(1) << ((x/16777216)&63))| (uint64_t(1) << ((x/1073741824)&63));
+    };
+    std::function<uint64_t(uint64_t)> fingerprint7 = [](uint64_t x) { 
+        return (uint64_t(1) << (x&63)) | (uint64_t(1) << ((x/64)&63)) | (uint64_t(1) << ((x/4096)&63)) | (uint64_t(1) << ((x/262144)&63))| (uint64_t(1) << ((x/16777216)&63))| (uint64_t(1) << ((x/1073741824)&63))| (uint64_t(1) << ((x/68719476736)&63));
+    };
+    std::cout << benchmark(fingerprint1, location) << std::endl;
+    std::cout << benchmark(fingerprint2, location) << std::endl;
+    std::cout << benchmark(fingerprint3, location) << std::endl;
+    std::cout << benchmark(fingerprint4, location) << std::endl;
+    std::cout << benchmark(fingerprint5, location) << std::endl;
+    std::cout << benchmark(fingerprint6, location) << std::endl;
+    std::cout << benchmark(fingerprint7, location) << std::endl;
+
+    std::cout << efficiency(benchmark(fingerprint6, location)) << std::endl;
+
+//    return benchmark(fingerprint, location);
+
 }
