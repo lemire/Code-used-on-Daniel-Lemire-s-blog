@@ -111,6 +111,33 @@ size_t union2by2_branchless(T *input1, size_t size1, T *input2, size_t size2,
   return pos;
 }
 
+size_t union2by2_branchless_ptr(uint32_t *input1, size_t size1,
+                                uint32_t *input2, size_t size2,
+                                uint32_t *output_buffer) {
+
+  uint32_t *end1 = input1 + size1;
+  uint32_t *end2 = input2 + size2;
+  uint32_t *begin = output_buffer;
+
+  while ((input1 < end1) & (input2 < end2)) {
+    uint32_t v1 = *input1;
+    uint32_t v2 = *input2;
+
+    *(output_buffer++) = v1 <= v2 ? *input1 : *input2;
+    input1 += v1 <= v2;
+    input2 += v2 <= v1;
+  }
+
+  while (input1 < end1) {
+    *(output_buffer++) = *(input1++);
+  }
+
+  while (input2 < end2) {
+    *(output_buffer++) = *(input2++);
+  }
+  return output_buffer - begin;
+}
+
 struct scenario {
   scenario(size_t s1, size_t s2)
       : input1(new uint32_t[s1]), size1(s1), input2(new uint32_t[s2]),
@@ -156,6 +183,7 @@ int main() {
   for (auto &sce : data) {
     std::vector<uint32_t> output1(sce.size1 + sce.size2);
     std::vector<uint32_t> output2(sce.size1 + sce.size2);
+    std::vector<uint32_t> output3(sce.size1 + sce.size2);
     size_t size1 = union2by2(sce.input1.get(), sce.size1, sce.input2.get(),
                              sce.size2, output1.data());
     output1.resize(size1);
@@ -164,6 +192,13 @@ int main() {
                              sce.size2, output2.data());
     output2.resize(size2);
     if (output1 != output2) {
+      throw std::runtime_error("bug");
+    }
+    size_t size3 =
+        union2by2_branchless_ptr(sce.input1.get(), sce.size1, sce.input2.get(),
+                                 sce.size2, output3.data());
+    output3.resize(size3);
+    if (output1 != output3) {
       throw std::runtime_error("bug");
     }
   }
@@ -186,17 +221,30 @@ int main() {
     }
     return total;
   };
+  auto branchless_procedure_ptr = [&data]() -> size_t {
+    size_t total{0};
+    for (auto &sce : data) {
+      total += union2by2_branchless_ptr(sce.input1.get(), sce.size1,
+                                        sce.input2.get(), sce.size2,
+                                        sce.united.get());
+    }
+    return total;
+  };
   std::cout << "warming cache...";
   std::cout.flush();
   bench(naive_procedure);
   bench(branchless_procedure);
+  bench(branchless_procedure_ptr);
+
   std::cout << " done." << std::endl;
 
-  for(size_t trial = 0; trial < 10; trial++) {
-    std::cout << "naive      " << bench(naive_procedure) << std::endl;
-    std::cout << "branchless " << bench(branchless_procedure) << std::endl;
-    std::cout << "===="  << std::endl;
+  for (size_t trial = 0; trial < 10; trial++) {
+    std::cout << "naive          " << bench(naive_procedure) << std::endl;
+    std::cout << "branchless     " << bench(branchless_procedure) << std::endl;
+    std::cout << "branchless_ptr " << bench(branchless_procedure_ptr)
+              << std::endl;
 
+    std::cout << "====" << std::endl;
   }
 
   return EXIT_SUCCESS;
