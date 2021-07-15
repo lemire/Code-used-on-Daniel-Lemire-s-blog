@@ -100,7 +100,7 @@ size_t union2by2_branchless(T *input1, size_t size1, T *input2, size_t size2,
     T v2 = input2[pos2];
     output_buffer[pos++] = (v1 <= v2) ? v1 : v2;
     pos1 = (v1 <= v2) ? pos1 + 1 : pos1;
-    pos2 = (v2 <= v1) ? pos2 + 1 : pos2;
+    pos2 = (v1 >= v2) ? pos2 + 1 : pos2;
   }
   while (pos1 < size1) {
     output_buffer[pos++] = input1[pos1++];
@@ -136,6 +136,30 @@ size_t union2by2_branchless_ptr(uint32_t *input1, size_t size1,
     *(output_buffer++) = *(input2++);
   }
   return output_buffer - begin;
+}
+
+size_t union2by2_branchless_variable(uint32_t *input1, size_t size1,
+                                     uint32_t *input2, size_t size2,
+                                     uint32_t *output_buffer) {
+  size_t pos1{0};
+  size_t pos2{0};
+  size_t pos{0};
+  while ((pos1 < size1) && (pos2 < size2)) {
+    uint32_t v1 = input1[pos1];
+    uint32_t v2 = input2[pos2];
+    size_t d = v1 <= v2;
+    size_t d2 = v1 >= v2;
+    output_buffer[pos++] = d ? v1 : v2;
+    pos1 += d;
+    pos2 += d2;
+  }
+  while (pos1 < size1) {
+    output_buffer[pos++] = input1[pos1++];
+  }
+  while (pos2 < size2) {
+    output_buffer[pos++] = input2[pos2++];
+  }
+  return pos;
 }
 
 struct scenario {
@@ -184,6 +208,7 @@ int main() {
     std::vector<uint32_t> output1(sce.size1 + sce.size2);
     std::vector<uint32_t> output2(sce.size1 + sce.size2);
     std::vector<uint32_t> output3(sce.size1 + sce.size2);
+    std::vector<uint32_t> output4(sce.size1 + sce.size2);
     size_t size1 = union2by2(sce.input1.get(), sce.size1, sce.input2.get(),
                              sce.size2, output1.data());
     output1.resize(size1);
@@ -199,6 +224,13 @@ int main() {
                                  sce.size2, output3.data());
     output3.resize(size3);
     if (output1 != output3) {
+      throw std::runtime_error("bug");
+    }
+    size_t size4 = union2by2_branchless_variable(sce.input1.get(), sce.size1,
+                                                 sce.input2.get(), sce.size2,
+                                                 output4.data());
+    output4.resize(size4);
+    if (output1 != output4) {
       throw std::runtime_error("bug");
     }
   }
@@ -230,20 +262,33 @@ int main() {
     }
     return total;
   };
+  auto branchless_procedure_variable = [&data]() -> size_t {
+    size_t total{0};
+    for (auto &sce : data) {
+      total += union2by2_branchless_variable(sce.input1.get(), sce.size1,
+                                             sce.input2.get(), sce.size2,
+                                             sce.united.get());
+    }
+    return total;
+  };
   std::cout << "warming cache...";
   std::cout.flush();
   bench(naive_procedure);
   bench(branchless_procedure);
   bench(branchless_procedure_ptr);
+  bench(branchless_procedure_variable);
 
   std::cout << " done." << std::endl;
 
   for (size_t trial = 0; trial < 10; trial++) {
-    std::cout << "naive          " << bench(naive_procedure) << std::endl;
-    std::cout << "branchless     " << bench(branchless_procedure) << std::endl;
-    std::cout << "branchless_ptr " << bench(branchless_procedure_ptr)
+    std::cout << "naive                         " << bench(naive_procedure)
               << std::endl;
-
+    std::cout << "branchless                    " << bench(branchless_procedure)
+              << std::endl;
+    std::cout << "branchless_ptr                "
+              << bench(branchless_procedure_ptr) << std::endl;
+    std::cout << "branchless_procedure_variable "
+              << bench(branchless_procedure_variable) << std::endl;
     std::cout << "====" << std::endl;
   }
 
