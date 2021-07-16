@@ -31,6 +31,7 @@ double bench(PROCEDURE f, uint64_t threshold = 200'000'000) {
   return double(finish - start) / times / output_size;
 }
 
+// Assumes that input1 and input2 are sorted
 template <typename T>
 size_t union2by2(T *input1, size_t size1, T *input2, size_t size2,
                  T *output_buffer) {
@@ -88,6 +89,7 @@ size_t union2by2(T *input1, size_t size1, T *input2, size_t size2,
 
 /**
  * Inspired by work by Andrey Pechkurov
+ * Assumes that input1 and input2 are sorted with no duplicate.
  */
 template <typename T>
 size_t union2by2_branchless(T *input1, size_t size1, T *input2, size_t size2,
@@ -111,9 +113,10 @@ size_t union2by2_branchless(T *input1, size_t size1, T *input2, size_t size2,
   return pos;
 }
 
-size_t union2by2_branchless_ptr(uint32_t *input1, size_t size1,
-                                uint32_t *input2, size_t size2,
-                                uint32_t *output_buffer) {
+// assumes that input1 and input2 are sorted with no duplicate.
+size_t union2by2_branchless_ptr(__restrict uint32_t *input1, size_t size1,
+                                __restrict uint32_t *input2, size_t size2,
+                                __restrict uint32_t *output_buffer) {
 
   uint32_t *end1 = input1 + size1;
   uint32_t *end2 = input2 + size2;
@@ -123,9 +126,9 @@ size_t union2by2_branchless_ptr(uint32_t *input1, size_t size1,
     uint32_t v1 = *input1;
     uint32_t v2 = *input2;
 
-    *(output_buffer++) = v1 <= v2 ? *input1 : *input2;
+    *(output_buffer++) = v1 <= v2 ? v1 : v2;
     input1 += v1 <= v2;
-    input2 += v2 <= v1;
+    input2 += v1 >= v2;
   }
 
   while (input1 < end1) {
@@ -138,6 +141,7 @@ size_t union2by2_branchless_ptr(uint32_t *input1, size_t size1,
   return output_buffer - begin;
 }
 
+// assumes that input1 and input2 are sorted with no duplicate.
 size_t union2by2_branchless_variable(uint32_t *input1, size_t size1,
                                      uint32_t *input2, size_t size2,
                                      uint32_t *output_buffer) {
@@ -184,7 +188,9 @@ inline scenario create_scenario(std::mt19937 &gen) {
     ans.input2.get()[i] = values(gen);
   }
   std::sort(ans.input1.get(), ans.input1.get() + ans.size1);
+  ans.size1 = std::unique(ans.input1.get(), ans.input1.get() + ans.size1) - ans.input1.get();
   std::sort(ans.input2.get(), ans.input2.get() + ans.size2);
+  ans.size2 = std::unique(ans.input2.get(), ans.input2.get() + ans.size2) - ans.input2.get();
   return ans;
 }
 
