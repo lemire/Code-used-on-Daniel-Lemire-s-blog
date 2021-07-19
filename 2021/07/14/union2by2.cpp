@@ -234,9 +234,9 @@ size_t union2by2_branchless(T *input1, size_t size1, T *input2, size_t size2,
 }
 
 // assumes that input1 and input2 are sorted with no duplicate.
-size_t union2by2_branchless_ptr(__restrict uint32_t *input1, size_t size1,
-                                __restrict uint32_t *input2, size_t size2,
-                                __restrict uint32_t *output_buffer) {
+size_t union2by2_branchless_ptr(uint32_t *input1, size_t size1,
+                                uint32_t *input2, size_t size2,
+                                uint32_t *output_buffer) {
 
   uint32_t *end1 = input1 + size1;
   uint32_t *end2 = input2 + size2;
