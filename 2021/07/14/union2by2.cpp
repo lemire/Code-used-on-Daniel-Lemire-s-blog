@@ -87,6 +87,126 @@ size_t union2by2(T *input1, size_t size1, T *input2, size_t size2,
   return pos;
 }
 
+
+// Assumes that input1 and input2 are sorted
+template <typename T>
+size_t union2by2_faked_trimmed(T *input1, size_t size1, T *input2, size_t size2,
+                 T *output_buffer) {
+  if (size1 == 0) {
+    for (size_t i = 0; i < size2; i++) {
+      output_buffer[i] = input2[i];
+    }
+    return size2;
+  }
+  if (size2 == 0) {
+    for (size_t i = 0; i < size1; i++) {
+      output_buffer[i] = input1[i];
+    }
+    return size1;
+  }
+  uint32_t largest1 = input1[size1-1];
+  uint32_t largest2 = input2[size2-1];
+  if(largest1 > largest2) {
+    std::swap(input1, input2);
+    std::swap(size1, size2);
+  }
+  size_t pos1{0};
+  size_t pos2{0};
+  T v1 = input1[pos1];
+  T v2 = input2[pos2];
+  size_t pos{0};
+  while (true) {
+    if (v1 < v2) {
+      output_buffer[pos++] = v1;
+      pos1++;
+      if (pos1 == size1) {
+        break;
+      }
+      v1 = input1[pos1];
+    } else if (v1 > v2) {
+      output_buffer[pos++] = v2;
+      pos2++;
+      if (pos2 == size2) {
+        break;
+      }
+      v2 = input2[pos2];
+    } else {
+      output_buffer[pos++] = input1[pos1];
+      pos1++;
+      pos2++;
+      if ((pos1 == size1) || (pos2 == size2)) {
+        break;
+      }
+      v1 = input1[pos1];
+      v2 = input2[pos2];
+    }
+  }
+  while (pos1 < size1) {
+    output_buffer[pos++] = input1[pos1++];
+  }
+  while (pos2 < size2) {
+    output_buffer[pos++] = input2[pos2++];
+  }
+  return pos;
+}
+
+
+// Assumes that input1 and input2 are sorted
+template <typename T>
+size_t union2by2_trimmed(T *input1, size_t size1, T *input2, size_t size2,
+                 T *output_buffer) {
+  if (size1 == 0) {
+    for (size_t i = 0; i < size2; i++) {
+      output_buffer[i] = input2[i];
+    }
+    return size2;
+  }
+  if (size2 == 0) {
+    for (size_t i = 0; i < size1; i++) {
+      output_buffer[i] = input1[i];
+    }
+    return size1;
+  }
+  uint32_t largest1 = input1[size1-1];
+  uint32_t largest2 = input2[size2-1];
+  if(largest1 > largest2) {
+    std::swap(input1, input2);
+    std::swap(size1, size2);
+  }
+  size_t pos1{0};
+  size_t pos2{0};
+  T v1 = input1[pos1];
+  T v2 = input2[pos2];
+  size_t pos{0};
+  while (true) {
+    if (v1 < v2) {
+      output_buffer[pos++] = v1;
+      pos1++;
+      if (pos1 == size1) {
+        break;
+      }
+      v1 = input1[pos1];
+    } else if (v1 > v2) {
+      output_buffer[pos++] = v2;
+      pos2++;
+      v2 = input2[pos2];
+    } else {
+      output_buffer[pos++] = input1[pos1];
+      pos1++;
+      pos2++;
+      if (pos1 == size1) {
+        break;
+      }
+      v1 = input1[pos1];
+      v2 = input2[pos2];
+    }
+  }
+  while (pos2 < size2) {
+    output_buffer[pos++] = input2[pos2++];
+  }
+  return pos;
+}
+
 /**
  * Inspired by work by Andrey Pechkurov
  * Assumes that input1 and input2 are sorted with no duplicate.
@@ -151,14 +271,42 @@ size_t union2by2_branchless_variable(uint32_t *input1, size_t size1,
   while ((pos1 < size1) && (pos2 < size2)) {
     uint32_t v1 = input1[pos1];
     uint32_t v2 = input2[pos2];
-    size_t d = v1 <= v2;
-    size_t d2 = v1 >= v2;
-    output_buffer[pos++] = d ? v1 : v2;
-    pos1 += d;
-    pos2 += d2;
+    size_t cmp_v1_lt_v2 = v1 <= v2;
+    size_t cmp_v1_gt_v2 = v1 >= v2;
+    output_buffer[pos++] = cmp_v1_lt_v2 ? v1 : v2;
+    pos1 += cmp_v1_lt_v2;
+    pos2 += cmp_v1_gt_v2;
   }
   while (pos1 < size1) {
     output_buffer[pos++] = input1[pos1++];
+  }
+  while (pos2 < size2) {
+    output_buffer[pos++] = input2[pos2++];
+  }
+  return pos;
+}
+
+// assumes that input1 and input2 are sorted with no duplicate.
+size_t union2by2_branchless_variable_trimmed(uint32_t *input1, size_t size1,
+                                     uint32_t *input2, size_t size2,
+                                     uint32_t *output_buffer) {
+  uint32_t largest1 = size1 > 0 ? input1[size1-1]:0;
+  uint32_t largest2 = size2 > 0 ? input2[size2-1]:0;
+  if(largest1 > largest2) {
+    std::swap(input1, input2);
+    std::swap(size1, size2);
+  }
+  size_t pos1{0};
+  size_t pos2{0};
+  size_t pos{0};
+  while (pos1 < size1) {
+    uint32_t v1 = input1[pos1];
+    uint32_t v2 = input2[pos2];
+    size_t cmp_v1_lt_v2 = v1 <= v2;
+    size_t cmp_v1_gt_v2 = v1 >= v2;
+    output_buffer[pos++] = cmp_v1_lt_v2 ? v1 : v2;
+    pos1 += cmp_v1_lt_v2;
+    pos2 += cmp_v1_gt_v2;
   }
   while (pos2 < size2) {
     output_buffer[pos++] = input2[pos2++];
@@ -178,7 +326,7 @@ struct scenario {
 };
 
 inline scenario create_scenario(std::mt19937 &gen) {
-  std::uniform_int_distribution<size_t> sizes(0, 1000000);
+  std::uniform_int_distribution<size_t> sizes(0, 10000);
   std::uniform_int_distribution<uint32_t> values;
   scenario ans(sizes(gen), sizes(gen));
   for (size_t i = 0; i < ans.size1; i++) {
@@ -215,6 +363,9 @@ int main() {
     std::vector<uint32_t> output2(sce.size1 + sce.size2);
     std::vector<uint32_t> output3(sce.size1 + sce.size2);
     std::vector<uint32_t> output4(sce.size1 + sce.size2);
+    std::vector<uint32_t> output5(sce.size1 + sce.size2);
+    std::vector<uint32_t> output6(sce.size1 + sce.size2);
+
     size_t size1 = union2by2(sce.input1.get(), sce.size1, sce.input2.get(),
                              sce.size2, output1.data());
     output1.resize(size1);
@@ -239,6 +390,19 @@ int main() {
     if (output1 != output4) {
       throw std::runtime_error("bug");
     }
+    size_t size5 = union2by2_branchless_variable_trimmed(sce.input1.get(), sce.size1,
+                                                 sce.input2.get(), sce.size2,
+                                                 output5.data());
+    output5.resize(size5);
+    if (output1 != output5) {
+      throw std::runtime_error("bug");
+    }
+    size_t size6 = union2by2_trimmed(sce.input1.get(), sce.size1, sce.input2.get(),
+                             sce.size2, output6.data());
+    output6.resize(size6);
+    if (output1 != output6) {
+      throw std::runtime_error("bug");
+    }
   }
   std::cout << " done." << std::endl;
 
@@ -246,6 +410,22 @@ int main() {
     size_t total{0};
     for (auto &sce : data) {
       total += union2by2(sce.input1.get(), sce.size1, sce.input2.get(),
+                         sce.size2, sce.united.get());
+    }
+    return total;
+  };
+  auto faked_trimmed_procedure = [&data]() -> size_t {
+    size_t total{0};
+    for (auto &sce : data) {
+      total += union2by2_faked_trimmed(sce.input1.get(), sce.size1, sce.input2.get(),
+                         sce.size2, sce.united.get());
+    }
+    return total;
+  };
+  auto trimmed_procedure = [&data]() -> size_t {
+    size_t total{0};
+    for (auto &sce : data) {
+      total += union2by2_trimmed(sce.input1.get(), sce.size1, sce.input2.get(),
                          sce.size2, sce.united.get());
     }
     return total;
@@ -277,23 +457,41 @@ int main() {
     }
     return total;
   };
+  auto branchless_procedure_variable_trimmed = [&data]() -> size_t {
+    size_t total{0};
+    for (auto &sce : data) {
+      total += union2by2_branchless_variable_trimmed(sce.input1.get(), sce.size1,
+                                             sce.input2.get(), sce.size2,
+                                             sce.united.get());
+    }
+    return total;
+  };
   std::cout << "warming cache...";
   std::cout.flush();
   bench(naive_procedure);
+  bench(trimmed_procedure);
+  bench(faked_trimmed_procedure);
   bench(branchless_procedure);
   bench(branchless_procedure_ptr);
   bench(branchless_procedure_variable);
+  bench(branchless_procedure_variable_trimmed);
 
   std::cout << " done." << std::endl;
 
   for (size_t trial = 0; trial < 10; trial++) {
     std::cout << "naive                         " << bench(naive_procedure)
               << std::endl;
+    std::cout << "faked trimmed                 " << bench(faked_trimmed_procedure)
+              << std::endl;
+    std::cout << "trimmed                       " << bench(trimmed_procedure)
+              << std::endl;
     std::cout << "branchless                    " << bench(branchless_procedure)
               << std::endl;
     std::cout << "branchless_ptr                "
               << bench(branchless_procedure_ptr) << std::endl;
     std::cout << "branchless_procedure_variable "
+              << bench(branchless_procedure_variable) << std::endl;
+    std::cout << "branchless_procedure_variablet"
               << bench(branchless_procedure_variable) << std::endl;
     std::cout << "====" << std::endl;
   }
