@@ -1,27 +1,22 @@
 
-extern "C" { 
+extern "C" {
 #include "nadeau.h"
 }
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <unistd.h>
 
-struct memory_tracker {
-    int64_t current;
-    memory_tracker() : current(getCurrentRSS()) {}
-    int64_t extra() {
-        int64_t memory_gain = getCurrentRSS() - current;
-        current += memory_gain;
-        return memory_gain;
-    }
-};
-
 int main() {
-    constexpr size_t big_number = 1000;
-    char** bigpointer = new char*[big_number];
-    memory_tracker mt;
-    for(size_t i =0; i <big_number;i++) {
-        bigpointer[i]  = new char[1000*1000];
-      std::cout << "extra mem " << mt.extra() << std::endl;
+  size_t pagesize = sysconf(_SC_PAGESIZE);
+  constexpr size_t N = 100000000;
+  char *buffer = new char[100000000]; // allocate 10MB
+  for (size_t i = 0; i < N; i++) {
+    buffer[i] = 1;
+    if ((i % (N / 100) == 0) || (i == N - 1)) {
+      int64_t sf = getCurrentRSS();
+      size_t pages = (i + pagesize) / pagesize;
+      std::cout << sf << " " << pages * pagesize << std::endl;
     }
+  }
+  return EXIT_SUCCESS;
 }
