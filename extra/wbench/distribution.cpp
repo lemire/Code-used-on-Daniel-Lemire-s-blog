@@ -35,15 +35,16 @@ uint64_t bench(PROCEDURE f, char *& data, size_t N) {
 
 int main(int argc, char** argv) {
   char * data;
-  size_t N = argc == 1 ? 10000: atol(argv[1]);
+  size_t N = argc == 1 ? 100000000: atol(argv[1]);
   printf("allocate-init\n");
   auto allocate_memory = [](char *& data, size_t N)  {
     data = new char[N];
     for(size_t i = 0; i < N; i++) { data[i] = i; }
+
   };
   uint64_t m0{99999999999999999};
   uint64_t m1{0};
-  for(size_t z = 0; z < 5; z++) {
+  for(size_t z = 0; z < 20; z++) {
     uint64_t m = bench(allocate_memory, data, N);
     if(m > m1) { m1 = m; }
     if(m < m0) { m0 = m; }
