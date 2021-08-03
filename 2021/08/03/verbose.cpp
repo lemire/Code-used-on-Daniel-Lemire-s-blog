@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 int main(int argc, char ** argv) {
+  std::ios_base::sync_with_stdio(false);
   size_t repeat = 1000;
   if(argc > 1) { std::from_chars(argv[1], argv[1] + strlen(argv[1]), repeat); }
   constexpr size_t buflength = 16384;
