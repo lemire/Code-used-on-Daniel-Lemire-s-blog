@@ -1,6 +1,4 @@
 #include <unistd.h>
-ssize_t read(int fd, void *buf, size_t count);
-
 #include <fstream>
 #include <iostream>
 #include <chrono>
@@ -17,10 +15,9 @@ int main() {
   char cachebuffer[cache_length];
   uint64_t before = nano();
   size_t howmany = 0;
-  while(true) {
-    auto tr = read(0, cachebuffer, cache_length);
-    howmany += tr;
-    if(tr == 0) { break; }
+  size_t tr{1};
+  while(tr) {
+    howmany += (tr = read(0, cachebuffer, cache_length));
   }
   uint64_t after = nano();
   double giga = howmany / 1000000000.;
