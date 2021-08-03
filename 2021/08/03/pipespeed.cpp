@@ -11,7 +11,7 @@ uint64_t nano() {
 
 int main() {
   std::ios_base::sync_with_stdio(false);
-  constexpr size_t cache_length = 512;
+  constexpr size_t cache_length = 16384;
   char cachebuffer[cache_length];
   std::vector<char> buffer;
   buffer.reserve(cache_length);

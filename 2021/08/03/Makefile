@@ -1,8 +1,8 @@
-all: twitter.json pipespeed
+all: verbose pipespeed
 
-twitter.json:
-	cp ../../06/30/twitter.json .
+verbose: verbose.cpp
+	c++ -std=c++17 -Wall -Wextra -o verbose verbose.cpp
 pipespeed: pipespeed.cpp
-	c++ -std=c++11 -Wall -Wextra -o pipespeed pipespeed.cpp
+	c++ -std=c++17 -Wall -Wextra -o pipespeed pipespeed.cpp
 clean:
-	rm -r -f pipespeed
+	rm -r -f verbose
