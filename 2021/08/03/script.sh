@@ -1,0 +1,1 @@
+for i in {1..10}; do ./pipespeed < ../../06/30/twitter.json ; done
