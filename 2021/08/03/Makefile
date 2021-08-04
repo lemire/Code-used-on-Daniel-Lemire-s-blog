@@ -7,4 +7,4 @@ pipespeed: pipespeed.cpp
 cpipespeed: cpipespeed.cpp
 	c++ -O3 -std=c++17 -Wall -Wextra -o cpipespeed cpipespeed.cpp
 clean:
-	rm -r -f verbose
+	rm -r -f verbose cpipespeed pipespeed
