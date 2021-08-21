@@ -33,6 +33,14 @@ uint64_t load_read_and_process(size_t volume) {
 }
 
 __attribute__((noinline))
+void load_read(size_t volume) {
+  int * content = new int[volume/sizeof(int)];
+  init(content, volume);
+  delete[] content;
+}
+
+
+__attribute__((noinline))
 uint64_t read_and_process(int * content, size_t volume) {
   uint64_t sum = 0;
   for(size_t i = 0; i < volume/sizeof(int); i++) {
@@ -43,8 +51,17 @@ uint64_t read_and_process(int * content, size_t volume) {
 
 void bench(const size_t size_in_bytes) {
   uint64_t before, after;
-  double s1, s2;
+  double s0, s1, s2;
   uint64_t ref_count = load_read_and_process(size_in_bytes);
+
+  for(size_t i = 0; i < 3; i++) {
+    before = nano();
+    load_read(size_in_bytes);
+    after = nano();
+    s0 = size_in_bytes / double(after - before);
+    std::cout << s0 << " GB/s ";
+  }
+  std::cout << " | ";
 
   for(size_t i = 0; i < 3; i++) {
     before = nano();
@@ -79,7 +96,7 @@ int main() {
     bench(length);
   }
   std::cout << "Large:" << std::endl;
-  for(size_t length = 250000000; length <= 1000000000; length *= 2) {
+  for(size_t length = 250000000; length <= 4000000000; length *= 2) {
     std::cout << length / 1000000000.0 << " GB : ";
     bench(length);
   }
