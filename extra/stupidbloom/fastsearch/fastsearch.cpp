@@ -28,9 +28,10 @@ uint64_t reduce(uint64_t key, uint64_t range) {
     return ((__uint128_t) key * range) >> 64;
 }
 
-double benchmark(std::function<uint64_t(uint64_t)> fingerprint, std::function<size_t(uint64_t, size_t)> location, size_t N = 2000000, size_t trial = 200000) {
+double benchmark(double bits_per_entry, std::function<uint64_t(uint64_t)> fingerprint, std::function<size_t(uint64_t, size_t)> location, size_t N = 2000000, size_t trial = 200000) {
     static std::vector<uint64_t> buffer;
-    buffer.clear(); buffer.resize(N * 2 / 8); // two bytes per entry
+    buffer.clear(); 
+    buffer.resize(size_t(round(N * (bits_per_entry / 8) / sizeof(uint64_t)))); // two bytes per entry
     splitmix_generator gen;
     for(size_t i = 0; i < N ; i++) {
         uint64_t key = gen();
@@ -49,7 +50,7 @@ uint64_t rotate(uint64_t x, unsigned int i) {
     if(i == 0) { return x; }
     return (x >> i) | (x << (64 - i));
 }
-
+/*
 double get_score(parameters p) {
     uint64_t a = p.a;
     uint64_t b = p.b;
@@ -57,13 +58,14 @@ double get_score(parameters p) {
     std::function<size_t(uint64_t, size_t)> location = [](uint64_t x, size_t range) { return reduce(cheap_mix(x), range); };
     std::function<uint64_t(uint64_t)> fingerprint = [a,b,r](uint64_t x) { return x & ((x>>r)*a) & (x*b); };
     return benchmark(fingerprint, location);
+}*/
+
+double efficiency(double bits_per_entry, double rate) {
+    double ideal = - log(rate) / log(2);
+    return bits_per_entry / ideal;
 }
 
-double efficiency(double rate) {
-    double bloom = - log(rate) / log(2);
-    return 16.0 / bloom;
-}
-
+/*
 void demo() {
   splitmix_generator  gen;
   gen.state = 132321311111;
@@ -82,7 +84,7 @@ void demo() {
           std::cout << "a = " << std::hex << p.a << " b = " << p.b << " r " << std::dec << p.r << std::endl;
       }
   }
-}
+}*/
  
 int main() {
 
@@ -108,16 +110,43 @@ int main() {
     std::function<uint64_t(uint64_t)> fingerprint7 = [](uint64_t x) { 
         return (uint64_t(1) << (x&63)) | (uint64_t(1) << ((x/64)&63)) | (uint64_t(1) << ((x/4096)&63)) | (uint64_t(1) << ((x/262144)&63))| (uint64_t(1) << ((x/16777216)&63))| (uint64_t(1) << ((x/1073741824)&63))| (uint64_t(1) << ((x/68719476736)&63));
     };
-    std::cout << benchmark(fingerprint1, location) << std::endl;
-    std::cout << benchmark(fingerprint2, location) << std::endl;
-    std::cout << benchmark(fingerprint3, location) << std::endl;
-    std::cout << benchmark(fingerprint4, location) << std::endl;
-    std::cout << benchmark(fingerprint5, location) << std::endl;
-    std::cout << benchmark(fingerprint6, location) << std::endl;
-    std::cout << benchmark(fingerprint7, location) << std::endl;
+    std::function<uint64_t(uint64_t)> fingerprint8 = [](uint64_t x) { 
+        return (uint64_t(1) << (x&63)) | (uint64_t(1) << ((x/64)&63)) | (uint64_t(1) << ((x/4096)&63)) | (uint64_t(1) << ((x/262144)&63))| (uint64_t(1) << ((x/16777216)&63))| (uint64_t(1) << ((x/1073741824)&63))| (uint64_t(1) << ((x/68719476736)&63))| (uint64_t(1) << ((x/4398046511104)&63));
+    };
+    for(double bits_per_entry = 6; bits_per_entry<=32; bits_per_entry+=1) {
+        std::cout << "bits_per_entry = " << bits_per_entry <<std::endl;
+        // std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint1, location)) << std::endl;
+    //std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint2, location)) << std::endl;
+   // std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint3, location)) << std::endl;
+   // std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint4, location)) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint4, location) << " : "<< efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint4, location)) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint5, location) << " : "<< efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint5, location)) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint6, location) << " : "<< efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint6, location)) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint7, location) << " : "<< efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint7, location)) << std::endl;
 
-    std::cout << efficiency(benchmark(fingerprint6, location)) << std::endl;
+   // std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint6, location)) << std::endl;
+   // std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint7, location)) << std::endl;
+   // std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint8, location)) << std::endl;
 
-//    return benchmark(fingerprint, location);
-
+        std::cout <<std::endl;
+    }/*
+    double bits_per_entry = 16;
+    std::cout << benchmark(bits_per_entry, fingerprint1, location) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint2, location) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint3, location) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint4, location) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint5, location) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint6, location) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint7, location) << std::endl;
+    std::cout << benchmark(bits_per_entry, fingerprint8, location) << std::endl;
+    std::cout << "---"<<std::endl;
+    std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint1, location)) << std::endl;
+    std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint2, location)) << std::endl;
+    std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint3, location)) << std::endl;
+    std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint4, location)) << std::endl;
+    std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint5, location)) << std::endl;
+    std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint6, location)) << std::endl;
+    std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint7, location)) << std::endl;
+    std::cout << efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint8, location)) << std::endl;
+*/
 }
