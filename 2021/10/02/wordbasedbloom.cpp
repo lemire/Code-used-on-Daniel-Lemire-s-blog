@@ -54,10 +54,10 @@ int main() {
 
     std::function<uint64_t(uint64_t)> fingerprint5 = [](uint64_t x) { 
         return (uint64_t(1) << (x&63)) 
-            | (uint64_t(1) << ((x/64)&63)) 
-            | (uint64_t(1) << ((x/4096)&63)) 
-            | (uint64_t(1) << ((x/262144)&63))
-            | (uint64_t(1) << ((x/16777216)&63));
+            | (uint64_t(1) << ((x>>6)&63)) 
+            | (uint64_t(1) << ((x>>12)&63)) 
+            | (uint64_t(1) << ((x>>18)&63))
+            | (uint64_t(1) << ((x>>24)&63));
     };
     double bits_per_entry = 12;
     std::cout << benchmark(bits_per_entry, fingerprint5, location) << " : "<< efficiency(bits_per_entry, benchmark(bits_per_entry, fingerprint5, location)) << std::endl;
