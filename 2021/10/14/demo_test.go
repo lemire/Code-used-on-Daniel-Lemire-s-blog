@@ -8,7 +8,6 @@ import (
 	"testing"
 )
 
-
 var sum int = 0
 
 var Count int = 1000000
@@ -35,7 +34,6 @@ func BenchmarkDynamicSquare(b *testing.B) {
 	}
 }
 
-
 func BenchmarkLocalPluginSquare(b *testing.B) {
 	file, err := os.Create("fast.go")
 	if err != nil {
@@ -46,14 +44,14 @@ func BenchmarkLocalPluginSquare(b *testing.B) {
 	if err != nil {
 		fmt.Println("Unable to write data")
 		os.Exit(1)
-	}	
+	}
 	powers := 2
 	for i := 1; i < powers; i++ {
 		_, err = file.WriteString(" * x")
 		if err != nil {
 			fmt.Println("Unable to write data")
 			os.Exit(1)
-		}	
+		}
 	}
 	_, err = file.WriteString("\n}\n")
 
@@ -62,11 +60,11 @@ func BenchmarkLocalPluginSquare(b *testing.B) {
 		os.Exit(1)
 	}
 	file.Close()
-	_, errc := exec.Command("go", "build", "-buildmode=plugin", "-o", "fast.so", "fast.go").Output() 
-    if errc != nil {
+	_, errc := exec.Command("go", "build", "-buildmode=plugin", "-o", "fast.so", "fast.go").Output()
+	if errc != nil {
 		fmt.Println(errc)
 		os.Exit(1)
-    }
+	}
 
 	plug, err := plugin.Open("fast.so")
 	if err != nil {
@@ -83,6 +81,28 @@ func BenchmarkLocalPluginSquare(b *testing.B) {
 		fmt.Println("unexpected type from module symbol")
 		os.Exit(1)
 	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		for i := 0; i < Count; i++ {
+			sum += loaded(i)
+		}
+	}
+}
+
+func BenchmarkLocalPluginSquareSimple(b *testing.B) {
+	file, _ := os.Create("fast.go")
+	file.WriteString("package main\nfunc FastFunction(x int) int {\n  return x")
+	powers := 2
+	for i := 1; i < powers; i++ {
+		file.WriteString(" * x")
+	}
+	file.WriteString("\n}\n")
+	file.Close()
+	exec.Command("go", "build", "-buildmode=plugin", "-o", "fast.so", "fast.go").Output()
+	plug, _ := plugin.Open("fast.so")
+	fastSquare, _ := plug.Lookup("FastFunction")
+	loaded, _ := fastSquare.(func(int) int)
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
