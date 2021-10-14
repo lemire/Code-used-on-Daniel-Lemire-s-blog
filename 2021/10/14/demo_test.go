@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"plugin"
 	"testing"
+	"time"
 )
 
 var sum int = 0
@@ -91,6 +92,8 @@ func BenchmarkLocalPluginSquare(b *testing.B) {
 }
 
 func BenchmarkLocalPluginSquareSimple(b *testing.B) {
+	start := time.Now()
+
 	file, _ := os.Create("fast.go")
 	file.WriteString("package main\nfunc FastFunction(x int) int {\n  return x")
 	powers := 2
@@ -104,6 +107,8 @@ func BenchmarkLocalPluginSquareSimple(b *testing.B) {
 	fastSquare, _ := plug.Lookup("FastFunction")
 	loaded, _ := fastSquare.(func(int) int)
 
+	elapsed := time.Since(start)
+	fmt.Printf("Build took %s\n", elapsed)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		for i := 0; i < Count; i++ {
