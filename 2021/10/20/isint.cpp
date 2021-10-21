@@ -60,8 +60,6 @@ bool to_int64(double x, int64_t *out) {
   uint64_t mantissa = (bits & 0xfffffffffffff) | 0x10000000000000;
   int raw_exp = (bits >> 52) & 0x7ff;
   int exp = raw_exp - 1023 - 52;
-  // except for the sign, we
-  // have that x = mantissa * 2**exp.
   if ((exp >= 0) && (exp < 11)) {
     int64_t tmp = int64_t(mantissa << exp);
     if (negative) {
@@ -123,8 +121,6 @@ bool to_int32(float x, int32_t *out) {
   uint32_t mantissa = (bits & 0x7fffff) | 0x800000;
   int raw_exp = (bits >> 23) & 0xff;
   int exp = raw_exp - 127 - 23;
-  // except for the sign, we
-  // have that x = mantissa * 2**exp.
   if ((exp >= 0) && (exp < 9)) {
     int32_t tmp = int32_t(mantissa << exp);
     if (negative) {
