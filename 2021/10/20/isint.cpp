@@ -59,12 +59,6 @@ bool to_int64(double x, int64_t *out) {
   }
   uint64_t mantissa = (bits & 0xfffffffffffff) | 0x10000000000000;
   int raw_exp = (bits >> 52) & 0x7ff;
-  if (raw_exp == 0) {
-    return false; // subnormal
-  }
-  if (raw_exp == 0x7ff) {
-    return false; // NaN or infinity
-  }
   int exp = raw_exp - 1023 - 52;
   // except for the sign, we
   // have that x = mantissa * 2**exp.
@@ -76,10 +70,7 @@ bool to_int64(double x, int64_t *out) {
     *out = tmp;
     return true;
   }
-  if (exp < -64) {
-    return false;
-  }
-  if ((mantissa << (64 + exp)) == 0) {
+  if ((exp > -64) && (exp < 0) && ((mantissa << (64 + exp)) == 0)) {
     int64_t tmp = int64_t(mantissa >> -exp);
     if (negative) {
       tmp = -tmp;
@@ -131,12 +122,6 @@ bool to_int32(float x, int32_t *out) {
   }
   uint32_t mantissa = (bits & 0x7fffff) | 0x800000;
   int raw_exp = (bits >> 23) & 0xff;
-  if (raw_exp == 0) {
-    return false; // subnormal
-  }
-  if (raw_exp == 0xff) {
-    return false; // NaN or infinity
-  }
   int exp = raw_exp - 127 - 23;
   // except for the sign, we
   // have that x = mantissa * 2**exp.
@@ -148,10 +133,7 @@ bool to_int32(float x, int32_t *out) {
     *out = tmp;
     return true;
   }
-  if (exp < -32) {
-    return false;
-  }
-  if ((mantissa << (32 + exp)) == 0) {
+  if ((exp > -32) && (exp < 0) && ((mantissa << (32 + exp)) == 0)) {
     int32_t tmp = int32_t(mantissa >> -exp);
     if (negative) {
       tmp = -tmp;
