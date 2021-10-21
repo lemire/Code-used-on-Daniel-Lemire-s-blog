@@ -79,6 +79,34 @@ bool to_int64(double x, int64_t *out) {
   return false;
 }
 
+bool fast_to_int64(double x, int64_t *out) {
+  uint64_t bits = 0;
+  ::memcpy(&bits, &x, sizeof(x));
+  bool negative = (bits >> 63);
+  if (bits == 0) { // We have a zero.
+    *out = 0;
+    return true;
+  }
+  uint64_t mantissa = (bits & 0xfffffffffffff) | 0x10000000000000;
+  int tz = __builtin_ctzll(mantissa);
+  int raw_exp = (bits >> 52) & 0x7ff;
+  int exp = raw_exp - 1023 - 52;
+  if ((exp >= 11) || (exp < -tz)) {
+    return false;
+  }
+  int64_t tmp;
+  if (exp >= 0) {
+    tmp = int64_t(mantissa << exp);
+  } else {
+    tmp = int64_t(mantissa >> -exp);
+  }
+  if (negative) {
+    tmp = -tmp;
+  }
+  *out = tmp;
+  return true;
+}
+
 bool is_integer(float x) {
   uint32_t bits = 0;
   ::memcpy(&bits, &x, sizeof(x));
@@ -187,32 +215,57 @@ void test() {
 
 int main() {
   test();
-  uint64_t start = nano();
-  uint64_t sum = 0;
-  uint64_t counter = 0;
-  for (double x = 1; x < 1000000000; x += 0.5) {
-    counter++;
-    int64_t tmp;
-    if (to_int64(x, &tmp)) {
-      sum += tmp;
+  for (size_t trial = 0; trial < 3; trial++) {
+    std::cout << std::endl;
+    std::cout << "to_int64        ";
+    std::cout.flush();
+    uint64_t start = nano();
+    uint64_t sum = 0;
+    uint64_t counter = 0;
+    for (double x = 1; x < 1000000000; x += 0.5) {
+      counter++;
+      int64_t tmp;
+      if (to_int64(x, &tmp)) {
+        sum += tmp;
+      }
     }
-  }
-  uint64_t finish = nano();
-  std::cout << sum << std::endl;
-  std::cout << double(finish - start) / counter << std::endl;
-  start = nano();
-  sum = 0;
-  counter = 0;
-  for (double x = 1; x < 1000000000; x += 0.5) {
-    counter++;
-    int64_t tmp;
-    if (to_int64_simple(x, &tmp)) {
-      sum += tmp;
-    }
-  }
-  std::cout << sum << std::endl;
+    uint64_t finish = nano();
+    check(499999999500000000 == sum);
+    std::cout << double(finish - start) / counter << std::endl;
 
-  finish = nano();
-  std::cout << double(finish - start) / counter << std::endl;
+    std::cout << "fast_to_int64   ";
+
+    std::cout.flush();
+    start = nano();
+    sum = 0;
+    counter = 0;
+    for (double x = 1; x < 1000000000; x += 0.5) {
+      counter++;
+      int64_t tmp;
+      if (fast_to_int64(x, &tmp)) {
+        sum += tmp;
+      }
+    }
+    finish = nano();
+    check(499999999500000000 == sum);
+    std::cout << double(finish - start) / counter << std::endl;
+
+    std::cout << "to_int64_simple ";
+    std::cout.flush();
+
+    start = nano();
+    sum = 0;
+    counter = 0;
+    for (double x = 1; x < 1000000000; x += 0.5) {
+      counter++;
+      int64_t tmp;
+      if (to_int64_simple(x, &tmp)) {
+        sum += tmp;
+      }
+    }
+    finish = nano();
+    check(499999999500000000 == sum);
+    std::cout << double(finish - start) / counter << std::endl;
+  }
   return EXIT_SUCCESS;
 }
