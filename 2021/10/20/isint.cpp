@@ -107,6 +107,37 @@ bool fast_to_int64(double x, int64_t *out) {
   return true;
 }
 
+typedef union {
+  struct {
+    uint64_t fraction : 52;
+    uint32_t exp_bias : 11;
+    uint32_t sign : 1;
+  } fields;
+  double value;
+} binary64_float;
+
+bool to_int64_mu(double x, int64_t *out) {
+  binary64_float number = {.value = x};
+  const int shift = number.fields.exp_bias - 1023 - 52;
+  if (shift > 0) {
+    return false;
+  }
+  if (shift <= -64) {
+    if (x == 0) {
+      *out = 0;
+      return true;
+    }
+    return false;
+  }
+  uint64_t integer = number.fields.fraction | 0x10000000000000;
+  if (integer << (64 + shift)) {
+    return false;
+  }
+  integer >>= -shift;
+  *out = (number.fields.sign) ? -integer : integer;
+  return true;
+}
+
 bool is_integer(float x) {
   uint32_t bits = 0;
   ::memcpy(&bits, &x, sizeof(x));
@@ -167,6 +198,38 @@ bool to_int32(float x, int32_t *out) {
   }
   return false;
 }
+typedef union {
+  struct {
+    uint32_t fraction : 23;
+    uint32_t exp_bias : 8;
+    uint32_t sign : 1;
+  } fields;
+  float value;
+} binary32_float;
+
+// credit :
+// https://github.com/WojciechMula/toys/blob/master/float2int/float2int.c
+bool to_int32_mu(float x, int64_t *out) {
+  binary32_float number = {.value = x};
+  const int shift = number.fields.exp_bias - 127 - 23;
+  if (shift > 0) {
+    return false;
+  }
+  if (shift <= -32) {
+    if (x == 0) {
+      *out = 0;
+      return true;
+    }
+    return false;
+  }
+  uint32_t integer = number.fields.fraction | 0x800000;
+  if (integer << (32 + shift)) {
+    return false;
+  }
+  integer >>= -shift;
+  *out = (number.fields.sign) ? -integer : integer;
+  return true;
+}
 
 void check(bool x) {
   if (!x) {
@@ -176,12 +239,16 @@ void check(bool x) {
 
 void test() {
   int64_t tmp;
-
   check(to_int64(0.0, &tmp) && (tmp == 0));
   check(to_int64(1.0, &tmp) && (tmp == 1));
   check(to_int64(-1.0, &tmp) && (tmp == -1));
   check(to_int64(9007199254740991.0, &tmp) && (tmp == 9007199254740991));
   check(to_int64(-9007199254740991.0, &tmp) && (tmp == -9007199254740991));
+  check(to_int64_mu(0.0, &tmp) && (tmp == 0));
+  check(to_int64_mu(1.0, &tmp) && (tmp == 1));
+  check(to_int64_mu(-1.0, &tmp) && (tmp == -1));
+  check(to_int64_mu(9007199254740991.0, &tmp) && (tmp == 9007199254740991));
+  check(to_int64_mu(-9007199254740991.0, &tmp) && (tmp == -9007199254740991));
 
   int32_t tmp32;
   check(to_int32(0.0f, &tmp32) && (tmp32 == 0));
@@ -215,6 +282,7 @@ void test() {
 
 int main() {
   test();
+
   for (size_t trial = 0; trial < 3; trial++) {
     std::cout << std::endl;
     std::cout << "to_int64        ";
@@ -230,6 +298,23 @@ int main() {
       }
     }
     uint64_t finish = nano();
+    check(499999999500000000 == sum);
+    std::cout << double(finish - start) / counter << std::endl;
+
+    std::cout << "fast_to_int64mu ";
+
+    std::cout.flush();
+    start = nano();
+    sum = 0;
+    counter = 0;
+    for (double x = 1; x < 1000000000; x += 0.5) {
+      counter++;
+      int64_t tmp;
+      if (to_int64_mu(x, &tmp)) {
+        sum += tmp;
+      }
+    }
+    finish = nano();
     check(499999999500000000 == sum);
     std::cout << double(finish - start) / counter << std::endl;
 
