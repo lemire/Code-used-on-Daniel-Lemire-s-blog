@@ -26,7 +26,7 @@ static uint8_t lengthTable[256] = {
 };
 
 
-static uint32_t vecDecodeTable[256][8] ALIGNED(16)  = {
+static uint32_t vecDecodeTable[256][8] ALIGNED(32)  = {
     { 0, 0, 0, 0, 0, 0, 0, 0 }, /* 0x00 (00000000) */
     { 1, 0, 0, 0, 0, 0, 0, 0 }, /* 0x01 (00000001) */
     { 2, 0, 0, 0, 0, 0, 0, 0 }, /* 0x02 (00000010) */
@@ -286,7 +286,7 @@ static uint32_t vecDecodeTable[256][8] ALIGNED(16)  = {
 };
 
 
-static uint8_t vecDecodeTableByte[256][8] ALIGNED(16)  = {
+static uint8_t vecDecodeTableByte[256][8] ALIGNED(32)  = {
     { 0, 0, 0, 0, 0, 0, 0, 0 }, /* 0x00 (00000000) */
     { 1, 0, 0, 0, 0, 0, 0, 0 }, /* 0x01 (00000001) */
     { 2, 0, 0, 0, 0, 0, 0, 0 }, /* 0x02 (00000010) */
