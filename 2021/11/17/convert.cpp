@@ -153,6 +153,22 @@ void to_string_tree_table(uint64_t x, char *out) {
   memcpy(out + 14, &table[2 * bottombottombottom], 2);
 }
 
+void to_string_tree_bigtable(uint64_t x, char *out) {
+  #include "bigtable.h"
+
+  uint64_t top = x / 100000000;
+  uint64_t bottom = x % 100000000;
+  //
+  uint64_t toptop = top / 10000;
+  uint64_t topbottom = top % 10000;
+  uint64_t bottomtop = bottom / 10000;
+  uint64_t bottombottom = top % 10000;
+
+  memcpy(out, &bigtable[4 * toptop], 4);
+  memcpy(out + 4, &bigtable[4 * topbottom], 4);
+  memcpy(out + 8, &bigtable[4 * bottomtop], 4);
+  memcpy(out + 12, &bigtable[4 * bottombottom], 4);
+}
 int main() {
   std::vector<uint64_t> data;
   for (size_t i = 0; i < 50000; i++) {
@@ -183,6 +199,14 @@ int main() {
     }
     return data.size();
   };
+  auto tree_bigtable_approach = [&data, buf]() -> size_t {
+    char *b = buf;
+    for (auto val : data) {
+      to_string_tree_bigtable(val, b);
+      b += 16;
+    }
+    return data.size();
+  };
   for (size_t i = 0; i < 3; i++) {
     std::cout << "linear ";
     std::cout << bench(linear_approach) << std::endl;
@@ -191,6 +215,9 @@ int main() {
     std::cout << "treet ";
 
     std::cout << bench(tree_table_approach) << std::endl;
+    std::cout << "treebt";
+
+    std::cout << bench(tree_bigtable_approach) << std::endl;
     std::cout << std::endl;
   }
   delete[] buf;
