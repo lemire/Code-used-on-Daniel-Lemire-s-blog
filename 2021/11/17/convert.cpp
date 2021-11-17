@@ -29,37 +29,37 @@ double bench(PROCEDURE f, uint64_t threshold = 200'000'000) {
 }
 
 void to_string_linear(uint64_t x, char *out) {
-  out[0] = x / 1000000000000000;
+  out[0] = x / 1000000000000000 + 0x30;
   x %= 1000000000000000;
-  out[1] = x / 100000000000000;
+  out[1] = x / 100000000000000 + 0x30;
   x %= 100000000000000;
-  out[2] = x / 10000000000000;
+  out[2] = x / 10000000000000 + 0x30;
   x %= 10000000000000;
-  out[3] = x / 1000000000000;
+  out[3] = x / 1000000000000 + 0x30;
   x %= 1000000000000;
-  out[4] = x / 100000000000;
+  out[4] = x / 100000000000 + 0x30;
   x %= 100000000000;
-  out[5] = x / 10000000000;
+  out[5] = x / 10000000000 + 0x30;
   x %= 10000000000;
-  out[6] = x / 1000000000;
+  out[6] = x / 1000000000 + 0x30;
   x %= 1000000000;
-  out[7] = x / 100000000;
+  out[7] = x / 100000000 + 0x30;
   x %= 100000000;
-  out[8] = x / 10000000;
+  out[8] = x / 10000000 + 0x30;
   x %= 10000000;
-  out[9] = x / 1000000;
+  out[9] = x / 1000000 + 0x30;
   x %= 1000000;
-  out[10] = x / 100000;
+  out[10] = x / 100000 + 0x30;
   x %= 100000;
-  out[11] = x / 10000;
+  out[11] = x / 10000 + 0x30;
   x %= 10000;
-  out[12] = x / 1000;
+  out[12] = x / 1000 + 0x30;
   x %= 1000;
-  out[13] = x / 100;
+  out[13] = x / 100 + 0x30;
   x %= 100;
-  out[14] = x / 10;
+  out[14] = x / 10 + 0x30;
   x %= 10;
-  out[15] = x;
+  out[15] = x + 0x30;
 }
 
 // take a 16-digit integer, < 10000000000000000,
@@ -85,22 +85,22 @@ void to_string_tree(uint64_t x, char *out) {
   uint64_t bottombottomtop = bottombottom / 100;
   uint64_t bottombottombottom = bottombottom % 100;
   //
-  out[0] = toptoptop / 10;
-  out[1] = toptoptop % 10;
-  out[2] = toptopbottom / 10;
-  out[3] = toptopbottom % 10;
-  out[4] = topbottomtop / 10;
-  out[5] = topbottomtop % 10;
-  out[6] = topbottombottom / 10;
-  out[7] = topbottombottom % 10;
-  out[8] = bottomtoptop / 10;
-  out[9] = bottomtoptop % 10;
-  out[10] = bottomtopbottom / 10;
-  out[11] = bottomtopbottom % 10;
-  out[12] = bottombottomtop / 10;
-  out[13] = bottombottomtop % 10;
-  out[14] = bottombottombottom / 10;
-  out[15] = bottombottombottom % 10;
+  out[0] = toptoptop / 10 + 0x30;
+  out[1] = toptoptop % 10 + 0x30;
+  out[2] = toptopbottom / 10 + 0x30;
+  out[3] = toptopbottom % 10 + 0x30;
+  out[4] = topbottomtop / 10 + 0x30;
+  out[5] = topbottomtop % 10 + 0x30;
+  out[6] = topbottombottom / 10 + 0x30;
+  out[7] = topbottombottom % 10 + 0x30;
+  out[8] = bottomtoptop / 10 + 0x30;
+  out[9] = bottomtoptop % 10 + 0x30;
+  out[10] = bottomtopbottom / 10 + 0x30;
+  out[11] = bottomtopbottom % 10 + 0x30;
+  out[12] = bottombottomtop / 10 + 0x30;
+  out[13] = bottombottomtop % 10 + 0x30;
+  out[14] = bottombottombottom / 10 + 0x30;
+  out[15] = bottombottombottom % 10 + 0x30;
 }
 
 void to_string_tree_table(uint64_t x, char *out) {
