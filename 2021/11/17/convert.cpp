@@ -28,10 +28,10 @@ double bench(PROCEDURE f, uint64_t threshold = 200'000'000) {
   return double(finish - start) / count;
 }
 void to_string_backlinear(uint64_t x, char *out) {
-    for(int z = 0; z < 16; z++) {
-        out[15-z] = (x % 10) + 0x30;
-        x /= 10;
-    }
+  for (int z = 0; z < 16; z++) {
+    out[15 - z] = (x % 10) + 0x30;
+    x /= 10;
+  }
 }
 
 void to_string_linear(uint64_t x, char *out) {
@@ -66,6 +66,41 @@ void to_string_linear(uint64_t x, char *out) {
   out[14] = x / 10 + 0x30;
   x %= 10;
   out[15] = x + 0x30;
+}
+
+// credit: Paul Khuong
+uint64_t encode_ten_thousands(uint64_t hi, uint64_t lo) {
+  uint64_t merged = hi | (lo << 32);
+  /* Truncate division by 100: 10486 / 2**20 ~= 1/100. */
+  uint64_t top = ((merged * 10486ULL) >> 20) & ((0x7FULL << 32) | 0x7FULL);
+  /* Trailing 2 digits in the 1e4 chunks. */
+  uint64_t bot = merged - 100ULL * top;
+  uint64_t hundreds;
+  uint64_t tens;
+
+  /*
+   * We now have 4 radix-100 digits in little-endian order, each
+   * in its own 16 bit area.
+   */
+  hundreds = (bot << 16) + top;
+
+  /* Divide and mod by 10 all 4 radix-100 digits in parallel. */
+  tens = (hundreds * 103ULL) >> 10;
+  tens &= (0xFULL << 48) | (0xFULL << 32) | (0xFULL << 16) | 0xFULL;
+  tens += (hundreds - 10ULL * tens) << 8;
+
+  return tens;
+}
+
+void to_string_khuong(uint64_t x, char *out) {
+  uint64_t top = x / 100000000;
+  uint64_t bottom = x % 100000000;
+  uint64_t first =
+      0x3030303030303030 + encode_ten_thousands(top / 10000, top % 10000);
+  memcpy(out, &first, sizeof(first));
+  uint64_t second =
+      0x3030303030303030 + encode_ten_thousands(bottom / 10000, bottom % 10000);
+  memcpy(out + 8, &second, sizeof(second));
 }
 
 // take a 16-digit integer, < 10000000000000000,
@@ -300,6 +335,15 @@ int main() {
     }
     return data.size();
   };
+  auto khuong_approach = [&data, buf]() -> size_t {
+    char *b = buf;
+    for (auto val : data) {
+      to_string_khuong(val, b);
+      b += 16;
+    }
+    return data.size();
+  };
+
 #ifdef __SSE2__
   auto sse2_approach = [&data, buf]() -> size_t {
     char *b = buf;
@@ -311,6 +355,8 @@ int main() {
   };
 #endif
   for (size_t i = 0; i < 3; i++) {
+    std::cout << "khuong     ";
+    std::cout << bench(khuong_approach) << std::endl;
     std::cout << "backlinear ";
     std::cout << bench(backlinear_approach) << std::endl;
     std::cout << "linear ";
