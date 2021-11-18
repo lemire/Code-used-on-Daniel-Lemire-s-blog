@@ -152,7 +152,81 @@ void to_string_tree_table(uint64_t x, char *out) {
   memcpy(out + 12, &table[2 * bottombottomtop], 2);
   memcpy(out + 14, &table[2 * bottombottombottom], 2);
 }
+#ifdef __ARM_NEON__
+#include <arm_neon.h>
 
+void to_string_neon(uint64_t v, char *out) {
+
+  // v is 16-digit number = abcdefghijklmnop
+  const uint32x2_t div_10000 = vmov_n_u32(0xd1b71759);
+  const uint32x4_t mul_10000 = vmovq_n_u32(10000);
+  const int div_10000_shift = 45;
+
+  const uint16x8_t div_100 = vmovq_n_u16(0x147b);
+  const uint16x8_t mul_100 = vmovq_n_u16(100);
+  const int div_100_shift = 3;
+
+  const uint16x8_t div_10 = vmovq_n_u16(0x199a);
+  const uint16x8_t mul_10 = vmovq_n_u16(10);
+
+  const uint8x16_t ascii0 = vmovq_n_u8(uint8_t('0'));
+
+  const uint32_t a = v / 100000000; // 8-digit number: abcdefgh
+  const uint32_t b = v % 100000000; // 8-digit number: ijklmnop
+
+  //                [ 3 | 2 | 1 | 0 | 3 | 2 | 1 | 0 | 3 | 2 | 1 | 0 | 3 | 2 | 1
+  //                | 0 ]
+  // x            = [       0       |      ijklmnop |       0       | abcdefgh ]
+  uint32x2_t x{b, a};
+
+  // x div 10^4   = [       0       |          ijkl |       0       | abcd ]
+  uint64x2_t x_div_10000 = vmull_u32(x, div_10000);
+  x_div_10000 = vshrq_n_u64(x_div_10000, div_10000_shift);
+
+  // x mod 10^4   = [       0       |          mnop |       0       | efgh ]
+  uint64x2_t x_mod_10000 = vmull_u32(x_div_10000, mul_10000); // fixme
+  x_mod_10000 = vsubq_u32(x, x_mod_10000);
+
+  // y            = [          mnop |          ijkl |          efgh | abcd ]
+  uint32x4_t y = vorrq_u32(x_div_10000, vshlq_n_u64(x_mod_10000, 32));
+
+  // y_div_100    = [   0   |    mn |   0   |    ij |   0   |    ef |   0   | ab
+  // ]
+  uint16x8_t y_div_100 = vmulq_u16(y, div_100);//fix me
+  y_div_100 = vshrq_n_u16(y_div_100, div_100_shift);
+
+  // y_mod_100    = [   0   |    op |   0   |    kl |   0   |    gh |   0   | cd
+  // ]
+  uint16x8_t y_mod_100;
+  y_mod_100 = vmulq_u16(y_div_100, mul_100);
+  y_mod_100 = vsubq_u16(y, y_mod_100);
+
+  // z            = [    mn |    op |    ij |    kl |    ef |    gh |    ab | cd
+  // ]
+  uint16x8_t z = vorrq_u32(y_div_100, vshlq_n_u32(y_mod_100, 16));
+
+  // z_div_10     = [ 0 | m | 0 | o | 0 | i | 0 | k | 0 | e | 0 | g | 0 | a | 0
+  // | c ]
+  uint16x8_t z_div_10 = vmulq_u16(z, div_10);//fixme
+
+  // z_mod_10     = [ 0 | n | 0 | p | 0 | j | 0 | l | 0 | f | 0 | h | 0 | b | 0
+  // | d ]
+  uint16x8_t z_mod_10 = vmulq_u16(z_div_10, mul_10);
+  z_mod_10 = vsubq_u16(z, z_mod_10);
+
+  // interleave z_mod_10 and z_div_10 -
+  // tmp          = [ m | n | o | p | i | j | k | l | e | f | g | h | a | b | c
+  // | d ]
+  uint16x8_t tmp = vorrq_u16(z_div_10, vshlq_n_u16(z_mod_10, 8));
+
+  // convert to ascii
+  tmp = vaddq_u8(tmp, ascii0);
+
+  // and save result
+  vst1q_u8(out, tmp);
+
+}
+#endif 
 #ifdef __SSE2__
 // mula
 #include <x86intrin.h>
@@ -172,7 +246,7 @@ void to_string_sse2(uint64_t v, char *out) {
 
   const __m128i ascii0 = _mm_set1_epi8('0');
 
-  // can't be easliy done in SSE
+  // can't be easily done in SSE
   const uint32_t a = v / 100000000; // 8-digit number: abcdefgh
   const uint32_t b = v % 100000000; // 8-digit number: ijklmnop
 
