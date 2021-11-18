@@ -27,6 +27,12 @@ double bench(PROCEDURE f, uint64_t threshold = 200'000'000) {
   }
   return double(finish - start) / count;
 }
+void to_string_backlinear(uint64_t x, char *out) {
+    for(int z = 0; z < 16; z++) {
+        out[15-z] = (x % 10) + 0x30;
+        x /= 10;
+    }
+}
 
 void to_string_linear(uint64_t x, char *out) {
   out[0] = x / 1000000000000000 + 0x30;
@@ -254,6 +260,14 @@ int main() {
     data.push_back(rand() % 10000000000000000);
   }
   char *buf = new char[data.size() * 16];
+  auto backlinear_approach = [&data, buf]() -> size_t {
+    char *b = buf;
+    for (auto val : data) {
+      to_string_backlinear(val, b);
+      b += 16;
+    }
+    return data.size();
+  };
   auto linear_approach = [&data, buf]() -> size_t {
     char *b = buf;
     for (auto val : data) {
@@ -297,6 +311,8 @@ int main() {
   };
 #endif
   for (size_t i = 0; i < 3; i++) {
+    std::cout << "backlinear ";
+    std::cout << bench(backlinear_approach) << std::endl;
     std::cout << "linear ";
     std::cout << bench(linear_approach) << std::endl;
     std::cout << "tree   ";
