@@ -293,12 +293,12 @@ int main() {
   for (size_t i = 0; i < 3; i++) {
     std::cout << "linear ";
     std::cout << bench(linear_approach) << std::endl;
-    std::cout << "tree  ";
+    std::cout << "tree   ";
     std::cout << bench(tree_approach) << std::endl;
-    std::cout << "treet ";
+    std::cout << "treet  ";
 
     std::cout << bench(tree_table_approach) << std::endl;
-    std::cout << "treebt";
+    std::cout << "treebt ";
 
     std::cout << bench(tree_bigtable_approach) << std::endl;
 #ifdef __SSE2__
