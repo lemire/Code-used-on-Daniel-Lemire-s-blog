@@ -112,7 +112,7 @@ void to_string_tree(uint64_t x, char *out) {
   uint64_t toptop = top / 10000;
   uint64_t topbottom = top % 10000;
   uint64_t bottomtop = bottom / 10000;
-  uint64_t bottombottom = top % 10000;
+  uint64_t bottombottom = bottom % 10000;
   //
   uint64_t toptoptop = toptop / 100;
   uint64_t toptopbottom = toptop % 100;
@@ -170,7 +170,7 @@ void to_string_tree_table(uint64_t x, char *out) {
   uint64_t toptop = top / 10000;
   uint64_t topbottom = top % 10000;
   uint64_t bottomtop = bottom / 10000;
-  uint64_t bottombottom = top % 10000;
+  uint64_t bottombottom = bottom % 10000;
   //
   uint64_t toptoptop = toptop / 100;
   uint64_t toptopbottom = toptop % 100;
@@ -282,7 +282,7 @@ void to_string_tree_bigtable(uint64_t x, char *out) {
   uint64_t toptop = top / 10000;
   uint64_t topbottom = top % 10000;
   uint64_t bottomtop = bottom / 10000;
-  uint64_t bottombottom = top % 10000;
+  uint64_t bottombottom = bottom % 10000;
 
   memcpy(out, &bigtable[4 * toptop], 4);
   memcpy(out + 4, &bigtable[4 * topbottom], 4);
