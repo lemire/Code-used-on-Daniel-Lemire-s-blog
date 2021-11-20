@@ -92,6 +92,24 @@ uint64_t encode_ten_thousands(uint64_t hi, uint64_t lo) {
   return tens;
 }
 
+uint64_t encode_ten_thousands2(uint64_t hi, uint64_t lo) {
+  uint64_t merged = hi | (lo << 32);
+  /* Truncate division by 100: 10486 / 2**20 ~= 1/100. */
+  uint64_t top = ((merged * 0x147b) >> 19) & ((0x7FULL << 32) | 0x7FULL);
+  /* Trailing 2 digits in the 1e4 chunks. */
+  uint64_t bot = merged - 100ULL * top;
+  uint64_t hundreds;
+  uint64_t tens;
+
+  hundreds = (bot << 16) + top;
+
+  /* Divide and mod by 10 all 4 radix-100 digits in parallel. */
+  tens = (hundreds * 103ULL) >> 10;
+  tens &= (0xFULL << 48) | (0xFULL << 32) | (0xFULL << 16) | 0xFULL;
+  tens += (hundreds - 10ULL * tens) << 8;
+  return tens;
+}
+
 void to_string_khuong(uint64_t x, char *out) {
   uint64_t top = x / 100000000;
   uint64_t bottom = x % 100000000;
