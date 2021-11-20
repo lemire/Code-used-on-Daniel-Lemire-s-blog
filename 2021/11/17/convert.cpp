@@ -350,6 +350,47 @@ void to_string_sse2__pshufb(uint64_t v, char *out) {
   _mm_storeu_si128((__m128i *)out, tmp);
 }
 #endif
+
+#ifdef __AVX2__
+void to_string_avx2(uint64_t v, char *out) {
+
+  // begin: copy of to_string_sse2
+
+  // v is 16-digit number = abcdefghijklmnop
+  const __m128i div_10000 = _mm_set1_epi32(0xd1b71759);
+  const __m128i mul_10000 = _mm_set1_epi32(10000);
+  const int div_10000_shift = 45;
+
+  // can't be easliy done in SSE
+  const uint32_t a = v / 100000000; // 8-digit number: abcdefgh
+  const uint32_t b = v % 100000000; // 8-digit number: ijklmnop
+
+  //                [ 3 | 2 | 1 | 0 | 3 | 2 | 1 | 0 | 3 | 2 | 1 | 0 | 3 | 2 | 1 | 0 ]
+  // x            = [       0       |      ijklmnop |       0       | abcdefgh  ]
+  __m128i x = _mm_set_epi64x(b, a);
+
+  // x div 10^4   = [       0       |          ijkl |       0       | abcd ]
+  __m128i x_div_10000;
+  x_div_10000 = _mm_mul_epu32(x, div_10000);
+  x_div_10000 = _mm_srli_epi64(x_div_10000, div_10000_shift);
+
+  // x mod 10^4   = [       0       |          mnop |       0       | efgh ]
+  __m128i x_mod_10000;
+  x_mod_10000 = _mm_mul_epu32(x_div_10000, mul_10000);
+  x_mod_10000 = _mm_sub_epi32(x, x_mod_10000);
+
+  // y            = [          mnop |          ijkl |          efgh | abcd ]
+  __m128i y = _mm_or_si128(x_div_10000, _mm_slli_epi64(x_mod_10000, 32));
+
+  // end of copy, AVX2 code now
+#include "bigtable.h"
+  
+  const __m128i ascii = _mm_i32gather_epi32(reinterpret_cast<int const*>(&bigtable), y, 4);
+  
+  _mm_storeu_si128((__m128i *)out, ascii);
+}
+#endif
+
 void to_string_tree_bigtable(uint64_t x, char *out) {
 #include "bigtable.h"
 
@@ -443,6 +484,17 @@ int main() {
     return data.size();
   };
 #endif
+
+#ifdef __AVX2__
+  auto avx2_approach = [&data, buf]() -> size_t {
+    char *b = buf;
+    for (auto val : data) {
+      to_string_avx2(val, b);
+      b += 16;
+    }
+    return data.size();
+  };
+#endif
   for (size_t i = 0; i < 3; i++) {
     std::cout << "khuong     ";
     std::cout << bench(khuong_approach) << std::endl;
@@ -466,6 +518,11 @@ int main() {
 #ifdef __SSE4_1__
     std::cout << "sse2(2) ";
     std::cout << bench(sse2_approach_v2) << std::endl;
+#endif
+
+#ifdef __AVX2__
+    std::cout << "avx2    ";
+    std::cout << bench(avx2_approach) << std::endl;
 #endif
 
     std::cout << std::endl;
