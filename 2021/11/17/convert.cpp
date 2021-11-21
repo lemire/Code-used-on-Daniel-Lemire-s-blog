@@ -162,6 +162,33 @@ void to_string_tree(uint64_t x, char *out) {
   out[15] = bottombottombottom % 10 + 0x30;
 }
 
+void write_tenthousand(uint64_t z, char *out) {
+  z = 429538 * z;
+  out[0] = 0x30 + ((z * 10)>>32);
+  z = (z * 10) & 0xffffffff;
+  out[1] = 0x30 + ((z * 10)>>32);
+  z = (z * 10) & 0xffffffff;
+  out[2] = 0x30 + ((z * 10)>>32);
+  z = (z * 10) & 0xffffffff;
+  out[3] = 0x30 + ((z * 10)>>32);
+}
+
+
+void to_string_tree_str(uint64_t x, char *out) {
+  uint64_t top = x / 100000000;
+  uint64_t bottom = x % 100000000;
+  //
+  uint64_t toptop = top / 10000;
+  uint64_t topbottom = top % 10000;
+  uint64_t bottomtop = bottom / 10000;
+  uint64_t bottombottom = bottom % 10000;
+  //
+  write_tenthousand(toptop, out);
+  write_tenthousand(topbottom, out + 4);
+  write_tenthousand(bottomtop, out + 8);
+  write_tenthousand(bottombottom, out + 12);
+}
+
 void to_string_tree_table(uint64_t x, char *out) {
   static const char table[200] = {
       0x30, 0x30, 0x30, 0x31, 0x30, 0x32, 0x30, 0x33, 0x30, 0x34, 0x30, 0x35,
@@ -345,6 +372,15 @@ int main() {
     }
     return data.size();
   };
+  auto tree_str_table_approach = [&data, buf]() -> size_t {
+    char *b = buf;
+    for (auto val : data) {
+      to_string_tree_str(val, b);
+      b += 16;
+    }
+    return data.size();
+  };
+
   auto tree_bigtable_approach = [&data, buf]() -> size_t {
     char *b = buf;
     for (auto val : data) {
@@ -382,6 +418,8 @@ int main() {
     std::cout << "tree   ";
     std::cout << bench(tree_approach) << std::endl;
     std::cout << "treet  ";
+    std::cout << bench(tree_str_table_approach) << std::endl;
+    std::cout << "treest ";
 
     std::cout << bench(tree_table_approach) << std::endl;
     std::cout << "treebt ";
