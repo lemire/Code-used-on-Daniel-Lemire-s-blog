@@ -13,7 +13,7 @@ if(s.check() == z3.sat):
     print(model)
 
 
-y = z3.BitVec("y", 8)
+y = z3.BitVec("y", 32)
 s = z3.Solver()
 s.add( ( 1 + y ) / 2 >= y )
 s.add( y > 0 )
@@ -26,6 +26,24 @@ if(s.check() == z3.sat):
 s = z3.Solver()
 s.add( ( 1 + y ) / 2 >= y )
 s.add( y > 1 )
+
+if(s.check() == z3.sat):
+    model = s.model()
+    print(model)
+
+s = z3.Solver()
+s.add( ( 1 + y ) >= y * 2 )
+s.add( y > 1 )
+
+if(s.check() == z3.sat):
+    model = s.model()
+    print(model)
+
+
+s = z3.Solver()
+s.add( ( 1 + y ) >= y * 2 )
+s.add( y > 1 )
+s.add( y <  2147483647/2)
 
 if(s.check() == z3.sat):
     model = s.model()
