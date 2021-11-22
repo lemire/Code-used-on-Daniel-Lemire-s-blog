@@ -34,15 +34,6 @@ void to_string_backlinear(uint64_t x, char *out) {
   }
 }
 
-static 
-unsigned put_dec_helper4(char *buf, unsigned x)
-{
-        uint32_t q = (x * (uint64_t)0x346DC5D7) >> 43;
-
-        put_dec_full4(buf, x - q * 10000);
-        return q;
-}
-
 void to_string_linear(uint64_t x, char *out) {
   out[0] = x / 1000000000000000 + 0x30;
   x %= 1000000000000000;
@@ -247,6 +238,7 @@ void to_string_tree_table(uint64_t x, char *out) {
   memcpy(out + 14, &table[2 * bottombottombottom], 2);
 }
 // http://www.cs.uiowa.edu/~jones/bcd/decimal.html
+/*
 void putdec( uint64_t n, char *out ) {
         uint32_t d4, d3, d2, d1, d0, q;
 
@@ -279,6 +271,7 @@ void putdec( uint64_t n, char *out ) {
         printf( "%4.4u", d1 );
         printf( "%4.4u", d0 );
  }
+ */
 
 
 #ifdef __SSE2__
