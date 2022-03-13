@@ -310,6 +310,20 @@ unsigned gcd_iterative_mod(unsigned a, unsigned b) {
   return a;
 }
 
+// make sure divsor is smaller to possibly save an iteration
+unsigned gcd_mod_faster(unsigned a, unsigned b) {
+  if (a < b)
+    std::swap(a, b);
+
+  while (b) {
+    unsigned t = b;
+    b = a % b;
+    a = t;
+  }
+
+  return a;
+}
+
 unsigned basicgcd(unsigned x, unsigned y) {
   return (x % y) == 0 ? y : basicgcd(y, x % y);
 }
@@ -361,6 +375,7 @@ unsigned int test(unsigned int offset) {
   int ti13 = 0;
   int ti14 = 0;
   int ti15 = 0;
+  int ti16 = 0;
 
   int bogus = 0;
   cout << "Running tests... ";
@@ -385,6 +400,7 @@ unsigned int test(unsigned int offset) {
       assert(gcdwikipedia2(x, y) == basicgcd(x, y));
       assert(gcdwikipedia2(x, y) == gcdFranke(x, y));
       assert(gcdwikipedia2(x, y) == gcdwikipedia8Spelvin(x, y));
+      assert(gcdwikipedia2(x, y) == gcd_mod_faster(x, y));
     }
 
   cout << "Ok! " << endl;
@@ -513,6 +529,13 @@ unsigned int test(unsigned int offset) {
       bogus += gcdwikipedia8Spelvin(x, y);
   ti15 += timer.split();
   cout << q * 0.001 / ti15 << endl;
+  cout << "gcd_mod_faster              ";
+  timer.reset();
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
+      bogus += gcd_mod_faster(x, y);
+  ti16 += timer.split();
+  cout << q * 0.001 / ti16 << endl;
   return bogus;
 }
 
