@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"testing"
 )
-// go test -bench=. -benchmem
+// go test -count 10 -bench=. -benchmem
 var data []uint64
 var buf *bytes.Buffer = new(bytes.Buffer)
 
@@ -57,33 +57,6 @@ func BenchmarkWriteOneByOne(b *testing.B) {
 			}
 		})
 		
-	}
-}
-
-func BenchmarkWriteChunk(b *testing.B) {
-	for _, v := range table {
-		data = make([]uint64, v.input)
-		for i := 0; i < len(data); i++ {
-			data[i] = uint64(i)
-		}
-		b.Run(fmt.Sprintf("input_size_%d", v.input), func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
-				m := len(data)
-				for i := 0; i < m; {
-					next := i + 16384
-					if next > m {
-						next = m
-					}
-					err := binary.Write(buf, binary.LittleEndian, data[i:next])
-					if err != nil {
-						fmt.Println("binary.Write failed:", err)
-						break
-					}
-					i = next
-				}
-				buf.Reset()
-			}
-		})
 	}
 }
 
