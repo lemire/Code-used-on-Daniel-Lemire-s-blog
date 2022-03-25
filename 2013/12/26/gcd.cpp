@@ -309,6 +309,18 @@ unsigned gcd_iterative_mod(unsigned a, unsigned b) {
   }
   return a;
 }
+unsigned gcd_mod_faster(unsigned a, unsigned b) {
+   if (a < b)
+     std::swap(a, b);
+
+   while (b) {
+     unsigned t = b;
+     b = a % b;
+     a = t;
+   }
+
+   return a;
+}
 
 // make sure divsor is smaller to possibly save an iteration
 unsigned gcd_mod_faster(unsigned a, unsigned b) {
