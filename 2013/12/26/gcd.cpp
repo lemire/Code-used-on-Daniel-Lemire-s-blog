@@ -308,6 +308,18 @@ unsigned gcd_iterative_mod(unsigned a, unsigned b) {
   }
   return a;
 }
+unsigned gcd_mod_faster(unsigned a, unsigned b) {
+   if (a < b)
+     std::swap(a, b);
+
+   while (b) {
+     unsigned t = b;
+     b = a % b;
+     a = t;
+   }
+
+   return a;
+}
 
 unsigned basicgcd(unsigned x, unsigned y) {
   return (x % y) == 0 ? y : basicgcd(y, x % y);
@@ -360,6 +372,7 @@ unsigned int test(unsigned int offset) {
   int ti13 = 0;
   int ti14 = 0;
   int ti15 = 0;
+  int ti16 = 0;
 
   int bogus = 0;
   cout << "Running tests... ";
@@ -384,33 +397,34 @@ unsigned int test(unsigned int offset) {
       assert(gcdwikipedia2(x, y) == basicgcd(x, y));
       assert(gcdwikipedia2(x, y) == gcdFranke(x, y));
       assert(gcdwikipedia2(x, y) == gcdwikipedia8Spelvin(x, y));
+      assert(gcdwikipedia2(x, y) == gcd_mod_faster(x, y));
     }
 
   cout << "Ok! " << endl;
-  cout << "We proceed to report timings (smaller values are better)." << endl;
+  cout << "We proceed to report kops/ms (larger values are better)." << endl;
 
   double q = N * N;
   cout << "basicgcd                    ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += basicgcd(x, y);
   ti1 += timer.split();
   cout << q * 0.001 / ti1 << endl;
   cout << "gcdwikipedia2               ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia2(x, y);
   ti2 += timer.split();
   cout << q * 0.001 / ti2 << endl;
   cout << "gcdwikipedia2fast           ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia2fast(x, y);
   ti3 += timer.split();
 
@@ -418,55 +432,55 @@ unsigned int test(unsigned int offset) {
   cout << "gcd_recursive               ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcd_recursive(x, y);
   ti4 += timer.split();
   cout << q * 0.001 / ti4 << endl;
   cout << "gcd_iterative_mod           ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcd_iterative_mod(x, y);
   ti5 += timer.split();
   cout << q * 0.001 / ti5 << endl;
   cout << "gcdFranke                   ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdFranke(x, y);
   ti6 += timer.split();
   cout << q * 0.001 / ti6 << endl;
   cout << "gcdwikipedia3fast           ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia3fast(x, y);
   ti7 += timer.split();
   cout << q * 0.001 / ti7 << endl;
   cout << "gcdwikipedia4fast           ";
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia4fast(x, y);
   ti8 += timer.split();
   cout << q * 0.001 / ti8 << endl;
   cout << "gcdwikipedia5fast           ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia5fast(x, y);
   ti9 += timer.split();
   cout << q * 0.001 / ti9 << endl;
   cout << "gcdwikipedia2fastswap       ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia2fastswap(x, y);
   ti10 += timer.split();
   cout << q * 0.001 / ti10 << endl;
@@ -476,16 +490,16 @@ unsigned int test(unsigned int offset) {
   cout << "gcdwikipedia6fastxchg       ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia6fastxchg(x, y);
   ti11 += timer.split();
   cout << q * 0.001 / ti11 << endl;
   cout << "gcdwikipedia2fastxchg       ";
 
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia2fastxchg(x, y);
   ti12 += timer.split();
   cout << q * 0.001 / ti12 << endl;
@@ -493,15 +507,15 @@ unsigned int test(unsigned int offset) {
   timer.reset();
   cout << "gcdwikipedia7fast           ";
 
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia7fast(x, y);
   ti13 += timer.split();
   cout << q * 0.001 / ti13 << endl;
   cout << "gcdwikipedia7fast32         ";
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia7fast32(x, y);
   ti14 += timer.split();
   cout << q * 0.001 / ti14 << endl;
@@ -512,6 +526,13 @@ unsigned int test(unsigned int offset) {
       bogus += gcdwikipedia8Spelvin(x, y);
   ti15 += timer.split();
   cout << q * 0.001 / ti15 << endl;
+  cout << "gcd_mod_faster              ";
+  timer.reset();
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
+      bogus += gcd_mod_faster(x, y);
+  ti16 += timer.split();
+  cout << q * 0.001 / ti16 << endl;
   return bogus;
 }
 
