@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <climits>
 #include <iostream>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -321,6 +322,20 @@ unsigned gcd_mod_faster(unsigned a, unsigned b) {
    return a;
 }
 
+// make sure divsor is smaller to possibly save an iteration
+unsigned gcd_mod_faster(unsigned a, unsigned b) {
+  if (a < b)
+    std::swap(a, b);
+
+  while (b) {
+    unsigned t = b;
+    b = a % b;
+    a = t;
+  }
+
+  return a;
+}
+
 unsigned basicgcd(unsigned x, unsigned y) {
   return (x % y) == 0 ? y : basicgcd(y, x % y);
 }
@@ -401,7 +416,7 @@ unsigned int test(unsigned int offset) {
     }
 
   cout << "Ok! " << endl;
-  cout << "We proceed to report kops/ms (larger values are better)." << endl;
+  cout << "Kops/ms (larger values are better)." << endl;
 
   double q = N * N;
   cout << "basicgcd                    ";
@@ -521,8 +536,8 @@ unsigned int test(unsigned int offset) {
   cout << q * 0.001 / ti14 << endl;
   cout << "gcdwikipedia8Spelvin        ";
   timer.reset();
-  for (unsigned int x = 1; x <= N; ++x)
-    for (unsigned int y = 1; y <= N; ++y)
+  for (unsigned int x = 1 + offset; x <= N + offset; ++x)
+    for (unsigned int y = 1 + offset; y <= N + offset; ++y)
       bogus += gcdwikipedia8Spelvin(x, y);
   ti15 += timer.split();
   cout << q * 0.001 / ti15 << endl;
