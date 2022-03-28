@@ -11,10 +11,8 @@
 #include <memory>
 #include <random>
 #include <vector>
-#include <intrin.h>
+#include <x86intrin.h>
 
-#define __SSE2__
-#define __SSE4_1__
 
 uint64_t nano() {
   return std::chrono::duration_cast<::std::chrono::nanoseconds>(
@@ -22,7 +20,7 @@ uint64_t nano() {
       .count();
 }
 template <typename PROCEDURE>
-double bench(PROCEDURE f, uint64_t threshold = 200'000'000) {
+double bench(PROCEDURE f, uint64_t threshold = 500'000'000) {
   uint64_t start = nano();
   uint64_t finish = start;
   size_t count{0};
@@ -242,41 +240,6 @@ void to_string_tree_table(uint64_t x, char *out) {
   memcpy(out + 12, &table[2 * bottombottomtop], 2);
   memcpy(out + 14, &table[2 * bottombottombottom], 2);
 }
-// http://www.cs.uiowa.edu/~jones/bcd/decimal.html
-/*
-void putdec( uint64_t n, char *out ) {
-        uint32_t d4, d3, d2, d1, d0, q;
-
-        d0 = n       & 0xFFFF;
-        d1 = (n>>16) & 0xFFFF;
-        d2 = (n>>32) & 0xFFFF;
-        d3 = (n>>48) & 0xFFFF;
-
-        d0 = 656 * d3 + 7296 * d2 + 5536 * d1 + d0;
-        q = d0 / 10000;
-        d0 = d0 % 10000;
-
-        d1 = q + 7671 * d3 + 9496 * d2 + 6 * d1;
-        q = d1 / 10000;
-        d1 = d1 % 10000;
-
-        d2 = q + 4749 * d3 + 42 * d2;
-        q = d2 / 10000;
-        d2 = d2 % 10000;
-
-        d3 = q + 281 * d3;
-        q = d3 / 10000;
-        d3 = d3 % 10000;
-
-        d4 = q;
-
-        printf( "%4.4u", d4 );
-        printf( "%4.4u", d3 );
-        printf( "%4.4u", d2 );
-        printf( "%4.4u", d1 );
-        printf( "%4.4u", d0 );
- }
- */
 
 
 #ifdef __SSE2__
@@ -532,7 +495,7 @@ uint32_t libdivide_u32_branchfree_do(
 
 void to_string_avx512f(uint64_t n, void *out) {          
 	uint64_t n_15_08			= 0;
-								  _mulx_u64(n, 0xabcc77118461cefd, &n_15_08);
+								  _mulx_u64(n, 0xabcc77118461cefd, reinterpret_cast<long long unsigned int*>(&n_15_08));
 						n_15_08	>>= 0x1a;									//n / 10^8
 	const uint64_t n_07_00		= n - (n_15_08 * 100000000);				//n % 10^8
 	const __m512i bcst_h		= _mm512_set1_epi32(n_15_08);
@@ -559,6 +522,10 @@ void to_string_avx512f(uint64_t n, void *out) {
 	const __m512i diff			= _mm512_sub_epi32(_mm512_add_epi32(rotated, _mm512_set1_epi32('0')), mul10);
 	_mm512_mask_cvtepi32_storeu_epi8(out, 0xffff, diff);
 }
+
+#endif
+#if defined(__AVX512IFMA__) && defined(__AVX512VBMI__) 
+
 
 /*
 The IFMA decimal print method: 
@@ -603,38 +570,28 @@ Solution: we use 0x2af31dc = 0x2af31dd - 1 as c, and use 0x1A1A400 bias instead 
 (0x19999996FD600 + 0x1A1A400) * 10 = 0x1000000EAEC400
 */ 
 
-//constexpr uint64_t u64_10pow(uint64_t exp) {
-//	uint64_t _10pow = 1;
-//	for (uint64_t p = 0; p < exp; p++)
-//		_10pow *= 10;
-//	return _10pow;
-//}
-//
-//constexpr uint64_t divconst52(uint64_t divisor) {
-//	return  UINT64_C(0xFFFFFFFFFFFFF) / divisor + 1;
-//}
 
-void to_string_avx512ifma(uint64_t n, void *out) {
-	uint64_t n_15_08			= 0;
-								  _mulx_u64(n, 0xabcc77118461cefd, &n_15_08);
-						n_15_08	>>= 0x1a;									//n / 10^8
-	const uint64_t n_07_00		= n - (n_15_08 * 100000000);				//n % 10^8
-	const __m512i bcstq_h		= _mm512_set1_epi64(n_15_08);
-	const __m512i bcstq_l		= _mm512_set1_epi64(n_07_00);
- 	const __m512i zmmzero		= _mm512_castsi128_si512(_mm_cvtsi64_si128(0x1A1A400)); //8th digit bias
- 	const __m512i zmmTen		= _mm512_set1_epi64(10);
- 	const __m512i asciiZero		= _mm512_set1_epi64('0');
+void to_string_avx512ifma(uint64_t n, char *out) {
+  uint64_t n_15_08  = n / 100000000;
+  uint64_t n_07_00  = n % 100000000;
+  __m512i bcstq_h   = _mm512_set1_epi64(n_15_08);
+  __m512i bcstq_l   = _mm512_set1_epi64(n_07_00);
+  __m512i zmmzero   = _mm512_castsi128_si512(_mm_cvtsi64_si128(0x1A1A400));
+  __m512i zmmTen    = _mm512_set1_epi64(10);
+  __m512i asciiZero = _mm512_set1_epi64('0');
 
-	//const __m512i ifma_const	= _mm512_setr_epi64(divconst52(u64_10pow(8)) - 1, divconst52(u64_10pow(7)), divconst52(u64_10pow(6)), divconst52(u64_10pow(5)), divconst52(u64_10pow(4)), divconst52(u64_10pow(3)), divconst52(u64_10pow(2)), divconst52(u64_10pow(1)));
-	const __m512i ifma_const	= _mm512_setr_epi64(0x00000000002af31dc, 0x0000000001ad7f29b, 0x0000000010c6f7a0c, 0x00000000a7c5ac472, 0x000000068db8bac72, 0x0000004189374bc6b, 0x0000028f5c28f5c29, 0x0000199999999999a);
-	const __m512i permb_const	= _mm512_castsi128_si512(_mm_set_epi8(0x78, 0x70, 0x68, 0x60, 0x58, 0x50, 0x48, 0x40, 0x38, 0x30, 0x28, 0x20, 0x18, 0x10, 0x08, 0x00));
-
-	const __m512i lowbits_h		= _mm512_madd52lo_epu64(zmmzero, bcstq_h, ifma_const);
-	const __m512i lowbits_l		= _mm512_madd52lo_epu64(zmmzero, bcstq_l, ifma_const);
-	const __m512i highbits_h	= _mm512_madd52hi_epu64(asciiZero, zmmTen, lowbits_h);
-	const __m512i highbits_l	= _mm512_madd52hi_epu64(asciiZero, zmmTen, lowbits_l);
-	const __m128i digits_15_0	= _mm512_castsi512_si128(_mm512_permutex2var_epi8(highbits_h, permb_const, highbits_l));
-	_mm_storeu_si128((__m128i *)out, digits_15_0);
+  __m512i ifma_const	= _mm512_setr_epi64(0x00000000002af31dc, 0x0000000001ad7f29b, 
+    0x0000000010c6f7a0c, 0x00000000a7c5ac472, 0x000000068db8bac72, 0x0000004189374bc6b,
+    0x0000028f5c28f5c29, 0x0000199999999999a);
+  __m512i permb_const	= _mm512_castsi128_si512(_mm_set_epi8(0x78, 0x70, 0x68, 0x60, 0x58,
+    0x50, 0x48, 0x40, 0x38, 0x30, 0x28, 0x20, 0x18, 0x10, 0x08, 0x00));
+  __m512i lowbits_h	= _mm512_madd52lo_epu64(zmmzero, bcstq_h, ifma_const);
+  __m512i lowbits_l	= _mm512_madd52lo_epu64(zmmzero, bcstq_l, ifma_const);
+  __m512i highbits_h	= _mm512_madd52hi_epu64(asciiZero, zmmTen, lowbits_h);
+  __m512i highbits_l	= _mm512_madd52hi_epu64(asciiZero, zmmTen, lowbits_l);
+  __m512i perm          = _mm512_permutex2var_epi8(highbits_h, permb_const, highbits_l);
+  __m128i digits_15_0	= _mm512_castsi512_si128(perm);
+  _mm_storeu_si128((__m128i *)out, digits_15_0);
 }
 #endif
 
@@ -761,7 +718,8 @@ int main() {
     }
     return data.size();
   };
-
+#endif
+#if defined(__AVX512IFMA__) && defined(__AVX512VBMI__) 
   auto avx512ifma_approach = [&data, buf]() -> size_t {
     char *b = buf;
     for (auto val : data) {
@@ -771,8 +729,8 @@ int main() {
     return data.size();
   };
 #endif
-  for (size_t i = 0; i < 3; i++) {
-    std::cout << "khuong     ";
+  for (size_t i = 0; i < 5; i++) {
+/*    std::cout << "khuong     ";
     std::cout << bench(khuong_approach) << std::endl;
     std::cout << "backlinear ";
     std::cout << bench(backlinear_approach) << std::endl;
@@ -782,9 +740,10 @@ int main() {
     std::cout << bench(tree_approach) << std::endl;
     std::cout << "treetst ";
     std::cout << bench(tree_str_approach) << std::endl;
+*/
     std::cout << "treest ";
     std::cout << bench(tree_table_approach) << std::endl;
-    std::cout << "treebt ";
+/*    std::cout << "treebt ";
 
     std::cout << bench(tree_bigtable_approach) << std::endl;
 #ifdef __SSE2__
@@ -805,7 +764,8 @@ int main() {
 #ifdef __AVX512F__
     std::cout << "avx512f  ";
     std::cout << bench(avx512f_approach) << std::endl;
-
+#endif*/
+#if defined(__AVX512IFMA__) && defined(__AVX512VBMI__) 
     std::cout << "avx512ifma ";
     std::cout << bench(avx512ifma_approach) << std::endl;
 #endif
