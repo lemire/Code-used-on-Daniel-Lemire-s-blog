@@ -326,7 +326,6 @@ void test(const char *filename, char target) {
   size_t wordcount;
   uint64_t *array = build_bitmap(filename, target, &wordcount);
   uint32_t *bigarray = new uint32_t[wordcount * 64];
-  wordcount = 10;
   size_t iterations = ITERATIONS;
 #ifdef __linux__
   std::vector<int> evts;

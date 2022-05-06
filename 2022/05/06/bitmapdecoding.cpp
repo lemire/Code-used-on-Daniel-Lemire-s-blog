@@ -10,6 +10,8 @@
 #ifndef __GNUC__
 #warning "We assume a GCC-like compiler."
 #endif
+#include <numeric>
+#include <algorithm>
 #include <cassert>
 #include <cinttypes>
 #include <cstdint>
@@ -19,13 +21,21 @@
 #include <exception>
 #include <iostream>
 #include <vector>
+#include <time.h> // for clock_t, clock()
+struct timespec start;
+struct timespec end;
+// time spent in nanoseconds
+double timespent() {
+  return (end.tv_sec - start.tv_sec) * 1000000000 +
+         (end.tv_nsec - start.tv_nsec);
+}
 
 #ifdef __x86_64__
 #include <x86intrin.h> // assume GCC/clang
 #elif defined(__aarch64__)
 #include <arm_neon.h>
 #endif
-#define ITERATIONS 10
+#define ITERATIONS 100
 
 /* result might be undefined when input_num is zero */
 static inline int trailingzeroes(uint64_t input_num) {
@@ -76,11 +86,14 @@ uint64_t *build_bitmap(const char *filename, char target, size_t *wordcount) {
   *wordcount = len / 64;
   uint64_t *data = new uint64_t[*wordcount];
   memset(data, 0, *wordcount * sizeof(uint64_t));
+  size_t matches = 0;
   for (size_t i = 0; i < *wordcount * 64; i++) {
     if ((filedata[i] == target) || ((unsigned char)filedata[i] < 0x20)) {
+      matches ++;
       data[i / 64] |= (UINT64_C(1) << (i % 64));
     }
   }
+  // std::cout << " Loaded " << len/64*64 << " bits with " << matches << " bits set." << std::endl;
   delete[] filedata;
   return data;
 }
@@ -356,7 +369,6 @@ void test(const char *filename, char target) {
   size_t wordcount;
   uint64_t *array = build_bitmap(filename, target, &wordcount);
   uint32_t *bigarray = new uint32_t[wordcount * 64];
-  wordcount = 10;
   size_t iterations = ITERATIONS;
 #ifdef __linux__
   std::vector<int> evts;
@@ -368,6 +380,7 @@ void test(const char *filename, char target) {
   LinuxEvents<PERF_TYPE_HARDWARE> unified(evts);
   std::vector<unsigned long long> results;
   std::vector<std::vector<unsigned long long>> allresults;
+  std::vector<double> timings;
   results.resize(evts.size());
 #elif defined(__APPLE__) && defined(__aarch64__)
   performance_counters agg_min{1e300};
@@ -377,6 +390,7 @@ void test(const char *filename, char target) {
   for (uint32_t i = 0; i < iterations; i++) {
     matches = 0;
 #ifdef __linux__
+    clock_gettime(CLOCK_REALTIME, &start);
     unified.start();
 #elif defined(__APPLE__) && defined(__aarch64__)
     performance_counters start = get_counters();
@@ -386,6 +400,9 @@ void test(const char *filename, char target) {
     }
 #ifdef __linux__
     unified.end(results);
+    clock_gettime(CLOCK_REALTIME, &end);
+    double ts = timespent();
+    timings.push_back(ts);
     allresults.push_back(results);
 #elif defined(__APPLE__) && defined(__aarch64__)
     performance_counters end = get_counters();
@@ -394,8 +411,7 @@ void test(const char *filename, char target) {
     agg_avg += diff;
 #endif
   }
-  if ((bigarray[0] == 0) && (bigarray[117] == 0) && (bigarray[116] == 1))
-    printf("bogus.\n");
+  if ((bigarray[0] == 0) && (bigarray[117] == 0) && (bigarray[116] == 1)) { printf("bogus.\n"); }
   printf(
       "matches = %u words = %zu 1-bit density %4.3f %% 1-bit per word %4.3f ",
       matches, wordcount, double(matches) / (64 * wordcount) * 100,
@@ -405,6 +421,7 @@ void test(const char *filename, char target) {
 
   std::vector<unsigned long long> mins = compute_mins(allresults);
   std::vector<double> avg = compute_averages(allresults);
+
   printf("instructions per cycle %4.2f, cycles per value set:  "
          "%4.3f, "
          "instructions per value set: %4.3f, cycles per word: %4.3f, "
@@ -422,6 +439,14 @@ void test(const char *filename, char target) {
   printf("avg: %8.1f cycles, %8.1f instructions, \t%8.1f branch mis., %8.1f "
          "cache ref., %8.1f cache mis.\n",
          avg[0], avg[1], avg[2], avg[3], avg[4]);
+  double mintime = *min_element(timings.begin(), timings.end());
+  double maxtime = *max_element(timings.begin(), timings.end());
+   printf("time [%.3f,%.3f] ns per value set\n", mintime/matches, maxtime/matches);
+
+  printf(" detected frequency: %.3f GHz\n", double(mins[0])/mintime);
+ // printf(" detected frequency: %.3f GHz\n", );
+
+ // printf(" detected frequency: %.3f GHz\n", );
 #elif defined(__APPLE__) && defined(__aarch64__)
   agg_avg /= iterations;
   printf(" %8.2f instructions/word (+/- %3.1f %%) ",
@@ -583,7 +608,7 @@ int main(int argc, char **argv) {
 #endif
 #ifdef __AVX512F__
   unit<avx512_decoder>();
-  printf("basic_decoder:\n");
+  printf("avx512_decoder:\n");
   test<avx512_decoder>("nfl.csv", ',');
 #endif
 
