@@ -10,6 +10,8 @@
 #ifndef __GNUC__
 #warning "We assume a GCC-like compiler."
 #endif
+#include <chrono>
+#include <thread>
 #include <numeric>
 #include <algorithm>
 #include <cassert>
@@ -347,25 +349,27 @@ static inline void avx512_decoder(uint32_t *base_ptr, uint32_t &base,
   uint16_t mask;
   mask = bits & 0xFFFF;
   _mm512_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
-  base += hamming(mask);
+  base += _popcnt64(mask);
   const __m512i constant16 = _mm512_set1_epi32(16);
   base_index = _mm512_add_epi32(base_index, constant16);
   mask = (bits>>16) & 0xFFFF;
   _mm512_mask_compressstoreu_epi32(base_ptr + base, (bits>>16) & 0xFFFF, base_index);
-  base += hamming(mask);
+  base += _popcnt64(mask);
   base_index = _mm512_add_epi32(base_index, constant16);
   mask = (bits>>32) & 0xFFFF;
   _mm512_mask_compressstoreu_epi32(base_ptr + base, (bits>>32) & 0xFFFF, base_index);
-  base += hamming(mask);
+  base += _popcnt64(mask);
   base_index = _mm512_add_epi32(base_index, constant16);
   mask = bits>>48;
   _mm512_mask_compressstoreu_epi32(base_ptr + base, bits>>48, base_index);
-  base += hamming(mask);
+  base += _popcnt64(mask);
 }
 #endif
 
 template <void (*F)(uint32_t *, uint32_t &, uint32_t, uint64_t)>
 void test(const char *filename, char target) {
+  // We pause to avoid frequency throttling.
+  std::this_thread::sleep_for(std::chrono::milliseconds(10));
   size_t wordcount;
   uint64_t *array = build_bitmap(filename, target, &wordcount);
   uint32_t *bigarray = new uint32_t[wordcount * 64];
@@ -401,8 +405,7 @@ void test(const char *filename, char target) {
 #ifdef __linux__
     unified.end(results);
     clock_gettime(CLOCK_REALTIME, &end);
-    double ts = timespent();
-    timings.push_back(ts);
+    timings.push_back(timespent());
     allresults.push_back(results);
 #elif defined(__APPLE__) && defined(__aarch64__)
     performance_counters end = get_counters();
@@ -441,12 +444,10 @@ void test(const char *filename, char target) {
          avg[0], avg[1], avg[2], avg[3], avg[4]);
   double mintime = *min_element(timings.begin(), timings.end());
   double maxtime = *max_element(timings.begin(), timings.end());
-   printf("time [%.3f,%.3f] ns per value set\n", mintime/matches, maxtime/matches);
+  printf("time [%.3f,%.3f] ns per value set\n", mintime/matches, maxtime/matches);
+  double total_time{}; for(double t : timings) { total_time += t; }
+  printf(" detected frequency: ~ %.3f -- %.3f to GHz \n", avg[0] * iterations / total_time, double(mins[0])/mintime);
 
-  printf(" detected frequency: %.3f GHz\n", double(mins[0])/mintime);
- // printf(" detected frequency: %.3f GHz\n", );
-
- // printf(" detected frequency: %.3f GHz\n", );
 #elif defined(__APPLE__) && defined(__aarch64__)
   agg_avg /= iterations;
   printf(" %8.2f instructions/word (+/- %3.1f %%) ",
