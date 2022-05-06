@@ -353,15 +353,56 @@ static inline void avx512_decoder(uint32_t *base_ptr, uint32_t &base,
   const __m512i constant16 = _mm512_set1_epi32(16);
   base_index = _mm512_add_epi32(base_index, constant16);
   mask = (bits>>16) & 0xFFFF;
-  _mm512_mask_compressstoreu_epi32(base_ptr + base, (bits>>16) & 0xFFFF, base_index);
+  _mm512_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
   base += _popcnt64(mask);
   base_index = _mm512_add_epi32(base_index, constant16);
   mask = (bits>>32) & 0xFFFF;
-  _mm512_mask_compressstoreu_epi32(base_ptr + base, (bits>>32) & 0xFFFF, base_index);
+  _mm512_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
   base += _popcnt64(mask);
   base_index = _mm512_add_epi32(base_index, constant16);
   mask = bits>>48;
-  _mm512_mask_compressstoreu_epi32(base_ptr + base, bits>>48, base_index);
+  _mm512_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
+  base += _popcnt64(mask);
+}
+
+
+static inline void avx256_decoder(uint32_t *base_ptr, uint32_t &base,
+                                           uint32_t idx, uint64_t bits) {
+  __m256i start_index = _mm256_set1_epi32(idx);
+  __m256i base_index = _mm256_setr_epi32(0,1,2,3,4,5,6,7);
+  base_index = _mm256_add_epi32(base_index, start_index);
+  uint16_t mask;
+  mask = bits & 0xFF;
+  _mm256_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
+  base += _popcnt64(mask);
+  const __m256i constant8 = _mm256_set1_epi32(8);
+  base_index = _mm256_add_epi32(base_index, constant8);
+  mask = (bits>>8) & 0xFF;
+  _mm256_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
+  base += _popcnt64(mask);
+  base_index = _mm256_add_epi32(base_index, constant8);
+  mask = (bits>>16) & 0xFF;
+  _mm256_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
+  base += _popcnt64(mask);
+  base_index = _mm256_add_epi32(base_index, constant8);
+  mask = (bits>>24) & 0xFF;
+  _mm256_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
+  base += _popcnt64(mask);
+  base_index = _mm256_add_epi32(base_index, constant8);
+  mask = (bits>>32) & 0xFF;
+  _mm256_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
+  base += _popcnt64(mask);
+  base_index = _mm256_add_epi32(base_index, constant8);
+  mask = (bits>>40) & 0xFF;
+  _mm256_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
+  base += _popcnt64(mask);
+  base_index = _mm256_add_epi32(base_index, constant8);
+  mask = (bits>>48) & 0xFF;
+  _mm256_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
+  base += _popcnt64(mask);
+  base_index = _mm256_add_epi32(base_index, constant8);
+  mask = bits>>56;
+  _mm256_mask_compressstoreu_epi32(base_ptr + base, mask, base_index);
   base += _popcnt64(mask);
 }
 #endif
@@ -485,6 +526,7 @@ template <void (*F)(uint32_t *, uint32_t &, uint32_t, uint64_t)> bool unit() {
           printf("decoded[%zu]=%u; refdecoded[%zu]=%u  \n", kk, decoded[kk], kk,
                  refdecoded[kk]);
         }
+        abort();
         return false;
       }
     }
@@ -611,6 +653,10 @@ int main(int argc, char **argv) {
   unit<avx512_decoder>();
   printf("avx512_decoder:\n");
   test<avx512_decoder>("nfl.csv", ',');
+
+  unit<avx256_decoder>();
+  printf("avx256_decoder:\n");
+  test<avx256_decoder>("nfl.csv", ',');
 #endif
 
   unit<basic_decoder>();
