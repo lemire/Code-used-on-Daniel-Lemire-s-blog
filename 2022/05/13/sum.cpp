@@ -39,6 +39,7 @@ int get_positive_value(int x) {
     if(x < 0) { throw std::runtime_error("it is not positive!"); }
     return x;
 }
+__attribute__ ((noinline))
 int sum_abs_value_exception(std::vector<int> &a) {
     int sum = 0;
     for (int x : a) {
@@ -52,6 +53,7 @@ int sum_abs_value_exception(std::vector<int> &a) {
 }
 
 
+__attribute__ ((noinline)) 
 int sum_abs_value(std::vector<int> &a) noexcept {
     int sum = 0;
     for (int x : a) {
