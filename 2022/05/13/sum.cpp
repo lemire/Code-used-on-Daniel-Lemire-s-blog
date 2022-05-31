@@ -1,5 +1,3 @@
-//original:
-//https://github.com/lemire/Code-used-on-Daniel-Lemire-s-blog/blob/master/2021/11/17/convert.cpp
 #include <algorithm>
 #include <chrono>
 #include <cmath>
