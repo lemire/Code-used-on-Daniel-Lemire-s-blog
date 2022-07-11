@@ -409,7 +409,7 @@ static inline void avx256_decoder(uint32_t *base_ptr, uint32_t &base,
 
 template <void (*F)(uint32_t *, uint32_t &, uint32_t, uint64_t)>
 void test(const char *filename, char target) {
-  // We pause to avoid frequency throttling.
+  // We pause to make sure we are not affected by frequency throttling.
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
   size_t wordcount;
   uint64_t *array = build_bitmap(filename, target, &wordcount);
