@@ -19,7 +19,7 @@ static uint32_t findInverse32(uint32_t x) {
   uint32_t y = (3 * x) ^ 2; // 5 bits
   y = f32(x, y); // 10 bits
   y = f32(x, y); // 20 bits
-  y = f32(x, y); // 30 bits
+  y = f32(x, y); // 40 bits
   return y;
 }
 
