@@ -52,6 +52,6 @@ double benchmark(size_t size) {
 
 int main() {
   for (size_t i = 0; i < 3; i++) {
-    std::cout << 1/benchmark(100000) << " GB/s" << std::endl;
+    std::cout << sizeof(double)/benchmark(100000) << " GB/s" << std::endl;
   }
 }
