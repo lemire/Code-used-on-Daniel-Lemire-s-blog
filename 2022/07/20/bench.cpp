@@ -24,7 +24,7 @@ uint64_t nano() {
       .count();
 }
 
-double benchmark(size_t size) {
+std::pair<double,double> benchmark(size_t size) {
   std::unique_ptr<double[]> data(new double[size]);
   double * datain = data.get();
   init(data.get(), size);
@@ -35,7 +35,12 @@ double benchmark(size_t size) {
       dataout[i] = float(datain[i]);
     }
   };
-  uint64_t start = nano();
+  auto reversedbenchfnc = [datain, dataout, size]() {
+    for (size_t i = 0; i < size; i++) {
+      datain[i] = double(dataout[i]);
+    }
+  };
+   uint64_t start = nano();
   uint64_t finish = start;
   size_t count{0};
   uint64_t threshold = 500'000'000;
@@ -46,12 +51,25 @@ double benchmark(size_t size) {
     bogus += dataout[size-1];
     finish = nano();
   }
+  double d1 = double(finish - start) / (count*size);
   if(bogus == 0) { printf("zero\n"); }
-  return double(finish - start) / (count*size);
+  start = nano();
+  finish = start;
+  count = 0;
+  bogus = 0;
+  for (; finish - start < threshold;) {
+    count++;
+    reversedbenchfnc();
+    bogus += dataout[size-1];
+    finish = nano();
+  }
+  if(bogus == 0) { printf("zero\n"); }
+  double d2 = double(finish - start) / (count*size);
+  return std::make_pair(d1,d2);
 }
-
 int main() {
   for (size_t i = 0; i < 3; i++) {
-    std::cout << sizeof(double)/benchmark(100000) << " GB/s" << std::endl;
+    auto p = benchmark(100000);
+    std::cout << sizeof(double)/p.first << "GB/s (double->float) " << sizeof(double)/p.second  << " GB/s (float->double)" << std::endl;
   }
 }
