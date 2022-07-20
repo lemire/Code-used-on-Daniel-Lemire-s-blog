@@ -4,20 +4,15 @@
 #include <iostream>
 #include <random>
 #include <vector>
-
-struct padded_struct {
-  uint64_t key;
-  uint64_t value;
-  bool is_valid;
-};
+#include <memory>
 
 void init(double *s, size_t size) {
   // Initialize the structs with random values + prefault
   std::random_device rd;
   std::mt19937 gen{rd()};
-  std::uniform_real_distribution<double> dist{0, 1};
+  std::uniform_real_distribution<double> dist(0.0, 1.0);
   for (uint64_t i = 0; i < size; ++i) {
-    s[i] = dist(gen);
+    s[i] = double(i)/size;
   }
 }
 
@@ -37,7 +32,7 @@ double benchmark(size_t size) {
   float * dataout = out.get();
   auto benchfnc = [datain, dataout, size]() {
     for (size_t i = 0; i < size; i++) {
-      datain[i] = float(dataout[i]);
+      dataout[i] = float(datain[i]);
     }
   };
   uint64_t start = nano();
