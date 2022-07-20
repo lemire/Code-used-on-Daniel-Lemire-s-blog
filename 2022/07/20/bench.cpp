@@ -7,10 +7,6 @@
 #include <memory>
 
 void init(double *s, size_t size) {
-  // Initialize the structs with random values + prefault
-  std::random_device rd;
-  std::mt19937 gen{rd()};
-  std::uniform_real_distribution<double> dist(0.0, 1.0);
   for (uint64_t i = 0; i < size; ++i) {
     s[i] = double(i)/size;
   }
