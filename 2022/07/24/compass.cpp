@@ -49,9 +49,8 @@ void round(double x, double y, double *xout, double *yout) {
   *yout = tmpy;
 }
 void roundtan(double x, double y, double *xout, double *yout) {
-
   double angle = atan2(y, x);
-  angle = (int(round(4 * angle / PI + 8)) & 7) * PI / 4;
+  angle = (int(round(4 * angle / PI + 8)) % 8) * PI / 4;
   *xout = cos(angle);
   *yout = sin(angle);
 }
