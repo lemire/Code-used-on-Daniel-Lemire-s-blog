@@ -17,37 +17,21 @@ uint64_t nano() {
 void round(double x, double y, double *xout, double *yout) {
   const double oneoversqrt2 = 0.7071067811865475;
   bool xneg = x < 0;
+  x = xneg ? -x : x;
   bool yneg = y < 0;
-  if (xneg) {
-    x = -x;
-  }
-  if (yneg) {
-    y = -y;
-  }
+  y = yneg ? -y : y;
   double tmpx = oneoversqrt2;
   double tmpy = oneoversqrt2;
-
-  if (x >= 0.923879532511286) {// cos(3*pi/8)
-    tmpx = 1;
-  }
-  if (y >= 0.923879532511286) {// cos(3*pi/8)
-    tmpy = 1;
-  }
-  if (x < 0.3826834323650898) {// cos(pi/8)
-    tmpx = 0;
-  }
-  if (y < 0.3826834323650898) {// cos(pi/8)
-    tmpy = 0;
-  }
-  if (xneg) {
-    tmpx = -tmpx;
-  }
-  if (yneg) {
-    tmpy = -tmpy;
-  }
+  tmpx = (x >= 0.923879532511286) ? 1 : tmpx;
+  tmpy = (y >= 0.923879532511286) ? 1 : tmpy;
+  tmpx = (x < 0.3826834323650898) ? 0 : tmpx;
+  tmpy = (y < 0.3826834323650898) ? 0 : tmpy;
+  tmpx = xneg ? -tmpx : tmpx;
+  tmpy = yneg ? -tmpy : tmpy;
   *xout = tmpx;
   *yout = tmpy;
 }
+
 void roundtan(double x, double y, double *xout, double *yout) {
   double angle = atan2(y, x);
   angle = (int(round(4 * angle / PI + 8)) % 8) * PI / 4;
