@@ -15,15 +15,12 @@ uint64_t nano() {
 #define PI 3.14159265358979323846
 
 void round(double x, double y, double *xout, double *yout) {
-  const double oneoversqrt2 = 0.7071067811865475;
   bool xneg = x < 0;
   x = xneg ? -x : x;
   bool yneg = y < 0;
   y = yneg ? -y : y;
-  double tmpx = oneoversqrt2;
-  double tmpy = oneoversqrt2;
-  tmpx = (x >= 0.923879532511286) ? 1 : tmpx;
-  tmpy = (y >= 0.923879532511286) ? 1 : tmpy;
+  double tmpx = (x >= 0.923879532511286) ? 1 : 0.7071067811865475;
+  double tmpy = (y >= 0.923879532511286) ? 1 : 0.7071067811865475;
   tmpx = (x < 0.3826834323650898) ? 0 : tmpx;
   tmpy = (y < 0.3826834323650898) ? 0 : tmpy;
   tmpx = xneg ? -tmpx : tmpx;
