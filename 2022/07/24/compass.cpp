@@ -16,13 +16,47 @@ uint64_t nano() {
 
 void round(double x, double y, double *xout, double *yout) {
   bool xneg = x < 0;
+  bool yneg = y < 0;
+  if (xneg) {
+    x = -x;
+  }
+  if (yneg) {
+    y = -y;
+  }
+  double tmpx = 0.7071067811865475; // 1/sqrt(2)
+  double tmpy = 0.7071067811865475;// 1/sqrt(2)
+  if (x >= 0.923879532511286) { // sin(3*pi/8)
+    tmpx = 1;
+  }
+ if (y >= 0.923879532511286) { // sin(3*pi/8)
+    tmpy = 1;
+  }
+  if (y >= 0.923879532511286) { // sin(3*pi/8)
+    tmpx = 0;
+  }
+  if (x >= 0.923879532511286) { // sin(3*pi/8)
+    tmpy = 0;
+  }
+  if (xneg) {
+    tmpx = -tmpx;
+  }
+
+  if (yneg) {
+    tmpy = -tmpy;
+  }
+  *xout = tmpx;
+  *yout = tmpy;
+}
+
+void branchlessround(double x, double y, double *xout, double *yout) {
+  bool xneg = x < 0;
   x = xneg ? -x : x;
   bool yneg = y < 0;
   y = yneg ? -y : y;
   double tmpx = (x >= 0.923879532511286) ? 1 : 0.7071067811865475;
   double tmpy = (y >= 0.923879532511286) ? 1 : 0.7071067811865475;
-  tmpx = (x < 0.3826834323650898) ? 0 : tmpx;
-  tmpy = (y < 0.3826834323650898) ? 0 : tmpy;
+  tmpx = (y >= 0.923879532511286) ? 0 : tmpx;
+  tmpy = (x >= 0.923879532511286) ? 0 : tmpy;
   tmpx = xneg ? -tmpx : tmpx;
   tmpy = yneg ? -tmpy : tmpy;
   *xout = tmpx;
@@ -38,7 +72,7 @@ void roundtan(double x, double y, double *xout, double *yout) {
 
 #include <iostream>
 
-std::pair<double, double> benchmark(size_t size) {
+std::tuple<double, double, double> benchmark(size_t size) {
   std::unique_ptr<double[]> data(new double[2 * size]);
   for (size_t i = 0; i < 2 * size; i++) {
     data.get()[i] = 2 * ((double)rand() / RAND_MAX) - 1;
@@ -62,6 +96,14 @@ std::pair<double, double> benchmark(size_t size) {
     for (size_t i = 0; i < size; i++) {
       roundtan(data.get()[2 * i], data.get()[2 * i + 1],
                databuffer2.get() + 2 * i, databuffer2.get() + 2 * i + 1);
+    }
+  };
+  std::unique_ptr<double[]> databuffer3(new double[2 * size]);
+
+  auto benchfncbranchless = [&data, &databuffer3, size]() {
+    for (size_t i = 0; i < size; i++) {
+      branchlessround(data.get()[2 * i], data.get()[2 * i + 1],
+               databuffer3.get() + 2 * i, databuffer3.get() + 2 * i + 1);
     }
   };
   uint64_t start = nano();
@@ -96,7 +138,24 @@ std::pair<double, double> benchmark(size_t size) {
     if(fabs(databuffer2.get()[i]- databuffer.get()[i]) > 0.001) { printf("bug\n"); }
   }
   double t2 = double(finish - start) / (count * size);
-  return std::make_pair(t1, t2);
+  count = 0;
+  bogus = 0;
+  start = nano();
+  finish = start;
+  for (; finish - start < threshold;) {
+    count++;
+    benchfncbranchless();
+    bogus += databuffer3.get()[size - 1] + databuffer3.get()[2*size - 1];
+    finish = nano();
+  }
+  if (bogus == 0.5) {
+    printf("zero\n");
+  }
+  for(size_t i = 0; i < 2*size; i++) {
+    if(fabs(databuffer3.get()[i]- databuffer.get()[i]) > 0.001) { printf("bug\n"); }
+  }
+  double t3 = double(finish - start) / (count * size);
+  return std::make_tuple(t1, t2, t3);
 }
 int main() {
   srand(time(NULL));
@@ -119,9 +178,10 @@ int main() {
       break;
     }
   }
+  std::cout << " lemire/branches tan/sin/cos lemire/branchless "<< std::endl;
 
   for(int trial = 0; trial < 10; trial++) {
-    auto b = benchmark(100000);
-    std::cout << b.first << " " << b.second << std::endl;
+    auto [t1, t2, t3] = benchmark(100000);
+    std::cout << t1 << "          " << t2  << "       " << t3 << std::endl;
   }
 }
