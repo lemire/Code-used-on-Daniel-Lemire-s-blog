@@ -23,29 +23,29 @@ void round(double x, double y, double *xout, double *yout) {
   if (yneg) {
     y = -y;
   }
-  double tmpx = 0.7071067811865475; // 1/sqrt(2)
-  double tmpy = 0.7071067811865475;// 1/sqrt(2)
+  double outx = 0.7071067811865475; // 1/sqrt(2)
+  double outy = 0.7071067811865475;// 1/sqrt(2)
   if (x >= 0.923879532511286) { // sin(3*pi/8)
-    tmpx = 1;
+    outx = 1;
   }
  if (y >= 0.923879532511286) { // sin(3*pi/8)
-    tmpy = 1;
+    outy = 1;
   }
   if (y >= 0.923879532511286) { // sin(3*pi/8)
-    tmpx = 0;
+    outx = 0;
   }
   if (x >= 0.923879532511286) { // sin(3*pi/8)
-    tmpy = 0;
+    outy = 0;
   }
   if (xneg) {
-    tmpx = -tmpx;
+    outx = -outx;
   }
 
   if (yneg) {
-    tmpy = -tmpy;
+    outy = -outy;
   }
-  *xout = tmpx;
-  *yout = tmpy;
+  *xout = outx;
+  *yout = outy;
 }
 
 void branchlessround(double x, double y, double *xout, double *yout) {
@@ -53,14 +53,14 @@ void branchlessround(double x, double y, double *xout, double *yout) {
   x = xneg ? -x : x;
   bool yneg = y < 0;
   y = yneg ? -y : y;
-  double tmpx = (x >= 0.923879532511286) ? 1 : 0.7071067811865475;
-  double tmpy = (y >= 0.923879532511286) ? 1 : 0.7071067811865475;
-  tmpx = (y >= 0.923879532511286) ? 0 : tmpx;
-  tmpy = (x >= 0.923879532511286) ? 0 : tmpy;
-  tmpx = xneg ? -tmpx : tmpx;
-  tmpy = yneg ? -tmpy : tmpy;
-  *xout = tmpx;
-  *yout = tmpy;
+  double outx = (x >= 0.923879532511286) ? 1 : 0.7071067811865475;
+  double outy = (y >= 0.923879532511286) ? 1 : 0.7071067811865475;
+  outx = (y >= 0.923879532511286) ? 0 : outx;
+  outy = (x >= 0.923879532511286) ? 0 : outy;
+  outx = xneg ? -outx : outx;
+  outy = yneg ? -outy : outy;
+  *xout = outx;
+  *yout = outy;
 }
 
 void roundtan(double x, double y, double *xout, double *yout) {
@@ -166,15 +166,15 @@ int main() {
     x /= norm;
     y /= norm;
 
-    double tmpx, tmpy;
-    roundtan(x, y, &tmpx, &tmpy);
-    double tmpx2, tmpy2;
+    double outx, outy;
+    roundtan(x, y, &outx, &outy);
+    double outx2, outy2;
 
-    round(x, y, &tmpx2, &tmpy2);
-    if ((fabs(tmpx - tmpx2) > 0.0001) || (fabs(tmpy - tmpy2) > 0.0001)) {
+    round(x, y, &outx2, &outy2);
+    if ((fabs(outx - outx2) > 0.0001) || (fabs(outy - outy2) > 0.0001)) {
       std::cout << x << " " << y << std::endl;
-      std::cout << tmpx << " " << tmpy << std::endl;
-      std::cout << tmpx2 << " " << tmpy2 << std::endl;
+      std::cout << outx << " " << outy << std::endl;
+      std::cout << outx2 << " " << outy2 << std::endl;
       break;
     }
   }
