@@ -54,11 +54,7 @@ double findmax_strtod(std::vector<std::string> &s) {
   }
   return answer;
 }
-#if defined(_MSC_VER)
-#define FROM_CHARS_AVAILABLE_MAYBE
-#endif
 
-#ifdef FROM_CHARS_AVAILABLE_MAYBE
 double findmax_from_chars(std::vector<std::string> &s) {
   double answer = 0;
   double x = 0;
@@ -71,7 +67,6 @@ double findmax_from_chars(std::vector<std::string> &s) {
   }
   return answer;
 }
-#endif
 
 template <class T>
 std::pair<double, double> time_it_ns(std::vector<std::string> &lines,
@@ -106,9 +101,7 @@ void process(std::vector<std::string> &lines, size_t volume) {
            (result.second - result.first) * 100.0 / result.second);
   };
   pretty_print("strtod", time_it_ns(lines, findmax_strtod, repeat));
-#ifdef FROM_CHARS_AVAILABLE_MAYBE
   pretty_print("from_chars", time_it_ns(lines, findmax_from_chars, repeat));
-#endif 
 }
 
 
