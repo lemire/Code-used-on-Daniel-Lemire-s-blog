@@ -40,7 +40,6 @@ void round(double x, double y, double *xout, double *yout) {
   if (xneg) {
     outx = -outx;
   }
-
   if (yneg) {
     outy = -outy;
   }
@@ -63,6 +62,17 @@ void branchlessround(double x, double y, double *xout, double *yout) {
   *yout = outy;
 }
 
+void leeround(double x, double y, double* xout, double* yout) {
+    double posx = fabs(x);
+    double posy = fabs(y);
+    double tmpx = (posx >= 0.923879532511286) ? 1 : 0.7071067811865475;
+    double tmpy = (posy >= 0.923879532511286) ? 1 : 0.7071067811865475;
+    tmpx = (posy >= 0.923879532511286) ? 0 : tmpx;
+    tmpy = (posx >= 0.923879532511286) ? 0 : tmpy;
+    *xout = copysign(tmpx, x);
+    *yout = copysign(tmpy, y);
+}
+
 void roundtan(double x, double y, double *xout, double *yout) {
   double angle = atan2(y, x);
   angle = (int(round(4 * angle / PI + 8)) % 8) * PI / 4;
@@ -72,7 +82,7 @@ void roundtan(double x, double y, double *xout, double *yout) {
 
 #include <iostream>
 
-std::tuple<double, double, double> benchmark(size_t size) {
+std::tuple<double, double, double, double> benchmark(size_t size) {
   std::unique_ptr<double[]> data(new double[2 * size]);
   for (size_t i = 0; i < 2 * size; i++) {
     data.get()[i] = 2 * ((double)rand() / RAND_MAX) - 1;
@@ -104,6 +114,14 @@ std::tuple<double, double, double> benchmark(size_t size) {
     for (size_t i = 0; i < size; i++) {
       branchlessround(data.get()[2 * i], data.get()[2 * i + 1],
                databuffer3.get() + 2 * i, databuffer3.get() + 2 * i + 1);
+    }
+  };
+  std::unique_ptr<double[]> databuffer4(new double[2 * size]);
+
+  auto benchfnclee = [&data, &databuffer4, size]() {
+    for (size_t i = 0; i < size; i++) {
+      leeround(data.get()[2 * i], data.get()[2 * i + 1],
+               databuffer4.get() + 2 * i, databuffer4.get() + 2 * i + 1);
     }
   };
   uint64_t start = nano();
@@ -155,7 +173,24 @@ std::tuple<double, double, double> benchmark(size_t size) {
     if(fabs(databuffer3.get()[i]- databuffer.get()[i]) > 0.001) { printf("bug\n"); }
   }
   double t3 = double(finish - start) / (count * size);
-  return std::make_tuple(t1, t2, t3);
+  count = 0;
+  bogus = 0;
+  start = nano();
+  finish = start;
+  for (; finish - start < threshold;) {
+    count++;
+    benchfnclee();
+    bogus += databuffer4.get()[size - 1] + databuffer4.get()[2*size - 1];
+    finish = nano();
+  }
+  if (bogus == 0.5) {
+    printf("zero\n");
+  }
+  for(size_t i = 0; i < 2*size; i++) {
+    if(fabs(databuffer4.get()[i]- databuffer.get()[i]) > 0.001) { printf("bug\n"); }
+  }
+  double t4 = double(finish - start) / (count * size);
+  return std::make_tuple(t1, t2, t3, t4);
 }
 int main() {
   srand(time(NULL));
@@ -178,10 +213,10 @@ int main() {
       break;
     }
   }
-  std::cout << " lemire/branches tan/sin/cos lemire/branchless "<< std::endl;
+  std::cout << " lemire/branches tan/sin/cos lemire/branchless copysing "<< std::endl;
 
   for(int trial = 0; trial < 10; trial++) {
-    auto [t1, t2, t3] = benchmark(100000);
-    std::cout << t1 << "          " << t2  << "       " << t3 << std::endl;
+    auto [t1, t2, t3, t4] = benchmark(100000);
+    std::cout << t1 << "          " << t2  << "       " << t3 << "       " << t4 << std::endl;
   }
 }
