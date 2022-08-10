@@ -1,10 +1,10 @@
 all: helloc hellocpp hellocppstatic hellocppfullstatic helloprintfcpp hellonoendl
-	hyperfine --runs 5000 ./helloc
-	hyperfine --runs 5000 ./hellocpp
-	hyperfine --runs 5000 ./hellocppstatic
-	hyperfine --runs 5000 ./hellocppfullstatic
-	hyperfine --runs 5000 ./helloprintfcpp
-	hyperfine --runs 5000 ./hellonoendl
+	hyperfine  --runs 5000 ./helloc --warmup 100
+	hyperfine  --runs 5000 ./hellocpp --warmup 100
+	hyperfine  --runs 5000 ./hellocppstatic --warmup 100
+	hyperfine  --runs 5000 ./hellocppfullstatic --warmup 100
+	hyperfine  --runs 5000 ./helloprintfcpp --warmup 100
+	hyperfine  --runs 5000 ./hellonoendl --warmup 100
 	LD_DEBUG=statistics ./helloc
 	LD_DEBUG=statistics ./hellocpp
 	LD_DEBUG=statistics ./hellocppstatic
