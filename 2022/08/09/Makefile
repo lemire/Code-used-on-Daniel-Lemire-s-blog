@@ -33,10 +33,10 @@ hellocpp: hello.cpp
 	c++ -O2 -o hellocpp hello.cpp -Wall
 
 hellocppstatic: hello.cpp
-	c++ -O2 -o hellocppstatic hello.cpp -Wall -static-libstdc++
+	c++ -O2 -o hellocppstatic hello.cpp -Wall -static-libstdc++  -Xlinker --gc-sections
 
 hellocppfullstatic: hello.cpp
-	c++ -O2 -o hellocppfullstatic hello.cpp -Wall -static-libstdc++ -static-libgcc
+	c++ -O2 -o hellocppfullstatic hello.cpp -Wall -static-libstdc++ -static-libgcc  -Xlinker --gc-sections
 
 clean:
-	rm -r -f hellocpp helloc hellocppstatic hellocppfullstatic
+	rm -r -f helloc hellocpp hellocppstatic hellocppfullstatic helloprintfcpp hellonoendl hellonosynccpp hellosc
