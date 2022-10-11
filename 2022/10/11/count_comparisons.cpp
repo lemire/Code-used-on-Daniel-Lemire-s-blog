@@ -21,8 +21,10 @@ int compare(const void *a, const void *b) {
   memcpy(&x, a, sizeof(x));
   memcpy(&y, b, sizeof(y));
   counter++;
-  int result = (x < y) ? -1 : ((y > x) ? 0 : 1);
-  return result;
+  if(x < y) { return -1; }
+  if(x == y) { return 0; }
+  //if(x > y) { return 1; }
+  return 1;
 }
 
 bool comparestl(const double x, const double y) {
@@ -33,7 +35,7 @@ bool comparestl(const double x, const double y) {
 
 int main() {
   for (size_t k = 2; k <= 18; k++) {
-    printf("N = 2** %zu\n ", k);
+    printf("N = 2**%zu\n ", k);
 
     size_t N = size_t(1) << k;
     double *buffer = new double[N];
@@ -60,7 +62,6 @@ int main() {
     counter = 0;
     std::sort(bufferstl, bufferstl + N, comparestl);
     printf("std::sort comparisons %f\n ", float(counter) / N);
-    printf("sorted to :");
     for (size_t i = 0; i < N; i++) {
       if (buffer[i] != bufferstl[i]) {
         printf("bug\n");
