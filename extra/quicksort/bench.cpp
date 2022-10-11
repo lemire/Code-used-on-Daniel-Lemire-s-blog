@@ -27,15 +27,17 @@ int qcompare(const void *a, const void *b) {
 
 int main() {
   size_t N = 1024;
-
-  for (size_t times = 0; times < 5; times++) {
+  std::random_device dev;
+  std::mt19937 rng(dev());
+  std::uniform_int_distribution<std::mt19937::result_type> dist(1,1000000000);
+  for (size_t times = 0; times < 10; times++) {
     counter = 0;
 
     int **buffer = new int *[N];
     //srandom(1234);
     for (size_t i = 0; i < N; i++) {
       buffer[i] = new int();
-      *buffer[i] = rand();
+      *buffer[i] = dist(rng);
     }
     cut2lr2((void **)buffer, 0, N - 1, qcompare);
     printf("cut2lr2 comparisons %f\n ", float(counter) / N);
@@ -47,7 +49,7 @@ int main() {
 
     int *sbuffer = new int[N];
     for (size_t i = 0; i < N; i++) {
-      sbuffer[i] = rand();
+      sbuffer[i] = dist(rng);
     }
     qsort((void *)sbuffer, N, sizeof(int), qcompare);
     printf("qsort comparisons %f\n ", float(counter) / N);
