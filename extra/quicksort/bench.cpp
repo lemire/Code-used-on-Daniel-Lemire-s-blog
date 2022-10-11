@@ -10,12 +10,10 @@
 #include <random>
 
 uint64_t nano() {
-  return std::chrono::duration_cast<::std::chrono::nanoseconds>(
-             std::chrono::steady_clock::now().time_since_epoch())
-      .count();
+  return std::chrono::duration_cast< ::std::chrono::nanoseconds>(
+      std::chrono::steady_clock::now().time_since_epoch()).count();
 }
 size_t counter = 0;
-
 
 int qcompare(const void *a, const void *b) {
   int x, y;
@@ -27,23 +25,28 @@ int qcompare(const void *a, const void *b) {
 }
 
 int main() {
-  size_t N = 1<<10;
+  size_t N = 1 << 10;
 
-  for (size_t times = 0; times < 5; times++) {
+  std::random_device dev;
+  std::mt19937 rng(dev());
+  std::uniform_int_distribution<std::mt19937::result_type> dist(1, 1000000000);
+  for (size_t times = 0; times < 10; times++) {
     counter = 0;
 
     int **buffer = new int *[N];
-    //srandom(1234);
+    // srandom(1234);
     for (size_t i = 0; i < N; i++) {
       buffer[i] = new int();
-      *buffer[i] = rand();
+      *buffer[i] = dist(rng);
     }
     cut2lr2((void **)buffer, 0, N - 1, qcompare);
     printf("cut2lr2 comparisons %f\n ", float(counter) / N);
-    for(size_t i = 1; i < N; i++) {
-      if(*buffer[i-1] > *buffer[i]) { printf("bug\n"); }
+    for (size_t i = 1; i < N; i++) {
+      if (*buffer[i - 1] > *buffer[i]) {
+        printf("bug\n");
+      }
     }
-     for (size_t i = 0; i < N; i++) {
+    for (size_t i = 0; i < N; i++) {
       delete buffer[i];
     }
     delete[] buffer;
@@ -51,12 +54,14 @@ int main() {
 
     int *sbuffer = new int[N];
     for (size_t i = 0; i < N; i++) {
-      sbuffer[i] = rand();
+      sbuffer[i] = dist(rng);
     }
     qsort((void *)sbuffer, N, sizeof(int), qcompare);
     printf("qsort comparisons %f\n ", float(counter) / N);
-    for(size_t i = 1; i < N; i++) {
-      if(sbuffer[i-1] > sbuffer[i]) { printf("bug\n"); }
+    for (size_t i = 1; i < N; i++) {
+      if (sbuffer[i - 1] > sbuffer[i]) {
+        printf("bug\n");
+      }
     }
     delete[] sbuffer;
 
