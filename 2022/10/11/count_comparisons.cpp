@@ -26,7 +26,7 @@ int compare(const void *a, const void *b) {
   if (x < y) {
     return -1;
   }
-  counter2++;
+  counter2++; // records the second comparison
 
   if (x == y) {
     return 0;
@@ -37,7 +37,6 @@ int compare(const void *a, const void *b) {
 
 bool comparestl(const double x, const double y) {
   counter++;
-
   return x < y;
 }
 
