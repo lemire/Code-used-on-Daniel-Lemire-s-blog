@@ -21,13 +21,18 @@ size_t counter = 0;
 
 int compare(const void *a, const void *b) {
   counter++;
-  return reinterpret_cast<const data_point *>(a)->key -
-         reinterpret_cast<const data_point *>(b)->key;
+  return reinterpret_cast<const data_point *>(a)->key <
+                 reinterpret_cast<const data_point *>(b)->key
+             ? -1
+             : (reinterpret_cast<const data_point *>(a)->key >
+                        reinterpret_cast<const data_point *>(b)->key
+                    ? 1
+                    : 0);
 }
 
 int qcompare(const void *a, const void *b) {
   counter++;
-  return *(int *)a - *(int *)b;
+  return *(int *)a < *(int *)b ? -1 : (*(int *)a > *(int *)b ? 1 : 0);
 }
 int main() {
   size_t N = 1000000;
@@ -35,26 +40,26 @@ int main() {
   for (size_t times = 0; times < 5; times++) {
     counter = 0;
 
-    data_point ** buffer = new data_point *[N];
+    data_point **buffer = new data_point *[N];
     srandom(1234);
     for (size_t i = 0; i < N; i++) {
       buffer[i] = new data_point();
       buffer[i]->key = rand();
     }
     cut2lr2((void **)buffer, 0, N - 1, compare);
-    printf("cut2lr2 comparisons %f\n ", float(counter)/N);
+    printf("cut2lr2 comparisons %f\n ", float(counter) / N);
     for (size_t i = 0; i < N; i++) {
       delete buffer[i];
     }
     delete[] buffer;
     counter = 0;
 
-    int* sbuffer = new int[N];
+    int *sbuffer = new int[N];
     for (size_t i = 0; i < N; i++) {
       sbuffer[i] = rand();
     }
     qsort((void *)sbuffer, N, sizeof(int), qcompare);
-    printf("qsort comparisons %f\n ", float(counter)/N);
+    printf("qsort comparisons %f\n ", float(counter) / N);
     delete[] sbuffer;
 
     printf("\n");
