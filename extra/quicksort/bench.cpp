@@ -1,5 +1,6 @@
 #include "C2LR2.h"
 
+#include <cstring>
 #include <atomic>
 #include <chrono>
 #include <cmath>
@@ -26,7 +27,7 @@ int qcompare(const void *a, const void *b) {
 }
 
 int main() {
-  size_t N = 1024;
+  size_t N = 1<<10;
 
   for (size_t times = 0; times < 5; times++) {
     counter = 0;
@@ -39,7 +40,10 @@ int main() {
     }
     cut2lr2((void **)buffer, 0, N - 1, qcompare);
     printf("cut2lr2 comparisons %f\n ", float(counter) / N);
-    for (size_t i = 0; i < N; i++) {
+    for(size_t i = 1; i < N; i++) {
+      if(*buffer[i-1] > *buffer[i]) { printf("bug\n"); }
+    }
+     for (size_t i = 0; i < N; i++) {
       delete buffer[i];
     }
     delete[] buffer;
@@ -51,6 +55,9 @@ int main() {
     }
     qsort((void *)sbuffer, N, sizeof(int), qcompare);
     printf("qsort comparisons %f\n ", float(counter) / N);
+    for(size_t i = 1; i < N; i++) {
+      if(sbuffer[i-1] > sbuffer[i]) { printf("bug\n"); }
+    }
     delete[] sbuffer;
 
     printf("\n");
