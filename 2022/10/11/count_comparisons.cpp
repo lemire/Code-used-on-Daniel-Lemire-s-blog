@@ -72,6 +72,6 @@ int main() {
     delete[] bufferstl;
     delete[] original;
   }
-  printf("Done,\n");
+  printf("Done.\n");
   return EXIT_SUCCESS;
 }
