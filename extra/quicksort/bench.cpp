@@ -13,40 +13,31 @@ uint64_t nano() {
              std::chrono::steady_clock::now().time_since_epoch())
       .count();
 }
-struct data_point {
-  int key;
-  double playload;
-};
 size_t counter = 0;
 
-int compare(const void *a, const void *b) {
-  counter++;
-  return reinterpret_cast<const data_point *>(a)->key <
-                 reinterpret_cast<const data_point *>(b)->key
-             ? -1
-             : (reinterpret_cast<const data_point *>(a)->key >
-                        reinterpret_cast<const data_point *>(b)->key
-                    ? 1
-                    : 0);
-}
 
 int qcompare(const void *a, const void *b) {
+  int x, y;
+  memcpy(&x, a, sizeof(x));
+  memcpy(&y, b, sizeof(y));
   counter++;
-  return *(int *)a < *(int *)b ? -1 : (*(int *)a > *(int *)b ? 1 : 0);
+  int result = (x < y) ? -1 : ((y > x) ? 0 : 1);
+  return result;
 }
+
 int main() {
   size_t N = 1024;
 
   for (size_t times = 0; times < 5; times++) {
     counter = 0;
 
-    data_point **buffer = new data_point *[N];
+    int **buffer = new int *[N];
     //srandom(1234);
     for (size_t i = 0; i < N; i++) {
-      buffer[i] = new data_point();
-      buffer[i]->key = rand();
+      buffer[i] = new int();
+      *buffer[i] = rand();
     }
-    cut2lr2((void **)buffer, 0, N - 1, compare);
+    cut2lr2((void **)buffer, 0, N - 1, qcompare);
     printf("cut2lr2 comparisons %f\n ", float(counter) / N);
     for (size_t i = 0; i < N; i++) {
       delete buffer[i];

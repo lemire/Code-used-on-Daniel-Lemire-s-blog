@@ -1,5 +1,6 @@
 
 all: test.txt getlines  readlines.class oldschoolreadlines.class
+	@echo "consider doing make test.txt; sudo purge"
 	@echo "functional, code written by a bro"
 	@java readlines test.txt
 	@echo "old school, code writen by a retiree..."
