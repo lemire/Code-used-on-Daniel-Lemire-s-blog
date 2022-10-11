@@ -35,13 +35,13 @@ int qcompare(const void *a, const void *b) {
   return *(int *)a < *(int *)b ? -1 : (*(int *)a > *(int *)b ? 1 : 0);
 }
 int main() {
-  size_t N = 1000000;
+  size_t N = 1024;
 
   for (size_t times = 0; times < 5; times++) {
     counter = 0;
 
     data_point **buffer = new data_point *[N];
-    srandom(1234);
+    //srandom(1234);
     for (size_t i = 0; i < N; i++) {
       buffer[i] = new data_point();
       buffer[i]->key = rand();
