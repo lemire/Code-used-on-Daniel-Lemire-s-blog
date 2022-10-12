@@ -17,21 +17,16 @@ double random(double from, double to) {
 size_t counter = 0;
 size_t counter2 = 0;
 
-
 int compare(const void *a, const void *b) {
-  double x, y;
-  memcpy(&x, a, sizeof(x));
-  memcpy(&y, b, sizeof(y));
+  double x = *(double *)a;
+  double y = *(double *)b;
   counter++;
   if (x < y) {
     return -1;
   }
-  counter2++; // records the second comparison
-
   if (x == y) {
     return 0;
   }
-  // if(x > y) { return 1; }
   return 1;
 }
 
@@ -58,7 +53,8 @@ int main() {
       for (size_t i = 0; i < N; i++) {
         buffer[i] = original[i];
       }
-      counter = 0; counter2 = 0;
+      counter = 0;
+      counter2 = 0;
       qsort((void *)buffer, N, sizeof(double), compare);
       qsortcount += counter;
       qsortcounttotal += counter2 + counter;
