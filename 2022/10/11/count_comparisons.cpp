@@ -45,7 +45,6 @@ int main() {
     size_t T = 1000;
     size_t qsortcount = 0;
     size_t sortcount = 0;
-    size_t qsortcounttotal = 0;
     for (size_t j = 0; j < T; j++) {
       for (size_t i = 0; i < N; i++) {
         original[i] = random(0, 1);
@@ -54,10 +53,8 @@ int main() {
         buffer[i] = original[i];
       }
       counter = 0;
-      counter2 = 0;
       qsort((void *)buffer, N, sizeof(double), compare);
       qsortcount += counter;
-      qsortcounttotal += counter2 + counter;
 
       for (size_t i = 1; i < N; i++) {
         if (buffer[i] < buffer[i - 1]) {
@@ -77,7 +74,6 @@ int main() {
       }
     }
     printf("qsort comparison calls %f\n ", float(qsortcount) / (T * N));
-    printf("qsort comparisons %f\n ", float(qsortcounttotal) / (T * N));
     printf("std::sort comparisons %f\n ", float(sortcount) / (T * N));
     delete[] buffer;
     delete[] bufferstl;
