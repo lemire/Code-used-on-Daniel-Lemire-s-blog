@@ -46,10 +46,8 @@ int main() {
     status = RIGHT_BEFORE;
     data[z * ps + page_limit] = 1;
     status = AVX512_STORE;
-
     _mm_mask_storeu_epi8(data + z * ps + page_limit, 1, ones);
     status = AVX512_LOAD;
-
     __m128i oneandzeroes = _mm_maskz_loadu_epi8(1, data + z * ps + page_limit);
     if (_mm_extract_epi8(oneandzeroes, 0) != 1) {
       printf("bug");

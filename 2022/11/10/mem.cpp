@@ -2,7 +2,7 @@
 #include "nadeau.h"
 #include <vector>
 #include <iostream>
-
+#include <cassert>
 void print_pages() {
     static size_t pagesize = sysconf(_SC_PAGESIZE);
     int64_t bytes = getCurrentRSS();
