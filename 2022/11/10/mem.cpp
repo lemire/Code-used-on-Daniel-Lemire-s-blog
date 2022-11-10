@@ -15,9 +15,9 @@ void print_pages() {
 
 int main() {
   print_pages();
-  std::vector<int> v1(10);
+  std::vector<uint8_t> v1(10);
   print_pages();
-  std::vector<int> v2(1000000);
+  std::vector<uint8_t> v2(1000000);
   print_pages();
 
   return EXIT_SUCCESS;
