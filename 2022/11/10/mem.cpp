@@ -19,6 +19,8 @@ int main() {
   print_pages();
   std::vector<uint8_t> v2(1000000);
   print_pages();
-
+  std::vector<uint8_t> v3;
+  v3.reserve(1000000000);
+  print_pages();
   return EXIT_SUCCESS;
 }
