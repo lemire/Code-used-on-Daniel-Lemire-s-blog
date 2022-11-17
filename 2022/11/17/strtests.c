@@ -11,7 +11,7 @@ int main(int argc, char ** args) {
     for(int i = 0; i < 4; i++) {
        fesetround(modes[i]);
        double result = strtod(args[1], NULL);
-       printf("%g \n", result);
+       printf("%.17g \n", result);
     }
     return EXIT_SUCCESS;
 }
