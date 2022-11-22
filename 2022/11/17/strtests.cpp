@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fenv.h>
+#include <iostream>
 
 int main(int argc, char ** args) {
     if(argc == 1) {
@@ -11,7 +12,7 @@ int main(int argc, char ** args) {
     for(int i = 0; i < 4; i++) {
        fesetround(modes[i]);
        double result = strtod(args[1], NULL);
-       printf("%.17g \n", result);
+       std::cout << std::hexfloat << result << " (" << std::defaultfloat << result << ")" << std::endl;
     }
     return EXIT_SUCCESS;
 }
