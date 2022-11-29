@@ -6,7 +6,6 @@
 #include <iostream>
 
 int main() {
-  svint8_t bogus;
-  std::cout << "detected vector register size (SVE): " << svlen_s8(bogus) << " bytes" << std::endl;
+  std::cout << "detected vector register size (SVE): " << svcntb() << " bytes" << std::endl;
   return EXIT_SUCCESS;
 }
