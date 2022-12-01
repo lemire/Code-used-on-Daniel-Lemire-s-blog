@@ -56,6 +56,16 @@ vector<C> runtestnicewreserve(size_t N) {
   return bigarray;
 }
 
+template <class C> 
+__attribute__((noinline)) 
+vector<C> runtestnicewresize(size_t N) {
+  vector<C> bigarray;
+  bigarray.resize(N);
+  for (unsigned int k = 0; k < N; ++k)
+    bigarray[k] = k;
+  return bigarray;
+}
+
 
 
 template <class C> 
@@ -185,6 +195,22 @@ template <class C> void demo() {
        << " %)" << endl;
 
   x = 1e300;
+  y = 0;
+  for (size_t i = 0; i < trials; i++) {
+    time.start();
+    auto z = runtestnicewresize<C>(N);
+    auto result = time.stop() * 1.0 / N;
+    y += result;
+    if (result < x) {
+      x = result;
+    }
+    hole = z[0];
+  }
+  y = y / trials;
+  cout << "with resize and []   : " << x << " (" << (y  - x) * 100 / x
+       << " %)" << endl;
+
+   x = 1e300;
   y = 0;
 
   for (size_t i = 0; i < trials; i++) {
