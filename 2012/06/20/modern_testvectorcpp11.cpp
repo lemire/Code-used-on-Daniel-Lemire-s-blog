@@ -32,6 +32,14 @@ public:
 };
 template <class C> 
 __attribute__((noinline)) 
+vector<C> runtestbasic(size_t N) {
+  vector<C> bigarray(N);
+  for (unsigned int k = 0; k < N; ++k)
+    bigarray[k] = k;
+  return bigarray;
+}
+template <class C> 
+__attribute__((noinline)) 
 vector<C> runtestnice(size_t N) {
   vector<C> bigarray;
   for (unsigned int k = 0; k < N; ++k)
@@ -47,6 +55,17 @@ vector<C> runtestnicewreserve(size_t N) {
     bigarray.push_back(k);
   return bigarray;
 }
+
+
+
+template <class C> 
+__attribute__((noinline)) 
+vector<int> runtestinsert(size_t N, C* prealloc) {
+  vector<int> bigarray;
+  bigarray.insert(bigarray.begin(), prealloc, prealloc + N);
+  return bigarray;
+}
+
 template <class C> 
 __attribute__((noinline)) 
 vector<C> runtestemplacewreserve(size_t N) {
@@ -95,6 +114,8 @@ private:
 template <class C> void demo() {
   CPUBenchmark time;
   const size_t N = 2 * 1000 * 1000;
+  C * prealloc = new C[N];
+  for(size_t i = 0; i < N; i++) { prealloc[i] = i; }
   double x, y;
   size_t trials = 1000;
 
@@ -118,6 +139,21 @@ template <class C> void demo() {
        << endl;
 
   x = 1e300;
+  y = 0;
+  for (size_t i = 0; i < trials; i++) {
+    time.start();
+    auto z = runtestbasic<C>(N);
+    auto result = time.stop() * 1.0 / N;
+    y += result;
+    if (result < x) {
+      x = result;
+    }
+    hole = z[0];
+  }
+  y = y / trials;
+  cout << "basic               : " << x << " (" << (y - x) * 100 / x << " %)"
+       << endl;
+   x = 1e300;
   y = 0;
   for (size_t i = 0; i < trials; i++) {
     time.start();
@@ -164,6 +200,23 @@ template <class C> void demo() {
   y = y / trials;
   cout << "with emplace_back and reserve: " << x << " ("
        << (y - x) * 100 / x << " %)" << endl;
+  x = 1e300;
+  y = 0;
+
+  for (size_t i = 0; i < trials; i++) {
+    time.start();
+    auto z = runtestinsert(N, prealloc);
+    auto result = time.stop() * 1.0 / N;
+    y += result;
+    if (result < x) {
+      x = result;
+    }
+    hole = z[0];
+  }
+  y = y / trials;
+  cout << "with insert: " << x << " ("
+       << (y - x) * 100 / x << " %)" << endl;
+  if(hole == 0) { printf("zero"); }
 }
 
 int main() {
