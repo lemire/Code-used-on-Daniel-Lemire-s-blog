@@ -1,11 +1,11 @@
 #include <x86intrin.h>
 
+#include <chrono>
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <chrono>
-#include <cstdlib>
 
 uint64_t nano() {
   return std::chrono::duration_cast<::std::chrono::nanoseconds>(
@@ -59,8 +59,7 @@ void encode_ssse3(const uint8_t *source, size_t len, char *target) {
   for (; i + 16 <= len; i += 16) {
     __m128i input = _mm_loadu_si128((const __m128i *)(source + i));
     __m128i inputbase = _mm_and_si128(maskf, input);
-    __m128i inputs4 =
-        _mm_and_si128(maskf, _mm_srli_epi16(input, 4));
+    __m128i inputs4 = _mm_and_si128(maskf, _mm_srli_epi16(input, 4));
     __m128i firstpart = _mm_unpacklo_epi8(inputs4, inputbase);
     __m128i output1 = _mm_shuffle_epi8(shuf, firstpart);
     __m128i secondpart = _mm_unpackhi_epi8(inputs4, inputbase);
@@ -74,9 +73,10 @@ void encode_ssse3(const uint8_t *source, size_t len, char *target) {
 }
 
 void encode_avx2(const uint8_t *source, size_t len, char *target) {
-  __m256i shuf = _mm256_set_epi8('f', 'e', 'd', 'c', 'b', 'a', '9', '8', '7', '6',
-                              '5', '4', '3', '2', '1', '0', 'f', 'e', 'd', 'c', 'b', 'a', '9', '8', '7', '6',
-                              '5', '4', '3', '2', '1', '0');
+  __m256i shuf =
+      _mm256_set_epi8('f', 'e', 'd', 'c', 'b', 'a', '9', '8', '7', '6', '5',
+                      '4', '3', '2', '1', '0', 'f', 'e', 'd', 'c', 'b', 'a',
+                      '9', '8', '7', '6', '5', '4', '3', '2', '1', '0');
   size_t i = 0;
   __m256i maskf = _mm256_set1_epi8(0xf);
 
@@ -84,8 +84,7 @@ void encode_avx2(const uint8_t *source, size_t len, char *target) {
     __m256i input = _mm256_loadu_si256((const __m256i *)(source + i));
     input = _mm256_permute4x64_epi64(input, 0b11011000);
     __m256i inputbase = _mm256_and_si256(maskf, input);
-    __m256i inputs4 =
-        _mm256_and_si256(maskf, _mm256_srli_epi16(input, 4));
+    __m256i inputs4 = _mm256_and_si256(maskf, _mm256_srli_epi16(input, 4));
     __m256i firstpart = _mm256_unpacklo_epi8(inputs4, inputbase);
     __m256i output1 = _mm256_shuffle_epi8(shuf, firstpart);
     __m256i secondpart = _mm256_unpackhi_epi8(inputs4, inputbase);
@@ -98,54 +97,234 @@ void encode_avx2(const uint8_t *source, size_t len, char *target) {
   encode_scalar(source + i, len - i, target);
 }
 
-int main() {
-  constexpr int N = 4096;
-  uint8_t input[N];
+void encode_scalar_to_utf16(const uint8_t *source, size_t len,
+                            char16_t *target) {
+  const uint32_t table[] = {
+      0x00300030, 0x00300030, 0x00300030, 0x00300030, 0x00300030, 0x00300030,
+      0x00300030, 0x00300030, 0x00300030, 0x00300030, 0x00600030, 0x00600030,
+      0x00600030, 0x00600030, 0x00600030, 0x00600030, 0x00300031, 0x00300031,
+      0x00300031, 0x00300031, 0x00300031, 0x00300031, 0x00300031, 0x00300031,
+      0x00300031, 0x00300031, 0x00600031, 0x00600031, 0x00600031, 0x00600031,
+      0x00600031, 0x00600031, 0x00300032, 0x00300032, 0x00300032, 0x00300032,
+      0x00300032, 0x00300032, 0x00300032, 0x00300032, 0x00300032, 0x00300032,
+      0x00600032, 0x00600032, 0x00600032, 0x00600032, 0x00600032, 0x00600032,
+      0x00300033, 0x00300033, 0x00300033, 0x00300033, 0x00300033, 0x00300033,
+      0x00300033, 0x00300033, 0x00300033, 0x00300033, 0x00600033, 0x00600033,
+      0x00600033, 0x00600033, 0x00600033, 0x00600033, 0x00300034, 0x00300034,
+      0x00300034, 0x00300034, 0x00300034, 0x00300034, 0x00300034, 0x00300034,
+      0x00300034, 0x00300034, 0x00600034, 0x00600034, 0x00600034, 0x00600034,
+      0x00600034, 0x00600034, 0x00300035, 0x00300035, 0x00300035, 0x00300035,
+      0x00300035, 0x00300035, 0x00300035, 0x00300035, 0x00300035, 0x00300035,
+      0x00600035, 0x00600035, 0x00600035, 0x00600035, 0x00600035, 0x00600035,
+      0x00300036, 0x00300036, 0x00300036, 0x00300036, 0x00300036, 0x00300036,
+      0x00300036, 0x00300036, 0x00300036, 0x00300036, 0x00600036, 0x00600036,
+      0x00600036, 0x00600036, 0x00600036, 0x00600036, 0x00300037, 0x00300037,
+      0x00300037, 0x00300037, 0x00300037, 0x00300037, 0x00300037, 0x00300037,
+      0x00300037, 0x00300037, 0x00600037, 0x00600037, 0x00600037, 0x00600037,
+      0x00600037, 0x00600037, 0x00300038, 0x00300038, 0x00300038, 0x00300038,
+      0x00300038, 0x00300038, 0x00300038, 0x00300038, 0x00300038, 0x00300038,
+      0x00600038, 0x00600038, 0x00600038, 0x00600038, 0x00600038, 0x00600038,
+      0x00300039, 0x00300039, 0x00300039, 0x00300039, 0x00300039, 0x00300039,
+      0x00300039, 0x00300039, 0x00300039, 0x00300039, 0x00600039, 0x00600039,
+      0x00600039, 0x00600039, 0x00600039, 0x00600039, 0x00300061, 0x00300061,
+      0x00300061, 0x00300061, 0x00300061, 0x00300061, 0x00300061, 0x00300061,
+      0x00300061, 0x00300061, 0x00600061, 0x00600061, 0x00600061, 0x00600061,
+      0x00600061, 0x00600061, 0x00300062, 0x00300062, 0x00300062, 0x00300062,
+      0x00300062, 0x00300062, 0x00300062, 0x00300062, 0x00300062, 0x00300062,
+      0x00600062, 0x00600062, 0x00600062, 0x00600062, 0x00600062, 0x00600062,
+      0x00300063, 0x00300063, 0x00300063, 0x00300063, 0x00300063, 0x00300063,
+      0x00300063, 0x00300063, 0x00300063, 0x00300063, 0x00600063, 0x00600063,
+      0x00600063, 0x00600063, 0x00600063, 0x00600063, 0x00300064, 0x00300064,
+      0x00300064, 0x00300064, 0x00300064, 0x00300064, 0x00300064, 0x00300064,
+      0x00300064, 0x00300064, 0x00600064, 0x00600064, 0x00600064, 0x00600064,
+      0x00600064, 0x00600064, 0x00300065, 0x00300065, 0x00300065, 0x00300065,
+      0x00300065, 0x00300065, 0x00300065, 0x00300065, 0x00300065, 0x00300065,
+      0x00600065, 0x00600065, 0x00600065, 0x00600065, 0x00600065, 0x00600065,
+      0x00300066, 0x00300066, 0x00300066, 0x00300066, 0x00300066, 0x00300066,
+      0x00300066, 0x00300066, 0x00300066, 0x00300066, 0x00600066, 0x00600066,
+      0x00600066, 0x00600066, 0x00600066, 0x00600066};
+  for (size_t i = 0; i < len; i++) {
+    uint32_t code = table[source[i]];
+    ::memcpy(target, &code, 4);
+    target += 2;
+  }
+}
+
+void encode_sse41_to_utf16(const uint8_t *source, size_t len,
+                           char16_t *target) {
+  __m128i shuf = _mm_set_epi8('f', 'e', 'd', 'c', 'b', 'a', '9', '8', '7', '6',
+                              '5', '4', '3', '2', '1', '0');
+  size_t i = 0;
+  __m128i maskf = _mm_set1_epi8(0xf);
+  for (; i + 16 <= len; i += 16) {
+    __m128i input = _mm_loadu_si128((const __m128i *)(source + i));
+    __m128i inputbase = _mm_and_si128(maskf, input);
+    __m128i inputs4 = _mm_and_si128(maskf, _mm_srli_epi16(input, 4));
+    __m128i firstpart = _mm_unpacklo_epi8(inputs4, inputbase);
+    __m128i output1 = _mm_shuffle_epi8(shuf, firstpart);
+    __m128i secondpart = _mm_unpackhi_epi8(inputs4, inputbase);
+    __m128i output2 = _mm_shuffle_epi8(shuf, secondpart);
+    _mm_storeu_si128((__m128i *)(target), _mm_cvtepu8_epi16(output1));
+    _mm_storeu_si128((__m128i *)(target + 8),
+                     _mm_cvtepu8_epi16(_mm_shuffle_epi32(output1, 0b01001110)));
+    target += 16;
+    _mm_storeu_si128((__m128i *)(target), _mm_cvtepu8_epi16(output2));
+    _mm_storeu_si128((__m128i *)(target + 8),
+                     _mm_cvtepu8_epi16(_mm_shuffle_epi32(output2, 0b01001110)));
+    target += 16;
+  }
+  encode_scalar_to_utf16(source + i, len - i, target);
+}
+
+void encode_avx2_to_utf16(const uint8_t *source, size_t len, char16_t *target) {
+  __m256i shuf =
+      _mm256_set_epi8('f', 'e', 'd', 'c', 'b', 'a', '9', '8', '7', '6', '5',
+                      '4', '3', '2', '1', '0', 'f', 'e', 'd', 'c', 'b', 'a',
+                      '9', '8', '7', '6', '5', '4', '3', '2', '1', '0');
+  size_t i = 0;
+  __m256i maskf = _mm256_set1_epi8(0xf);
+
+  for (; i + 32 <= len; i += 32) {
+    __m256i input = _mm256_loadu_si256((const __m256i *)(source + i));
+    input = _mm256_permute4x64_epi64(input, 0b11011000);
+    __m256i inputbase = _mm256_and_si256(maskf, input);
+    __m256i inputs4 = _mm256_and_si256(maskf, _mm256_srli_epi16(input, 4));
+    __m256i firstpart = _mm256_unpacklo_epi8(inputs4, inputbase);
+    __m256i output1 = _mm256_shuffle_epi8(shuf, firstpart);
+    __m256i secondpart = _mm256_unpackhi_epi8(inputs4, inputbase);
+    __m256i output2 = _mm256_shuffle_epi8(shuf, secondpart);
+    _mm256_storeu_si256((__m256i *)(target),
+                        _mm256_cvtepu8_epi16(_mm256_castsi256_si128(output1)));
+    _mm256_storeu_si256(
+        (__m256i *)(target + 16),
+        _mm256_cvtepu8_epi16(_mm256_extracti128_si256(output1, 1)));
+    target += 32;
+    _mm256_storeu_si256((__m256i *)(target),
+                        _mm256_cvtepu8_epi16(_mm256_castsi256_si128(output2)));
+    _mm256_storeu_si256(
+        (__m256i *)(target + 16),
+        _mm256_cvtepu8_epi16(_mm256_extracti128_si256(output2, 1)));
+    target += 32;
+  }
+  encode_scalar_to_utf16(source + i, len - i, target);
+}
+void to_utf8(size_t N) {
+
+  uint8_t *input = new uint8_t[N];
   for (size_t i = 0; i < N; i++) {
     input[i] = rand();
   }
-  char buffer[2*N + 1]{};
-    {
-      uint64_t start = nano();
-      uint64_t finish = start;
-      size_t count{0};
-      uint64_t threshold = 500000000;
-      for (; finish - start < threshold;) {
-        count++;
-        encode_scalar(input, N, buffer);
-        finish = nano();
-      }
-      double t = (N * count) / double(finish - start);
 
-      printf("scalar %f GB/s\n", t);
+  char *buffer = new char[2 * N];
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      encode_scalar(input, N, buffer);
+      finish = nano();
     }
-    {
-      uint64_t start = nano();
-      uint64_t finish = start;
-      size_t count{0};
-      uint64_t threshold = 500000000;
-      for (; finish - start < threshold;) {
-        count++;
-        encode_ssse3(input, N, buffer);
-        finish = nano();
-      }
-      double t = (N * count) / double(finish - start);
+    double t = (N * count) / double(finish - start);
 
-      printf("ssse3 %f GB/s\n", t);
+    printf("scalar %f GB/s\n", t);
+  }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      encode_ssse3(input, N, buffer);
+      finish = nano();
     }
+    double t = (N * count) / double(finish - start);
 
-    {
-      uint64_t start = nano();
-      uint64_t finish = start;
-      size_t count{0};
-      uint64_t threshold = 500000000;
-      for (; finish - start < threshold;) {
-        count++;
-        encode_avx2(input, N, buffer);
-        finish = nano();
-      }
-      double t = (N * count) / double(finish - start);
+    printf("ssse3  %f GB/s\n", t);
+  }
 
-      printf("avx2 %f GB/s\n", t);
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      encode_avx2(input, N, buffer);
+      finish = nano();
     }
+    double t = (N * count) / double(finish - start);
+
+    printf("avx2   %f GB/s\n", t);
+  }
+  delete[] input;
+
+  delete[] buffer;
+}
+
+void to_utf16(size_t N) {
+  uint8_t *input = new uint8_t[N];
+
+  for (size_t i = 0; i < N; i++) {
+    input[i] = rand();
+  }
+
+  char16_t *buffer16 = new char16_t[2 * N];
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      encode_scalar_to_utf16(input, N, buffer16);
+      finish = nano();
+    }
+    double t = (N * count) / double(finish - start);
+
+    printf("to:utf16 scalar %f GB/s\n", t);
+  }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      encode_sse41_to_utf16(input, N, buffer16);
+      finish = nano();
+    }
+    double t = (N * count) / double(finish - start);
+
+    printf("to:utf16 sse4   %f GB/s\n", t);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      encode_avx2_to_utf16(input, N, buffer16);
+      finish = nano();
+    }
+    double t = (N * count) / double(finish - start);
+
+    printf("to:utf16 avx2   %f GB/s\n", t);
+  }
+  delete[] input;
+
+  delete[] buffer16;
+}
+int main() {
+  for (size_t N = 1024; N <= 8192; N *= 2) {
+    printf("===N = %zu \n", N);
+    to_utf8(N);
+    to_utf16(N);
+  }
 }
