@@ -7,6 +7,7 @@
 #include <iostream>
 #include <random>
 #include <unordered_set>
+#include <string_view>
 
 uint64_t nano() {
   return std::chrono::duration_cast<::std::chrono::nanoseconds>(
@@ -17,11 +18,6 @@ uint64_t nano() {
 static inline uint64_t string_to_uint64(std::string_view view) {
   uint64_t val;
   std::memcpy(&val, view.data(), sizeof(uint64_t));
-  return val;
-}
-static inline uint64_t string_to_uint64(const char *data) {
-  uint64_t val;
-  std::memcpy(&val, data, sizeof(uint64_t));
   return val;
 }
 
