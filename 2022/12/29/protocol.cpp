@@ -39,7 +39,24 @@ bool branchless_is_special(std::string_view input) {
   return (((inputu & 0xffffffffff) == https) & (input.size() == 5)) |
          ((((inputu & 0xffffffff) == http) | ((inputu & 0xffffffff) == file)) &
           (input.size() == 4))
+         | ((((inputu & 0xffffff) == ftp) | ((inputu & 0xffffff) == wss)) &
+            (input.size() == 3)) |
+         (((inputu & 0xffff) == ws) & (input.size() == 2));
+}
 
+__attribute__((noinline))
+bool no_inline_branchless_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+  uint64_t https = string_to_uint64("https\0\0\0");
+  uint32_t http = string_to_uint32("https");
+  uint32_t file = string_to_uint32("file");
+  uint32_t ftp = string_to_uint32("ftp\0");
+  uint32_t wss = string_to_uint32("wss\0");
+  uint32_t ws = string_to_uint32("ws\0\0");
+
+  return (((inputu & 0xffffffffff) == https) & (input.size() == 5)) |
+         ((((inputu & 0xffffffff) == http) | ((inputu & 0xffffffff) == file)) &
+          (input.size() == 4))
          | ((((inputu & 0xffffff) == ftp) | ((inputu & 0xffffff) == wss)) &
             (input.size() == 3)) |
          (((inputu & 0xffff) == ws) & (input.size() == 2));
@@ -67,7 +84,38 @@ bool fast_is_special(std::string_view input) {
   }
   return false;
 }
-bool default_is_special(std::string_view input) {
+
+__attribute__((noinline))
+bool no_inline_fast_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+  if ((inputu & 0xffffffffff) == string_to_uint64("https\0\0\0")) {
+    return input.size() == 5;
+  }
+  if ((inputu & 0xffffffff) == string_to_uint64("http\0\0\0\0")) {
+    return input.size() == 4;
+  }
+  if (uint32_t(inputu) == string_to_uint32("file")) {
+    return input.size() == 4;
+  }
+  if ((inputu & 0xffffff) == string_to_uint32("ftp\0")) {
+    return input.size() == 3;
+  }
+  if ((inputu & 0xffffff) == string_to_uint32("wss\0")) {
+    return input.size() == 3;
+  }
+  if ((inputu & 0xffff) == string_to_uint32("ws\0\0")) {
+    return input.size() == 2;
+  }
+  return false;
+}
+
+bool direct_is_special(std::string_view input) {
+  return (input == "https") | (input == "http") | (input == "ftp") |
+         (input == "file") | (input == "ws") | (input == "wss");
+}
+
+__attribute__((noinline))
+bool no_inline_direct_is_special(std::string_view input) {
   return (input == "https") | (input == "http") | (input == "ftp") |
          (input == "file") | (input == "ws") | (input == "wss");
 }
@@ -75,6 +123,11 @@ bool default_is_special(std::string_view input) {
 static const std::unordered_set<std::string_view> special_set = {
     "ftp", "file", "http", "https", "ws", "wss"};
 bool hash_is_special(std::string_view input) {
+  return special_set.find(input) != special_set.end();
+}
+
+__attribute__((noinline))
+bool no_inline_hash_is_special(std::string_view input) {
   return special_set.find(input) != special_set.end();
 }
 
@@ -127,13 +180,13 @@ void simulation(size_t N) {
       count++;
       matches = 0;
       for (auto v : data) {
-        matches += default_is_special(v);
+        matches += direct_is_special(v);
       }
       finish = nano();
     }
     double t = double(finish - start) / (N * count);
 
-    printf("default_is_special %f ns/string, matches = %zu \n", t, matches);
+    printf("direct_is_special %f ns/string, matches = %zu \n", t, matches);
   }
 
   {
@@ -172,6 +225,82 @@ void simulation(size_t N) {
     double t = double(finish - start) / (N * count);
 
     printf("branchless_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_hash_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_hash_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_direct_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_direct_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_fast_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_fast_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_branchless_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_branchless_is_special %f ns/string, matches = %zu \n", t, matches);
   }
 }
 
