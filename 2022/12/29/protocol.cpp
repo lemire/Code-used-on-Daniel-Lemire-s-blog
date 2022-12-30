@@ -27,40 +27,6 @@ uint32_t string_to_uint32(const char *data) {
   return val;
 }
 
-bool branchless_is_special(std::string_view input) {
-  uint64_t inputu = string_to_uint64(input);
-  uint64_t https = string_to_uint64("https\0\0\0");
-  uint32_t http = string_to_uint32("https");
-  uint32_t file = string_to_uint32("file");
-  uint32_t ftp = string_to_uint32("ftp\0");
-  uint32_t wss = string_to_uint32("wss\0");
-  uint32_t ws = string_to_uint32("ws\0\0");
-
-  return (((inputu & 0xffffffffff) == https) & (input.size() == 5)) |
-         ((((inputu & 0xffffffff) == http) | ((inputu & 0xffffffff) == file)) &
-          (input.size() == 4))
-         | ((((inputu & 0xffffff) == ftp) | ((inputu & 0xffffff) == wss)) &
-            (input.size() == 3)) |
-         (((inputu & 0xffff) == ws) & (input.size() == 2));
-}
-
-__attribute__((noinline))
-bool no_inline_branchless_is_special(std::string_view input) {
-  uint64_t inputu = string_to_uint64(input);
-  uint64_t https = string_to_uint64("https\0\0\0");
-  uint32_t http = string_to_uint32("https");
-  uint32_t file = string_to_uint32("file");
-  uint32_t ftp = string_to_uint32("ftp\0");
-  uint32_t wss = string_to_uint32("wss\0");
-  uint32_t ws = string_to_uint32("ws\0\0");
-
-  return (((inputu & 0xffffffffff) == https) & (input.size() == 5)) |
-         ((((inputu & 0xffffffff) == http) | ((inputu & 0xffffffff) == file)) &
-          (input.size() == 4))
-         | ((((inputu & 0xffffff) == ftp) | ((inputu & 0xffffff) == wss)) &
-            (input.size() == 3)) |
-         (((inputu & 0xffff) == ws) & (input.size() == 2));
-}
 
 bool fast_is_special(std::string_view input) {
   uint64_t inputu = string_to_uint64(input);
@@ -83,6 +49,60 @@ bool fast_is_special(std::string_view input) {
     return input.size() == 2;
   }
   return false;
+}
+
+bool fast2_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+  uint64_t https = string_to_uint64("https\0\0\0");
+  uint64_t http = string_to_uint32("https\0\0\0\0");
+  uint64_t file = string_to_uint32("file\0\0\0\0");
+  uint64_t ftp = string_to_uint32("ftp\0\0\0\0\0");
+  uint64_t wss = string_to_uint32("wss\0\0\0\0\0");
+  uint64_t ws = string_to_uint32("ws\0\0\0\0\0\0");
+  return ((inputu == https) || (inputu == http) 
+          || (inputu == file) || (inputu == ftp) 
+          || (inputu == wss) || (inputu == ws));
+}
+
+__attribute__((noinline))
+bool no_inline_fast2_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+  uint64_t https = string_to_uint64("https\0\0\0");
+  uint64_t http = string_to_uint64("https\0\0\0\0");
+  uint64_t file = string_to_uint64("file\0\0\0\0");
+  uint64_t ftp = string_to_uint64("ftp\0\0\0\0\0");
+  uint64_t wss = string_to_uint64("wss\0\0\0\0\0");
+  uint64_t ws = string_to_uint64("ws\0\0\0\0\0\0");
+  return ((inputu == https) || (inputu == http) 
+          || (inputu == file) || (inputu == ftp) 
+          || (inputu == wss) || (inputu == ws));
+}
+
+bool branchless_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+  uint64_t https = string_to_uint64("https\0\0\0");
+  uint64_t http = string_to_uint64("https\0\0\0\0");
+  uint64_t file = string_to_uint64("file\0\0\0\0");
+  uint64_t ftp = string_to_uint64("ftp\0\0\0\0\0");
+  uint64_t wss = string_to_uint64("wss\0\0\0\0\0");
+  uint64_t ws = string_to_uint64("ws\0\0\0\0\0\0");
+  return ((inputu == https) | (inputu == http) 
+          | (inputu == file) | (inputu == ftp) 
+          | (inputu == wss) | (inputu == ws));
+}
+
+__attribute__((noinline))
+bool no_inline_branchless_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+  uint64_t https = string_to_uint64("https\0\0\0");
+  uint64_t http = string_to_uint32("https\0\0\0\0");
+  uint64_t file = string_to_uint32("file\0\0\0\0");
+  uint64_t ftp = string_to_uint32("ftp\0\0\0\0\0");
+  uint64_t wss = string_to_uint32("wss\0\0\0\0\0");
+  uint64_t ws = string_to_uint32("ws\0\0\0\0\0\0");
+  return ((inputu == https) | (inputu == http) 
+          | (inputu == file) | (inputu == ftp) 
+          | (inputu == wss) | (inputu == ws));
 }
 
 __attribute__((noinline))
@@ -134,10 +154,11 @@ bool no_inline_hash_is_special(std::string_view input) {
 std::vector<std::string_view> populate(size_t length) {
   std::mt19937 gen;
   // we generate a distribution where https is more common
-  std::discrete_distribution<> d({50, 20, 10, 10, 5, 5, 5, 5});
+  std::discrete_distribution<> d({50, 20, 10, 10, 5, 5, 5, 5, 5, 5});
   const static std::string options[] = {
       "https\0\0\0",    "http\0\0\0\0",  "ftp\0\0\0\0\0", "file\0\0\0\0",
-      "ws\0\0\0\0\0\0", "wss\0\0\0\0\0", "garbage\0",     "fake\0\0\0\0"};
+      "ws\0\0\0\0\0\0", "wss\0\0\0\0\0", "garbage\0",     "fake\0\0\0\0",
+      "httpr\0\0\0", "filer\0\0\0"};
   std::vector<std::string_view> answer;
   answer.reserve(length);
   for (size_t pos = 0; pos < length; pos++) {
@@ -218,6 +239,24 @@ void simulation(size_t N) {
       count++;
       matches = 0;
       for (auto v : data) {
+        matches += fast2_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("fast2_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
         matches += branchless_is_special(v);
       }
       finish = nano();
@@ -284,6 +323,25 @@ void simulation(size_t N) {
     printf("no_inline_fast_is_special %f ns/string, matches = %zu \n", t, matches);
   }
 
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_fast2_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_fast2_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
   {
     uint64_t start = nano();
     uint64_t finish = start;
