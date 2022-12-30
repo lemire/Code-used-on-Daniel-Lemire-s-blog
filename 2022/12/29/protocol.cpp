@@ -54,11 +54,11 @@ bool fast_is_special(std::string_view input) {
 bool fast2_is_special(std::string_view input) {
   uint64_t inputu = string_to_uint64(input);
   uint64_t https = string_to_uint64("https\0\0\0");
-  uint64_t http = string_to_uint32("https\0\0\0\0");
-  uint64_t file = string_to_uint32("file\0\0\0\0");
-  uint64_t ftp = string_to_uint32("ftp\0\0\0\0\0");
-  uint64_t wss = string_to_uint32("wss\0\0\0\0\0");
-  uint64_t ws = string_to_uint32("ws\0\0\0\0\0\0");
+  uint64_t http = string_to_uint64("http\0\0\0\0");
+  uint64_t file = string_to_uint64("file\0\0\0\0");
+  uint64_t ftp = string_to_uint64("ftp\0\0\0\0\0");
+  uint64_t wss = string_to_uint64("wss\0\0\0\0\0");
+  uint64_t ws = string_to_uint64("ws\0\0\0\0\0\0");
   return ((inputu == https) || (inputu == http) 
           || (inputu == file) || (inputu == ftp) 
           || (inputu == wss) || (inputu == ws));
@@ -68,7 +68,7 @@ __attribute__((noinline))
 bool no_inline_fast2_is_special(std::string_view input) {
   uint64_t inputu = string_to_uint64(input);
   uint64_t https = string_to_uint64("https\0\0\0");
-  uint64_t http = string_to_uint64("https\0\0\0\0");
+  uint64_t http = string_to_uint64("http\0\0\0\0");
   uint64_t file = string_to_uint64("file\0\0\0\0");
   uint64_t ftp = string_to_uint64("ftp\0\0\0\0\0");
   uint64_t wss = string_to_uint64("wss\0\0\0\0\0");
@@ -81,7 +81,7 @@ bool no_inline_fast2_is_special(std::string_view input) {
 bool branchless_is_special(std::string_view input) {
   uint64_t inputu = string_to_uint64(input);
   uint64_t https = string_to_uint64("https\0\0\0");
-  uint64_t http = string_to_uint64("https\0\0\0\0");
+  uint64_t http = string_to_uint64("http\0\0\0\0");
   uint64_t file = string_to_uint64("file\0\0\0\0");
   uint64_t ftp = string_to_uint64("ftp\0\0\0\0\0");
   uint64_t wss = string_to_uint64("wss\0\0\0\0\0");
@@ -95,11 +95,11 @@ __attribute__((noinline))
 bool no_inline_branchless_is_special(std::string_view input) {
   uint64_t inputu = string_to_uint64(input);
   uint64_t https = string_to_uint64("https\0\0\0");
-  uint64_t http = string_to_uint32("https\0\0\0\0");
-  uint64_t file = string_to_uint32("file\0\0\0\0");
-  uint64_t ftp = string_to_uint32("ftp\0\0\0\0\0");
-  uint64_t wss = string_to_uint32("wss\0\0\0\0\0");
-  uint64_t ws = string_to_uint32("ws\0\0\0\0\0\0");
+  uint64_t http = string_to_uint64("http\0\0\0\0");
+  uint64_t file = string_to_uint64("file\0\0\0\0");
+  uint64_t ftp = string_to_uint64("ftp\0\0\0\0\0");
+  uint64_t wss = string_to_uint64("wss\0\0\0\0\0");
+  uint64_t ws = string_to_uint64("ws\0\0\0\0\0\0");
   return ((inputu == https) | (inputu == http) 
           | (inputu == file) | (inputu == ftp) 
           | (inputu == wss) | (inputu == ws));
@@ -134,10 +134,21 @@ bool direct_is_special(std::string_view input) {
          (input == "file") | (input == "ws") | (input == "wss");
 }
 
+bool directb_is_special(std::string_view input) {
+  return (input == "https") || (input == "http") || (input == "ftp") ||
+         (input == "file") || (input == "ws") || (input == "wss");
+}
+
 __attribute__((noinline))
 bool no_inline_direct_is_special(std::string_view input) {
   return (input == "https") | (input == "http") | (input == "ftp") |
          (input == "file") | (input == "ws") | (input == "wss");
+}
+
+__attribute__((noinline))
+bool no_inline_directb_is_special(std::string_view input) {
+  return (input == "https") || (input == "http") || (input == "ftp") ||
+         (input == "file") || (input == "ws") || (input == "wss");
 }
 
 static const std::unordered_set<std::string_view> special_set = {
@@ -210,6 +221,24 @@ void simulation(size_t N) {
     printf("direct_is_special %f ns/string, matches = %zu \n", t, matches);
   }
 
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += directb_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("directb_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
   {
     uint64_t start = nano();
     uint64_t finish = start;
@@ -303,7 +332,24 @@ void simulation(size_t N) {
 
     printf("no_inline_direct_is_special %f ns/string, matches = %zu \n", t, matches);
   }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_directb_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
 
+    printf("no_inline_directb_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
   {
     uint64_t start = nano();
     uint64_t finish = start;
