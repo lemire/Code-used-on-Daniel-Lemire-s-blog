@@ -60,9 +60,11 @@ bool fast2_is_special(std::string_view input) {
   uint64_t ftp = string_to_uint64("ftp\0\0\0\0\0");
   uint64_t wss = string_to_uint64("wss\0\0\0\0\0");
   uint64_t ws = string_to_uint64("ws\0\0\0\0\0\0");
-  return ((inputu == https) || (inputu == http) 
-          || (inputu == file) || (inputu == ftp) 
-          || (inputu == wss) || (inputu == ws));
+  if((inputu == https) | (inputu == http)) {
+    return true;
+  }
+  return ((inputu == file) | (inputu == ftp) 
+          | (inputu == wss) | (inputu == ws));
 }
 
 __attribute__((noinline))
@@ -74,9 +76,11 @@ bool no_inline_fast2_is_special(std::string_view input) {
   uint64_t ftp = string_to_uint64("ftp\0\0\0\0\0");
   uint64_t wss = string_to_uint64("wss\0\0\0\0\0");
   uint64_t ws = string_to_uint64("ws\0\0\0\0\0\0");
-  return ((inputu == https) || (inputu == http) 
-          || (inputu == file) || (inputu == ftp) 
-          || (inputu == wss) || (inputu == ws));
+  if((inputu == https) | (inputu == http)) {
+    return true;
+  }
+  return ((inputu == file) | (inputu == ftp) 
+          | (inputu == wss) | (inputu == ws));
 }
 
 bool branchless_is_special(std::string_view input) {
