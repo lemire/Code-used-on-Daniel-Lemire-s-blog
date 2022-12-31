@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <string_view>
 #include <regex>
+#include "gperf.c"
 
 uint64_t nano() {
   return std::chrono::duration_cast<::std::chrono::nanoseconds>(
@@ -187,6 +188,25 @@ std::vector<std::string_view> populate(size_t length) {
 void simulation(size_t N) {
 
   std::vector<std::string_view> data = populate(N);
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += Perfect_Hash::in_word_set(v.data(), v.size());
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("gperf %f ns/string, matches = %zu \n", t, matches);
+  }
 
   {
     uint64_t start = nano();
