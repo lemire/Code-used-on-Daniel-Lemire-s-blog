@@ -199,7 +199,7 @@ void simulation(size_t N) {
       count++;
       matches = 0;
       for (auto v : data) {
-        matches += Perfect_Hash::in_word_set(v.data(), v.size());
+        matches += (Perfect_Hash::in_word_set(v.data(), v.size()) != nullptr);
       }
       finish = nano();
     }
