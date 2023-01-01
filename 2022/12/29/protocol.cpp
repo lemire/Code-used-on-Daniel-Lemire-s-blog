@@ -23,12 +23,32 @@ static inline uint64_t string_to_uint64(std::string_view view) {
   return val;
 }
 
+static inline uint64_t string_to_uint64(const uint8_t * data) {
+  uint64_t val;
+  std::memcpy(&val, data, sizeof(uint64_t));
+  return val;
+}
+
 uint32_t string_to_uint32(const char *data) {
   uint32_t val;
   std::memcpy(&val, data, sizeof(uint32_t));
   return val;
 }
 
+
+const uint8_t table[64] = {
+    'w', 's', 0,   0,   0, 0, 0, 0, 'f', 't', 'p', 0,   0,   0, 0, 0,
+    'w', 's', 's', 0,   0, 0, 0, 0, 'f', 'i', 'l', 'e', 0,   0, 0, 0,
+    'h', 't', 't', 'p', 0, 0, 0, 0, 'h', 't', 't', 'p', 's', 0, 0, 0,
+    0,   0,   0,   0,   0, 0, 0, 0, 0,   0,   0,   0,   0,   0, 0, 0};
+
+bool mulhi_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+  __uint128_t magic = 39114211812342;
+  return string_to_uint64(
+             table + (((inputu * magic) >> 64) & 0x38)) ==
+         inputu;
+}
 
 bool fast_is_special(std::string_view input) {
   uint64_t inputu = string_to_uint64(input);
@@ -300,6 +320,24 @@ void simulation(size_t N) {
     double t = double(finish - start) / (N * count);
 
     printf("fast2_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += mulhi_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("mulhi_is_special %f ns/string, matches = %zu \n", t, matches);
   }
   {
     uint64_t start = nano();
