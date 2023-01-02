@@ -50,6 +50,15 @@ bool mulhi_is_special(std::string_view input) {
          inputu;
 }
 
+__attribute__((noinline))
+bool no_inline_mulhi_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+  __uint128_t magic = 0x123ULL << 37;
+  return string_to_uint64(
+             mulhi_table + (((inputu * magic) >> 64) & 0x38)) ==
+         inputu;
+}
+
 static const uint8_t shiftxor_table[128] = {
     'w', 's', 0,   0,   0,   0, 0, 0, 0,   0,   0,   0, 0, 0, 0, 0,
     0,   0,   0,   0,   0,   0, 0, 0, 0,   0,   0,   0, 0, 0, 0, 0,
@@ -61,6 +70,15 @@ static const uint8_t shiftxor_table[128] = {
     0,   0,   0,   0,   0,   0, 0, 0, 0,   0,   0,   0, 0, 0, 0, 0};
 
 bool shiftxor_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+
+  return string_to_uint64(
+	     shiftxor_table + (((inputu >> 28) ^ (inputu >> 14)) & 0x78)) ==
+         inputu;
+}
+
+__attribute__((noinline))
+bool no_inline_shiftxor_is_special(std::string_view input) {
   uint64_t inputu = string_to_uint64(input);
 
   return string_to_uint64(
@@ -524,6 +542,41 @@ void simulation(size_t N) {
 
     printf("no_inline_branchless_is_special %f ns/string, matches = %zu \n", t, matches);
   }
-}
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_mulhi_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
 
+    printf("no_inline_mulhi_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_shiftxor_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_shiftxor_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+}
 int main() { simulation(8192); }
