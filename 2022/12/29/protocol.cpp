@@ -90,7 +90,8 @@ bool no_inline_shiftxor_is_special(std::string_view input) {
 #define DFA_STATE_HTTP_1  1
 #define DFA_STATE_HTTP_2  2
 #define DFA_STATE_HTTP_3  3
-#define DFA_STATE_HTTP_4  4
+#define DFA_STATE_S       4
+#define DFA_STATE_HTTP_4  DFA_STATE_S
 #define DFA_STATE_MATCH   5
 #define DFA_STATE_NUL     6
 #define DFA_STATE_HTTPS_1 DFA_STATE_NUL
@@ -101,9 +102,9 @@ bool no_inline_shiftxor_is_special(std::string_view input) {
 #define DFA_STATE_FTP_1   10
 #define DFA_STATE_FTP_2   DFA_STATE_NUL
 #define DFA_STATE_WS_1    11
-#define DFA_STATE_WS_2    12
+#define DFA_STATE_WS_2    DFA_STATE_S
 #define DFA_STATE_WSS_1   DFA_STATE_NUL
-#define DFA_STATE_FAIL    13
+#define DFA_STATE_FAIL    12
 
 #define DFA_STATES_COUNT (DFA_STATE_FAIL + 1)
 
@@ -125,9 +126,10 @@ void init_dfa_states()
   memset(dfa_states[DFA_STATE_HTTP_3], DFA_STATE_FAIL, sizeof(*dfa_states));
   dfa_states[DFA_STATE_HTTP_3][(uint8_t)'p'] = DFA_STATE_HTTP_4;
 
-  memset(dfa_states[DFA_STATE_HTTP_4], DFA_STATE_FAIL, sizeof(*dfa_states));
-  dfa_states[DFA_STATE_HTTP_4][(uint8_t)'\0'] = DFA_STATE_MATCH;
-  dfa_states[DFA_STATE_HTTP_4][(uint8_t)'s'] = DFA_STATE_HTTPS_1;
+  /* HTTP_4, WS_2 */
+  memset(dfa_states[DFA_STATE_S], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_S][(uint8_t)'\0'] = DFA_STATE_MATCH;
+  dfa_states[DFA_STATE_S][(uint8_t)'s'] = DFA_STATE_NUL;
 
   /* HTTPS_1, FILE_3, FTP_2, WSS_1 */
   memset(dfa_states[DFA_STATE_NUL], DFA_STATE_FAIL, sizeof(*dfa_states));
@@ -148,10 +150,6 @@ void init_dfa_states()
 
   memset(dfa_states[DFA_STATE_WS_1], DFA_STATE_FAIL, sizeof(*dfa_states));
   dfa_states[DFA_STATE_WS_1][(uint8_t)'s'] = DFA_STATE_WS_2;
-
-  memset(dfa_states[DFA_STATE_WS_2], DFA_STATE_FAIL, sizeof(*dfa_states));
-  dfa_states[DFA_STATE_WS_2][(uint8_t)'\0'] = DFA_STATE_MATCH;
-  dfa_states[DFA_STATE_WS_2][(uint8_t)'s'] = DFA_STATE_WSS_1;
 
   memset(dfa_states[DFA_STATE_MATCH], DFA_STATE_MATCH, sizeof(*dfa_states));
   memset(dfa_states[DFA_STATE_FAIL], DFA_STATE_FAIL, sizeof(*dfa_states));
