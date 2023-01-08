@@ -86,6 +86,170 @@ bool no_inline_shiftxor_is_special(std::string_view input) {
          inputu;
 }
 
+#define DFA_STATE_INIT    0
+#define DFA_STATE_HTTP_1  1
+#define DFA_STATE_HTTP_2  2
+#define DFA_STATE_HTTP_3  3
+#define DFA_STATE_HTTP_4  4
+#define DFA_STATE_MATCH   5
+#define DFA_STATE_NUL     6
+#define DFA_STATE_HTTPS_1 DFA_STATE_NUL
+#define DFA_STATE_F_1     7
+#define DFA_STATE_FILE_1  8
+#define DFA_STATE_FILE_2  9
+#define DFA_STATE_FILE_3  DFA_STATE_NUL
+#define DFA_STATE_FTP_1   10
+#define DFA_STATE_FTP_2   DFA_STATE_NUL
+#define DFA_STATE_WS_1    11
+#define DFA_STATE_WS_2    12
+#define DFA_STATE_WSS_1   DFA_STATE_NUL
+#define DFA_STATE_FAIL    13
+
+#define DFA_STATES_COUNT (DFA_STATE_FAIL + 1)
+
+static uint8_t dfa_states[DFA_STATES_COUNT][256];
+
+void init_dfa_states()
+{
+  memset(dfa_states[DFA_STATE_INIT], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_INIT][(uint8_t)'h'] = DFA_STATE_HTTP_1;
+  dfa_states[DFA_STATE_INIT][(uint8_t)'f'] = DFA_STATE_F_1;
+  dfa_states[DFA_STATE_INIT][(uint8_t)'w'] = DFA_STATE_WS_1;
+
+  memset(dfa_states[DFA_STATE_HTTP_1], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_HTTP_1][(uint8_t)'t'] = DFA_STATE_HTTP_2;
+
+  memset(dfa_states[DFA_STATE_HTTP_2], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_HTTP_2][(uint8_t)'t'] = DFA_STATE_HTTP_3;
+
+  memset(dfa_states[DFA_STATE_HTTP_3], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_HTTP_3][(uint8_t)'p'] = DFA_STATE_HTTP_4;
+
+  memset(dfa_states[DFA_STATE_HTTP_4], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_HTTP_4][(uint8_t)'\0'] = DFA_STATE_MATCH;
+  dfa_states[DFA_STATE_HTTP_4][(uint8_t)'s'] = DFA_STATE_HTTPS_1;
+
+  /* HTTPS_1, FILE_3, FTP_2, WSS_1 */
+  memset(dfa_states[DFA_STATE_NUL], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_NUL][(uint8_t)'\0'] = DFA_STATE_MATCH;
+
+  memset(dfa_states[DFA_STATE_F_1], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_F_1][(uint8_t)'i'] = DFA_STATE_FILE_1;
+  dfa_states[DFA_STATE_F_1][(uint8_t)'t'] = DFA_STATE_FTP_1;
+
+  memset(dfa_states[DFA_STATE_FILE_1], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_FILE_1][(uint8_t)'l'] = DFA_STATE_FILE_2;
+
+  memset(dfa_states[DFA_STATE_FILE_2], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_FILE_2][(uint8_t)'e'] = DFA_STATE_FILE_3;
+
+  memset(dfa_states[DFA_STATE_FTP_1], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_FTP_1][(uint8_t)'p'] = DFA_STATE_FTP_2;
+
+  memset(dfa_states[DFA_STATE_WS_1], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_WS_1][(uint8_t)'s'] = DFA_STATE_WS_2;
+
+  memset(dfa_states[DFA_STATE_WS_2], DFA_STATE_FAIL, sizeof(*dfa_states));
+  dfa_states[DFA_STATE_WS_2][(uint8_t)'\0'] = DFA_STATE_MATCH;
+  dfa_states[DFA_STATE_WS_2][(uint8_t)'s'] = DFA_STATE_WSS_1;
+
+  memset(dfa_states[DFA_STATE_MATCH], DFA_STATE_MATCH, sizeof(*dfa_states));
+  memset(dfa_states[DFA_STATE_FAIL], DFA_STATE_FAIL, sizeof(*dfa_states));
+}
+
+bool dfa(std::string_view input) {
+  uint8_t state = DFA_STATE_INIT;
+  const char *str = input.data();
+
+  for (size_t i = 0; i < 6; i++)
+    {
+      state = dfa_states[state][(uint8_t)str[i]];
+
+      if (state == DFA_STATE_FAIL)
+	{
+	  return false;
+	}
+    }
+
+  return state == DFA_STATE_MATCH;
+}
+
+__attribute__((noinline))
+bool no_inline_dfa(std::string_view input) {
+  uint8_t state = DFA_STATE_INIT;
+  const char *str = input.data();
+
+  for (size_t i = 0; i < 6; i++)
+    {
+      state = dfa_states[state][(uint8_t)str[i]];
+
+      if (state == DFA_STATE_FAIL)
+	{
+	  return false;
+	}
+    }
+
+  return state == DFA_STATE_MATCH;
+}
+
+bool dfa2(std::string_view input) {
+  uint8_t state = DFA_STATE_INIT;
+  const char *str = input.data();
+  size_t j = 0;
+
+  for (size_t i = 0; i < 6; i++)
+    {
+      uint8_t c = (uint8_t)str[j];
+      j += c != 0;
+
+      state = dfa_states[state][c];
+    }
+
+  return state == DFA_STATE_MATCH;
+}
+
+__attribute__((noinline))
+bool no_inline_dfa2(std::string_view input) {
+  uint8_t state = DFA_STATE_INIT;
+  const char *str = input.data();
+  size_t j = 0;
+
+  for (size_t i = 0; i < 6; i++)
+    {
+      uint8_t c = (uint8_t)str[j];
+      j += c != 0;
+
+      state = dfa_states[state][c];
+    }
+
+  return state == DFA_STATE_MATCH;
+}
+
+bool dfa_is_special(std::string_view input) {
+  uint8_t state = DFA_STATE_INIT;
+  const char *str = input.data();
+
+  for (size_t i = 0; i < 6; i++)
+    {
+      state = dfa_states[state][(uint8_t)str[i]];
+    }
+
+  return state == DFA_STATE_MATCH;
+}
+
+__attribute__((noinline))
+bool no_inline_dfa_is_special(std::string_view input) {
+  uint8_t state = DFA_STATE_INIT;
+  const char *str = input.data();
+
+  for (size_t i = 0; i < 6; i++)
+    {
+      state = dfa_states[state][(uint8_t)str[i]];
+    }
+
+  return state == DFA_STATE_MATCH;
+}
+
 bool fast_is_special(std::string_view input) {
   uint64_t inputu = string_to_uint64(input);
   if ((inputu & 0xffffffffff) == string_to_uint64("https\0\0\0")) {
@@ -244,6 +408,7 @@ std::vector<std::string_view> populate(size_t length) {
 void simulation(size_t N) {
 
   std::vector<std::string_view> data = populate(N);
+  init_dfa_states();
 
   {
     uint64_t start = nano();
@@ -262,6 +427,44 @@ void simulation(size_t N) {
     double t = double(finish - start) / (N * count);
 
     printf("gperf %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += dfa(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("dfa %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += dfa2(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("dfa2 %f ns/string, matches = %zu \n", t, matches);
   }
 
   {
@@ -403,6 +606,24 @@ void simulation(size_t N) {
       count++;
       matches = 0;
       for (auto v : data) {
+        matches += dfa_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("dfa_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
         matches += branchless_is_special(v);
       }
       finish = nano();
@@ -431,6 +652,45 @@ void simulation(size_t N) {
 
     printf("regex %f ns/string, matches = %zu \n", t, matches);
   }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_dfa(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_dfa %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_dfa2(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_dfa2 %f ns/string, matches = %zu \n", t, matches);
+  }
+
   {
     uint64_t start = nano();
     uint64_t finish = start;
@@ -577,6 +837,24 @@ void simulation(size_t N) {
     double t = double(finish - start) / (N * count);
 
     printf("no_inline_shiftxor_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_dfa_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_dfa_is_special %f ns/string, matches = %zu \n", t, matches);
   }
 }
 int main() { simulation(8192); }
