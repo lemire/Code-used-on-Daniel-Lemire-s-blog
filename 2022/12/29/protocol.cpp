@@ -87,13 +87,13 @@ bool no_inline_shiftxor_is_special(std::string_view input) {
 }
 
 #define DFA_STATE_FAIL    0 /* For easier testing. */
-#define DFA_STATE_INIT    1
-#define DFA_STATE_HTTP_1  2
-#define DFA_STATE_HTTP_2  3
-#define DFA_STATE_HTTP_3  4
-#define DFA_STATE_S       5
+#define DFA_STATE_MATCH   1
+#define DFA_STATE_INIT    2
+#define DFA_STATE_HTTP_1  3
+#define DFA_STATE_HTTP_2  4
+#define DFA_STATE_HTTP_3  5
+#define DFA_STATE_S       6
 #define DFA_STATE_HTTP_4  DFA_STATE_S
-#define DFA_STATE_MATCH   6
 #define DFA_STATE_NUL     7
 #define DFA_STATE_HTTPS_1 DFA_STATE_NUL
 #define DFA_STATE_F_1     8
@@ -163,9 +163,9 @@ bool dfa(std::string_view input) {
     {
       state = dfa_states[state][(uint8_t)str[i]];
 
-      if (state == DFA_STATE_FAIL)
+      if (state == DFA_STATE_MATCH || state == DFA_STATE_FAIL)
 	{
-	  return false;
+	  return state == DFA_STATE_MATCH;
 	}
     }
 
@@ -181,9 +181,9 @@ bool no_inline_dfa(std::string_view input) {
     {
       state = dfa_states[state][(uint8_t)str[i]];
 
-      if (state == DFA_STATE_FAIL)
+      if (state == DFA_STATE_MATCH || state == DFA_STATE_FAIL)
 	{
-	  return false;
+	  return state == DFA_STATE_MATCH;
 	}
     }
 
