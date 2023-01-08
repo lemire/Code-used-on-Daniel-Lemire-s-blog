@@ -110,8 +110,7 @@ bool no_inline_shiftxor_is_special(std::string_view input) {
 
 static uint8_t dfa_states[DFA_STATES_COUNT][256];
 
-void init_dfa_states()
-{
+void init_dfa_states() {
   memset(dfa_states[DFA_STATE_INIT], DFA_STATE_FAIL, sizeof(*dfa_states));
   dfa_states[DFA_STATE_INIT][(uint8_t)'h'] = DFA_STATE_HTTP_1;
   dfa_states[DFA_STATE_INIT][(uint8_t)'f'] = DFA_STATE_F_1;
