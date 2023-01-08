@@ -158,15 +158,12 @@ bool dfa(std::string_view input) {
   uint8_t state = DFA_STATE_INIT;
   const char *str = input.data();
 
-  for (size_t i = 0; i < 6; i++)
-    {
-      state = dfa_states[state][(uint8_t)str[i]];
+  for (size_t i = 0; i < 6; i++) {
+    state = dfa_states[state][(uint8_t)str[i]];
 
-      if (state == DFA_STATE_MATCH || state == DFA_STATE_FAIL)
-	{
-	  return state == DFA_STATE_MATCH;
-	}
-    }
+    if (state == DFA_STATE_MATCH || state == DFA_STATE_FAIL)
+      break;
+  }
 
   return state == DFA_STATE_MATCH;
 }
@@ -176,15 +173,12 @@ bool no_inline_dfa(std::string_view input) {
   uint8_t state = DFA_STATE_INIT;
   const char *str = input.data();
 
-  for (size_t i = 0; i < 6; i++)
-    {
-      state = dfa_states[state][(uint8_t)str[i]];
+  for (size_t i = 0; i < 6; i++) {
+    state = dfa_states[state][(uint8_t)str[i]];
 
-      if (state == DFA_STATE_MATCH || state == DFA_STATE_FAIL)
-	{
-	  return state == DFA_STATE_MATCH;
-	}
-    }
+    if (state == DFA_STATE_MATCH || state == DFA_STATE_FAIL)
+      break;
+  }
 
   return state == DFA_STATE_MATCH;
 }
@@ -194,13 +188,12 @@ bool dfa2(std::string_view input) {
   const char *str = input.data();
   size_t j = 0;
 
-  for (size_t i = 0; i < 6; i++)
-    {
-      uint8_t c = (uint8_t)str[j];
-      j += c != 0;
+  for (size_t i = 0; i < 6; i++) {
+    uint8_t c = (uint8_t)str[j];
+    j += c != 0;
 
-      state = dfa_states[state][c];
-    }
+    state = dfa_states[state][c];
+  }
 
   return state == DFA_STATE_MATCH;
 }
@@ -211,13 +204,12 @@ bool no_inline_dfa2(std::string_view input) {
   const char *str = input.data();
   size_t j = 0;
 
-  for (size_t i = 0; i < 6; i++)
-    {
-      uint8_t c = (uint8_t)str[j];
-      j += c != 0;
+  for (size_t i = 0; i < 6; i++) {
+    uint8_t c = (uint8_t)str[j];
+    j += c != 0;
 
-      state = dfa_states[state][c];
-    }
+    state = dfa_states[state][c];
+  }
 
   return state == DFA_STATE_MATCH;
 }
@@ -226,10 +218,9 @@ bool dfa_is_special(std::string_view input) {
   uint8_t state = DFA_STATE_INIT;
   const char *str = input.data();
 
-  for (size_t i = 0; i < 6; i++)
-    {
-      state = dfa_states[state][(uint8_t)str[i]];
-    }
+  for (size_t i = 0; i < 6; i++) {
+    state = dfa_states[state][(uint8_t)str[i]];
+  }
 
   return state == DFA_STATE_MATCH;
 }
@@ -239,10 +230,9 @@ bool no_inline_dfa_is_special(std::string_view input) {
   uint8_t state = DFA_STATE_INIT;
   const char *str = input.data();
 
-  for (size_t i = 0; i < 6; i++)
-    {
-      state = dfa_states[state][(uint8_t)str[i]];
-    }
+  for (size_t i = 0; i < 6; i++) {
+    state = dfa_states[state][(uint8_t)str[i]];
+  }
 
   return state == DFA_STATE_MATCH;
 }
