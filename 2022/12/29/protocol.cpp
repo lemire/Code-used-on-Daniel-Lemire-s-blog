@@ -86,27 +86,27 @@ bool no_inline_shiftxor_is_special(std::string_view input) {
          inputu;
 }
 
-#define DFA_STATE_INIT    0
-#define DFA_STATE_HTTP_1  1
-#define DFA_STATE_HTTP_2  2
-#define DFA_STATE_HTTP_3  3
-#define DFA_STATE_S       4
+#define DFA_STATE_FAIL    0 /* For easier testing. */
+#define DFA_STATE_INIT    1
+#define DFA_STATE_HTTP_1  2
+#define DFA_STATE_HTTP_2  3
+#define DFA_STATE_HTTP_3  4
+#define DFA_STATE_S       5
 #define DFA_STATE_HTTP_4  DFA_STATE_S
-#define DFA_STATE_MATCH   5
-#define DFA_STATE_NUL     6
+#define DFA_STATE_MATCH   6
+#define DFA_STATE_NUL     7
 #define DFA_STATE_HTTPS_1 DFA_STATE_NUL
-#define DFA_STATE_F_1     7
-#define DFA_STATE_FILE_1  8
-#define DFA_STATE_FILE_2  9
+#define DFA_STATE_F_1     8
+#define DFA_STATE_FILE_1  9
+#define DFA_STATE_FILE_2  10
 #define DFA_STATE_FILE_3  DFA_STATE_NUL
-#define DFA_STATE_FTP_1   10
+#define DFA_STATE_FTP_1   11
 #define DFA_STATE_FTP_2   DFA_STATE_NUL
-#define DFA_STATE_WS_1    11
+#define DFA_STATE_WS_1    12
 #define DFA_STATE_WS_2    DFA_STATE_S
 #define DFA_STATE_WSS_1   DFA_STATE_NUL
-#define DFA_STATE_FAIL    12
 
-#define DFA_STATES_COUNT (DFA_STATE_FAIL + 1)
+#define DFA_STATES_COUNT  13
 
 static uint8_t dfa_states[DFA_STATES_COUNT][256];
 
