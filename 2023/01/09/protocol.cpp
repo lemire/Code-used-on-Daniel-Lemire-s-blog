@@ -244,4 +244,4 @@ void simulation(size_t N) {
   }
   
 }
-int main() { simulation(8192); simulation(8192); simulation(65536); simulation(65536); }
+int main() { simulation(8192); simulation(8192); }
