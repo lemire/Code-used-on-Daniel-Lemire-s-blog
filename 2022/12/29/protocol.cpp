@@ -507,6 +507,9 @@ std::vector<std::string_view> populate(size_t length) {
 }
 
 void simulation(size_t N) {
+  puts("=======\n");
+  printf("Simulation with N = %zu \n", N);
+
 
   std::vector<std::string_view> data = populate(N);
   init_dfa_states();
@@ -791,6 +794,25 @@ void simulation(size_t N) {
 
     printf("regex %f ns/string, matches = %zu \n", t, matches);
   }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    const std::regex txt_regex("https?|ftp|file|wss?");
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += std::regex_match(v.begin(), v.end(), txt_regex);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("regex2 %f ns/string, matches = %zu \n", t, matches);
+  }
 
   {
     uint64_t start = nano();
@@ -1033,4 +1055,4 @@ void simulation(size_t N) {
     printf("no_inline_dfa3_is_special %f ns/string, matches = %zu \n", t, matches);
   }
 }
-int main() { simulation(8192); }
+int main() { simulation(8192); simulation(65536); }
