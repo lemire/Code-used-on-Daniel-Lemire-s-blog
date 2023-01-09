@@ -1,0 +1,6 @@
+ftp,21
+file,0
+http,80
+https,443
+ws,80
+wss,443
