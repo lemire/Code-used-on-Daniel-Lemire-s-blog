@@ -35,6 +35,15 @@ uint32_t string_to_uint32(const char *data) {
   return val;
 }
 
+std::string_view table_craftedhash_is_special[] = {"http", "", "https", 
+  "ws", "ftp", "wss", "file", ""};
+
+bool craftedhash_is_special(std::string_view input) {
+  if(input.empty()) { return false; }
+  int hash_value = (2*input.size() + (unsigned)(input[0])) & 7;
+  const std::string_view target = table_craftedhash_is_special[hash_value];
+  return (target[0] == input[0]) && (target.substr(1) == input.substr(1));
+}
 
 const uint8_t mulhi_table[64] = {
     'w', 's', 0,   0, 0, 0, 0, 0, 'f', 't', 'p', 0,   0,   0, 0, 0,
@@ -514,6 +523,25 @@ void simulation(size_t N) {
   std::vector<std::string_view> data = populate(N);
   init_dfa_states();
   init_dfa_states2();
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += craftedhash_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("nocheatinghash %f ns/string, matches = %zu \n", t, matches);
+  }
 
   {
     uint64_t start = nano();
