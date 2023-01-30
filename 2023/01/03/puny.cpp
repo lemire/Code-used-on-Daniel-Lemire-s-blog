@@ -19,7 +19,7 @@ int main() {
   for(std::string_view v : words) {
     int length = utf8_to_punycode(v.data(), v.size(), buffer);
     if(length < 0) { return EXIT_FAILURE; }
-    // std::cout << v << " becomes " << std::string_view(buffer, length) << std::endl;
+     std::cout << v << " becomes " << std::string_view(buffer, length) << std::endl;
   }
   {
     uint64_t start = nano();
