@@ -38,11 +38,10 @@ template <bool shortstrings> std::vector<std::string> populate(size_t length) {
 
 std::vector<std::string> data;
 std::vector<std::optional<std::string>> outdata;
-template <bool shortstrings> std::pair<double, double> simulation(size_t N) {
- //puts("=======\n");
- // printf("Simulation with N = %zu \n", N);
+std::vector<std::string*> outdataptr;
 
-  double t1, t2;
+template <bool shortstrings> std::tuple<double, double, double> simulation(size_t N) {
+  double t1, t2, t3;
 
   {
     data = populate<shortstrings>(N);
@@ -54,8 +53,6 @@ template <bool shortstrings> std::pair<double, double> simulation(size_t N) {
     }
     uint64_t finish = nano();
     t1 = double(finish - start) / N;
-
-    // printf("%f ns/string\n", t1);
   }
   {
     data = populate<shortstrings>(N);
@@ -67,29 +64,43 @@ template <bool shortstrings> std::pair<double, double> simulation(size_t N) {
     }
     uint64_t finish = nano();
     t2 = double(finish - start) / N;
-
-    // printf("%f ns/string\n", t2);
   }
-  return {t1, t2};
+  {
+    data = populate<shortstrings>(N);
+    outdataptr = std::vector<std::string*>(N);
+
+    uint64_t start = nano();
+    for (size_t i = 0; i < N; i++) {
+      outdataptr[i] = &data[i];
+    }
+    uint64_t finish = nano();
+    t3 = double(finish - start) / N;
+  }
+  return {t1, t2, t3};
 }
 
 template <bool shortstrings> void demo() {
   double avg1 = 0;
   double avg2 = 0;
+  double avg3 = 0;
+
   size_t times = 100;
 
   for (size_t i = 0; i < times; i++) {
-    auto [t1, t2] = simulation<shortstrings>(131072);
+    auto [t1, t2, t3] = simulation<shortstrings>(131072);
     avg1 += t1;
     avg2 += t2;
+    avg3 += t3;
   }
   avg1 /= times;
   avg2 /= times;
-  std::cout << avg1 << " " << avg2 << std::endl;
+  avg3 /= times;
+
+  std::cout << avg1 << " " << avg2 << " " << avg3 << std::endl;
 }
 
 int main() {
-  puts("We report ns/string (first copy, then move).\n");
+  puts("We report ns/string (first copy, then move, then pointer).\n");
   puts("short strings:");
   demo<true>();
   puts("long strings:");
