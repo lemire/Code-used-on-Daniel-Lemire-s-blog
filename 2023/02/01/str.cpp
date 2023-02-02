@@ -270,7 +270,8 @@ void demo() {
   avg6 /= times;
   std::cout << "Time per string in ns.\n";
   std::cout << "First two numbers rely on std::to_string.\n";
-  std::cout << "Third number is from the blog post.\n";
+  std::cout << "Third number is from a scheme similar to the blog post.\n";
+  std::cout << "Fourth number is from the blog post.\n";
   std::cout << "Last two numbers are additional schemes proposed by Dimov.\n";
   std::cout << avg1 << " " << avg2 << " " << avg3 << " " << avg4 << " " << avg5
             << " " << avg6 << std::endl;
