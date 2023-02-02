@@ -1,4 +1,3 @@
-
 #include <charconv>
 #include <chrono>
 #include <cstdint>
@@ -34,7 +33,7 @@ std::string ipv40(const uint64_t address) noexcept {
 std::string ipv41(const uint64_t address) noexcept {
   std::string output = std::to_string(address >> 24);
   for (int i = 2; i >= 0; i--) {
-    output.append(std::to_string((address >> (i * 8)) % 256) + ".");
+    output.append("." + std::to_string((address >> (i * 8)) % 256) );
   }
   return output;
 }
@@ -174,11 +173,57 @@ std::string ipv52(const uint64_t address) noexcept {
   output.resize(p - output.data());
   return output;
 }
+
+class Foo {
+public:
+  Foo() {
+    for (int i = 0; i < 256; i++) {
+      std::string s0 = std::to_string(i);
+      std::string s1 = std::string(".") + s0;
+      v0[i] = *(int*)s0.data();
+      v1[i] = *(int*)s1.data();
+      l0[i] = (i < 10) ? 1 : (i < 100 ? 2 : 3);
+      l1[i] = l0[i] + 1;
+    }
+  }
+  int v0[256]; // value for the 0th byte
+  int v1[256]; // value for the 1+ byte
+  int l0[256]; // length for the 0th byte
+  int l1[256]; // length for the 1+ byte
+};
+
+Foo foo;
+
+std::string ipv61(const uint64_t address) noexcept {
+  std::string output(4 * 3 + 3, '\0');
+
+  char *point = output.data();
+  uint8_t by;
+
+  by = address >> 24;
+  *(int*)point = foo.v0[by];
+  point += foo.l0[by];
+
+  by = address >> 16;
+  *(int*)point = foo.v1[by];
+  point += foo.l1[by];
+
+  by = address >> 8;
+  *(int*)point = foo.v1[by];
+  point += foo.l1[by];
+
+  by = address >> 0;
+  *(int*)point = foo.v1[by];
+  point += foo.l1[by];
+  output.resize(point - output.data());
+  return output;
+}
+
 std::vector<std::string> data;
 
-std::tuple<double, double, double, double, double, double>
+std::tuple<double, double, double, double, double, double, double>
 simulation(const size_t N) {
-  double t1, t2, t3, t4, t5, t6;
+  double t1, t2, t3, t4, t5, t6, t7;
   data.reserve(N);
 
   {
@@ -230,7 +275,6 @@ simulation(const size_t N) {
     t5 = double(finish - start) / N;
   }
   {
-
     data.clear();
     uint64_t start = nano();
     for (size_t i = 0; i < N; i++) {
@@ -239,7 +283,16 @@ simulation(const size_t N) {
     uint64_t finish = nano();
     t6 = double(finish - start) / N;
   }
-  return {t1, t2, t3, t4, t5, t6};
+  {
+    data.clear();
+    uint64_t start = nano();
+    for (size_t i = 0; i < N; i++) {
+      data.emplace_back(ipv61(uint32_t(1271132211 * i)));
+    }
+    uint64_t finish = nano();
+    t7 = double(finish - start) / N;
+  }
+  return {t1, t2, t3, t4, t5, t6, t7};
 }
 
 void demo() {
@@ -249,17 +302,19 @@ void demo() {
   double avg4 = 0;
   double avg5 = 0;
   double avg6 = 0;
+  double avg7 = 0;
 
   size_t times = 10;
 
   for (size_t i = 0; i < times; i++) {
-    auto [t1, t2, t3, t4, t5, t6] = simulation(131072);
+    auto [t1, t2, t3, t4, t5, t6, t7] = simulation(131072);
     avg1 += t1;
     avg2 += t2;
     avg3 += t3;
     avg4 += t4;
-    avg5 += t4;
-    avg6 += t4;
+    avg5 += t5;
+    avg6 += t6;
+    avg7 += t7;
   }
   avg1 /= times;
   avg2 /= times;
@@ -267,13 +322,38 @@ void demo() {
   avg4 /= times;
   avg5 /= times;
   avg6 /= times;
+  avg7 /= times;
   std::cout << "Time per string in ns.\n";
   std::cout << "First two numbers rely on std::to_string.\n";
   std::cout << "Third number is from a scheme similar to the blog post.\n";
   std::cout << "Fourth number is from the blog post.\n";
-  std::cout << "Last two numbers are additional schemes proposed by Dimov.\n";
+  std::cout << "5th and 6th numbers are additional schemes proposed by Dimov.\n";
+  std::cout << "7th numbers are from idea by Marcin Zukowski.\n";
   std::cout << avg1 << " " << avg2 << " " << avg3 << " " << avg4 << " " << avg5
-            << " " << avg6 << std::endl;
+            << " " << avg6 << " " << avg7 << std::endl;
 }
 
-int main() { demo(); }
+void test()
+{
+  for (int i = 0; i < 100000; i++) {
+    uint32_t ip = 1271132211 * i;
+    std::string s40 = ipv40(ip);
+    std::string s41 = ipv41(ip);
+    std::string s42 = ipv42(ip);
+    std::string s43 = ipv43(ip);
+    std::string s51 = ipv51(ip);
+    std::string s52 = ipv52(ip);
+    std::string s61 = ipv61(ip);
+    if (s40 != s41) { printf("ip=%08x s40: '%s' s41: '%s'\n", ip, s40.c_str(), s41.c_str()); exit(1); }
+    if (s40 != s42) { printf("ip=%08x s40: '%s' s42: '%s'\n", ip, s40.c_str(), s42.c_str()); exit(1); }
+    if (s40 != s43) { printf("ip=%08x s40: '%s' s43: '%s'\n", ip, s40.c_str(), s43.c_str()); exit(1); }
+    if (s40 != s51) { printf("ip=%08x s40: '%s' s51: '%s'\n", ip, s40.c_str(), s51.c_str()); exit(1); }
+    if (s40 != s52) { printf("ip=%08x s40: '%s' s52: '%s'\n", ip, s40.c_str(), s52.c_str()); exit(1); }
+    if (s40 != s61) { printf("ip=%08x s40: '%s' s61: '%s'\n", ip, s40.c_str(), s61.c_str()); exit(1); }
+  }
+}
+
+int main() {
+  test();
+  demo();
+}
