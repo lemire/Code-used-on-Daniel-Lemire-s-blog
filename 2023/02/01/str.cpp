@@ -30,7 +30,7 @@ std::string ipv40(const uint64_t address) noexcept {
   return output;
 }
 
-std::string ipv41(const uint64_t address) noexcept {
+std::string ipv41(const uint32_t address) noexcept {
   std::string output = std::to_string(address >> 24);
   for (int i = 2; i >= 0; i--) {
     output.append("." + std::to_string((address >> (i * 8)) % 256));
@@ -38,7 +38,7 @@ std::string ipv41(const uint64_t address) noexcept {
   return output;
 }
 
-std::string ipv42(const uint64_t address) noexcept {
+std::string ipv42(const uint32_t address) noexcept {
   std::string output(4 * 3 + 3, '\0');
   char *point = output.data();
   char *point_end = output.data() + output.size();
@@ -392,7 +392,8 @@ void demo() {
 }
 
 void test() {
-  for (int i = 0; i < 100000; i++) {
+  puts("Running tests.");
+  for (uint32_t i = 0; i < 100000; i++) {
     uint32_t ip = 1271132211 * i;
     std::string s40 = ipv40(ip);
     std::string s41 = ipv41(ip);
@@ -432,6 +433,7 @@ void test() {
       exit(1);
     }
   }
+  puts("Functions are ok.");
 }
 
 int main() {
