@@ -258,7 +258,6 @@ void demo() {
     avg2 += t2;
     avg3 += t3;
     avg4 += t4;
-
     avg5 += t4;
     avg6 += t4;
   }
