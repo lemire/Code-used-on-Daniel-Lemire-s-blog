@@ -28,3 +28,5 @@ perf.data*
 # maven output
 target
 
+# mac garbage
+.DS_Store

@@ -187,10 +187,10 @@ public:
       l1[i] = l0[i] + 1;
     }
   }
-  uint32_t v0[256];     // value for the 0th byte
+  uint32_t v0[256]; // value for the 0th byte
   uint32_t v1[256]; // value for the 1+ byte
-  uint32_t l0[256];     // length for the 0th byte
-  uint32_t l1[256];     // length for the 1+ byte
+  uint32_t l0[256]; // length for the 0th byte
+  uint32_t l1[256]; // length for the 1+ byte
 };
 
 Foo foo;
@@ -220,6 +220,95 @@ std::string ipv61(const uint64_t address) noexcept {
   return output;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// almost same as ipv61 but with constexpr table generators
+// using only 1024 + 256 = 1280 bytes instead of 4kB
+// and append . at the end instead prepending it
+
+#include <array>
+
+template <class Function, std::size_t... Indices>
+constexpr auto make_array_helper(Function &&f, std::index_sequence<Indices...>)
+    -> std::array<typename std::invoke_result<Function, std::size_t>::type,
+                  sizeof...(Indices)> {
+  return {{f(Indices)...}};
+}
+
+template <int N, class Function>
+constexpr auto make_array(Function &&f)
+    -> std::array<typename std::invoke_result<Function, std::size_t>::type, N> {
+  return make_array_helper(f, std::make_index_sequence<N>{});
+}
+
+static std::string ipv62(const uint32_t address) noexcept {
+
+  // This data structure uses 1024 bytes = 256 x sizeof(uint32_t).
+  static constexpr auto table_u8_to_u32_str =
+      make_array<256>([](uint8_t index) -> uint32_t {
+        // equivalent to this but constexpr
+        //
+        // std::string s = std::to_string(index) + "."
+        // uint32_t dst;
+        // std::memcpy(&dst, s.data(), sizeof(uint32_t));
+        // return dst;
+
+        unsigned int shift = 0;
+        uint8_t src = index;
+        uint32_t dst = 0;
+
+        if (index >= 100) {
+          dst += ('0' + (src / 100)) << shift;
+          shift += 8;
+          src %= 100;
+        }
+
+        if (index >= 10) {
+          dst += ('0' + (src / 10)) << shift;
+          shift += 8;
+          src %= 10;
+        }
+
+        dst += ('0' + src) << shift;
+        shift += 8;
+
+        dst += '.' << shift;
+
+        return dst;
+      });
+
+  // This data structure uses 256 bytes = 256 x sizeof(uint8_t).
+  static constexpr auto table_length =
+      make_array<256>([](uint8_t index) -> uint8_t {
+        return (index < 10) ? 2 : (index < 100 ? 3 : 4);
+      });
+
+  std::string output(16, '\0');
+
+  char *point = output.data();
+  uint8_t by;
+
+  by = address >> 24;
+  std::memcpy(point, table_u8_to_u32_str.data() + by, sizeof(uint32_t));
+  point += table_length[by];
+
+  by = address >> 16;
+  std::memcpy(point, table_u8_to_u32_str.data() + by, sizeof(uint32_t));
+  point += table_length[by];
+
+  by = address >> 8;
+  std::memcpy(point, table_u8_to_u32_str.data() + by, sizeof(uint32_t));
+  point += table_length[by];
+
+  by = address;
+  std::memcpy(point, table_u8_to_u32_str.data() + by, sizeof(uint32_t));
+  point += table_length[by];
+
+  --point; // remove last appended .
+  output.resize(point - output.data());
+  return output;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // We can do nearly as well using only 1kB.
 std::string ipv71(const uint64_t address) noexcept {
   // uses 1025 bytes
@@ -265,9 +354,10 @@ std::string ipv71(const uint64_t address) noexcept {
 
 std::vector<std::string> data;
 
-std::tuple<double, double, double, double, double, double, double, double>
+std::tuple<double, double, double, double, double, double, double, double,
+           double>
 simulation(const size_t N) {
-  double t1, t2, t3, t4, t5, t6, t7, t8;
+  double t1, t2, t3, t4, t5, t6, t7, t8, t9;
   data.reserve(N);
 
   {
@@ -279,6 +369,7 @@ simulation(const size_t N) {
     uint64_t finish = nano();
     t1 = double(finish - start) / N;
   }
+
   {
     data.clear();
     uint64_t start = nano();
@@ -298,8 +389,8 @@ simulation(const size_t N) {
     uint64_t finish = nano();
     t3 = double(finish - start) / N;
   }
-  {
 
+  {
     data.clear();
     uint64_t start = nano();
     for (size_t i = 0; i < N; i++) {
@@ -308,8 +399,8 @@ simulation(const size_t N) {
     uint64_t finish = nano();
     t4 = double(finish - start) / N;
   }
-  {
 
+  {
     data.clear();
     uint64_t start = nano();
     for (size_t i = 0; i < N; i++) {
@@ -318,6 +409,7 @@ simulation(const size_t N) {
     uint64_t finish = nano();
     t5 = double(finish - start) / N;
   }
+
   {
     data.clear();
     uint64_t start = nano();
@@ -327,6 +419,7 @@ simulation(const size_t N) {
     uint64_t finish = nano();
     t6 = double(finish - start) / N;
   }
+
   {
     data.clear();
     uint64_t start = nano();
@@ -336,6 +429,17 @@ simulation(const size_t N) {
     uint64_t finish = nano();
     t7 = double(finish - start) / N;
   }
+
+  {
+    data.clear();
+    uint64_t start = nano();
+    for (size_t i = 0; i < N; i++) {
+      data.emplace_back(ipv62(uint32_t(1271132211 * i)));
+    }
+    uint64_t finish = nano();
+    t8 = double(finish - start) / N;
+  }
+
   {
     data.clear();
     uint64_t start = nano();
@@ -343,9 +447,9 @@ simulation(const size_t N) {
       data.emplace_back(ipv71(uint32_t(1271132211 * i)));
     }
     uint64_t finish = nano();
-    t8 = double(finish - start) / N;
+    t9 = double(finish - start) / N;
   }
-  return {t1, t2, t3, t4, t5, t6, t7, t8};
+  return {t1, t2, t3, t4, t5, t6, t7, t8, t9};
 }
 
 void demo() {
@@ -357,11 +461,12 @@ void demo() {
   double avg6 = 0;
   double avg7 = 0;
   double avg8 = 0;
+  double avg9 = 0;
 
   size_t times = 10;
 
   for (size_t i = 0; i < times; i++) {
-    auto [t1, t2, t3, t4, t5, t6, t7, t8] = simulation(131072);
+    auto [t1, t2, t3, t4, t5, t6, t7, t8, t9] = simulation(131072);
     avg1 += t1;
     avg2 += t2;
     avg3 += t3;
@@ -370,6 +475,7 @@ void demo() {
     avg6 += t6;
     avg7 += t7;
     avg8 += t8;
+    avg9 += t9;
   }
   avg1 /= times;
   avg2 /= times;
@@ -379,6 +485,7 @@ void demo() {
   avg6 /= times;
   avg7 /= times;
   avg8 /= times;
+  avg9 /= times;
 
   std::cout << "Time per string in ns.\n";
   std::cout << "std::to_string (1)  " << avg1 << std::endl;
@@ -388,7 +495,8 @@ void demo() {
   std::cout << "Dimov 1             " << avg5 << std::endl;
   std::cout << "Dimov 2             " << avg6 << std::endl;
   std::cout << "Zukowski            " << avg7 << std::endl;
-  std::cout << "thin table          " << avg8 << std::endl;
+  std::cout << "Zukowski by oc      " << avg8 << std::endl;
+  std::cout << "thin table          " << avg9 << std::endl;
 }
 
 void test() {
@@ -402,7 +510,8 @@ void test() {
     std::string s51 = ipv51(ip);
     std::string s52 = ipv52(ip);
     std::string s61 = ipv61(ip);
-    std::string s62 = ipv71(ip);
+    std::string s62 = ipv62(ip);
+    std::string s71 = ipv71(ip);
 
     if (s40 != s41) {
       printf("ip=%08x s40: '%s' s41: '%s'\n", ip, s40.c_str(), s41.c_str());
@@ -430,6 +539,10 @@ void test() {
     }
     if (s40 != s62) {
       printf("ip=%08x s40: '%s' s62: '%s'\n", ip, s40.c_str(), s62.c_str());
+      exit(1);
+    }
+    if (s40 != s71) {
+      printf("ip=%08x s40: '%s' s71: '%s'\n", ip, s40.c_str(), s71.c_str());
       exit(1);
     }
   }
