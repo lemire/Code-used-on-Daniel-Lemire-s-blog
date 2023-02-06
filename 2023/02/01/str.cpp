@@ -8,6 +8,8 @@
 #include <optional>
 #include <random>
 #include <string>
+#include <sstream>
+
 #include <string_view>
 #include <tuple>
 #include <vector>
@@ -28,6 +30,15 @@ std::string ipv40(const uint64_t address) noexcept {
     n >>= 8;
   }
   return output;
+}
+
+std::string ipvss(const uint32_t address) noexcept {
+  std::stringstream s;
+  s << (address >> 24);
+  for (int i = 2; i >= 0; i--) {
+    s << "." << ((address >> (i * 8)) & 0xFF);
+  }
+  return s.str();
 }
 
 std::string ipv41(const uint32_t address) noexcept {
@@ -423,9 +434,9 @@ std::string ipv81(const uint32_t address) noexcept {
 std::vector<std::string> data;
 
 std::tuple<double, double, double, double, double, double, double, double,
-           double, double>
+           double, double, double>
 simulation(const size_t N) {
-  double t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
+  double t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11;
   data.reserve(N);
 
   {
@@ -527,8 +538,17 @@ simulation(const size_t N) {
     uint64_t finish = nano();
     t10 = double(finish - start) / N;
   }
+  {
+    data.clear();
+    uint64_t start = nano();
+    for (size_t i = 0; i < N; i++) {
+      data.emplace_back(ipvss(uint32_t(1271132211 * i)));
+    }
+    uint64_t finish = nano();
+    t11 = double(finish - start) / N;
+  }
 
-  return {t1, t2, t3, t4, t5, t6, t7, t8, t9, t10};
+  return {t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11};
 }
 
 void demo() {
@@ -542,11 +562,12 @@ void demo() {
   double avg8 = 0;
   double avg9 = 0;
   double avg10 = 0;
+  double avg11 = 0;
 
   size_t times = 10;
 
   for (size_t i = 0; i < times; i++) {
-    auto [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10] = simulation(131072);
+    auto [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11] = simulation(131072);
     avg1 += t1;
     avg2 += t2;
     avg3 += t3;
@@ -557,6 +578,7 @@ void demo() {
     avg8 += t8;
     avg9 += t9;
     avg10 += t10;
+    avg11 += t11;
   }
   avg1 /= times;
   avg2 /= times;
@@ -568,8 +590,10 @@ void demo() {
   avg8 /= times;
   avg9 /= times;
   avg10 /= times;
+  avg11 /= times;
 
   std::cout << "Time per string in ns.\n";
+  std::cout << "stringstream        " << avg11 << std::endl;
   std::cout << "std::to_string (1)  " << avg1 << std::endl;
   std::cout << "std::to_string (2)  " << avg2 << std::endl;
   std::cout << "blog post (similar) " << avg3 << std::endl;
@@ -596,7 +620,11 @@ void test() {
     std::string s62 = ipv62(ip);
     std::string s71 = ipv71(ip);
     std::string s81 = ipv81(ip);
-
+    std::string sss = ipvss(ip);
+    if (s40 != sss) {
+      printf("ip=%08x s40: '%s' sss: '%s'\n", ip, s40.c_str(), sss.c_str());
+      exit(1);
+    }
     if (s40 != s41) {
       printf("ip=%08x s40: '%s' s41: '%s'\n", ip, s40.c_str(), s41.c_str());
       exit(1);
