@@ -352,12 +352,65 @@ std::string ipv71(const uint64_t address) noexcept {
   return output;
 }
 
+std::string ipv81(const uint64_t address) noexcept {
+  // uses 1025 bytes
+  // little-endian version
+  constexpr static const char *lookup =
+      "0. @1. @2. @3. @4. @5. @6. @7. @"
+      "8. @9. @10.\20011.\20012.\20013.\20014.\20015.\200"
+      "16.\20017.\20018.\20019.\20020.\20021.\20022.\20023.\200"
+      "24.\20025.\20026.\20027.\20028.\20029.\20030.\20031.\200"
+      "32.\20033.\20034.\20035.\20036.\20037.\20038.\20039.\200"
+      "40.\20041.\20042.\20043.\20044.\20045.\20046.\20047.\200"
+      "48.\20049.\20050.\20051.\20052.\20053.\20054.\20055.\200"
+      "56.\20057.\20058.\20059.\20060.\20061.\20062.\20063.\200"
+      "64.\20065.\20066.\20067.\20068.\20069.\20070.\20071.\200"
+      "72.\20073.\20074.\20075.\20076.\20077.\20078.\20079.\200"
+      "80.\20081.\20082.\20083.\20084.\20085.\20086.\20087.\200"
+      "88.\20089.\20090.\20091.\20092.\20093.\20094.\20095.\200"
+      "96.\20097.\20098.\20099.\200100\356101\356102\356103\356"
+      "104\356105\356106\356107\356108\356109\356110\356111\356"
+      "112\356113\356114\356115\356116\356117\356118\356119\356"
+      "120\356121\356122\356123\356124\356125\356126\356127\356"
+      "128\356129\356130\356131\356132\356133\356134\356135\356"
+      "136\356137\356138\356139\356140\356141\356142\356143\356"
+      "144\356145\356146\356147\356148\356149\356150\356151\356"
+      "152\356153\356154\356155\356156\356157\356158\356159\356"
+      "160\356161\356162\356163\356164\356165\356166\356167\356"
+      "168\356169\356170\356171\356172\356173\356174\356175\356"
+      "176\356177\356178\356179\356180\356181\356182\356183\356"
+      "184\356185\356186\356187\356188\356189\356190\356191\356"
+      "192\356193\356194\356195\356196\356197\356198\356199\356"
+      "200\356201\356202\356203\356204\356205\356206\356207\356"
+      "208\356209\356210\356211\356212\356213\356214\356215\356"
+      "216\356217\356218\356219\356220\356221\356222\356223\356"
+      "224\356225\356226\356227\356228\356229\356230\356231\356"
+      "232\356233\356234\356235\356236\356237\356238\356239\356"
+      "240\356241\356242\356243\356244\356245\356246\356247\356"
+      "248\356249\356250\356251\356252\356253\356254\356255\356";
+  std::string output(4 * 3 + 3, '\0');
+
+  char *point = output.data();
+
+  for (int i = 1; i <= 4; i++) {
+    uint8_t by = address >> (32 - 8 * i);
+    uint32_t val = ((uint32_t *)lookup)[by];
+    uint32_t str = val & 0x3fffffff;
+
+    std::memcpy(point, &str, 4);
+    point += 1 + (val >> 30);
+  }
+
+  output.resize(point - 1 - output.data());
+  return output;
+}
+
 std::vector<std::string> data;
 
 std::tuple<double, double, double, double, double, double, double, double,
-           double>
+           double, double>
 simulation(const size_t N) {
-  double t1, t2, t3, t4, t5, t6, t7, t8, t9;
+  double t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
   data.reserve(N);
 
   {
@@ -449,7 +502,18 @@ simulation(const size_t N) {
     uint64_t finish = nano();
     t9 = double(finish - start) / N;
   }
-  return {t1, t2, t3, t4, t5, t6, t7, t8, t9};
+
+  {
+    data.clear();
+    uint64_t start = nano();
+    for (size_t i = 0; i < N; i++) {
+      data.emplace_back(ipv81(uint32_t(1271132211 * i)));
+    }
+    uint64_t finish = nano();
+    t10 = double(finish - start) / N;
+  }
+
+  return {t1, t2, t3, t4, t5, t6, t7, t8, t9, t10};
 }
 
 void demo() {
@@ -462,11 +526,12 @@ void demo() {
   double avg7 = 0;
   double avg8 = 0;
   double avg9 = 0;
+  double avg10 = 0;
 
   size_t times = 10;
 
   for (size_t i = 0; i < times; i++) {
-    auto [t1, t2, t3, t4, t5, t6, t7, t8, t9] = simulation(131072);
+    auto [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10] = simulation(131072);
     avg1 += t1;
     avg2 += t2;
     avg3 += t3;
@@ -476,6 +541,7 @@ void demo() {
     avg7 += t7;
     avg8 += t8;
     avg9 += t9;
+    avg10 += t10;
   }
   avg1 /= times;
   avg2 /= times;
@@ -486,6 +552,7 @@ void demo() {
   avg7 /= times;
   avg8 /= times;
   avg9 /= times;
+  avg10 /= times;
 
   std::cout << "Time per string in ns.\n";
   std::cout << "std::to_string (1)  " << avg1 << std::endl;
@@ -497,6 +564,7 @@ void demo() {
   std::cout << "Zukowski            " << avg7 << std::endl;
   std::cout << "Zukowski by oc      " << avg8 << std::endl;
   std::cout << "thin table          " << avg9 << std::endl;
+  std::cout << "combined table      " << avg10 << std::endl;
 }
 
 void test() {
@@ -512,6 +580,7 @@ void test() {
     std::string s61 = ipv61(ip);
     std::string s62 = ipv62(ip);
     std::string s71 = ipv71(ip);
+    std::string s81 = ipv81(ip);
 
     if (s40 != s41) {
       printf("ip=%08x s40: '%s' s41: '%s'\n", ip, s40.c_str(), s41.c_str());
@@ -543,6 +612,10 @@ void test() {
     }
     if (s40 != s71) {
       printf("ip=%08x s40: '%s' s71: '%s'\n", ip, s40.c_str(), s71.c_str());
+      exit(1);
+    }
+    if (s40 != s81) {
+      printf("ip=%08x s40: '%s' s81: '%s'\n", ip, s40.c_str(), s81.c_str());
       exit(1);
     }
   }
