@@ -388,20 +388,20 @@ std::string ipv81(const uint64_t address) noexcept {
       "232\356233\356234\356235\356236\356237\356238\356239\356"
       "240\356241\356242\356243\356244\356245\356246\356247\356"
       "248\356249\356250\356251\356252\356253\356254\356255\356";
-  std::string output(4 * 3 + 3, '\0');
+  std::string output(4 * 4, '\0');
 
-  char *point = output.data();
+  char *nextnum = output.data();
 
   for (int i = 1; i <= 4; i++) {
     uint8_t by = address >> (32 - 8 * i);
     uint32_t val = ((uint32_t *)lookup)[by];
     uint32_t str = val & 0x3fffffff;
 
-    std::memcpy(point, &str, 4);
-    point += 1 + (val >> 30);
+    std::memcpy(nextnum, &str, 4);
+    nextnum += 1 + (val >> 30);
   }
 
-  output.resize(point - 1 - output.data());
+  output.resize(nextnum - 1 - output.data());
   return output;
 }
 
