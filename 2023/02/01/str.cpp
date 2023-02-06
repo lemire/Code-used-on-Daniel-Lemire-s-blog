@@ -352,7 +352,7 @@ std::string ipv71(const uint64_t address) noexcept {
   return output;
 }
 
-std::string ipv81(const uint64_t address) noexcept {
+std::string ipv81(const uint32_t address) noexcept {
   // uses 1025 bytes
   // little-endian version
   constexpr static const char *lookup =
