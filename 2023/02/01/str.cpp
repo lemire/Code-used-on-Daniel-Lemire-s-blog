@@ -390,18 +390,41 @@ std::string ipv81(const uint32_t address) noexcept {
       "248\356249\356250\356251\356252\356253\356254\356255\356";
   std::string output(4 * 4, '\0');
 
-  char *nextnum = output.data();
+  char *buf = output.data();
 
-  for (int i = 1; i <= 4; i++) {
-    uint8_t by = address >> (32 - 8 * i);
-    uint32_t val = ((uint32_t *)lookup)[by];
-    uint32_t str = val & 0x3fffffff;
+  uint8_t by;
+  uint32_t val, str;
+  size_t digits;
 
-    std::memcpy(nextnum, &str, 4);
-    nextnum += 1 + (val >> 30);
-  }
+  by = address >> 24;
+  val = ((uint32_t *)lookup)[by];
+  str = val & 0x3fffffff;
 
-  output.resize(nextnum - 1 - output.data());
+  std::memcpy(buf, &str, 4);
+  digits = val >> 30;
+
+  by = address >> 16;
+  val = ((uint32_t *)lookup)[by];
+  str = val & 0x3fffffff;
+
+  std::memcpy(buf + digits + 1, &str, 4);
+  digits += val >> 30;
+
+  by = address >> 8;
+  val = ((uint32_t *)lookup)[by];
+  str = val & 0x3fffffff;
+
+  std::memcpy(buf + digits + 2, &str, 4);
+  digits += val >> 30;
+
+  by = address;
+  val = ((uint32_t *)lookup)[by];
+  str = val & 0x3fffffff;
+
+  std::memcpy(buf + digits + 3, &str, 4);
+  digits += val >> 30;
+
+  output.resize(digits + 3);
   return output;
 }
 
