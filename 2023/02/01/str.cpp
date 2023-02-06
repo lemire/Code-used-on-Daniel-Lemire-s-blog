@@ -394,7 +394,7 @@ std::string ipv81(const uint32_t address) noexcept {
 
   uint32_t val0, val1, val2, val3, str;
   size_t digits;
-
+  // The casts are technically unsafe but the lookup table is surely aligned on a 32-bit bounday.
   val0 = ((uint32_t *)lookup)[(uint8_t)(address >> 24)];
   val1 = ((uint32_t *)lookup)[(uint8_t)(address >> 16)];
   val2 = ((uint32_t *)lookup)[(uint8_t)(address >> 8)];
