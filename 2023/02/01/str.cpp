@@ -392,38 +392,30 @@ std::string ipv81(const uint32_t address) noexcept {
 
   char *buf = output.data();
 
-  uint8_t by;
-  uint32_t val, str;
+  uint32_t val0, val1, val2, val3, str;
   size_t digits;
 
-  by = address >> 24;
-  val = ((uint32_t *)lookup)[by];
-  str = val & 0x3fffffff;
+  val0 = ((uint32_t *)lookup)[(uint8_t)(address >> 24)];
+  val1 = ((uint32_t *)lookup)[(uint8_t)(address >> 16)];
+  val2 = ((uint32_t *)lookup)[(uint8_t)(address >> 8)];
+  val3 = ((uint32_t *)lookup)[(uint8_t)address];
 
+  str = val0 & 0x3fffffff;
   std::memcpy(buf, &str, 4);
-  digits = val >> 30;
 
-  by = address >> 16;
-  val = ((uint32_t *)lookup)[by];
-  str = val & 0x3fffffff;
-
+  str = val1 & 0x3fffffff;
+  digits = val0 >> 30;
   std::memcpy(buf + digits + 1, &str, 4);
-  digits += val >> 30;
 
-  by = address >> 8;
-  val = ((uint32_t *)lookup)[by];
-  str = val & 0x3fffffff;
-
+  str = val2 & 0x3fffffff;
+  digits += val1 >> 30;
   std::memcpy(buf + digits + 2, &str, 4);
-  digits += val >> 30;
 
-  by = address;
-  val = ((uint32_t *)lookup)[by];
-  str = val & 0x3fffffff;
-
+  str = val3 & 0x3fffffff;
+  digits += val2 >> 30;
   std::memcpy(buf + digits + 3, &str, 4);
-  digits += val >> 30;
 
+  digits += val3 >> 30;
   output.resize(digits + 3);
   return output;
 }
