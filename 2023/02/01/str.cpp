@@ -436,7 +436,7 @@ std::string ipv81(const uint32_t address) noexcept {
   std::memcpy(buf + digits + 2, &str, 4);
   digits += val2 >> 30;
 
-  str = val3 & 0x3fffffff;
+  str = val3; // no masking needed, last byte never included in output
   std::memcpy(buf + digits + 3, &str, 4);
   digits += val3 >> 30;
 
