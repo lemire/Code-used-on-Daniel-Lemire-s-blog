@@ -402,20 +402,20 @@ std::string ipv81(const uint32_t address) noexcept {
 
   str = val0 & 0x3fffffff;
   std::memcpy(buf, &str, 4);
+  digits = val0 >> 30;
 
   str = val1 & 0x3fffffff;
-  digits = val0 >> 30;
   std::memcpy(buf + digits + 1, &str, 4);
+  digits += val1 >> 30;
 
   str = val2 & 0x3fffffff;
-  digits += val1 >> 30;
   std::memcpy(buf + digits + 2, &str, 4);
+  digits += val2 >> 30;
 
   str = val3 & 0x3fffffff;
-  digits += val2 >> 30;
   std::memcpy(buf + digits + 3, &str, 4);
-
   digits += val3 >> 30;
+
   output.resize(digits + 3);
   return output;
 }
