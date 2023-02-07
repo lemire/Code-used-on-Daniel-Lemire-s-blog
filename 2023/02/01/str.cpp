@@ -412,7 +412,13 @@ std::string ipv81(const uint32_t address) noexcept {
       0xee323532, 0xee333532, 0xee343532, 0xee353532,
   };
 
-  std::string output(4 * 4, '\0');
+  // This is a hack. Thanks to C++11 semantics, the buffer includes
+  // null termination, which is not included in the allocation size.
+  // That byte may be overwritten by code below but resizing guarantees
+  // that the string is valid in the end of the function anyway.
+  // This string wouldn't need initialization at all, but this way
+  // in practice one byte less gets initialized, removing one store.
+  std::string output(4 * 4 - 1, '\0');
 
   char *buf = output.data();
 
