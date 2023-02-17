@@ -4,6 +4,17 @@
 #include <random>
 #include <vector>
 
+ __attribute__((optimize("no-tree-vectorize")))
+size_t pure_scalar_utf8_length(const uint8_t *c, size_t len) {
+  size_t answer = 0;
+  for (size_t i = 0; i < len; i++) {
+    if ((c[i] >> 7)) {
+      answer++;
+    }
+  }
+  return answer + len;
+}
+
 size_t scalar_utf8_length(const uint8_t *c, size_t len) {
   size_t answer = 0;
   for (size_t i = 0; i < len; i++) {
@@ -112,8 +123,26 @@ int main() {
       std::vector<int>{ PERF_COUNT_HW_CPU_CYCLES,
                         PERF_COUNT_HW_INSTRUCTIONS, });
   volatile size_t len{ 0 };
-  std::cout << "scalar" << std::endl;
+
+  std::cout << "scalar (no autovec)" << std::endl;
   std::vector<unsigned long long> results(2);
+  for (size_t t = 0; t < trials + warm_trials; t++) {
+    linux_events.start();
+    len = pure_scalar_utf8_length(input, N);
+    linux_events.end(results);
+    if (t >= warm_trials) {
+
+      std::cout << "cycles/bytes " << double(results[0]) / (len) << " ";
+      std::cout << "instructions/bytes " << double(results[1]) / (len) << " ";
+      std::cout << "instructions/cycle " << double(results[1]) / results[0]
+                << std::endl;
+    }
+  }
+  std::cout << std::endl;
+
+  if(len != expected) { abort(); }
+
+  std::cout << "scalar" << std::endl;
   for (size_t t = 0; t < trials + warm_trials; t++) {
     linux_events.start();
     len = scalar_utf8_length(input, N);
