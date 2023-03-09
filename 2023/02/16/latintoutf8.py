@@ -17,15 +17,13 @@ for l in range(1,12):
 
 format = 'windows-1252'
 print(format)
-try:
-    for i in range(1,256):
-        b = bytearray(1)
-        b[0] = i
-        predicted = 1
-        if(i>=128): predicted = 2
-        actual = len(b.decode(format).encode("utf-8"))
-        if(predicted != actual): 
-          print("BUG "+ format + " "+ str(i) + " " +str(b.decode(format).encode("utf-8")))
-        break
-except  Exception as e:
-    print("problem", e, format)
+
+for i in range(1,256):
+    b = bytearray(1)
+    b[0] = i
+    predicted = 1
+    if(i>=128): predicted = 2
+    actual = len(b.decode(format).encode("utf-8"))
+    print(actual, chr(i))
+    if(predicted != actual): 
+      print("BUG "+ format + " "+ str(i) + " " +str(b.decode(format).encode("utf-8")))
