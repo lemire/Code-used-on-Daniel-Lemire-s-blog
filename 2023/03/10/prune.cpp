@@ -29,7 +29,7 @@ size_t sve_trimspaces(const char *s, size_t len, char *out) {
   if (i < len) {
     svbool_t read_mask = svwhilelt_b32(i, len);
     svuint32_t input = svld1sb_u32(read_mask, (const int8_t *)s + i);
-    svbool_t matches = svcmpeq_n_u32(read_mask, input, 32);
+    svbool_t matches = svcmpne_n_u32(read_mask, input, 32);
     svuint32_t compressed = svcompact_u32(matches, input);
     svst1b_u32(read_mask, out8, compressed);
     out8 += svcntp_b32(read_mask, matches);
