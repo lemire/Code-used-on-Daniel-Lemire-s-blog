@@ -37,6 +37,23 @@ size_t sve_trimspaces(const char *s, size_t len, char *out) {
   return out8 - reinterpret_cast<uint8_t *>(out);
 }
 
+size_t sve_trimspaces_oneloop_alt(const char *s, size_t len, char *out) {
+  uint8_t *out8 = reinterpret_cast<uint8_t *>(out);
+  size_t i = 0;
+  svbool_t all = svptrue_b32();
+  svbool_t Pg;
+  // see http://www.cse.iitm.ac.in/~rupesh/events/arm2021/CDAC%20-%20Overview%20of%20the%20Arm%20ISA%20for%20HPC.pdf
+  for (; svptest_first(all,Pg=svwhilelt_b32(i, len)); i += svcntw()) {
+    svbool_t read_mask = svwhilelt_b32(i, len);
+    svuint32_t input = svld1sb_u32(read_mask, (const int8_t *)s + i);
+    svbool_t matches = svcmpne_n_u32(read_mask, input, 32);
+    svuint32_t compressed = svcompact_u32(matches, input);
+    svst1b_u32(read_mask, out8, compressed);
+    out8 += svcntp_b32(read_mask, matches);
+  }
+  return out8 - reinterpret_cast<uint8_t *>(out);
+}
+
 
 size_t sve_trimspaces_oneloop(const char *s, size_t len, char *out) {
   uint8_t *out8 = reinterpret_cast<uint8_t *>(out);
@@ -91,6 +108,21 @@ int main() {
   std::cout << "instructions/cycle " << double(results[1]) / results[0]
             << std::endl;
   std::cout << std::endl;
+
+  std::cout << "sve one loop alt" << std::endl;
+
+  linux_events.start();
+  len = sve_trimspaces_oneloop_alt(input, N, output);
+  linux_events.end(results);
+  std::cout << len << std::endl;
+
+  std::cout << "cycles/bytes " << double(results[0]) / (len) << " ";
+  std::cout << "instructions/bytes " << double(results[1]) / (len)
+            << " ";
+  std::cout << "instructions/cycle " << double(results[1]) / results[0]
+            << std::endl;
+  std::cout << std::endl;
+
 
   std::cout << "sve" << std::endl;
 
