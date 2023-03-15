@@ -15,7 +15,7 @@ __attribute__((noinline)) void copy(uint64_t *x1, uint64_t *x2, size_t N) {
 }
 __attribute__((noinline)) void copy2(uint64_t *x1, uint64_t *x2, size_t N) {
   for (size_t i = 0; i < N; i++) {
-    assert(x1[i] <= RAND_MAX);
+    assert(x2[i] <= RAND_MAX);
     x1[i] = x2[i];
   }
 }
