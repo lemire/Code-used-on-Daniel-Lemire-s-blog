@@ -1,7 +1,8 @@
 #include <iostream>
 #include <random>
 #include <vector>
-
+#include <cassert>
+#include <chrono>
 uint64_t nano() {
   return std::chrono::duration_cast<std::chrono::nanoseconds>(
              std::chrono::steady_clock::now().time_since_epoch())
@@ -14,7 +15,7 @@ __attribute__((noinline)) void copy(uint64_t *x1, uint64_t *x2, size_t N) {
 }
 __attribute__((noinline)) void copy2(uint64_t *x1, uint64_t *x2, size_t N) {
   for (size_t i = 0; i < N; i++) {
-    assert(x1[i] < RAND_MAX + 1);
+    assert(x1[i] <= RAND_MAX);
     x1[i] = x2[i];
   }
 }
