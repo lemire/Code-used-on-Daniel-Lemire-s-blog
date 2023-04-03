@@ -1,35 +1,21 @@
 #ifndef _BENCHMARK_H_
 #define _BENCHMARK_H_
-
 #include <stdint.h>
+#include <chrono>
+
+uint64_t nano() {
+  return std::chrono::duration_cast<std::chrono::nanoseconds>(
+             std::chrono::steady_clock::now().time_since_epoch())
+      .count();
+}
 #define RDTSC_START(cycles)                                             \
     do {                                                                \
-        uint32_t cyc_high, cyc_low;                                     \
-        __asm volatile("cpuid\n"                                        \
-                       "rdtsc\n"                                        \
-                       "mov %%edx, %0\n"                                \
-                       "mov %%eax, %1" :                                \
-                       "=r" (cyc_high),                                 \
-                       "=r"(cyc_low) :                                  \
-                       : /* no read only */                             \
-                       "%rax", "%rbx", "%rcx", "%rdx" /* clobbers */    \
-                       );                                               \
-        (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;                \
+        (cycles) = nano();                \
     } while (0)
 
 #define RDTSC_STOP(cycles)                                              \
     do {                                                                \
-        uint32_t cyc_high, cyc_low;                                     \
-        __asm volatile("rdtscp\n"                                       \
-                       "mov %%edx, %0\n"                                \
-                       "mov %%eax, %1\n"                                \
-                       "cpuid" :                                        \
-                       "=r"(cyc_high),                                  \
-                       "=r"(cyc_low) :                                  \
-                       /* no read only registers */ :                   \
-                       "%rax", "%rbx", "%rcx", "%rdx" /* clobbers */    \
-                       );                                               \
-        (cycles) = ((uint64_t)cyc_high << 32) | cyc_low;                \
+        (cycles) = nano();                \
     } while (0)
 
 static __attribute__ ((noinline))
@@ -85,8 +71,8 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             uint64_t S = size;                                            \
             float cycle_per_op = (min_diff) / (double)S;                  \
             float avg_cycle_per_op = (sum_diff) / ((double)S * repeat);   \
-            if(verbose) printf(" %.2f cycles per operation (best) ", cycle_per_op);   \
-            if(verbose) printf("\t%.2f cycles per operation (avg) ", avg_cycle_per_op);   \
+            if(verbose) printf(" %.2f ns per operation (best) ", cycle_per_op);   \
+            if(verbose) printf("\t%.2f ns per operation (avg) ", avg_cycle_per_op);   \
             if(verbose) printf("\n");                                                 \
             if(!verbose) printf(" %.2f ",cycle_per_op);                   \
             fflush(NULL);                                                 \
@@ -116,8 +102,8 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             uint64_t S = size;                                            \
             float cycle_per_op = (min_diff) / (double)S;                  \
             float avg_cycle_per_op = (sum_diff) / ((double)S * repeat);   \
-            if(verbose) printf(" %.2f cycles per operation (best) ", cycle_per_op);   \
-            if(verbose) printf("\t%.2f cycles per operation (avg) ", avg_cycle_per_op);   \
+            if(verbose) printf(" %.2f ns per operation (best) ", cycle_per_op);   \
+            if(verbose) printf("\t%.2f ns per operation (avg) ", avg_cycle_per_op);   \
             if(verbose) printf("\n");                                                 \
             if(!verbose) printf(" %.2f ",cycle_per_op);                   \
             fflush(NULL);                                                 \
@@ -149,8 +135,8 @@ uint64_t global_rdtsc_overhead = (uint64_t) UINT64_MAX;
             uint64_t S = size;                                            \
             float cycle_per_op = (min_diff) / (double)S;                  \
             float avg_cycle_per_op = (sum_diff) / ((double)S * repeat);   \
-            if(verbose) printf(" %.2f cycles per operation (best) ", cycle_per_op);   \
-            if(verbose) printf("\t%.2f cycles per operation (avg) ", avg_cycle_per_op);   \
+            if(verbose) printf(" %.2f ns per operation (best) ", cycle_per_op);   \
+            if(verbose) printf("\t%.2f ns per operation (avg) ", avg_cycle_per_op);   \
             if(verbose) printf("\n");                                                 \
             if(!verbose) printf(" %.2f ",cycle_per_op);                   \
             fflush(NULL);                                                 \
