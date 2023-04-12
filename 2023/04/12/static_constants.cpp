@@ -1,4 +1,4 @@
-
+#include <tuple>
 #include <chrono>
 #include <cstdint>
 #include <cstdio>
@@ -33,9 +33,10 @@ std::string_view grab(size_t idx) {
   return options[idx];
 }
 
+volatile size_t counter = 0;
+
 std::tuple<double, double> simulation(const size_t N) {
   double t1, t2;
-  volatile size_t counter = 0;
 
   {
 
@@ -55,7 +56,6 @@ std::tuple<double, double> simulation(const size_t N) {
     uint64_t finish = nano();
     t2 = double(finish - start) / N;
   }
-  (void) counter;
   return {t1, t2};
 }
 
@@ -77,10 +77,7 @@ void demo() {
 }
 
 int main() {
-  puts("We report ns/string_view (first non-static, then static_).\n");
-  demo();
-  demo();
-  demo();
-  demo();
-
+  puts("We report ns/string_view (first constexpr static, then const static).\n");
+  for(size_t i = 0; i < 10; i++) { demo(); }
+  printf("bogus: %zu \n", counter);
 }
