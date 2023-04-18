@@ -38,3 +38,8 @@ size_t t() {
   a.array.resize(10);
   return f(a);
 }
+
+int main() {
+  t();
+  return 0;
+}
