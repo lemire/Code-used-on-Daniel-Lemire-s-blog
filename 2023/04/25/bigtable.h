@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
- const unsigned char BitsSetTable256mul2[256] = {
+const unsigned char BitsSetTable256mul2[256] = {
     0,  2,  2,  4,  2,  4,  4,  6,  2,  4,  4,  6,  4,  6,  6,  8,  2,  4,  4,
     6,  4,  6,  6,  8,  4,  6,  6,  8,  6,  8,  8,  10, 2,  4,  4,  6,  4,  6,
     6,  8,  4,  6,  6,  8,  6,  8,  8,  10, 4,  6,  6,  8,  6,  8,  8,  10, 6,
@@ -122,7 +122,6 @@ const uint64_t thintable_epi8[256] = {
     0x0000000000000201, 0x0000000000000200, 0x0000000000000002,
     0x0000000000000100, 0x0000000000000001, 0x0000000000000000,
     0x0000000000000000,
-}; //static uint64_t thintable_epi8[256]
+}; // static uint64_t thintable_epi8[256]
 
-
-#endif 
+#endif
