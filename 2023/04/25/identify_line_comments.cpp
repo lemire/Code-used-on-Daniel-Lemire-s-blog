@@ -10,9 +10,9 @@
 
 struct bitmask {
   explicit bitmask(size_t capacity)
-      : line_start((capacity + 63) / 64), hash((capacity + 63) / 64),
+      : line_end((capacity + 63) / 64), hash((capacity + 63) / 64),
         comment((capacity + 63) / 64) {}
-  std::vector<uint64_t> line_start;
+  std::vector<uint64_t> line_end;
   std::vector<uint64_t> hash;
   std::vector<uint64_t> comment;
 };
@@ -56,7 +56,7 @@ bitmask compute_bitmask(std::string_view input) {
     uint8x16_t data = vld1q_u8((const uint8_t *)input.data() + i);
     uint16_t endoflinemask = to_bitmask(vceqq_u8(data, endofline));
     uint16_t hashmask = to_bitmask(vceqq_u8(data, hash));
-    memcpy(reinterpret_cast<uint8_t *>(answer.line_start.data()) + i / 8,
+    memcpy(reinterpret_cast<uint8_t *>(answer.line_end.data()) + i / 8,
            &endoflinemask, sizeof(uint16_t));
     memcpy(reinterpret_cast<uint8_t *>(answer.hash.data()) + i / 8, &hashmask,
            sizeof(uint16_t));
@@ -64,7 +64,7 @@ bitmask compute_bitmask(std::string_view input) {
   for (; i < input.size(); i++) {
     if (input[i] ==
         '\n') { // we consider that right after '\n', we start a new line.
-      answer.line_start[i / 64] |= uint64_t(1) << (i % 64);
+      answer.line_end[i / 64] |= uint64_t(1) << (i % 64);
     }
     if (input[i] == '#') {
       answer.hash[i / 64] |= uint64_t(1) << (i % 64);
@@ -85,7 +85,7 @@ bitmask compute_bitmask(std::string_view input) {
   for (size_t i = 0; i < input.size(); i++) {
     if (input[i] ==
         '\n') { // we consider that right after '\n', we start a new line.
-      answer.line_start[i / 64] |= uint64_t(1) << (i % 64);
+      answer.line_end[i / 64] |= uint64_t(1) << (i % 64);
     }
     if (input[i] == '#') {
       answer.hash[i / 64] |= uint64_t(1) << (i % 64);
@@ -99,12 +99,12 @@ bitmask compute_bitmask(std::string_view input) {
 
 void comment_trimmer(bitmask &b) {
   bool overflow = 1;
-  for (size_t i = 0; i < b.line_start.size(); i++) {
-    overflow = __builtin_usubll_overflow(b.hash[i], b.line_start[i] + overflow,
+  for (size_t i = 0; i < b.line_end.size(); i++) {
+    overflow = __builtin_usubll_overflow(b.hash[i], b.line_end[i] + overflow,
                                          &b.comment[i]);
     b.comment[i] &=
         ~b.hash[i]; // when there is more than one #, we want to remove it.
-    b.comment[i] |= b.line_start[i]; // we want to keep the line start bits.
+    b.comment[i] |= b.line_end[i]; // we want to keep the line start bits.
   }
 }
 
