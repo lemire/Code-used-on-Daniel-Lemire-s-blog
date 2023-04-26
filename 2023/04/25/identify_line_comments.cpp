@@ -101,8 +101,11 @@ void comment_trimmer(bitmask &b) {
   bool overflow = 1;
   for (size_t i = 0; i < b.line_end.size(); i++) {
     // We subtract b.line_end from b.hash, with overflow handling.
-    overflow = __builtin_usubll_overflow(b.hash[i], b.line_end[i] + overflow,
-                                         (unsigned long long*)&b.comment[i]);
+    uint64_t line_end_plus_overflow;
+    overflow = __builtin_uaddll_overflow(b.line_end[i], overflow,
+                                         &line_end_plus_overflow) |
+               __builtin_usubll_overflow(b.hash[i], line_end_plus_overflow,
+                                         (unsigned long long *)&b.comment[i]);
     b.comment[i] &=
         ~b.hash[i]; // when there is more than one #, we want to remove it.
     b.comment[i] |= b.line_end[i]; // we want to keep the line start bits.
