@@ -1,5 +1,5 @@
-hello: hello.cpp
-	c++ -o hello hello.cpp
+hello: hello.c
+	cc  -g -o hello hello.c -lSegFault
 
 clean:
 	rm -r -f hello

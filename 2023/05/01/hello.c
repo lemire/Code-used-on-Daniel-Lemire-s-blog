@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void go() { printf("%d\n", *((int *)NULL)); }
+void go() { 
+	int x = 0;
+	x += *((int *)NULL); 
+}
 
 int main() { go(); }
