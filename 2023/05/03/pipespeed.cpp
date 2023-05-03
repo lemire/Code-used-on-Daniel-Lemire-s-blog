@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
-
+#include <cstring>
 uint64_t nano() {
   return std::chrono::duration_cast<::std::chrono::nanoseconds>(
              std::chrono::steady_clock::now().time_since_epoch())
