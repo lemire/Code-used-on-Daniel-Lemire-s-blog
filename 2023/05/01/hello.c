@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void go() { 
+int go() { 
 	int x = 0;
 	x += *((int *)NULL); 
+	return x;
 }
 
-int main() { go(); }
+int main() { return go(); }
