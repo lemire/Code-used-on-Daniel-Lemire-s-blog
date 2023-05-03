@@ -29,11 +29,6 @@ int main() {
     blocks++;
     size_t capacity = tr + offset;
     line_iterator li(cachebuffer.get(), capacity);
-    if (li.find_another_complete_line()) {
-      std::string_view line = li.grab_line();
-      sum_of_lines += line.size() + 1;
-      lines++;
-    }
     while (li.find_another_complete_line()) {
       std::string_view line = li.grab_line();
       sum_of_lines += line.size() + 1;
