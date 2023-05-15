@@ -56,6 +56,28 @@ uint64_t utf8_length_kvakil(const uint8_t *data, uint32_t length) {
   return result + length;
 }
 
+uint64_t utf8_length_faster(const uint8_t *data, uint32_t length) {
+  uint64_t result = 0;
+  const int lanes = sizeof(uint8x16_t);
+  uint8_t rem = length % lanes;
+  const uint8_t *simd_end = data + (length / lanes) * lanes;
+  const uint8x16_t threshold = vdupq_n_u8(0x80);
+  for (; data < simd_end; data += lanes) {
+    // load 16 bits
+    uint8x16_t input = vld1q_u8(data);
+    // compare to threshold (0x80)
+    uint8x16_t withhighbit = vcgeq_u8(input, threshold);
+    // vertical addition
+    result -= vaddvq_s8(withhighbit);
+  }
+  // scalar tail
+  for (uint8_t j = 0; j < rem; j++) {
+    result += (simd_end[j] >> 7);
+  }
+  return result + length;
+}
+
+
 int main() {
   size_t trials = 3;
   size_t warm_trials = 3;
@@ -90,6 +112,24 @@ int main() {
   for (size_t t = 0; t < trials + warm_trials; t++) {
     uint64_t before = nano();
     len = utf8_length_kvakil(input, N);
+    uint64_t after = nano();
+    if (t >= warm_trials) {
+      std::cout << "ns/bytes " << double(after - before) / (len) << std::endl;
+      std::cout << "GB/s " << (len)/double(after - before) << std::endl;
+
+    }
+  }
+  if (len != expected) {
+    printf("%zu %zu \n", len, expected);
+    abort();
+  }
+  std::cout << std::endl;
+
+
+  std::cout << "faster" << std::endl;
+  for (size_t t = 0; t < trials + warm_trials; t++) {
+    uint64_t before = nano();
+    len = utf8_length_faster(input, N);
     uint64_t after = nano();
     if (t >= warm_trials) {
       std::cout << "ns/bytes " << double(after - before) / (len) << std::endl;
