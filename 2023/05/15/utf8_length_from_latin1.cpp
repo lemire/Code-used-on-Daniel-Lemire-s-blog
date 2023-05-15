@@ -37,7 +37,7 @@ uint64_t utf8_length_kvakil(const uint8_t *data, uint32_t length) {
   const uint8_t *simd_end = data + (length / lanes) * lanes;
   const uint8x16_t threshold = vdupq_n_u8(0x80);
   for (; data < simd_end; data += lanes) {
-    // load 16 bits
+    // load 16 bytes
     uint8x16_t input = vld1q_u8(data);
     // compare to threshold (0x80)
     uint8x16_t withhighbit = vcgeq_u8(input, threshold);
