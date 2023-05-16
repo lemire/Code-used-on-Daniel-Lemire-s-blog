@@ -10,16 +10,9 @@ uint64_t nano() {
       .count();
 }
 
-size_t pure_scalar_utf8_length(const uint8_t *c, size_t len) {
-  size_t answer = 0;
-  for (size_t i = 0; i < len; i++) {
-    if ((c[i] >> 7)) {
-      answer++;
-    }
-  }
-  return answer + len;
-}
 
+
+__attribute__((noinline))
 size_t scalar_utf8_length(const uint8_t *c, size_t len) {
   size_t answer = 0;
   for (size_t i = 0; i < len; i++) {
@@ -29,7 +22,9 @@ size_t scalar_utf8_length(const uint8_t *c, size_t len) {
   }
   return answer + len;
 }
+
 // from https://github.com/nodejs/node/pull/48009#issuecomment-1547344694
+__attribute__((noinline))
 uint64_t utf8_length_kvakil(const uint8_t *data, uint32_t length) {
   uint64_t result = 0;
   const int lanes = sizeof(uint8x16_t);
@@ -56,6 +51,7 @@ uint64_t utf8_length_kvakil(const uint8_t *data, uint32_t length) {
   return result + length;
 }
 
+__attribute__((noinline))
 uint64_t utf8_length_faster(const uint8_t *data, uint32_t length) {
   uint64_t result = 0;
   const int lanes = sizeof(uint8x16_t);
@@ -77,6 +73,58 @@ uint64_t utf8_length_faster(const uint8_t *data, uint32_t length) {
   return result + length;
 }
 
+__attribute__((noinline))
+uint64_t utf8_length_shift(const uint8_t *data, uint32_t length) {
+  uint64_t result = length;
+  
+  while(length >= 64) {
+    uint8x16_t acc1, acc2, acc3, acc4;
+    acc1 = acc2 = acc3 = acc4 = vdupq_n_u8(0);
+    unsigned iters = length / 64;
+    if(iters > 255) iters = 255;
+    length -= 64 * iters;
+    while(iters--) {
+      acc1 = vsraq_n_u8(acc1, vld1q_u8(data), 7);
+      acc2 = vsraq_n_u8(acc2, vld1q_u8(data + 16), 7);
+      acc3 = vsraq_n_u8(acc3, vld1q_u8(data + 32), 7);
+      acc4 = vsraq_n_u8(acc4, vld1q_u8(data + 48), 7);
+      data += 64;
+    }
+    uint16x8_t sum1 = vpaddlq_u8(acc1), sum2 = vpaddlq_u8(acc2);
+    sum1 = vpadalq_u8(sum1, acc3);
+    sum2 = vpadalq_u8(sum2, acc4);
+    sum1 = vaddq_u16(sum1, sum2);
+    result += vaddvq_u16(sum1);
+  }
+  
+  // scalar tail
+  for (uint8_t j = 0; j < length; j++) {
+    result += (data[j] >> 7);
+  }
+  return result;
+}
+
+__attribute__((noinline))
+uint64_t utf8_length_strager(const uint8_t *data, uint32_t length) {
+   uint64_t result = 0;
+
+   const int simd_lanes = sizeof(uint8x16_t);
+
+   const uint8_t *simd_end = data + (length / simd_lanes) * simd_lanes;
+   uint32_t length_after_simd = length % simd_lanes;
+   for (; data < simd_end; data += simd_lanes) {
+     uint8x16_t chunk = vld1q_u8(data);
+     uint8x16_t high_bits = vshrq_n_u8(chunk, 7);
+     result += vaddvq_u8(high_bits);
+   }
+
+   const uint8_t *scalar_end = data + length_after_simd;
+   for (; data < scalar_end; data += 1) {
+     result += *data >> 7;
+   }
+
+   return result + length;
+ }
 
 int main() {
   size_t trials = 3;
@@ -130,6 +178,43 @@ int main() {
   for (size_t t = 0; t < trials + warm_trials; t++) {
     uint64_t before = nano();
     len = utf8_length_faster(input, N);
+    uint64_t after = nano();
+    if (t >= warm_trials) {
+      std::cout << "ns/bytes " << double(after - before) / (len) << std::endl;
+      std::cout << "GB/s " << (len)/double(after - before) << std::endl;
+
+    }
+  }
+  if (len != expected) {
+    printf("%zu %zu \n", len, expected);
+    abort();
+  }
+  std::cout << std::endl;
+
+
+
+  std::cout << "shift" << std::endl;
+  for (size_t t = 0; t < trials + warm_trials; t++) {
+    uint64_t before = nano();
+    len = utf8_length_shift(input, N);
+    uint64_t after = nano();
+    if (t >= warm_trials) {
+      std::cout << "ns/bytes " << double(after - before) / (len) << std::endl;
+      std::cout << "GB/s " << (len)/double(after - before) << std::endl;
+
+    }
+  }
+  if (len != expected) {
+    printf("%zu %zu \n", len, expected);
+    abort();
+  }
+  std::cout << std::endl;
+
+
+  std::cout << "strager" << std::endl;
+  for (size_t t = 0; t < trials + warm_trials; t++) {
+    uint64_t before = nano();
+    len = utf8_length_strager(input, N);
     uint64_t after = nano();
     if (t >= warm_trials) {
       std::cout << "ns/bytes " << double(after - before) / (len) << std::endl;
