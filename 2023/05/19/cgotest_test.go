@@ -28,6 +28,12 @@ func BenchmarkAllocateAuto(b *testing.B) {
 	}
 }
 
+func BenchmarkAllocateAutoDummy(b *testing.B) {
+	for j := 0; j < b.N; j++ {
+		AllocateAuto()
+	}
+}
+
 func BenchmarkAdditionGo(b *testing.B) {
 	t := 0
 	for j := 0; j < b.N; j++ {

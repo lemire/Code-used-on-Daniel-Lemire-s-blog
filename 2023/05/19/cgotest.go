@@ -29,7 +29,13 @@ func AllocateFree() {
 }
 func AllocateAuto() *Cstr {
 	answer := &Cstr{C.allocate()}
-	runtime.SetFinalizer(answer, FreeCstr)
+	runtime.SetFinalizer(answer, func(c *Cstr) { C.free_allocated(c.cpointer); runtime.KeepAlive(c) })
+	return answer
+}
+
+func AllocateDummy() *Cstr {
+	answer := &Cstr{C.allocate()}
+	runtime.SetFinalizer(answer, func(c *Cstr) {})
 	return answer
 }
 
