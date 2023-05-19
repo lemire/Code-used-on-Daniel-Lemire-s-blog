@@ -163,6 +163,89 @@ utf8_length_strager_sra_unrolled(const uint8_t *data, uint32_t length) {
   return result + length;
 }
 
+uint64_t utf8_length_shift_v2(const uint8_t *data, uint32_t length) {
+  uint64_t result = length;
+  const size_t BYTES_PER_ITER_SHIFT_V2 = 192;
+
+  while (length >= BYTES_PER_ITER_SHIFT_V2) {
+    uint8x16_t tmp1, tmp2, tmp3, tmp4;
+    uint8x16_t acc1, acc2, acc3, acc4, acc5, acc6, acc7, acc8, acc9, acc10,
+        acc11, acc12;
+    unsigned iters = length / BYTES_PER_ITER_SHIFT_V2;
+    if (iters > 255)
+      iters = 255;
+    length -= BYTES_PER_ITER_SHIFT_V2 * iters;
+
+    acc1 = vshrq_n_u8(vld1q_u8(data), 7);
+    acc2 = vshrq_n_u8(vld1q_u8(data + 16), 7);
+    acc3 = vshrq_n_u8(vld1q_u8(data + 32), 7);
+    acc4 = vshrq_n_u8(vld1q_u8(data + 48), 7);
+    acc5 = vshrq_n_u8(vld1q_u8(data + 64), 7);
+    acc6 = vshrq_n_u8(vld1q_u8(data + 80), 7);
+    acc7 = vshrq_n_u8(vld1q_u8(data + 96), 7);
+    acc8 = vshrq_n_u8(vld1q_u8(data + 112), 7);
+    acc9 = vshrq_n_u8(vld1q_u8(data + 128), 7);
+    acc10 = vshrq_n_u8(vld1q_u8(data + 144), 7);
+    acc11 = vshrq_n_u8(vld1q_u8(data + 160), 7);
+    acc12 = vshrq_n_u8(vld1q_u8(data + 176), 7);
+    data += BYTES_PER_ITER_SHIFT_V2;
+
+    while (--iters) {
+      acc1 = vsraq_n_u8(acc1, vld1q_u8(data), 7);
+      acc2 = vsraq_n_u8(acc2, vld1q_u8(data + 16), 7);
+      acc3 = vsraq_n_u8(acc3, vld1q_u8(data + 32), 7);
+      acc4 = vsraq_n_u8(acc4, vld1q_u8(data + 48), 7);
+      acc5 = vsraq_n_u8(acc5, vld1q_u8(data + 64), 7);
+      acc6 = vsraq_n_u8(acc6, vld1q_u8(data + 80), 7);
+      acc7 = vsraq_n_u8(acc7, vld1q_u8(data + 96), 7);
+      acc8 = vsraq_n_u8(acc8, vld1q_u8(data + 112), 7);
+
+      tmp1 = vcltzq_s8(vld1q_s8((int8_t *)data + 128));
+      tmp2 = vcltzq_s8(vld1q_s8((int8_t *)data + 144));
+      tmp3 = vcltzq_s8(vld1q_s8((int8_t *)data + 160));
+      tmp4 = vcltzq_s8(vld1q_s8((int8_t *)data + 176));
+      // asm volatile("" ::: "memory");
+      //  Use a barrier to induce the correct scheduling from GCC
+      //  Trying to ensure USRA uops do not contend with CMLT and SUB uops
+      //  when only half of ASIMD pipes support USRA uops (and all support
+      //  CMLT and SUB)
+      acc9 = vsubq_u8(acc9, tmp1);
+      acc10 = vsubq_u8(acc10, tmp2);
+      acc11 = vsubq_u8(acc11, tmp3);
+      acc12 = vsubq_u8(acc12, tmp4);
+
+      data += BYTES_PER_ITER_SHIFT_V2;
+    }
+    uint16x8_t sum1 = vpaddlq_u8(acc1);
+    uint16x8_t sum2 = vpaddlq_u8(acc2);
+    uint16x8_t sum3 = vpaddlq_u8(acc3);
+    uint16x8_t sum4 = vpaddlq_u8(acc4);
+    uint16x8_t sum5 = vpaddlq_u8(acc5);
+    uint16x8_t sum6 = vpaddlq_u8(acc6);
+
+    sum1 = vpadalq_u8(sum1, acc7);
+    sum2 = vpadalq_u8(sum2, acc8);
+    sum3 = vpadalq_u8(sum3, acc9);
+    sum4 = vpadalq_u8(sum4, acc10);
+    sum5 = vpadalq_u8(sum5, acc11);
+    sum6 = vpadalq_u8(sum6, acc12);
+
+    sum1 = vaddq_u16(sum1, sum2);
+    sum3 = vaddq_u16(sum3, sum4);
+    sum5 = vaddq_u16(sum5, sum6);
+
+    sum1 = vaddq_u16(sum1, sum3);
+    sum1 = vaddq_u16(sum1, sum5);
+    result += vaddvq_u16(sum1);
+  }
+
+  // scalar tail
+  for (uint8_t j = 0; j < length; j++) {
+    result += (data[j] >> 7);
+  }
+  return result;
+}
+
 int main() {
   size_t trials = 3;
   size_t warm_trials = 3;
@@ -273,5 +356,20 @@ int main() {
   }
   std::cout << std::endl;
 
+  std::cout << "v2" << std::endl;
+  for (size_t t = 0; t < trials + warm_trials; t++) {
+    uint64_t before = nano();
+    len = utf8_length_shift_v2(input, N);
+    uint64_t after = nano();
+    if (t >= warm_trials) {
+      std::cout << "ns/bytes " << double(after - before) / (len) << std::endl;
+      std::cout << "GB/s " << (len) / double(after - before) << std::endl;
+    }
+  }
+  if (len != expected) {
+    printf("%zu %zu \n", len, expected);
+    abort();
+  }
+  std::cout << std::endl;
   return EXIT_SUCCESS;
 }
