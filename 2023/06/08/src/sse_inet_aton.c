@@ -141,7 +141,7 @@ const static uint8_t patterns[81][16] = {
 int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint32_t * destination) {
   //const size_t n = ipv4_string_length;
   // This function always reads 16 bytes. With AVX-512 we can do a mask
-  // load, but it is 
+  // load, but it is not generally available with SSE 4.1.
   const __m128i input = _mm_loadu_si128((const __m128i *)ipv4_string);
   if (ipv4_string_length > 15) {
     return 0;
