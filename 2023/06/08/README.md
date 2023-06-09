@@ -13,3 +13,9 @@ In this article, Mula describes several SIMD-based algorithm. Our approach is si
 4. We validate by comparing the expected length of the address (which we get from the mask) instead of Mula's approach of validating by store the dot mask.
 
 Overall, we get a performance that is similar or better than the fastest Mula's scheme, while using relatively little memory.
+
+We benchmark against inet_pton, with the IPv4 flag, which is documented as follows:
+
+> src points to a character string containing an IPv4 network address in
+> dotted-decimal format, “ddd.ddd.ddd.ddd”, where ddd is a decimal
+> number of up to three digits in the range 0 to 255.
