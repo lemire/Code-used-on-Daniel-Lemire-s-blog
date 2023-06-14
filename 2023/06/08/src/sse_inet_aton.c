@@ -187,10 +187,18 @@ int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint
   const __m128i t2 = _mm_sub_epi8(t1b, ascii0);
   // check that everything was in the range '0' to '9'
   {
-    const __m128i c9 = _mm_set1_epi8('9' - '0');
+    // There are two ways to do it, the second one saves one instruction
+    // under LLVM clang 16. Under both GCC and clang, they have the same performance:
+    /*const __m128i c9 = _mm_set1_epi8('9' - '0');
     const __m128i t2m = _mm_max_epu8(t2, c9);
     const __m128i t2me = _mm_cmpeq_epi8(t2m, c9);
     if (!_mm_test_all_ones(t2me)) {
+      return 0;
+    }*/
+    const __m128i t2z = _mm_add_epi8(t2,_mm_set1_epi8(-128) );
+    const __m128i c9 = _mm_set1_epi8('9' - '0' - 128);
+    const __m128i t2me = _mm_cmpgt_epi8(t2z, c9);
+    if (!_mm_test_all_zeros(t2me, t2me)) {
       return 0;
     }
   }
@@ -198,6 +206,8 @@ int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint
   const __m128i weights =
       _mm_setr_epi8(1, 10, 1, 10, 1, 10, 1, 10, 100, 0, 100, 0, 100, 0, 100, 0);
   const __m128i t3 = _mm_maddubs_epi16(t2, weights);
+  // In t3, we have 8 16-bit values, the first four combine the two first digits, and
+  // the 4 next 16-bit valued are made of the third digits.
   const __m128i t4 = _mm_alignr_epi8(t3, t3, 8);
   const __m128i t5 = _mm_add_epi16(t4, t3);
   // Test that we don't overflow (over 255)
@@ -208,5 +218,5 @@ int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint
   // pack and we are done!
   const __m128i t6 = _mm_packus_epi16(t5, t5);
   *destination = _mm_cvtsi128_si32(t6);
-  return ipv4_string_length - (size_t)pat[6];
+  return (ipv4_string_length - (size_t)pat[6]);
 }
