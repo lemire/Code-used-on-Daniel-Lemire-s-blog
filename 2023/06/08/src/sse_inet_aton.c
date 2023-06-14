@@ -32,7 +32,7 @@ relatively little memory.
 
 */
 
-const static uint8_t patterns_id[256] = {
+static const uint8_t patterns_id[256] = {
     38,  65,  255, 56,  73,  255, 255, 255, 255, 255, 255, 3,   255, 255, 6,
     255, 255, 9,   255, 27,  255, 12,  30,  255, 255, 255, 255, 15,  255, 33,
     255, 255, 255, 255, 18,  36,  255, 255, 255, 54,  21,  255, 39,  255, 255,
@@ -53,7 +53,7 @@ const static uint8_t patterns_id[256] = {
     20,
 };
 
-const static uint8_t patterns[81][16] = {
+static const uint8_t patterns[81][16] = {
   {0, 128, 2, 128, 4, 128, 6, 128, 128, 128, 128, 128, 128, 128, 128, 128},
   {0, 128, 2, 128, 4, 128, 7, 6, 128, 128, 128, 128, 128, 128, 128, 6},
   {0, 128, 2, 128, 4, 128, 8, 7, 128, 128, 128, 128, 128, 128, 6, 6},
@@ -157,7 +157,7 @@ int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint
 
   // build a hashcode
 
-  const uint8_t hashcode = ((6639 * dotmask) >> 13);
+  const uint8_t hashcode = (uint8_t)((6639 * dotmask) >> 13);
   // grab the index of the shuffle mask
   const uint8_t id = patterns_id[hashcode];
   if (id >= 81) {
@@ -175,7 +175,7 @@ int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint
   // check that leading digits of 2- 3- numbers are not zeros.
   {
     const __m128i eq0 = _mm_cmpeq_epi8(t1, ascii0);
-    if (!_mm_testz_si128(eq0, _mm_set_epi8(0xff, 0, 0xff, 0, 0xff, 0, 0xff, 0,
+    if (!_mm_testz_si128(eq0, _mm_set_epi8(-1, 0, -1, 0, -1, 0, -1, 0,
                                            0, 0, 0, 0, 0, 0, 0, 0))) {
       return 0;
     }
@@ -211,14 +211,14 @@ int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint
   const __m128i t4 = _mm_alignr_epi8(t3, t3, 8);
   const __m128i t5 = _mm_add_epi16(t4, t3);
   // Test that we don't overflow (over 255)
-  if (!_mm_testz_si128(t5, _mm_set_epi8(0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0, 0xff,
-                                        0, 0xff, 0, 0xff, 0))) {
+  if (!_mm_testz_si128(t5, _mm_set_epi8(0, 0, 0, 0, 0, 0, 0, 0, -1, 0, -1,
+                                        0, -1, 0, -1, 0))) {
     return 0;
   }
   // pack and we are done!
   const __m128i t6 = _mm_packus_epi16(t5, t5);
   *destination = (uint32_t)_mm_cvtsi128_si32(t6);
-  return (ipv4_string_length - (size_t)pat[6]);
+  return ((int)ipv4_string_length - (int)pat[6]);
 }
 
 
@@ -243,7 +243,7 @@ int sse_inet_aton_16(const char* ipv4_string, uint32_t * destination) {
     ipv4_string_length = __builtin_popcount(m) - 1;
   }
   // build a hashcode
-  const uint8_t hashcode = ((6639 * dotmask) >> 13);
+  const uint8_t hashcode = (uint8_t)((6639 * dotmask) >> 13);
   // grab the index of the shuffle mask
   const uint8_t id = patterns_id[hashcode];
   if (id >= 81) {
@@ -261,7 +261,7 @@ int sse_inet_aton_16(const char* ipv4_string, uint32_t * destination) {
   // check that leading digits of 2- 3- numbers are not zeros.
   {
     const __m128i eq0 = _mm_cmpeq_epi8(t1, ascii0);
-    if (!_mm_testz_si128(eq0, _mm_set_epi8(0xff, 0, 0xff, 0, 0xff, 0, 0xff, 0,
+    if (!_mm_testz_si128(eq0, _mm_set_epi8(-1, 0, -1, 0, -1, 0, -1, 0,
                                            0, 0, 0, 0, 0, 0, 0, 0))) {
       return 0;
     }
@@ -287,8 +287,8 @@ int sse_inet_aton_16(const char* ipv4_string, uint32_t * destination) {
   const __m128i t4 = _mm_alignr_epi8(t3, t3, 8);
   const __m128i t5 = _mm_add_epi16(t4, t3);
   // Test that we don't overflow (over 255)
-  if (!_mm_testz_si128(t5, _mm_set_epi8(0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0, 0xff,
-                                        0, 0xff, 0, 0xff, 0))) {
+  if (!_mm_testz_si128(t5, _mm_set_epi8(0, 0, 0, 0, 0, 0, 0, 0, -1, 0, -1,
+                                        0, -1, 0, -1, 0))) {
     return 0;
   }
   // pack and we are done!
