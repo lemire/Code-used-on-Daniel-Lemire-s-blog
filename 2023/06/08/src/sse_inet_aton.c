@@ -3,7 +3,6 @@
 
 #include <x86intrin.h> // update if we need to support Windows.
 
-
 /**
 
 This assumes Linux/macOS and a processor with SSE 4.1 (virtually any x64 processor in operation today).
@@ -139,7 +138,6 @@ const static uint8_t patterns[81][16] = {
 };
 
 int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint32_t * destination) {
-  //const size_t n = ipv4_string_length;
   // This function always reads 16 bytes. With AVX-512 we can do a mask
   // load, but it is not generally available with SSE 4.1.
   const __m128i input = _mm_loadu_si128((const __m128i *)ipv4_string);
@@ -158,19 +156,21 @@ int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint
   }
 
   // build a hashcode
-  const uint8_t hashcode = ((6639 * dotmask) >> 13);
 
+  const uint8_t hashcode = ((6639 * dotmask) >> 13);
   // grab the index of the shuffle mask
   const uint8_t id = patterns_id[hashcode];
   if (id >= 81) {
     return 0;
   }
   const uint8_t *pat = &patterns[id][0];
+
   const __m128i pattern = _mm_loadu_si128((const __m128i *)pat);
   // The value of the shuffle mask at a specific index points at the last digit,
   // we check that it matches the length of the input.
   const __m128i ascii0 = _mm_set1_epi8('0');
   const __m128i t0 = input;
+
   __m128i t1 = _mm_shuffle_epi8(t0, pattern);
   // check that leading digits of 2- 3- numbers are not zeros.
   {
@@ -208,5 +208,5 @@ int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint
   // pack and we are done!
   const __m128i t6 = _mm_packus_epi16(t5, t5);
   *destination = _mm_cvtsi128_si32(t6);
-  return 1;
+  return ipv4_string_length - (size_t)pat[6];
 }
