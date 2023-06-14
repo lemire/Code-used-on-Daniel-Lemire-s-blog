@@ -6,6 +6,8 @@
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <x86intrin.h>
+
 extern "C" {
 #include "sse_inet_aton.h"
 }
@@ -77,7 +79,7 @@ bool test_bad() {
   return true;
 }
 
-#include <x86intrin.h>
+// credit: @aqrit
 static void bitmask_to_teststring(uint16_t bitmap, char *buf) {
   const __m128i bit_id =
       _mm_set_epi32(0x80402010, 0x08040201, 0x80402010, 0x08040201);
@@ -94,8 +96,8 @@ static void bitmask_to_teststring(uint16_t bitmap, char *buf) {
   _mm_storeu_si128((__m128i *)buf, r);
 }
 
+// credit: @aqrit
 bool test_adversarial() {
-
   uint64_t n = 0;
 #pragma omp parallel for reduction(+ : n)
   for (uint16_t i = 0; i < 0x8000; i++) {
