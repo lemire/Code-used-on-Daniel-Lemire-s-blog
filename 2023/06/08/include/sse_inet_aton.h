@@ -19,4 +19,9 @@
 // processors in operation today (June 2023).
 //
 int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint32_t * destination);
+
+// This works like sse_inet_aton except that the length of the IP address is determined
+// automatically after reading 16 bytes by selecting only the leading digits and dots.
+int sse_inet_aton_16(const char* ipv4_string, uint32_t * destination);
+
 #endif // SSE_INET_ATON_H

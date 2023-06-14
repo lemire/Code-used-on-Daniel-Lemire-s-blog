@@ -66,6 +66,13 @@ int main() {
                    sum += ipv4;
                  }
                }));
+  pretty_print(N, bytes, "sse_inet_aton_16", bench([&test_data, &sum]() {
+                 for (const std::string &s : test_data) {
+                  uint32_t ipv4;
+                   sse_inet_aton_16(s.data(), &ipv4); // should check error
+                   sum += ipv4;
+                 }
+               }));
   pretty_print(N, bytes, "inet_pton", bench([&test_data, &sum]() {
                  for (const std::string &s : test_data) {
                   uint32_t ipv4;

@@ -47,6 +47,16 @@ bool test_exhaustive() {
       printf("[sse_inet_aton] bad value %x %x \n", ipv4, uint32_t(x));
       errors++;
     }
+    err = sse_inet_aton_16(view.data(), &ipv4);
+    if (err != 1) {
+      printf("[sse_inet_aton_16] non-one error code\n");
+      printf(" value %x \n", err);
+      errors++;
+    }
+    if (ipv4 != x) {
+      printf("[sse_inet_aton_16] bad value %x %x \n", ipv4, uint32_t(x));
+      errors++;
+    }
     err = inet_pton(AF_INET, view.data(), &ipv4);
     if (err != 1) {
       printf("[inet_pton] non-one error code\n");
@@ -79,6 +89,21 @@ bool test_bad() {
   return true;
 }
 
+bool test_bad2() {
+  std::string bad = "111.1.1.1.111111";
+  bad.reserve(16);
+  uint32_t ipv4;
+  int err = sse_inet_aton(bad.data(), bad.size(), &ipv4);
+  if (err == 1) {
+    std::cout << " it should not allow this string to be valid " << bad
+              << std::endl;
+    return false;
+  }
+  return true;
+}
+
+
+
 // credit: @aqrit
 static void bitmask_to_teststring(uint16_t bitmap, char *buf) {
   const __m128i bit_id =
@@ -99,19 +124,25 @@ static void bitmask_to_teststring(uint16_t bitmap, char *buf) {
 // credit: @aqrit
 bool test_adversarial() {
   uint64_t n = 0;
-#pragma omp parallel for reduction(+ : n)
+  //#pragma omp parallel for reduction(+ : n)
   for (uint16_t i = 0; i < 0x8000; i++) {
     char buf[16];
     bitmask_to_teststring(i, buf);
-    for (int j = 15; j != 0; j--) {
-      uint32_t ipv4_1;
-      uint32_t ipv4_2;
-      int res = sse_inet_aton(buf, strlen(buf), &ipv4_1);
-      int ref = inet_pton(AF_INET, buf, &ipv4_2);
-      if ((ref != res) || (ref == 1 && ipv4_1 != ipv4_2)) {
-        printf("%s\n", buf);
-        n++;
-      }
+    
+    uint32_t ipv4_1;
+    uint32_t ipv4_2;
+    uint32_t ipv4_3;
+
+    int res = sse_inet_aton(buf, strlen(buf), &ipv4_1);
+    int ref = inet_pton(AF_INET, buf, &ipv4_2);
+    int res16 = sse_inet_aton_16(buf, &ipv4_3);
+    if (((ref == 1) != (res == 1)) || (ref == 1 && ipv4_1 != ipv4_2)) {
+      printf("sse_inet_aton %s\n", buf);
+      n++;
+    }
+    if (((ref == 1) != (res16 == 1)) || (ref == 1 && ipv4_3 != ipv4_2)) {
+      printf("sse_inet_aton_16 %s \n", buf);
+      n++;
     }
   }
   printf("errors: %d\n", (uint32_t)n);
@@ -119,6 +150,6 @@ bool test_adversarial() {
 }
 
 int main() {
-  return (test_bad() && test_adversarial() && test_exhaustive()) ? EXIT_SUCCESS
+  return (test_bad2() &&  test_adversarial() && test_bad() &&  test_exhaustive()) ? EXIT_SUCCESS
                                                    : EXIT_FAILURE;
 }
