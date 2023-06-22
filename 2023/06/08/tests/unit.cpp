@@ -47,7 +47,8 @@ bool test_exhaustive() {
       printf("[sse_inet_aton] bad value %x %x \n", ipv4, uint32_t(x));
       errors++;
     }
-    err = sse_inet_aton_16(view.data(), &ipv4);
+    size_t length;
+    err = sse_inet_aton_16(view.data(), &ipv4, &length);
     if (err != 1) {
       printf("[sse_inet_aton_16] non-one error code\n");
       printf(" value %x \n", err);
@@ -56,6 +57,25 @@ bool test_exhaustive() {
     if (ipv4 != x) {
       printf("[sse_inet_aton_16] bad value %x %x \n", ipv4, uint32_t(x));
       errors++;
+    }
+    if(length != view.size()) {
+      printf("[sse_inet_aton_16] bad length \n");
+      errors++;      
+    }
+
+    err = sse_inet_aton_16_branchless(view.data(), &ipv4, &length);
+    if (err != 1) {
+      printf("[sse_inet_aton_16_branchless] non-one error code\n");
+      printf(" value %x \n", err);
+      errors++;
+    }
+    if (ipv4 != x) {
+      printf("[sse_inet_aton_16_branchless] bad value %x %x \n", ipv4, uint32_t(x));
+      errors++;
+    }
+    if(length != view.size()) {
+      printf("[sse_inet_aton_16_branchless] bad length \n");
+      errors++;      
     }
     err = inet_pton(AF_INET, view.data(), &ipv4);
     if (err != 1) {
@@ -135,7 +155,8 @@ bool test_adversarial() {
 
     int res = sse_inet_aton(buf, strlen(buf), &ipv4_1);
     int ref = inet_pton(AF_INET, buf, &ipv4_2);
-    int res16 = sse_inet_aton_16(buf, &ipv4_3);
+    size_t length;
+    int res16 = sse_inet_aton_16(buf, &ipv4_3, &length);
     if (((ref == 1) != (res == 1)) || (ref == 1 && ipv4_1 != ipv4_2)) {
       printf("sse_inet_aton %s\n", buf);
       n++;

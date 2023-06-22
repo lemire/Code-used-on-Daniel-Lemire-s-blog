@@ -2,7 +2,7 @@
 #include "sse_inet_aton.h"
 
 #include <x86intrin.h> // update if we need to support Windows.
-
+#include <string.h>
 /**
 
 This assumes Linux/macOS and a processor with SSE 4.1 (virtually any x64 processor in operation today).
@@ -222,12 +222,11 @@ int sse_inet_aton(const char* ipv4_string, const size_t ipv4_string_length, uint
 }
 
 
-int sse_inet_aton_16(const char* ipv4_string, uint32_t * destination) {
+int sse_inet_aton_16(const char* ipv4_string, uint32_t * destination, size_t* restrict ipv4_string_length) {
   const __m128i input = _mm_loadu_si128((const __m128i *)ipv4_string);
   const __m128i dot = _mm_set1_epi8('.');
   // locate dots
   uint16_t dotmask;
-  int ipv4_string_length;
   {
     const __m128i ascii0_9 = _mm_setr_epi8(
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 0, 0, 0, 0, 0, 0);
@@ -240,7 +239,7 @@ int sse_inet_aton_16(const char* ipv4_string, uint32_t * destination) {
     // credit @aqrit
     m ^= (m + 1); // mask of lowest clear bit and below
     dotmask = ~digit_mask & m;
-    ipv4_string_length = __builtin_popcount(m) - 1;
+    *ipv4_string_length = (size_t)__builtin_popcount(m) - 1;
   }
   // build a hashcode
   const uint8_t hashcode = (uint8_t)((6639 * dotmask) >> 13);
@@ -266,11 +265,8 @@ int sse_inet_aton_16(const char* ipv4_string, uint32_t * destination) {
       return 0;
     }
   }
-  // replace null values with '0'
-  __m128i t1b = _mm_blendv_epi8(t1, ascii0, pattern);
-
   // subtract '0'
-  const __m128i t2 = _mm_sub_epi8(t1b, ascii0);
+  const __m128i t2 = _mm_subs_epu8(t1, ascii0);
   // check that there is no dot
   {
     const __m128i t2me = _mm_cmpeq_epi8(t1, dot);
@@ -294,5 +290,57 @@ int sse_inet_aton_16(const char* ipv4_string, uint32_t * destination) {
   // pack and we are done!
   const __m128i t6 = _mm_packus_epi16(t5, t5);
   *destination = (uint32_t)_mm_cvtsi128_si32(t6);
-  return (ipv4_string_length - (int)pat[6]);
+  return (int)(*ipv4_string_length - (int)pat[6]);
+}
+
+
+int sse_inet_aton_16_branchless(const char* ipv4_string, uint32_t * destination, size_t* restrict ipv4_string_length) {
+
+    __m128i v = _mm_loadu_si128((const __m128i *)ipv4_string);
+
+    __m128i is_dot = _mm_cmpeq_epi8(v, _mm_set1_epi8(0x2E));
+    uint32_t dot_mask = (uint32_t)_mm_movemask_epi8(is_dot);
+
+    // set non-digits to 0x80..0x89, set digits to 0x00..0x09
+    const __m128i saturation_distance = _mm_set1_epi8(0x76); // 0x7F - 9
+    v = _mm_xor_si128(v, _mm_set1_epi8(0x30)); // ascii '0'
+    v = _mm_adds_epu8(v, saturation_distance);
+    uint32_t non_digit_mask = (uint32_t)_mm_movemask_epi8(v);
+    v = _mm_subs_epi8(v, saturation_distance);
+
+    uint32_t bad_mask = dot_mask ^ non_digit_mask;
+    uint32_t clip_mask = bad_mask ^ (bad_mask - 1);
+    uint32_t partition_mask = non_digit_mask & clip_mask;
+
+    const uint32_t length = (uint32_t)_mm_popcnt_u32(clip_mask) - 1;
+
+    uint32_t hash_key = (partition_mask * 0x00CF7800) >> 24;
+    uint8_t hash_id = patterns_id[hash_key];
+    if (hash_id >= 81) {
+        return 0;
+    }
+    const uint8_t* const pattern_ptr = &patterns[hash_id][0];
+
+    __m128i shuf = _mm_loadu_si128((const __m128i *)pattern_ptr);
+    v = _mm_shuffle_epi8(v, shuf);
+
+    const __m128i mul_weights =
+        _mm_set_epi8(0,100, 0,100, 0,100, 0,100, 10,1, 10,1, 10,1, 10,1);
+    __m128i acc = _mm_maddubs_epi16(mul_weights, v);
+    __m128i swapped = _mm_shuffle_epi32(acc, _MM_SHUFFLE(1,0,3,2));
+    acc = _mm_adds_epu16(acc, swapped);
+
+    // check `v` for leading zeros in each partition, ignore lanes if partition has only one digit
+    // if hibyte of `acc` then bad_char or overflow
+    __m128i check_lz = _mm_xor_si128(_mm_cmpeq_epi8(_mm_setzero_si128(), v), shuf);
+    __m128i check_of = _mm_adds_epu16(_mm_set1_epi16(0x7F00), acc);
+    __m128i checks = _mm_or_si128(check_lz, check_of);
+    uint32_t check_mask = (uint32_t)_mm_movemask_epi8(checks);
+    check_mask &= 0x0000AA00; // the only lanes wanted
+
+    // pack and we are done!
+    uint32_t address = (uint32_t)_mm_cvtsi128_si32(_mm_packus_epi16(acc, acc));
+    *ipv4_string_length = length;
+    memcpy(destination, &address, 4);
+    return (int)(length + check_mask - pattern_ptr[6]);
 }
