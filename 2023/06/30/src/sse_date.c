@@ -44,7 +44,6 @@ static time_t mktime_from_utc(const struct tm *tm) {
   hours = days * 24 + tm->tm_hour;
   minutes = hours * 60 + tm->tm_min;
   seconds = minutes * 60 + tm->tm_sec;
-
   return seconds;
 }
 
@@ -81,16 +80,19 @@ bool sse_parse_time(const char *date_string, uint32_t *time_in_second) {
   // byte. the hsum needs 17-bits...  (max possible hsum is 107999 "29:59.59")
   // so also strip trailing zeros from the minute lane
   // (the scalar mul steals bits -which are zero- from an adjoining lower lane).
-  v = _mm_add_epi8(v, _mm_slli_epi16(v, 11));
+  //v = _mm_add_epi8(v, _mm_slli_epi16(v, 11));
   //
-  const __m128i weights =
-      _mm_set_epi8(0, 0, 1, 2, 15, 30, 36, 72, 1, 2, 1, 2, 1, 2, 1, 2);
-  v = _mm_maddubs_epi16(v, weights);
+  //const __m128i weights =
+  //    _mm_set_epi8(0, 0, 1, 2, 15, 30, 36, 72, 1, 2, 1, 2, 1, 2, 1, 2);
+  //v = _mm_maddubs_epi16(v, weights);
   // 0x000000SS0mmm0HHH`00DD00MM00YY00YY
 
+  const __m128i weights = _mm_setr_epi8(
+  //     Y   Y   Y   Y   m   m   d   d   H   H   M   M   S   S   -   -
+      10,  1, 10,  1, 10,  1, 10,  1, 10,  1, 10,  1, 10,  1,  0,  0);
+    v = _mm_maddubs_epi16(v, weights);
   uint64_t hi = (uint64_t)_mm_extract_epi64(v, 1);
-  //
-  uint64_t seconds = (hi * 0x0019000100004000) >> 46;
+  uint64_t seconds = (hi * 0x0384000F00004000) >> 46;
   if (seconds > 86399) {
     return false;
   }

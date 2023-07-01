@@ -7,53 +7,60 @@
 #include <string>
 #include <string_view>
 #include <x86intrin.h>
+#include <omp.h>
 
 extern "C" {
 #include "sse_date.h"
 }
-std::string to_date_string(time_t rawtime) {
+static inline std::string to_date_string(time_t rawtime) {
   std::string output(16, '\0');
-  struct tm *timeinfo = gmtime(&rawtime);
-  size_t len = strftime(output.data(), output.size(), "%Y%m%d%H%M%S", timeinfo);
+  struct tm timeinfo;
+  gmtime_r(&rawtime, &timeinfo);
+  size_t len = strftime(output.data(), output.size(), "%Y%m%d%H%M%S", &timeinfo);
   if (len == 0) {
     printf("len = %zu rawtime = %ld \n", len, rawtime);
     abort();
   }
-  output.resize(len);
   return output;
 }
 
 bool test_exhaustive() {
+  printf("testing exhaustive.\n");
+  printf("number of threads: %u\n", omp_get_max_threads());
   int errors = 0;
-
-  for (uint64_t x = 0; x <= 0xfffffff; x++) {
-    if ((x & 0xffffff) == 0) {
+  int count = 0;
+  #pragma omp parallel for reduction(+ : errors,count)
+  for (uint64_t x64 = 0; x64 <= 0xfffffff; x64++) {
+    count++;
+    const uint32_t x = (uint32_t)x64;
+    if ((count & 0xfffff) == 0) {
       printf(".");
       fflush(NULL);
     }
-    std::string view = to_date_string(x);
-    uint32_t time;
-    if (!parse_time(view.c_str(), &time)) {
+    const std::string view = to_date_string(x);
+    uint32_t time = 0;
+    if (!parse_time(view.data(), &time)) {
       printf("[parse_time] bad parsing\n");
       printf(" value %s \n", view.data());
+      abort();
       errors++;
     }
 
     if (time != x) {
-      printf("[parse_time] bad value %x %x from %s \n", time, uint32_t(x),
-             view.c_str());
-      std::cout << to_date_string(x) << std::endl;
-      std::cout << to_date_string(time) << std::endl;
+      printf("[parse_time] bad value %x %x from %s %s %s\n", time, uint32_t(x),
+             view.data(), to_date_string(time).data(), to_date_string(x).data());
       errors++;
     }
-    if (!sse_parse_time(view.c_str(), &time)) {
+    uint32_t time2 = 0;
+    if (!sse_parse_time(view.data(), &time2)) {
       printf("[sse_parse_time] bad parsing\n");
       printf(" value %s \n", view.data());
+      abort();
       errors++;
     }
-    if (time != x) {
-      printf("[sse_parse_time] bad value %x %x from %s\n", time, uint32_t(x),
-             view.c_str());
+    if (time2 != x) {
+      printf("[sse_parse_time] bad value %x %x from %s %s %s\n", time, uint32_t(x),
+             view.data(), to_date_string(time).data(), to_date_string(x).data());
       errors++;
     }
   }
@@ -61,61 +68,29 @@ bool test_exhaustive() {
   if (errors) {
     return false;
   }
-  printf("SUCCESS\n");
+  printf("testing exhaustive: SUCCESS\n");
   return true;
 }
 
 bool test_bad() {
-  std::string bad = "20230630236159";
-  bad.reserve(16);
-  uint32_t time;
-  bool err = sse_parse_time(bad.data(), &time);
-  if (err == 1) {
-    std::cout << " it should not allow this string to be valid " << bad
-              << std::endl;
-    return false;
+  printf("testing bad examples.\n");
+  std::string bad_examples[] = {
+      "20230630236159", "20230630245959", "20230631235959", "20231330000060",
+      "20231330235959", "20231330000060", "20231330006000", "20231330240000"};
+  for (std::string &bad : bad_examples) {
+    bad.reserve(16);
+    uint32_t time;
+    bool err = sse_parse_time(bad.data(), &time);
+    if (err == 1) {
+      std::cout << " it should not allow this string to be valid " << bad
+                << std::endl;
+      return false;
+    }
   }
+  printf("Ok.\n");
   return true;
 }
 
-bool test_bad2() {
-  std::string bad = "20230630245959";
-  bad.reserve(16);
-  uint32_t time;
-  bool err = sse_parse_time(bad.data(), &time);
-  if (err == 1) {
-    std::cout << " it should not allow this string to be valid " << bad
-              << std::endl;
-    return false;
-  }
-  return true;
-}
-
-bool test_bad3() {
-  std::string bad = "20230631235959";
-  bad.reserve(16);
-  uint32_t time;
-  bool err = sse_parse_time(bad.data(), &time);
-  if (err == 1) {
-    std::cout << " it should not allow this string to be valid " << bad
-              << std::endl;
-    return false;
-  }
-  return true;
-}
-
-bool test_bad4() {
-  std::string bad = "20231330235959";
-  bad.reserve(16);
-  uint32_t time;
-  bool err = sse_parse_time(bad.data(), &time);
-  if (err == 1) {
-    std::cout << " it should not allow this string to be valid " << bad
-              << std::endl;
-    return false;
-  }
-  return true;
-}
 bool test_good1() {
   std::string bad = "20380119031408";
   bad.reserve(16);
@@ -139,8 +114,6 @@ bool test_good1() {
 }
 
 int main() {
-  return (test_good1() && test_bad2() && test_bad3() && test_bad4() &&
-          test_bad() && test_exhaustive())
-             ? EXIT_SUCCESS
-             : EXIT_FAILURE;
+  return (test_good1() && test_bad() && test_exhaustive()) ? EXIT_SUCCESS
+                                                           : EXIT_FAILURE;
 }
