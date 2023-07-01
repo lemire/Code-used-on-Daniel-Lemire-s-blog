@@ -75,16 +75,6 @@ bool sse_parse_time(const char *date_string, uint32_t *time_in_second) {
   if (!_mm_test_all_ones(abide_by_limits)) {
     return false;
   }
-  // shift+add allows a subtract of `lane1_mul * 8` from `lane0_mul`
-  // so we can fit a weight of "(36000/100) - ((3600/100) * 8)" in a single
-  // byte. the hsum needs 17-bits...  (max possible hsum is 107999 "29:59.59")
-  // so also strip trailing zeros from the minute lane
-  // (the scalar mul steals bits -which are zero- from an adjoining lower lane).
-  //v = _mm_add_epi8(v, _mm_slli_epi16(v, 11));
-  //
-  //const __m128i weights =
-  //    _mm_set_epi8(0, 0, 1, 2, 15, 30, 36, 72, 1, 2, 1, 2, 1, 2, 1, 2);
-  //v = _mm_maddubs_epi16(v, weights);
   // 0x000000SS0mmm0HHH`00DD00MM00YY00YY
 
   const __m128i weights = _mm_setr_epi8(
@@ -109,7 +99,11 @@ bool sse_parse_time(const char *date_string, uint32_t *time_in_second) {
   bool is_leap_yr = is_leap_year((int)yr);
 
   if (dy > (uint64_t)mdays[mo]) {
-    if (!(mo == 1 && is_leap_yr)) {
+    if (mo == 1 && is_leap_yr) {
+      if(dy != 29) {
+        return false;
+      }
+    } else {
       return false;
     }
   }
