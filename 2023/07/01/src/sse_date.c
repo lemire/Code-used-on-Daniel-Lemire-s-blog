@@ -31,11 +31,9 @@ static time_t mktime_from_utc(const struct tm *tm) {
   time_t hours;
   time_t minutes;
   time_t seconds;
-  int i;
 
-  for (i = 0; i < tm->tm_mon; ++i) {
-    days += mdays[i];
-  }
+  days += mdays_cumulative[tm->tm_mon];
+
   if (tm->tm_mon > 1 && is_leap_year(year)) {
     ++days;
   }
@@ -59,6 +57,16 @@ bool parse_time(const char *date_string, uint32_t *time_in_second) {
 }
 
 bool sse_parse_time(const char *date_string, uint32_t *time_in_second) {
+  // We load the block of digits. We subtract 0x30 (the code point value of the character '0'),
+  // and all bytes values should be between 0 and 9, inclusively. We know that some character 
+  // must be smaller that 9, for example, we cannot have more than 59 seconds and never 60 seconds, 
+  // in the time stamp string. So one character must be between 0 and 5. Similarly, we start the 
+  // hours at 00 and end at 23, so one character must be between 0 and 2. We do a saturating 
+  // subtraction of the maximum: the result of such a subtraction should be zero if the value 
+  // is no larger. We then use a special instruction to multiply one byte by 10, and sum it up 
+  // with the next byte, getting a 16-bit value. We then repeat the same approach as before, 
+  // checking that the result is not too large.
+  //
   __m128i v = _mm_loadu_si128((const __m128i *)date_string);
   // loaded YYYYMMDDHHmmSS.....
   v = _mm_sub_epi8(v, _mm_set1_epi8(0x30));
