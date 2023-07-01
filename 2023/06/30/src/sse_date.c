@@ -12,11 +12,11 @@
 static const int mdays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 static const int mdays_cumulative[] = {0,31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
 
-static int is_leap_year(int year) {
+static inline int is_leap_year(int year) {
   return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
 }
 
-static int leap_days(int y1, int y2) {
+static inline int leap_days(int y1, int y2) {
   --y1;
   --y2;
   return (y2 / 4 - y1 / 4) - (y2 / 100 - y1 / 100) + (y2 / 400 - y1 / 400);
@@ -70,31 +70,27 @@ bool sse_parse_time(const char *date_string, uint32_t *time_in_second) {
   // overflows are still possible, if hours are in the range 24 to 29
   // of if days are in the range 32 to 39
   // or if months are in the range 12 to 19.
-  __m128i abide_by_limits = _mm_cmpeq_epi8(_mm_max_epu8(v, limit), limit);
-
-  if (!_mm_test_all_ones(abide_by_limits)) {
-    return false;
-  }
+  __m128i abide_by_limits = _mm_subs_epu8(v, limit); // must be all zero
   // 0x000000SS0mmm0HHH`00DD00MM00YY00YY
 
   const __m128i weights = _mm_setr_epi8(
   //     Y   Y   Y   Y   m   m   d   d   H   H   M   M   S   S   -   -
       10,  1, 10,  1, 10,  1, 10,  1, 10,  1, 10,  1, 10,  1,  0,  0);
     v = _mm_maddubs_epi16(v, weights);
+  __m128i limit16 =
+      _mm_setr_epi16(99,99, 12, 31, 23, 59, 59, -1);
+  __m128i abide_by_limits16 = _mm_subs_epu16(v, limit16); // must be all zero
+  __m128i combined_limits = _mm_or_si128(abide_by_limits16,abide_by_limits); // must be all zero
+
+  if (!_mm_test_all_zeros(combined_limits, combined_limits)) {
+    return false;
+  }
   uint64_t hi = (uint64_t)_mm_extract_epi64(v, 1);
   uint64_t seconds = (hi * 0x0384000F00004000) >> 46;
-  if (seconds > 86399) {
-    return false;
-  }
-
   uint64_t lo = (uint64_t)_mm_extract_epi64(v, 0);
   uint64_t yr = (lo * 0x64000100000000) >> 48;
-  uint64_t mo = ((lo & 0x000000ff00000000) >> 32) - 1;
-  if (mo >= 12) {
-    return false;
-  }
-
-  uint64_t dy = (lo & 0x000000ff000000000000) >> (32 + 16);
+  uint64_t mo = ((lo >> 32) & 0xff) - 1;
+  uint64_t dy = (uint64_t)_mm_extract_epi8(v, 6);
 
   bool is_leap_yr = is_leap_year((int)yr);
 
@@ -113,6 +109,7 @@ bool sse_parse_time(const char *date_string, uint32_t *time_in_second) {
   if (mo > 1 && is_leap_yr) {
     ++days;
   }
+
   days += dy - 1;
   *time_in_second = (uint32_t)(seconds + days * 60 * 60 * 24);
   return true;
