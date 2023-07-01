@@ -1,0 +1,18 @@
+#ifndef SSE_INET_ATON_H
+#define SSE_INET_ATON_H
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+// Convert a string in the form YYYYMMDDHHmmSS to an integer (stored in
+// destination) representing the time in second since epoch. The function
+// returns true upon success.
+bool parse_time(const char *date_string, uint32_t *time_in_second);
+
+// Convert a string in the form YYYYMMDDHHmmSS to an integer (stored in
+// destination) representing the time in second since epoch. The function
+// returns true upon success. This function may read up to 16 bytes in
+// date_string but will only process the first 14 bytes.
+bool sse_parse_time(const char *date_string, uint32_t *time_in_second);
+
+#endif // SSE_INET_ATON_H
