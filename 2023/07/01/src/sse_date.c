@@ -69,7 +69,8 @@ bool sse_parse_time(const char *date_string, uint32_t *time_in_second) {
   //
   __m128i v = _mm_loadu_si128((const __m128i *)date_string);
   // loaded YYYYMMDDHHmmSS.....
-  v = _mm_sub_epi8(v, _mm_set1_epi8(0x30));
+  v = _mm_xor_si128(v, _mm_set1_epi8(0x30)); 
+  // W can use _mm_sub_epi8 or _mm_xor_si128 for the subtraction above.
   // subtracting by 0x30 (or '0'), turns all values into a byte value between 0
   // and 9 if the initial input was made of digits.
   // We want to disallow 0s for days and months...
@@ -81,7 +82,10 @@ bool sse_parse_time(const char *date_string, uint32_t *time_in_second) {
   // or if months are in the range 12 to 19.
   __m128i abide_by_limits = _mm_subs_epu8(v, limit); // must be all zero
   // 0x000000SS0mmm0HHH`00DD00MM00YY00YY
-
+  //////////////////////////////////////////////////////
+  // pmaddubsw has a high latency (e.g., 5 cycles) and is
+  // likely a performance bottleneck.
+  /////////////////////////////////////////////////////
   const __m128i weights = _mm_setr_epi8(
   //     Y   Y   Y   Y   m   m   d   d   H   H   M   M   S   S   -   -
       10,  1, 10,  1, 10,  1, 10,  1, 10,  1, 10,  1, 10,  1,  0,  0);
