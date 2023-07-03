@@ -91,29 +91,105 @@ bool test_bad() {
   return true;
 }
 
-bool test_good1() {
-  std::string bad = "20380119031408";
+
+bool invalid_zero_month() {
+  printf("invalid_zero_month\n");
+  std::string bad = "19980001235959";
+  uint32_t time2;
+  bool err = parse_time(bad.data(), &time2);
+  if (!err) {
+    std::cout << "[parse_time] it should be invalid " << bad << std::endl;
+    return false;
+  }
   bad.reserve(16);
   uint32_t time1;
-  bool err = sse_parse_time(bad.data(), &time1);
+  err = sse_parse_time(bad.data(), &time1);
+  if (err) {
+    std::cout << "[sse_parse_time] it should be invalid " << bad << std::endl;
+    return false;
+  }
+  return true;
+}
+
+bool invalid_zero_day() {
+  printf("invalid_zero_day\n");
+  std::string bad = "19980100235959";
+  uint32_t time2;
+  bool err = parse_time(bad.data(), &time2);
   if (!err) {
-    std::cout << "it should be valid " << bad << std::endl;
+    std::cout << "[parse_time] it should be invalid " << bad << std::endl;
+    return false;
+  }
+  bad.reserve(16);
+  uint32_t time1;
+  err = sse_parse_time(bad.data(), &time1);
+  if (err) {
+    std::cout << "[sse_parse_time] it should be invalid " << bad << std::endl;
+    return false;
+  }
+  return true;
+}
+
+bool test_leap_second() {
+  printf("test_leap_second\n");
+  std::string good = "19981231235959";
+  std::string bad = "19981231235960";
+  uint32_t time2bad, time2good;
+  bool err = parse_time(bad.data(), &time2bad);
+  if (!err) {
+    std::cout << "[parse_time] it should be valid " << bad << std::endl;
+    return false;
+  }
+  err = parse_time(bad.data(), &time2good);
+  if (!err) {
+    std::cout << "[parse_time] it should be valid " << bad << std::endl;
+    return false;
+  }
+  if(time2good != time2bad) {
+    std::cout << "[parse_time] it should be equal " << time2bad << " == " << time2good << std::endl;
+    return false;    
+  }
+  bad.reserve(16);
+  uint32_t time1;
+  err = sse_parse_time(bad.data(), &time1);
+  if (err) {
+    std::cout << "[sse_parse_time] it should be invalid " << bad << std::endl;
     return false;
   }
   uint32_t time2;
   err = parse_time(bad.data(), &time2);
+  if (err) {
+    std::cout << "[parse_time] it should be invalid " << bad << std::endl;
+    //return false;
+  }
+  return true;
+}
+
+bool test_good1() {
+  std::string good = "20380119031408";
+  good.reserve(16);
+  uint32_t time1;
+  bool err = sse_parse_time(good.data(), &time1);
   if (!err) {
-    std::cout << "it should be valid " << bad << std::endl;
+    std::cout << "it should be valid " << good << std::endl;
+    return false;
+  }
+  uint32_t time2;
+  err = parse_time(good.data(), &time2);
+  if (!err) {
+    std::cout << "it should be valid " << good << std::endl;
     return false;
   }
   if (time1 != time2) {
-    std::cout << "they differ " << bad << std::endl;
+    std::cout << "they differ " << good << std::endl;
     return false;
   }
   return true;
 }
 
 int main() {
-  return (test_good1() && test_bad() && test_exhaustive()) ? EXIT_SUCCESS
+  return (//invalid_zero_day() && invalid_zero_month() && 
+  //test_leap_second() && 
+  test_good1() && test_bad() && test_exhaustive()) ? EXIT_SUCCESS
                                                            : EXIT_FAILURE;
 }

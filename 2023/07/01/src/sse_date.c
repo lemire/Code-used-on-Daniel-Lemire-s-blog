@@ -72,6 +72,7 @@ bool sse_parse_time(const char *date_string, uint32_t *time_in_second) {
   v = _mm_sub_epi8(v, _mm_set1_epi8(0x30));
   // subtracting by 0x30 (or '0'), turns all values into a byte value between 0
   // and 9 if the initial input was made of digits.
+  // We want to disallow 0s for days and months...
   __m128i limit =
       _mm_setr_epi8(9, 9, 9, 9, 1, 9, 3, 9, 2, 9, 5, 9, 5, 9, -1, -1);
   // credit @aqrit
