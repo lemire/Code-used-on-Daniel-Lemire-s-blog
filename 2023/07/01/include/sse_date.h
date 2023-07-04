@@ -20,5 +20,6 @@ bool parse_time(const char *date_string, uint32_t *time_in_second);
 //
 // In Unix time, we omit leap seconds, so that the SS cannot be 60 or above.
 bool sse_parse_time(const char *date_string, uint32_t *time_in_second);
+bool sse_parse_time_alt(const char *date_string, uint32_t *time_in_second);
 
 #endif // SSE_INET_ATON_H

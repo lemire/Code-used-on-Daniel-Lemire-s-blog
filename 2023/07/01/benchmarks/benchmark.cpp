@@ -54,10 +54,10 @@ int main() {
     bytes += test_data.back().size();
   }
   uint64_t sum{};
-  pretty_print(N, bytes, "parse_time", bench([&test_data, &sum]() {
+  pretty_print(N, bytes, "sse_parse_time_alt", bench([&test_data, &sum]() {
                  for (const std::string &s : test_data) {
                    uint32_t t;
-                   parse_time(s.data(), &t); // should check error
+                   sse_parse_time_alt(s.data(), &t); // should check error
                    sum += t;
                  }
                }));
@@ -68,4 +68,12 @@ int main() {
                    sum += t;
                  }
                }));
+  pretty_print(N, bytes, "parse_time", bench([&test_data, &sum]() {
+                 for (const std::string &s : test_data) {
+                   uint32_t t;
+                   parse_time(s.data(), &t); // should check error
+                   sum += t;
+                 }
+               }));
+
 }
