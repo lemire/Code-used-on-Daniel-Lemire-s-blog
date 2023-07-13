@@ -2,9 +2,6 @@
 #include "sse_type.h"
 
 #include <string.h>
-#ifndef __USE_XOPEN
-#define __USE_XOPEN
-#endif
 #include <x86intrin.h> // update if we need to support Windows.
 
 int8_t zero_masks[17][16] = {
@@ -337,7 +334,7 @@ bool sse_type(const char *type_string, uint8_t *type) {
   // We can hash the first 8 bytes...
   // This is maybe not the best approach. It is possible
   // to hash based on the first and last character, along with the length.
-  uint8_t idx = hash((uint64_t)_mm_cvtsi128_si64x(input));
+  uint8_t idx = hash((uint64_t)_mm_cvtsi128_si64(input));
   *type = idx;
 
   __m128i compar = _mm_loadu_si128((const __m128i *)buffers[idx]);
