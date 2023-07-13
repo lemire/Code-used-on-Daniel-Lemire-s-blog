@@ -1,5 +1,7 @@
 
 #include "performancecounters/benchmarker.h"
+#include <algorithm>
+#include <cctype>
 #include <charconv>
 #include <random>
 #include <vector>
@@ -8,15 +10,111 @@ extern "C" {
 #include "sse_type.h"
 }
 
-// This only checks that the prefix is correct, we would need to
-// check that the next character is a separator, to be more precise.
-__attribute__((noinline)) int simple_trie(const std::string &s) {
+#define CONTIGUOUS (1 << 0)
+
+static const uint8_t contiguous[256] = {
+    // 0x00 = "\0"
+    0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x00 - 0x07
+    // 0x09 = "\t", 0x0a = "\n", 0x0d = "\r"
+    0x01, 0x40, 0x04, 0x01, 0x01, 0x40, 0x01, 0x01, // 0x08 - 0x0f
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x10 - 0x17
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x18 - 0x1f
+    // 0x20 = " ", 0x22 = "\""
+    0x40, 0x01, 0x02, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x20 - 0x27
+    // 0x28 = "(", 0x29 = ")"
+    0x10, 0x20, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x28 - 0x2f
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x30 - 0x37
+    // 0x3b = ";"
+    0x01, 0x01, 0x01, 0x80, 0x01, 0x01, 0x01, 0x01, // 0x38 - 0x3f
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x40 - 0x47
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x48 - 0x4f
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x50 - 0x57
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x58 - 0x5f
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x60 - 0x67
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x68 - 0x6f
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x70 - 0x77
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x78 - 0x7f
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x80 - 0x87
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x88 - 0x8f
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x90 - 0x97
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0x98 - 0x9f
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xa0 - 0xa7
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xa8 - 0xaf
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xb0 - 0xb7
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xb8 - 0xbf
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xc0 - 0xc7
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xc8 - 0xcf
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xd0 - 0xd7
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xd8 - 0xdf
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xe0 - 0xe7
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xe8 - 0xef
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, // 0xf8 - 0xf7
+    0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01  // 0xf8 - 0xff
+};
+
+static bool is_separator(char c) {
+  return contiguous[uint8_t(c)] != CONTIGUOUS;
+}
+
+std::vector<std::string> strings = {
+    "A",          "A6",    "AAAA",     "AFSDB",      "APL",    "CAA",
+    "CDNSKEY",    "CDS",   "CERT",     "CH",         "CNAME",  "CS",
+    "CSYNC",      "DHCID", "DLV",      "DNAME",      "DNSKEY", "DS",
+    "EUI48",      "EUI64", "GPOS",     "HINFO",      "HIP",    "HS",
+    "HTTPS",      "IN",    "IPSECKEY", "ISDN",       "KEY",    "KX",
+    "L32",        "L64",   "LOC",      "LP",         "MB",     "MD",
+    "MF",         "MG",    "MINFO",    "MR",         "MX",     "NAPTR",
+    "NID",        "NS",    "NSAP",     "NSAP-PTR",   "NSEC",   "NSEC3",
+    "NSEC3PARAM", "NULL",  "NXT",      "OPENPGPKEY", "PTR",    "PX",
+    "RP",         "RRSIG", "RT",       "SIG",        "SMIMEA", "SOA",
+    "SPF",        "SRV",   "SSHFP",    "SVCB",       "TLSA",   "TXT",
+    "URI",        "WKS",   "X25",      "ZONEMD"};
+
+std::vector<std::string> lowerstrings = {
+    "a",          "a6",    "aaaa",     "afsdb",      "apl",    "caa",
+    "cdnskey",    "cds",   "cert",     "ch",         "cname",  "cs",
+    "csync",      "dhcid", "dlv",      "dname",      "dnskey", "ds",
+    "eui48",      "eui64", "gpos",     "hinfo",      "hip",    "hs",
+    "https",      "in",    "ipseckey", "isdn",       "key",    "kx",
+    "l32",        "l64",   "loc",      "lp",         "mb",     "md",
+    "mf",         "mg",    "minfo",    "mr",         "mx",     "naptr",
+    "nid",        "ns",    "nsap",     "nsap-ptr",   "nsec",   "nsec3",
+    "nsec3param", "null",  "nxt",      "openpgpkey", "ptr",    "px",
+    "rp",         "rrsig", "rt",       "sig",        "smimea", "soa",
+    "spf",        "srv",   "sshfp",    "svcb",       "tlsa",   "txt",
+    "uri",        "wks",   "x25",      "zonemd"};
+
+// compare and lookup_symbol and the initial approach in simdzone
+static int compare(const void *p1, const void *p2) {
+  // printf("compare\n");
+  const char *data(reinterpret_cast<const char *>(p1));
+  const std::string &target(*reinterpret_cast<const std::string *>(p2));
+  // printf("%.32s ", data);
+  // std::cout << "comparing " << target << " ";
+
+  int r;
+  if ((r = strncasecmp(data, target.data(), target.size())) != 0) {
+    // printf(" %d\n", r);
+    return r;
+  }
+  // printf(" match except for sep?\n");
+  return !is_separator(data[target.size()]);
+}
+
+// essentially what simdzone had, a binary search.
+static const std::string *lookup_symbol(const char *input) {
+  return reinterpret_cast<const std::string *>(bsearch(
+      input, strings.data(), strings.size(), sizeof(std::string), compare));
+}
+
+// Silly trie approach
+__attribute__((noinline)) static int simple_trie(const std::string &s) {
   switch (s[0]) {
   case 'A':
   case 'a':
     switch (s[1]) {
     case '6':
-      return 1;
+      return is_separator(s[2]) ? 1 : -1;
     case 'A':
     case 'a':
       switch (s[2]) {
@@ -25,7 +123,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         switch (s[3]) {
         case 'A':
         case 'a':
-          return 2;
+          return is_separator(s[4]) ? 2 : -1;
         default:
           return -1;
         };
@@ -45,7 +143,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'B':
           case 'b':
-            return 3;
+            return is_separator(s[5]) ? 3 : -1;
           default:
             return -1;
           };
@@ -63,13 +161,13 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'L':
       case 'l':
-        return 4;
+        return is_separator(s[3]) ? 4 : -1;
       default:
         return -1;
       };
       break;
     default:
-      return 0;
+      return is_separator(s[2]) ? 0 : -1;
     };
     break;
   case 'C':
@@ -80,7 +178,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'A':
       case 'a':
-        return 5;
+        return is_separator(s[3]) ? 5 : -1;
       default:
         return -1;
       };
@@ -90,7 +188,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'S':
       case 's':
-        return 6;
+        return is_separator(s[3]) ? 6 : -1;
       case 'N':
       case 'n':
         switch (s[3]) {
@@ -105,7 +203,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
               switch (s[6]) {
               case 'Y':
               case 'y':
-                return 7;
+                return is_separator(s[7]) ? 7 : -1;
               default:
                 return -1;
               };
@@ -134,7 +232,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         switch (s[3]) {
         case 'T':
         case 't':
-          return 8;
+          return is_separator(s[4]) ? 8 : -1;
         default:
           return -1;
         };
@@ -145,7 +243,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       break;
     case 'H':
     case 'h':
-      return 9;
+      return is_separator(s[2]) ? 9 : -1;
     case 'N':
     case 'n':
       switch (s[2]) {
@@ -157,7 +255,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'E':
           case 'e':
-            return 10;
+            return is_separator(s[5]) ? 10 : -1;
           default:
             return -1;
           };
@@ -181,7 +279,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'C':
           case 'c':
-            return 12;
+            return is_separator(s[5]) ? 12 : -1;
           default:
             return -1;
           };
@@ -191,7 +289,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         };
         break;
       default:
-        return 11;
+        return is_separator(s[3]) ? 11 : -1;
       };
       break;
     default:
@@ -212,7 +310,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'D':
           case 'd':
-            return 13;
+            return is_separator(s[5]) ? 13 : -1;
           default:
             return -1;
           };
@@ -230,7 +328,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'V':
       case 'v':
-        return 14;
+        return is_separator(s[3]) ? 14 : -1;
       default:
         return -1;
       };
@@ -246,7 +344,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'E':
           case 'e':
-            return 15;
+            return is_separator(s[5]) ? 15 : -1;
           default:
             return -1;
           };
@@ -266,7 +364,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
             switch (s[5]) {
             case 'Y':
             case 'y':
-              return 16;
+              return is_separator(s[6]) ? 16 : -1;
             default:
               return -1;
             };
@@ -285,7 +383,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       break;
     case 'S':
     case 's':
-      return 17;
+      return is_separator(s[2]) ? 17 : -1;
     default:
       return -1;
     };
@@ -302,7 +400,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         case '4':
           switch (s[4]) {
           case '8':
-            return 18;
+            return is_separator(s[5]) ? 18 : -1;
           default:
             return -1;
           };
@@ -310,7 +408,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         case '6':
           switch (s[4]) {
           case '4':
-            return 19;
+            return is_separator(s[5]) ? 19 : -1;
           default:
             return -1;
           };
@@ -338,7 +436,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         switch (s[3]) {
         case 'S':
         case 's':
-          return 20;
+          return is_separator(s[4]) ? 20 : -1;
         default:
           return -1;
         };
@@ -365,7 +463,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'O':
           case 'o':
-            return 21;
+            return is_separator(s[5]) ? 21 : -1;
           default:
             return -1;
           };
@@ -376,14 +474,14 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         break;
       case 'P':
       case 'p':
-        return 22;
+        return is_separator(s[3]) ? 22 : -1;
       default:
         return -1;
       };
       break;
     case 'S':
     case 's':
-      return 23;
+      return is_separator(s[2]) ? 23 : -1;
     case 'T':
     case 't':
       switch (s[2]) {
@@ -395,7 +493,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'S':
           case 's':
-            return 24;
+            return is_separator(s[5]) ? 24 : -1;
           default:
             return -1;
           };
@@ -417,7 +515,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
     switch (s[1]) {
     case 'N':
     case 'n':
-      return 25;
+      return is_separator(s[2]) ? 25 : -1;
     case 'P':
     case 'p':
       switch (s[2]) {
@@ -438,7 +536,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
                 switch (s[7]) {
                 case 'Y':
                 case 'y':
-                  return 26;
+                  return is_separator(s[8]) ? 26 : -1;
                 default:
                   return -1;
                 };
@@ -471,7 +569,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         switch (s[3]) {
         case 'N':
         case 'n':
-          return 27;
+          return is_separator(s[4]) ? 27 : -1;
         default:
           return -1;
         };
@@ -492,14 +590,14 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'Y':
       case 'y':
-        return 28;
+        return is_separator(s[3]) ? 28 : -1;
       default:
         return -1;
       };
       break;
     case 'X':
     case 'x':
-      return 29;
+      return is_separator(s[2]) ? 29 : -1;
     default:
       return -1;
     };
@@ -510,7 +608,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
     case '3':
       switch (s[2]) {
       case '2':
-        return 30;
+        return is_separator(s[3]) ? 30 : -1;
       default:
         return -1;
       };
@@ -518,7 +616,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
     case '6':
       switch (s[2]) {
       case '4':
-        return 31;
+        return is_separator(s[3]) ? 31 : -1;
       default:
         return -1;
       };
@@ -528,14 +626,14 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'C':
       case 'c':
-        return 32;
+        return is_separator(s[3]) ? 32 : -1;
       default:
         return -1;
       };
       break;
     case 'P':
     case 'p':
-      return 33;
+      return is_separator(s[2]) ? 33 : -1;
     default:
       return -1;
     };
@@ -545,16 +643,16 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
     switch (s[1]) {
     case 'B':
     case 'b':
-      return 34;
+      return is_separator(s[2]) ? 34 : -1;
     case 'D':
     case 'd':
-      return 35;
+      return is_separator(s[2]) ? 35 : -1;
     case 'F':
     case 'f':
-      return 36;
+      return is_separator(s[2]) ? 36 : -1;
     case 'G':
     case 'g':
-      return 37;
+      return is_separator(s[2]) ? 37 : -1;
     case 'I':
     case 'i':
       switch (s[2]) {
@@ -566,7 +664,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'O':
           case 'o':
-            return 38;
+            return is_separator(s[5]) ? 38 : -1;
           default:
             return -1;
           };
@@ -581,10 +679,10 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       break;
     case 'R':
     case 'r':
-      return 39;
+      return is_separator(s[2]) ? 39 : -1;
     case 'X':
     case 'x':
-      return 40;
+      return is_separator(s[2]) ? 40 : -1;
     default:
       return -1;
     };
@@ -603,7 +701,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'R':
           case 'r':
-            return 41;
+            return is_separator(s[5]) ? 41 : -1;
           default:
             return -1;
           };
@@ -621,7 +719,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'D':
       case 'd':
-        return 42;
+        return is_separator(s[3]) ? 42 : -1;
       default:
         return -1;
       };
@@ -645,7 +743,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
                 switch (s[7]) {
                 case 'R':
                 case 'r':
-                  return 45;
+                  return is_separator(s[8]) ? 45 : -1;
                 default:
                   return -1;
                 };
@@ -659,7 +757,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
             };
             break;
           default:
-            return 44;
+            return is_separator(s[5]) ? 44 : -1;
           };
           break;
         default:
@@ -688,7 +786,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
                     switch (s[9]) {
                     case 'M':
                     case 'm':
-                      return 48;
+                      return is_separator(s[10]) ? 48 : -1;
                     default:
                       return -1;
                     };
@@ -706,11 +804,11 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
               };
               break;
             default:
-              return 47;
+              return is_separator(s[6]) ? 47 : -1;
             };
             break;
           default:
-            return 46;
+            return is_separator(s[5]) ? 46 : -1;
           };
           break;
         default:
@@ -718,7 +816,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         };
         break;
       default:
-        return 43;
+        return is_separator(s[3]) ? 43 : -1;
       };
       break;
     case 'U':
@@ -729,7 +827,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         switch (s[3]) {
         case 'L':
         case 'l':
-          return 49;
+          return is_separator(s[4]) ? 49 : -1;
         default:
           return -1;
         };
@@ -743,7 +841,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'T':
       case 't':
-        return 50;
+        return is_separator(s[3]) ? 50 : -1;
       default:
         return -1;
       };
@@ -781,7 +879,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
                     switch (s[9]) {
                     case 'Y':
                     case 'y':
-                      return 51;
+                      return is_separator(s[10]) ? 51 : -1;
                     default:
                       return -1;
                     };
@@ -826,14 +924,14 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'R':
       case 'r':
-        return 52;
+        return is_separator(s[3]) ? 52 : -1;
       default:
         return -1;
       };
       break;
     case 'X':
     case 'x':
-      return 53;
+      return is_separator(s[2]) ? 53 : -1;
     default:
       return -1;
     };
@@ -843,7 +941,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
     switch (s[1]) {
     case 'P':
     case 'p':
-      return 54;
+      return is_separator(s[2]) ? 54 : -1;
     case 'R':
     case 'r':
       switch (s[2]) {
@@ -855,7 +953,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'G':
           case 'g':
-            return 55;
+            return is_separator(s[5]) ? 55 : -1;
           default:
             return -1;
           };
@@ -870,7 +968,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       break;
     case 'T':
     case 't':
-      return 56;
+      return is_separator(s[2]) ? 56 : -1;
     default:
       return -1;
     };
@@ -883,7 +981,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'G':
       case 'g':
-        return 57;
+        return is_separator(s[3]) ? 57 : -1;
       default:
         return -1;
       };
@@ -902,7 +1000,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
             switch (s[5]) {
             case 'A':
             case 'a':
-              return 58;
+              return is_separator(s[6]) ? 58 : -1;
             default:
               return -1;
             };
@@ -924,7 +1022,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'A':
       case 'a':
-        return 59;
+        return is_separator(s[3]) ? 59 : -1;
       default:
         return -1;
       };
@@ -934,7 +1032,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'F':
       case 'f':
-        return 60;
+        return is_separator(s[3]) ? 60 : -1;
       default:
         return -1;
       };
@@ -944,7 +1042,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'V':
       case 'v':
-        return 61;
+        return is_separator(s[3]) ? 61 : -1;
       default:
         return -1;
       };
@@ -960,7 +1058,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
           switch (s[4]) {
           case 'P':
           case 'p':
-            return 62;
+            return is_separator(s[5]) ? 62 : -1;
           default:
             return -1;
           };
@@ -981,7 +1079,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         switch (s[3]) {
         case 'B':
         case 'b':
-          return 63;
+          return is_separator(s[4]) ? 63 : -1;
         default:
           return -1;
         };
@@ -1005,7 +1103,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
         switch (s[3]) {
         case 'A':
         case 'a':
-          return 64;
+          return is_separator(s[4]) ? 64 : -1;
         default:
           return -1;
         };
@@ -1019,7 +1117,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'T':
       case 't':
-        return 65;
+        return is_separator(s[3]) ? 65 : -1;
       default:
         return -1;
       };
@@ -1036,7 +1134,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'I':
       case 'i':
-        return 66;
+        return is_separator(s[3]) ? 66 : -1;
       default:
         return -1;
       };
@@ -1053,7 +1151,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
       switch (s[2]) {
       case 'S':
       case 's':
-        return 67;
+        return is_separator(s[3]) ? 67 : -1;
       default:
         return -1;
       };
@@ -1068,7 +1166,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
     case '2':
       switch (s[2]) {
       case '5':
-        return 68;
+        return is_separator(s[3]) ? 68 : -1;
       default:
         return -1;
       };
@@ -1094,7 +1192,7 @@ __attribute__((noinline)) int simple_trie(const std::string &s) {
             switch (s[5]) {
             case 'D':
             case 'd':
-              return 69;
+              return is_separator(s[6]) ? 69 : -1;
             default:
               return -1;
             };
@@ -1177,7 +1275,48 @@ int main() {
                }));
   pretty_print(N, bytes, "simple_trie", bench([&test_data, &sum]() {
                  for (const std::string &s : test_data) {
-                   sum += simple_trie(s); // should check error
+                   int r = simple_trie(s);
+                   sum += r; // should check error
                  }
                }));
+  pretty_print(N, bytes, "bsearch", bench([&test_data, &sum]() {
+                 for (const std::string &s : test_data) {
+                   const std::string *answer = lookup_symbol(s.data());
+                   sum += answer == nullptr
+                              ? 0
+                              : answer->size(); // should check error
+                 }
+               }));
+
+  pretty_print(
+      N, bytes, "std::lower_bound", bench([&test_data, &sum]() {
+        std::string s;
+        s.resize(16);
+        for (const std::string &sc : test_data) {
+          for (size_t i = 0; i < 16; i++) {
+            s[i] = std::tolower(sc[i]);
+          }
+          auto lb = std::lower_bound(
+              lowerstrings.begin(), lowerstrings.end(), s,
+              [](const std::string &source, const std::string &target) {
+                std::string_view targetsv(target.data(), source.size());
+                if (source == targetsv) {
+                  return !is_separator(target.data()[source.size()]);
+                }
+                return source < targetsv;
+              });
+          if (lb != lowerstrings.end()) {
+            // We have something to look at
+            std::string &candidate = *lb;
+            std::string_view targetsv(s.data(), candidate.size());
+
+            if (targetsv == candidate &&
+                is_separator(s.data()[candidate.size()])) {
+              sum += targetsv.size(); // do something.
+            }
+          }
+
+          // should check error
+        }
+      }));
 }
