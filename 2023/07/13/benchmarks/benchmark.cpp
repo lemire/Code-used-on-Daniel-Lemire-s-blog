@@ -1250,7 +1250,7 @@ int main() {
   std::default_random_engine generator;
   std::uniform_int_distribution<uint64_t> distribution(0, source.size() - 1);
   std::vector<std::string> test_data;
-  size_t N = 2000000;;
+  size_t N = 2000000;
   size_t bytes = 0;
   while (test_data.size() < N) {
     uint64_t t = distribution(generator);
