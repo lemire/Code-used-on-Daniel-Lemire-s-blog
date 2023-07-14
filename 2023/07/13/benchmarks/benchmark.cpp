@@ -86,18 +86,12 @@ std::vector<std::string> lowerstrings = {
 
 // compare and lookup_symbol and the initial approach in simdzone
 static int compare(const void *p1, const void *p2) {
-  // printf("compare\n");
   const char *data(reinterpret_cast<const char *>(p1));
   const std::string &target(*reinterpret_cast<const std::string *>(p2));
-  // printf("%.32s ", data);
-  // std::cout << "comparing " << target << " ";
-
   int r;
   if ((r = strncasecmp(data, target.data(), target.size())) != 0) {
-    // printf(" %d\n", r);
     return r;
   }
-  // printf(" match except for sep?\n");
   return !is_separator(data[target.size()]);
 }
 
