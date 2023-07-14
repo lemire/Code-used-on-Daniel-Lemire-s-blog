@@ -277,77 +277,79 @@ static inline uint8_t hash(uint64_t val) {
   return val8;
 }
 
-
 size_t sse_length(const char *type_string) {
-  __m128i input = _mm_loadu_si128((const __m128i *)type_string);
+  __m128i input = _mm_loadu_si128((__m128i *)type_string);
+
   // RRTYPEs consist of [0-9a-zA-Z-] (unofficially, no other values are in use)
-  // 0x2d        : hyphen : 0b0010_1101
-  // 0x30 - 0x39 :  0 - 9 : 0b0011_0000 - 0b0011_1001
-  // 0x41 - 0x4f :  A - O : 0b0100_0001 - 0b0100_1111
-  // 0x50 - 0x5a :  P - Z : 0b0101_0000 - 0b0101_1010
-  // 0x61 - 0x6f :  a - o : 0b0110_0001 - 0b0110_1111
-  // 0x70 - 0x7a :  p - z : 0b0111_0000 - 0b0111_1010
-  const __m128i high_mask =
-      _mm_setr_epi8(0x00, 0x00, 0x01, 0x02, 0x04, 0x08, 0x04, 0x08, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+  // 0x2d        :            hyphen : 0b0010_1101
+  // 0x30 - 0x39 :             0 - 9 : 0b0011_0000 - 0b0011_1001
+  // 0x41 - 0x4f :             A - O : 0b0100_0001 - 0b0100_1111
+  // 0x50 - 0x5a :             P - Z : 0b0101_0000 - 0b0101_1010
+  // 0x61 - 0x6f :             a - o : 0b0110_0001 - 0b0110_1111
+  // 0x70 - 0x7a :             p - z : 0b0111_0000 - 0b0111_1010
 
-  const __m128i low_mask = _mm_setr_epi8(
-      0x02 | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08,
-      0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0a,
-      0x04, 0x05, 0x04 | 0x01, 0x04, 0x04);
+  // Delimiters for strings consisting of a contiguous set of characters
+  // 0x00        :       end-of-file : 0b0000_0000
+  // 0x20        :             space : 0b0010_0000
+  // 0x22        :             quote : 0b0010_0010
+  // 0x28        :  left parenthesis : 0b0010_1000
+  // 0x29        : right parenthesis : 0b0010_1001
+  // 0x09        :               tab : 0b0000_1001
+  // 0x0a        :         line feed : 0b0000_1010
+  // 0x3b        :         semicolon : 0b0011_1011
+  // 0x0d        :   carriage return : 0b0000_1101
 
-  const __m128i high_shuffled = _mm_shuffle_epi8(
-      high_mask, _mm_and_si128(_mm_srli_epi16(input, 4), _mm_set1_epi8(0x0f)));
-  const __m128i low_shuffled = _mm_shuffle_epi8(low_mask, input);
+  __m128i delimiters =
+      _mm_setr_epi8(0x00, 0x00, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00, 0x28, 0x09,
+                    0x0a, 0x3b, 0x00, 0x0d, 0x00, 0x00);
+  __m128i mask = _mm_setr_epi8(-33, -1, -1, -1, -1, -1, -1, -1, -1, -33, -1, -1,
+                               -1, -1, -1, -1);
 
-  const __m128i intersect = _mm_and_si128(high_shuffled, low_shuffled);
-
-  const __m128i alnum = _mm_cmpgt_epi8(intersect, _mm_setzero_si128());
-
-  //  invert mask to get delimiters
-  const uint16_t delim = ~(uint16_t)_mm_movemask_epi8(alnum);
-  // the | (1<<15) should not be needed actually...
-  const uint16_t len = (uint16_t)__builtin_ctz(delim | (1 << 15));
-  return len;
+  // construct delimiter pattern for comparison
+  __m128i pattern = _mm_shuffle_epi8(delimiters, input);
+  // clear 5th bit (match 0x20 with 0x00, match 0x29 using 0x09)
+  __m128i inputc = _mm_and_si128(input, _mm_shuffle_epi8(mask, input));
+  int bitmask = _mm_movemask_epi8(_mm_cmpeq_epi8(inputc, pattern));
+  return (size_t)__builtin_ctz((unsigned int)bitmask);
 }
 
 bool sse_type(const char *type_string, uint8_t *type) {
-  __m128i input = _mm_loadu_si128((const __m128i *)type_string);
+  __m128i input = _mm_loadu_si128((__m128i *)type_string);
+
   // RRTYPEs consist of [0-9a-zA-Z-] (unofficially, no other values are in use)
-  // 0x2d        : hyphen : 0b0010_1101
-  // 0x30 - 0x39 :  0 - 9 : 0b0011_0000 - 0b0011_1001
-  // 0x41 - 0x4f :  A - O : 0b0100_0001 - 0b0100_1111
-  // 0x50 - 0x5a :  P - Z : 0b0101_0000 - 0b0101_1010
-  // 0x61 - 0x6f :  a - o : 0b0110_0001 - 0b0110_1111
-  // 0x70 - 0x7a :  p - z : 0b0111_0000 - 0b0111_1010
-  const __m128i high_mask =
-      _mm_setr_epi8(0x00, 0x00, 0x01, 0x02, 0x04, 0x08, 0x04, 0x08, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+  // 0x2d        :            hyphen : 0b0010_1101
+  // 0x30 - 0x39 :             0 - 9 : 0b0011_0000 - 0b0011_1001
+  // 0x41 - 0x4f :             A - O : 0b0100_0001 - 0b0100_1111
+  // 0x50 - 0x5a :             P - Z : 0b0101_0000 - 0b0101_1010
+  // 0x61 - 0x6f :             a - o : 0b0110_0001 - 0b0110_1111
+  // 0x70 - 0x7a :             p - z : 0b0111_0000 - 0b0111_1010
 
-  const __m128i low_mask = _mm_setr_epi8(
-      0x02 | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08,
-      0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0a,
-      0x04, 0x05, 0x04 | 0x01, 0x04, 0x04);
+  // Delimiters for strings consisting of a contiguous set of characters
+  // 0x00        :       end-of-file : 0b0000_0000
+  // 0x20        :             space : 0b0010_0000
+  // 0x22        :             quote : 0b0010_0010
+  // 0x28        :  left parenthesis : 0b0010_1000
+  // 0x29        : right parenthesis : 0b0010_1001
+  // 0x09        :               tab : 0b0000_1001
+  // 0x0a        :         line feed : 0b0000_1010
+  // 0x3b        :         semicolon : 0b0011_1011
+  // 0x0d        :   carriage return : 0b0000_1101
 
-  const __m128i high_shuffled = _mm_shuffle_epi8(
-      high_mask, _mm_and_si128(_mm_srli_epi16(input, 4), _mm_set1_epi8(0x0f)));
-  const __m128i low_shuffled = _mm_shuffle_epi8(low_mask, input);
+  __m128i delimiters =
+      _mm_setr_epi8(0x00, 0x00, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00, 0x28, 0x09,
+                    0x0a, 0x3b, 0x00, 0x0d, 0x00, 0x00);
+  __m128i mask = _mm_setr_epi8(-33, -1, -1, -1, -1, -1, -1, -1, -1, -33, -1, -1,
+                               -1, -1, -1, -1);
 
-  const __m128i intersect = _mm_and_si128(high_shuffled, low_shuffled);
-
-  const __m128i alnum = _mm_cmpgt_epi8(intersect, _mm_setzero_si128());
-
-  // convert upper case to lower case (dash is 0x20, digits are 0x30 - 0x39)
-  input = _mm_and_si128(_mm_or_si128(input, _mm_set1_epi8(0x20)), alnum);
-  //  invert mask to get delimiters
-  const uint16_t delim = ~(uint16_t)_mm_movemask_epi8(alnum);
-  // the | (1<<15) should not be needed actually...
-  const uint16_t len = (uint16_t)__builtin_ctz(delim | (1 << 15));
-  // that's a long way to get here...
-  __m128i zero_m = _mm_loadu_si128((const __m128i *)(zero_masks + 16 - len));
-
-  input = _mm_andnot_si128(zero_m, input);
-
+  // construct delimiter pattern for comparison
+  __m128i pattern = _mm_shuffle_epi8(delimiters, input);
+  // clear 5th bit (match 0x20 with 0x00, match 0x29 using 0x09)
+  __m128i inputc = _mm_and_si128(input, _mm_shuffle_epi8(mask, input));
+  int bitmask = _mm_movemask_epi8(_mm_cmpeq_epi8(inputc, pattern));
+  uint16_t length = (uint16_t)__builtin_ctz((unsigned int)bitmask);
+  __m128i zero_mask = _mm_loadu_si128((__m128i *)(zero_masks + 16 - length));
+  __m128i inputlc = _mm_or_si128(input, _mm_set1_epi8(0x20));
+  input = _mm_andnot_si128(zero_mask, inputlc);
   // We now have just the string content we seek, followed by zeros.
 
   // We can hash the first 8 bytes...
@@ -356,7 +358,7 @@ bool sse_type(const char *type_string, uint8_t *type) {
   uint8_t idx = hash((uint64_t)_mm_cvtsi128_si64(input));
   *type = idx;
 
-  __m128i compar = _mm_loadu_si128((const __m128i *)buffers[idx]);
+  __m128i compar = _mm_loadu_si128((__m128i *)buffers[idx]);
   // if we have a match, then compar and input should be
   // identical!
 
