@@ -1281,7 +1281,11 @@ int main() {
                               : answer->size(); // should check error
                  }
                }));
-
+  pretty_print(N, bytes, "sse_length", bench([&test_data, &sum]() {
+                 for (const std::string &s : test_data) {
+                  sum += sse_length(s.data());
+                 }
+               }));
   pretty_print(
       N, bytes, "std::lower_bound", bench([&test_data, &sum]() {
         std::string s;

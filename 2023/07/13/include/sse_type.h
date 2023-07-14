@@ -78,5 +78,5 @@ enum {
 };
 
 bool sse_type(const char *date_string, uint8_t *type);
-
+size_t sse_length(const char *type_string);
 #endif // SSE_TYPE_H

@@ -277,6 +277,40 @@ static inline uint8_t hash(uint64_t val) {
   return val8;
 }
 
+
+size_t sse_length(const char *type_string) {
+  __m128i input = _mm_loadu_si128((const __m128i *)type_string);
+  // RRTYPEs consist of [0-9a-zA-Z-] (unofficially, no other values are in use)
+  // 0x2d        : hyphen : 0b0010_1101
+  // 0x30 - 0x39 :  0 - 9 : 0b0011_0000 - 0b0011_1001
+  // 0x41 - 0x4f :  A - O : 0b0100_0001 - 0b0100_1111
+  // 0x50 - 0x5a :  P - Z : 0b0101_0000 - 0b0101_1010
+  // 0x61 - 0x6f :  a - o : 0b0110_0001 - 0b0110_1111
+  // 0x70 - 0x7a :  p - z : 0b0111_0000 - 0b0111_1010
+  const __m128i high_mask =
+      _mm_setr_epi8(0x00, 0x00, 0x01, 0x02, 0x04, 0x08, 0x04, 0x08, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+
+  const __m128i low_mask = _mm_setr_epi8(
+      0x02 | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08,
+      0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0e | 0x08, 0x0a,
+      0x04, 0x05, 0x04 | 0x01, 0x04, 0x04);
+
+  const __m128i high_shuffled = _mm_shuffle_epi8(
+      high_mask, _mm_and_si128(_mm_srli_epi16(input, 4), _mm_set1_epi8(0x0f)));
+  const __m128i low_shuffled = _mm_shuffle_epi8(low_mask, input);
+
+  const __m128i intersect = _mm_and_si128(high_shuffled, low_shuffled);
+
+  const __m128i alnum = _mm_cmpgt_epi8(intersect, _mm_setzero_si128());
+
+  //  invert mask to get delimiters
+  const uint16_t delim = ~(uint16_t)_mm_movemask_epi8(alnum);
+  // the | (1<<15) should not be needed actually...
+  const uint16_t len = (uint16_t)__builtin_ctz(delim | (1 << 15));
+  return len;
+}
+
 bool sse_type(const char *type_string, uint8_t *type) {
   __m128i input = _mm_loadu_si128((const __m128i *)type_string);
   // RRTYPEs consist of [0-9a-zA-Z-] (unofficially, no other values are in use)
