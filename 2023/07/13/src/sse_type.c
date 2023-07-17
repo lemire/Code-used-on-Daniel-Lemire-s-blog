@@ -4,7 +4,7 @@
 #include <string.h>
 #include <x86intrin.h> // update if we need to support Windows.
 
-int8_t zero_masks[32] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+static int8_t zero_masks[32] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
                          0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
                          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 
@@ -267,6 +267,25 @@ int8_t buffers[256][16] = {
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
+static const uint16_t hash_to_code[256] = {
+  0, 0, 0, 0, 0, 4, 0, 0, 0, 35, 0, 0, 0, 0, 0, 0, //   0 -  15
+  48, 0, 61, 0, 0, 0, 0, 0, 0, 0, 0, 51, 0, 0, 0, 0, //  16 -  31
+  0, 0, 0, 0, 0, 0, 53, 0, 0, 11, 0, 63, 64, 0, 0, 105, //  32 -  47
+  0, 42, 60, 0, 25, 0, 0, 0, 107, 0, 0, 14, 0, 17, 0, 13, //  48 -  63
+  99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, //  64 -  79
+  0, 0, 0, 0, 0, 0, 0, 0, 108, 109, 0, 59, 0, 0, 0, 0, //  80 -  95
+  0, 3, 0, 0, 0, 0, 0, 19, 29, 0, 0, 0, 0, 0, 6, 0, //  96 - 111
+  44, 0, 0, 0, 0, 0, 0, 49, 39, 55, 0, 0, 0, 5, 104, 0, // 112 - 127
+  0, 0, 24, 0, 0, 21, 12, 0, 0, 0, 65, 10, 37, 0, 0, 0, // 128 - 143
+  27, 0, 1, 0, 0, 0, 0, 62, 0, 0, 0, 38, 0, 0, 0, 0, // 144 - 159
+  0, 3, 0, 0, 0, 106, 0, 2, 43, 0, 50, 4, 0, 0, 0, 0, // 160 - 175
+  2, 0, 0, 0, 0, 0, 0, 23, 47, 0, 0, 18, 46, 7, 0, 0, // 176 - 191
+  0, 45, 0, 0, 0, 0, 0, 36, 0, 15, 0, 26, 30, 0, 0, 0, // 192 - 207
+  0, 16, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 9, 28, 0, // 208 - 223
+  0, 0, 0, 0, 33, 257, 256, 0, 0, 0, 0, 0, 32769, 20, 0, 0, // 224 - 239
+  0, 0, 0, 0, 52, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0  // 240 - 255
+};
+
 static inline uint8_t hash(uint64_t val) {
   uint32_t val32 = (uint32_t)((val >> 32) ^ val);
   return (uint8_t)((val32 * (uint64_t)3523216699) >> 32);
@@ -308,7 +327,7 @@ size_t sse_length(const char *type_string) {
   return (size_t)__builtin_ctz((unsigned int)bitmask);
 }
 
-bool sse_type(const char *type_string, uint8_t *type) {
+bool sse_type(const char *type_string, uint16_t *type) {
   __m128i input = _mm_loadu_si128((__m128i *)type_string);
 
   // RRTYPEs consist of [0-9a-zA-Z-] (unofficially, no other values are in use)
@@ -351,7 +370,7 @@ bool sse_type(const char *type_string, uint8_t *type) {
   // This is maybe not the best approach. It is possible
   // to hash based on the first and last character, along with the length.
   uint8_t idx = hash((uint64_t)_mm_cvtsi128_si64(input));
-  *type = idx;
+  *type = hash_to_code[idx];
 
   __m128i compar = _mm_loadu_si128((__m128i *)buffers[idx]);
   // if we have a match, then compar and input should be

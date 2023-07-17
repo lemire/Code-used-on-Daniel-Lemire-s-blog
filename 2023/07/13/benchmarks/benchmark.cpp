@@ -1863,8 +1863,15 @@ int main() {
   volatile uint64_t sum{};
   pretty_print(N, bytes, "sse_type", bench([&test_data, &sum]() {
                  for (const std::string &s : test_data) {
-                   uint8_t t;
+                   uint16_t t;
                    sse_type(s.data(), &t); // should check error
+                   sum += t;
+                 }
+               }));
+  pretty_print(N, bytes, "sse_table", bench([&test_data, &sum]() {
+                 for (const std::string &s : test_data) {
+                   uint16_t t;
+                   sse_table(s.data(), &t); // should check error
                    sum += t;
                  }
                }));
