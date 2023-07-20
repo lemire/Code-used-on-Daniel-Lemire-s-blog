@@ -19,6 +19,8 @@ size_t base32hex_fast(uint8_t *dst, const uint8_t *src);
 
 // may overwrite by 3 bytes
 size_t base32hex_swar(uint8_t *dst, const uint8_t *src);
-// may overwrite by 8 bytes
+// may overwrite by 15 bytes
 size_t base32hex_simd(uint8_t *dst, const uint8_t *src);
+// may overwrite by 31 bytes
+size_t base32hex_avx(uint8_t *dst, const uint8_t *src);
 #endif // BASE32_H

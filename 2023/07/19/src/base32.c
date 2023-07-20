@@ -60,6 +60,63 @@ size_t base32hex_simd(uint8_t *dst, const uint8_t *src) {
   return (size_t)(src - srcinit);
 }
 
+size_t base32hex_avx(uint8_t *dst, const uint8_t *src) {
+  static int8_t zero_masks256[64] = {
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+  bool valid = true;
+  const __m256i delta_check = _mm256_setr_epi8(
+      -16, -32, -48, 70, -65, 41, -97, 9, 0, 0, 0, 0, 0, 0, 0, 0, -16, -32, -48,
+      70, -65, 41, -97, 9, 0, 0, 0, 0, 0, 0, 0, 0);
+  const __m256i delta_rebase = _mm256_setr_epi8(
+      0, 0, 0, -48, -55, -55, -87, -87, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -48,
+      -55, -55, -87, -87, 0, 0, 0, 0, 0, 0, 0, 0);
+  const uint8_t *srcinit = src;
+  do {
+    __m256i v = _mm256_loadu_si256((__m256i *)src);
+
+    __m256i hash_key =
+        _mm256_and_si256(_mm256_srli_epi32(v, 4), _mm256_set1_epi8(0x0F));
+    __m256i check =
+        _mm256_add_epi8(_mm256_shuffle_epi8(delta_check, hash_key), v);
+    v = _mm256_add_epi8(v, _mm256_shuffle_epi8(delta_rebase, hash_key));
+    unsigned int m = (unsigned)_mm256_movemask_epi8(check);
+
+    if (m) {
+      int length = __builtin_ctz(m);
+      if (length == 0) {
+        break;
+      }
+      src += length;
+      __m256i zero_mask =
+          _mm256_loadu_si256((__m256i *)(zero_masks256 + 32 - length));
+      v = _mm256_andnot_si256(zero_mask, v);
+      valid = false;
+    } else { // common case
+      src += 32;
+    }
+    v = _mm256_maddubs_epi16(v, _mm256_set1_epi32(0x01200120));
+    v = _mm256_madd_epi16(
+        v, _mm256_set_epi32(0x00010400, 0x00104000, 0x00010400, 0x00104000,
+                            0x00010400, 0x00104000, 0x00010400, 0x00104000));
+    // ...00000000`0000eeee`efffffgg`ggghhhhh`00000000`aaaaabbb`bbcccccd`dddd0000
+    v = _mm256_or_si256(v, _mm256_srli_epi64(v, 48));
+    v = _mm256_shuffle_epi8(
+        v, _mm256_set_epi8(0, 0, 0, 0, 0, 0, 12, 13, 8, 9, 10, 4, 5, 0, 1, 2, 0,
+                           0, 0, 0, 0, 0, 12, 13, 8, 9, 10, 4, 5, 0, 1, 2));
+    // 5. store bytes
+    _mm_storeu_si128((__m128i *)dst, _mm256_castsi256_si128(v));
+    dst += 10;
+    _mm_storeu_si128((__m128i *)dst, _mm256_extractf128_si256(v, 1));
+    dst += 10;
+
+  } while (valid);
+
+  return (size_t)(src - srcinit);
+}
+
 /* if we didn't have to worry about an unknown number of base32 digits...
  then we could just unroll and sign-extend to detect bad chars
 */
@@ -100,8 +157,8 @@ size_t base32hex_simple(uint8_t *dst, const uint8_t *src) {
       r |= x;
     }
     r = (unsigned long int)_bswap64((long long int)r);
-    uint64_t rs =((uint64_t)r >> (3*8));
-    memcpy(dst, (const char*)&rs, 8);
+    uint64_t rs = ((uint64_t)r >> (3 * 8));
+    memcpy(dst, (const char *)&rs, 8);
     dst += 5;
   } while (valid);
   return (size_t)(src - srcinit);
@@ -164,8 +221,8 @@ size_t base32hex_fast(uint8_t *dst, const uint8_t *src) {
       }
     }
     r = (long int)_bswap64((long long int)r);
-    uint64_t rs =((uint64_t)r >> (3*8));
-    memcpy(dst, (const char*)&rs, 8);
+    uint64_t rs = ((uint64_t)r >> (3 * 8));
+    memcpy(dst, (const char *)&rs, 8);
     dst += 5;
   } while (valid);
   return (size_t)(src - srcinit);

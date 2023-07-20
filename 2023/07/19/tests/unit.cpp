@@ -74,6 +74,18 @@ bool simple_test() {
 
       abort();
     }
+    size_t avx_decoded =
+        base32hex_avx((uint8_t *)output.data(), (const uint8_t *)coded.data());
+    std::cout << "avx_decoded = " << avx_decoded << std::endl;
+    output.resize((avx_decoded * 5) / 8);
+    std::cout << "got: " << output << "[" << output.size() << " bytes]..."
+              << std::endl;
+    if (output != strings[i]) {
+      std::cout << "expected: " << strings[i] << " [" << strings[i].size()
+                << " bytes]..." << std::endl;
+
+      abort();
+    }
 
     size_t swar_decoded =
         base32hex_swar((uint8_t *)output.data(), (const uint8_t *)coded.data());
