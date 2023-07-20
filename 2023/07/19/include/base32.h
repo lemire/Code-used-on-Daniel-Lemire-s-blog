@@ -12,6 +12,12 @@
 // The number of valid output bytes can be computed as
 // (x*5)/8.
 //
+// We don't check the padding character, and generally
+// do not require padding. However, because the functions
+// return the number of bytes read, it is always easy to
+// check the padding if you want to. All you need is a
+// single loop when the number of bytes read is not a multiple of eight.
+//
 // may overwrite by 3 bytes
 size_t base32hex_simple(uint8_t *dst, const uint8_t *src);
 // may overwrite by 3 bytes
