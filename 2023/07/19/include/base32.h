@@ -11,7 +11,10 @@
 //
 // The number of valid output bytes can be computed as
 // (x*5)/8.
+//
+// may overwrite by 3 bytes
 size_t base32hex_simple(uint8_t *dst, const uint8_t *src);
+// may overwrite by 3 bytes
 size_t base32hex_fast(uint8_t *dst, const uint8_t *src);
 
 // may overwrite by 3 bytes
