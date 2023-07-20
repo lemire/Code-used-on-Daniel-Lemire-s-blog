@@ -1868,6 +1868,13 @@ int main() {
                    sum += t;
                  }
                }));
+  pretty_print(N, bytes, "sse_upper_type", bench([&test_data, &sum]() {
+                 for (const std::string &s : test_data) {
+                   uint16_t t;
+                   sse_upper_type(s.data(), &t); // should check error
+                   sum += t;
+                 }
+               }));
   pretty_print(N, bytes, "sse_table", bench([&test_data, &sum]() {
                  for (const std::string &s : test_data) {
                    uint16_t t;

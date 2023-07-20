@@ -59,6 +59,14 @@ bool simple_test() {
       printf("bad type\n");
       return false;
     }
+    if (!sse_upper_type(main.data(), &type)) {
+      printf("expected success\n");
+      return false;
+    }
+    if (type != expected[i]) {
+      printf("bad type\n");
+      return false;
+    }
     if (!sse_table(main.data(), &type)) {
       printf("expected success\n");
       return false;
