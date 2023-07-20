@@ -4,7 +4,9 @@
 #include <stddef.h>
 #include <stdint.h>
 // base32 encodes encodes 5 bytes to 8 characters.
-// We implement base32hex.
+// We implement base32hex. 
+// Base32: the "Base 32 Encoding with Extended Hex Alphabet" as
+// specified in [RFC4648].
 //
 // The functions return the
 // number of input bytes decoded (not counting padding).

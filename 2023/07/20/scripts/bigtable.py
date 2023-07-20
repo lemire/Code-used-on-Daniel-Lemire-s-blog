@@ -48,3 +48,12 @@ for i in range(8):
     running |= swap_shift(0b11111 << (5 * (7 - i)))
     z.append(running)
 print(z)
+
+w = []
+for i in range(256):
+    if(t[i] != 32):
+        w.append((t[i], chr(i)))
+w.sort()
+for (a,b) in w:
+    if(b.upper() == b):
+       print("<tr><td>'"+str(b)+"'</td><td>",a,"</td></tr>")
