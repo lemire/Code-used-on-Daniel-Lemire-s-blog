@@ -14,4 +14,5 @@ size_t base16hex_simd(uint8_t *dst, const uint8_t *src);
 
 size_t base16hex_simd_geoff(uint8_t *dst, const uint8_t *src);
 
+size_t base16hex_simdzone_fallback(uint8_t *dst, const uint8_t *src);
 #endif // BASE16_H
