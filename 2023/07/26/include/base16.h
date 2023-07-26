@@ -15,4 +15,9 @@ size_t base16hex_simd(uint8_t *dst, const uint8_t *src);
 size_t base16hex_simd_geoff(uint8_t *dst, const uint8_t *src);
 
 size_t base16hex_simdzone_fallback(uint8_t *dst, const uint8_t *src);
+
+// decode
+// dst_end will point at the end of the written data (beyond dst).
+size_t base16hex_simd_skipspace(uint8_t *dst, const uint8_t *src,
+                                size_t *output_size);
 #endif // BASE16_H

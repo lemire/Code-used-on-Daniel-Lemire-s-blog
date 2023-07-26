@@ -37,14 +37,15 @@ size_t base16hex_simd(uint8_t *dst, const uint8_t *src) {
     } else { // common case
       src += 16;
     }
-    // the maddubs can be replaced by a shift, an or and an and (so 3 instructions)
+    // the maddubs can be replaced by a shift, an or and an and (so 3
+    // instructions)
     //
     // const __m128i t1 = _mm_srli_epi32(v, 4);
     // const __m128i t3 = _mm_or_si128(t0, t1);
     // const __m128i t4 = _mm_and_si128(t3, _mm_set1_epi16(0x00ff));
     //
     const __m128i t3 = _mm_maddubs_epi16(v, _mm_set1_epi16(0x0110));
-    // the shuffle can be replaced by a pack instruction, e.g., 
+    // the shuffle can be replaced by a pack instruction, e.g.,
     // const __m128i t5 = _mm_packus_epi16(t3, t3);
     const __m128i t5 =
         _mm_shuffle_epi8(t3, _mm_setr_epi8(0, 2, 4, 6, 8, 10, 12, 14, -1, -1,
@@ -52,6 +53,137 @@ size_t base16hex_simd(uint8_t *dst, const uint8_t *src) {
     _mm_storeu_si128((__m128i *)dst, t5);
     dst += 8;
   } while (valid);
+  return (size_t)(src - srcinit);
+}
+
+// Returns the length of the continuous sequence found, but only process an even
+// number of characters, the caller is responsible for processing the leftover
+// character (if any). If leftoverin is not the null pointer, then we take
+// *leftoverin as the first character of the sequence.
+static size_t base16hex_simd_justeven(uint8_t *dst, const uint8_t *src,
+                                      const uint8_t *leftoverin) {
+  static int8_t zero_masks[32] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+                                  0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
+                                  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+  bool valid = true;
+  const __m128i delta_check = _mm_setr_epi8(-16, -32, -47, 71, 58, -96, 26,
+                                            -128, 0, 0, 0, 0, 0, 0, 0, 0);
+  const __m128i delta_rebase =
+      _mm_setr_epi8(0, 0, -47, -47, -54, 0, -86, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  const uint8_t *srcinit = src;
+
+  __m128i v = _mm_loadu_si128((__m128i *)src);
+  if (leftoverin) {
+    src -= 1;
+    v = _mm_alignr_epi8(v, _mm_set1_epi8((char)*leftoverin), 15);
+  }
+
+  do {
+    __m128i vm1 = _mm_add_epi8(v, _mm_set1_epi8(-1));
+    __m128i hash_key =
+        _mm_and_si128(_mm_srli_epi32(vm1, 4), _mm_set1_epi8(0x0F));
+    __m128i check = _mm_add_epi8(_mm_shuffle_epi8(delta_check, hash_key), vm1);
+    v = _mm_add_epi8(vm1, _mm_shuffle_epi8(delta_rebase, hash_key));
+    unsigned int m = (unsigned)_mm_movemask_epi8(check);
+    if (m) {
+      int length = __builtin_ctzll(m);
+      if (length == 0) {
+        break;
+      }
+      src += length;
+      __m128i zero_mask =
+          _mm_loadu_si128((__m128i *)(zero_masks + 16 - (length & ~1)));
+      v = _mm_andnot_si128(zero_mask, v);
+      valid = false;
+    } else { // common case
+      src += 16;
+    }
+    // the maddubs can be replaced by a shift, an or and an and (so 3
+    // instructions)
+    //
+    // const __m128i t1 = _mm_srli_epi32(v, 4);
+    // const __m128i t3 = _mm_or_si128(t0, t1);
+    // const __m128i t4 = _mm_and_si128(t3, _mm_set1_epi16(0x00ff));
+    //
+    const __m128i t3 = _mm_maddubs_epi16(v, _mm_set1_epi16(0x0110));
+    // the shuffle can be replaced by a pack instruction, e.g.,
+    // const __m128i t5 = _mm_packus_epi16(t3, t3);
+    const __m128i t5 =
+        _mm_shuffle_epi8(t3, _mm_setr_epi8(0, 2, 4, 6, 8, 10, 12, 14, -1, -1,
+                                           -1, -1, -1, -1, -1, -1));
+    _mm_storeu_si128((__m128i *)dst, t5);
+    dst += 8;
+    if (valid) {
+      v = _mm_loadu_si128((__m128i *)src);
+    } else {
+      break;
+    }
+  } while (true);
+  return (size_t)(src - srcinit);
+}
+
+static inline bool is_space(uint8_t c) {
+  static const bool table[] = {
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  return table[(unsigned)c];
+}
+static inline bool is_hex(uint8_t c) {
+  static const bool table[] = {
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  return table[(unsigned)c];
+}
+
+size_t base16hex_simd_skipspace(uint8_t *dst, const uint8_t *src,
+                                size_t *output_size) {
+  uint8_t *dstinit = dst;
+  const uint8_t *srcinit = src;
+  const uint8_t *pointer = NULL;
+  {
+    size_t consumed = base16hex_simd(dst, src);
+    size_t actual_consumed = consumed;
+    dst += actual_consumed / 2;
+    pointer = (actual_consumed & 1) ? src + consumed - 1 : NULL;
+    src += consumed;
+  }
+  if (is_space(*src)) {
+    src++;
+    while (is_space(*src)) {
+      src++;
+    }
+
+    while (is_hex(*src)) {
+      size_t consumed = base16hex_simd_justeven(dst, src, pointer);
+      size_t actual_consumed = consumed + (pointer == NULL ? 0 : 1);
+      dst += actual_consumed / 2;
+      pointer = (actual_consumed & 1) ? src + consumed - 1 : NULL;
+      src += consumed;
+      while (is_space(*src)) {
+        src++;
+      }
+    }
+  }
+
+  *output_size = (size_t)(dst - dstinit);
   return (size_t)(src - srcinit);
 }
 
