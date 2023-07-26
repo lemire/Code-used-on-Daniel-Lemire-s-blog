@@ -37,21 +37,18 @@ size_t base16hex_simd(uint8_t *dst, const uint8_t *src) {
     } else { // common case
       src += 16;
     }
+    // the maddubs can be replaced by a shift, an or and an and (so 3 instructions)
+    //
+    // const __m128i t1 = _mm_srli_epi32(v, 4);
+    // const __m128i t3 = _mm_or_si128(t0, t1);
+    // const __m128i t4 = _mm_and_si128(t3, _mm_set1_epi16(0x00ff));
+    //
     const __m128i t3 = _mm_maddubs_epi16(v, _mm_set1_epi16(0x0110));
+    // the shuffle can be replaced by a pack instruction, e.g., 
+    // const __m128i t5 = _mm_packus_epi16(t3, t3);
     const __m128i t5 =
         _mm_shuffle_epi8(t3, _mm_setr_epi8(0, 2, 4, 6, 8, 10, 12, 14, -1, -1,
                                            -1, -1, -1, -1, -1, -1));
-
-    /**
-    // Alternative: has four instructions.
-
-  const __m128i t1 = _mm_srli_epi32(v, 4);
-  const __m128i t3 = _mm_or_si128(t0, t1);
-  const __m128i t4 = _mm_and_si128(
-      t3, _mm_set1_epi16(0x00ff)); // keep just lower bytes in words
-  const __m128i t5 =
-      _mm_packus_epi16(t4, t4); // no
-    */
     _mm_storeu_si128((__m128i *)dst, t5);
     dst += 8;
   } while (valid);
