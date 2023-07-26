@@ -115,6 +115,7 @@ size_t base16hex_simd_geoff(uint8_t *dst, const uint8_t *src) {
   } while (valid);
   return (size_t)(src - srcinit);
 }
+
 size_t base16hex_simple(uint8_t *dst, const uint8_t *src) {
 
   static const signed char digittoval[256] = {
@@ -197,8 +198,10 @@ size_t base16hex_simdzone_fallback(uint8_t *dst, const uint8_t *src) {
 
     if (state == 0)
       *dst = (uint8_t)(ofs << 4);
-    else
+    else {
       *dst |= ofs;
+      dst++;
+    }
 
     state = !state;
   }
