@@ -7,9 +7,9 @@
 /// Source: Faster Base64 Encoding and Decoding Using AVX2 Instructions,
 ///         https://arxiv.org/abs/1704.00605
 size_t base16hex_simd(uint8_t *dst, const uint8_t *src) {
-  static int8_t zero_masks[32] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-                                  0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
-                                  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+  //static int8_t zero_masks[32] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  //                                0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
+  //                                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
   bool valid = true;
   const __m128i delta_check = _mm_setr_epi8(-16, -32, -47, 71, 58, -96, 26,
                                             -128, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -30,9 +30,9 @@ size_t base16hex_simd(uint8_t *dst, const uint8_t *src) {
         break;
       }
       src += length;
-      __m128i zero_mask =
-          _mm_loadu_si128((__m128i *)(zero_masks + 16 - length));
-      v = _mm_andnot_si128(zero_mask, v);
+      //__m128i zero_mask =
+      //    _mm_loadu_si128((__m128i *)(zero_masks + 16 - length));
+      //v = _mm_andnot_si128(zero_mask, v);
       valid = false;
     } else { // common case
       src += 16;
@@ -61,11 +61,11 @@ size_t base16hex_simd(uint8_t *dst, const uint8_t *src) {
 /// Source: Faster Base64 Encoding and Decoding Using AVX2 Instructions,
 ///         https://arxiv.org/abs/1704.00605
 size_t base16hex_avx(uint8_t *dst, const uint8_t *src) {
-  static int8_t zero_masks[64] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-                                  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-                                  0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
-                                  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  -1, -1, -1, -1, -1, -1,
-                                  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+  //static int8_t zero_masks[64] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  //                                0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  //                                0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
+  //                                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  -1, -1, -1, -1, -1, -1,
+  //                                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
   bool valid = true;
   const __m256i delta_check = _mm256_setr_epi8(-16, -32, -47, 71, 58, -96, 26,
                                             -128, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -89,9 +89,9 @@ size_t base16hex_avx(uint8_t *dst, const uint8_t *src) {
         break;
       }
       src += length;
-      __m256i zero_mask =
-          _mm256_loadu_si256((__m256i *)(zero_masks + 32 - length));
-      v = _mm256_andnot_si256(zero_mask, v);
+      //__m256i zero_mask =
+      //    _mm256_loadu_si256((__m256i *)(zero_masks + 32 - length));
+      //v = _mm256_andnot_si256(zero_mask, v);
       valid = false;
     } else { // common case
       src += 32;
@@ -110,9 +110,9 @@ size_t base16hex_avx(uint8_t *dst, const uint8_t *src) {
 // *leftoverin as the first character of the sequence.
 static size_t base16hex_simd_justeven(uint8_t *dst, const uint8_t *src,
                                       const uint8_t *leftoverin) {
-  static int8_t zero_masks[32] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-                                  0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
-                                  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+  //static int8_t zero_masks[32] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  //                                0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
+  //                                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
   bool valid = true;
   const __m128i delta_check = _mm_setr_epi8(-16, -32, -47, 71, 58, -96, 26,
                                             -128, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -139,9 +139,9 @@ static size_t base16hex_simd_justeven(uint8_t *dst, const uint8_t *src,
         break;
       }
       src += length;
-      __m128i zero_mask =
-          _mm_loadu_si128((__m128i *)(zero_masks + 16 - (length & ~1)));
-      v = _mm_andnot_si128(zero_mask, v);
+      //__m128i zero_mask =
+      //    _mm_loadu_si128((__m128i *)(zero_masks + 16 - (length & ~1)));
+      //v = _mm_andnot_si128(zero_mask, v);
       valid = false;
     } else { // common case
       src += 16;
@@ -238,9 +238,9 @@ size_t base16hex_simd_skipspace(uint8_t *dst, const uint8_t *src,
 // Parsing hex numbers with validation
 // http://0x80.pl/notesen/2022-01-17-validating-hex-parse.html
 size_t base16hex_simd_geoff(uint8_t *dst, const uint8_t *src) {
-  static int8_t zero_masks[32] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-                                  0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
-                                  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+  //static int8_t zero_masks[32] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  //                                0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
+  //                                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
   bool valid = true;
   const uint8_t *srcinit = src;
 
@@ -272,9 +272,9 @@ size_t base16hex_simd_geoff(uint8_t *dst, const uint8_t *src) {
         break;
       }
       src += length;
-      __m128i zero_mask =
-          _mm_loadu_si128((__m128i *)(zero_masks + 16 - length));
-      t7 = _mm_andnot_si128(zero_mask, t7);
+      //__m128i zero_mask =
+      //    _mm_loadu_si128((__m128i *)(zero_masks + 16 - length));
+      //t7 = _mm_andnot_si128(zero_mask, t7);
       valid = false;
     } else { // common case
       src += 16;
