@@ -64,6 +64,18 @@ bool simple_test() {
       abort();
     }
 
+    size_t fast_decoded_avx = base16hex_avx(
+        (uint8_t *)output.data(), (const uint8_t *)coded.data());
+    output.resize(fast_decoded_avx / 2);
+    std::cout << "got: " << output << "[" << output.size() << " bytes]..."
+              << std::endl;
+    if (output != strings[i]) {
+      std::cout << "expected: " << strings[i] << " [" << strings[i].size()
+                << " bytes]..." << std::endl;
+
+      abort();
+    }
+
     size_t fast_decoded_fallback = base16hex_simdzone_fallback(
         (uint8_t *)output.data(), (const uint8_t *)coded.data());
     output.resize(fast_decoded_fallback / 2);

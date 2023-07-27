@@ -46,12 +46,60 @@ size_t base16hex_simd(uint8_t *dst, const uint8_t *src) {
     //
     const __m128i t3 = _mm_maddubs_epi16(v, _mm_set1_epi16(0x0110));
     // the shuffle can be replaced by a pack instruction, e.g.,
-    // const __m128i t5 = _mm_packus_epi16(t3, t3);
-    const __m128i t5 =
-        _mm_shuffle_epi8(t3, _mm_setr_epi8(0, 2, 4, 6, 8, 10, 12, 14, -1, -1,
-                                           -1, -1, -1, -1, -1, -1));
+     const __m128i t5 = _mm_packus_epi16(t3, t3);
+    //const __m128i t5 =
+    //    _mm_shuffle_epi8(t3, _mm_setr_epi8(0, 2, 4, 6, 8, 10, 12, 14, -1, -1,
+    //                                       -1, -1, -1, -1, -1, -1));
     _mm_storeu_si128((__m128i *)dst, t5);
+    // could use _mm_storel_epi64 but will likely be slower
+    // _mm_storel_epi64((__m64*)dst, t5);
     dst += 8;
+  } while (valid);
+  return (size_t)(src - srcinit);
+}
+
+/// Source: Faster Base64 Encoding and Decoding Using AVX2 Instructions,
+///         https://arxiv.org/abs/1704.00605
+size_t base16hex_avx(uint8_t *dst, const uint8_t *src) {
+  static int8_t zero_masks[64] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+                                  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+                                  0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
+                                  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  -1, -1, -1, -1, -1, -1,
+                                  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+  bool valid = true;
+  const __m256i delta_check = _mm256_setr_epi8(-16, -32, -47, 71, 58, -96, 26,
+                                            -128, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            -16, -32, -47, 71, 58, -96, 26,
+                                            -128, 0, 0, 0, 0, 0, 0, 0, 0);
+  const __m256i delta_rebase =
+      _mm256_setr_epi8(0, 0, -47, -47, -54, 0, -86, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, -47, -47, -54, 0, -86, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  const uint8_t *srcinit = src;
+  do {
+    __m256i v = _mm256_loadu_si256((__m256i *)src);
+    __m256i vm1 = _mm256_add_epi8(v, _mm256_set1_epi8(-1));
+    __m256i hash_key =
+        _mm256_and_si256(_mm256_srli_epi32(vm1, 4), _mm256_set1_epi8(0x0F));
+    __m256i check = _mm256_add_epi8(_mm256_shuffle_epi8(delta_check, hash_key), vm1);
+    v = _mm256_add_epi8(vm1, _mm256_shuffle_epi8(delta_rebase, hash_key));
+    unsigned int m = (unsigned)_mm256_movemask_epi8(check);
+    if (m) {
+      int length = __builtin_ctzll(m);
+      if (length == 0) {
+        break;
+      }
+      src += length;
+      __m256i zero_mask =
+          _mm256_loadu_si256((__m256i *)(zero_masks + 32 - length));
+      v = _mm256_andnot_si256(zero_mask, v);
+      valid = false;
+    } else { // common case
+      src += 32;
+    }
+    const __m256i t3 = _mm256_maddubs_epi16(v, _mm256_set1_epi16(0x0110));
+    const __m256i t5 = _mm256_permute4x64_epi64(_mm256_packus_epi16(t3, t3), 0b11011000);
+    _mm_storeu_si128((__m128i *)dst, _mm256_castsi256_si128(t5));
+    dst += 16;
   } while (valid);
   return (size_t)(src - srcinit);
 }

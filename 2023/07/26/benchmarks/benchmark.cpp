@@ -88,7 +88,13 @@ int main() {
   output.resize(20 + 16);
   volatile uint64_t sum{};
 
-
+  pretty_print(inputs.size(), bytes, "base16hex_avx",
+               bench([&inputs, &output, &sum]() {
+                 for (const std::string &s : inputs) {
+                   sum += base16hex_avx((uint8_t *)output.data(),
+                                         (const uint8_t *)s.c_str());
+                 }
+               }));
   pretty_print(inputs.size(), bytes, "base16hex_simd",
                bench([&inputs, &output, &sum]() {
                  for (const std::string &s : inputs) {
