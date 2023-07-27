@@ -69,7 +69,7 @@ int main() {
   std::vector<std::string> inputs;
   for(size_t i = 0; i < 10000; i++) {
     std::string new_str;
-    new_str.resize((rand()%24)&~1);
+    new_str.resize(56);
     for(size_t z = 0; z < new_str.size(); z++) {
       int digit = rand()%16;
       new_str[z] = (digit < 10 ? '0' + digit : 'A' + (digit - 10) );
