@@ -33,6 +33,13 @@ bool simple_test() {
     printf("%02x ", out[i]);
   }
   printf("\n");
+  read = name_to_dnswire_simd_fast(basic.c_str(), out.data());
+  read += 2;
+  printf("output:\n");
+  for(size_t i = 0; i < read; i++) {
+    printf("%02x ", out[i]);
+  }
+  printf("\n");
   read = name_to_dnswire(basic.c_str(), out.data());
   read += 2;
   printf("output:\n");

@@ -21,12 +21,13 @@ size_t name_to_dnswire(const char *src, uint8_t *dst) {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   uint8_t *counter = dst++;
   do {
-    
+
     while (is_alphanumdash[(uint8_t)*src]) {
       *dst++ = (uint8_t)*src;
       src++;
     }
-    *counter = (uint8_t)(dst - counter - 1); // should check for overflow and zero values.
+    *counter = (uint8_t)(dst - counter -
+                         1); // should check for overflow and zero values.
     counter = dst++;
     if (*src != '.') {
       break;
@@ -255,6 +256,104 @@ size_t name_to_dnswire_simd(const char *src, uint8_t *dst) {
   __m128i magic = _mm_shuffle_epi8(diffed_packed_dotscounts, dotones);
   // shift it
   __m128i marked_input = _mm_blendv_epi8(input, magic, dots);
+  _mm_storeu_si128((__m128i *)dst, marked_input);
+  // dst += 16;
+  return (size_t)(src - srcinit);
+}
+
+// This version processes at most 15 bytes from the input. A fallback would
+// be necessary to use such code in production. TODO.
+size_t name_to_dnswire_simd_fast(const char *src, uint8_t *dst) {
+  const char *srcinit = src;
+  // Each label may contain from 1 to 63 octets. The empty label is
+  // reserved for the root node and when fully qualified is expressed
+  // as the empty label terminated by a dot.
+  // The full domain name may not exceed a total length of 253 ASCII characters
+  // in its textual representation.
+  //
+  // It is likely that many name sfits under 16 bytes, however.
+
+  // We do vectorized classification to validate the content.
+  // We want to allow 0x30 to 0x39 (digits)
+  // The hyphen 0x2d.
+  // The dot 0x2e.
+  // The lower-cased letters 0x61-0x6f (a-o), 0x70-0x7a (p-z)
+  // The upper-cased letters 0x41-0x4f (A-O), 0x50-0x5a (P-Z)
+
+  const char DIGIT = 0x01;
+  const char HYPHENDOT = 0x02;
+  const char LETTERAO = 0x04;
+  const char LETTERPZ = 0x08;
+  static int8_t zero_masks[32] = {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+                                  0,  0,  0,  0,  0,  -1, -1, -1, -1, -1, -1,
+                                  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+  __m128i highnibbles =
+      _mm_setr_epi8(0, 0, HYPHENDOT, DIGIT, LETTERAO, LETTERPZ, LETTERAO,
+                    LETTERPZ, 0, 0, 0, 0, 0, 0, 0, 0);
+  __m128i lownibbles =
+      _mm_setr_epi8(LETTERPZ | DIGIT, LETTERAO | LETTERPZ | DIGIT,
+                    LETTERAO | LETTERPZ | DIGIT, LETTERAO | LETTERPZ | DIGIT,
+                    LETTERAO | LETTERPZ | DIGIT, LETTERAO | LETTERPZ | DIGIT,
+                    LETTERAO | LETTERPZ | DIGIT, LETTERAO | LETTERPZ | DIGIT,
+                    LETTERAO | LETTERPZ | DIGIT, LETTERAO | LETTERPZ | DIGIT,
+                    LETTERAO | LETTERPZ, LETTERAO, LETTERAO,
+                    LETTERAO | HYPHENDOT, LETTERAO | HYPHENDOT, LETTERAO);
+  // we always insert a fake '.' initially.
+  __m128i input = _mm_loadu_si128((const __m128i *)src);
+  input = _mm_alignr_epi8(input, _mm_set1_epi8('.'), 15);
+  src -= 1; // we pretend that we are pointing at the virtual '.'.
+
+  // We could possibly 'upper case everything' if we wanted to.
+  //   __m128i inputlc = _mm_or_si128(input, _mm_set1_epi8(0x20));
+  __m128i low = _mm_shuffle_epi8(
+      lownibbles,
+      input); // no need for _mm_and_si128(input,_mm_set1_epi8(0xf)) because
+              // if high bit is set, there is no match
+  __m128i high = _mm_shuffle_epi8(
+      highnibbles, _mm_and_si128(_mm_srli_epi64(input, 4), _mm_set1_epi8(0xf)));
+  __m128i classified =
+      _mm_cmpeq_epi8(_mm_and_si128(low, high), _mm_setzero_si128());
+  // m cannot be zero!!!
+  unsigned m = (unsigned)_mm_movemask_epi8(
+      classified); // should be 1 wherever we have a match.
+  uint16_t length = (uint16_t)__builtin_ctz((unsigned int)m);
+  src += length;
+  __m128i zero_mask = _mm_loadu_si128((__m128i *)(zero_masks + 16 - length));
+  // masking with '.'
+  input = _mm_blendv_epi8(input, _mm_set1_epi8('.'), zero_mask);
+  //
+  __m128i dots = _mm_cmpeq_epi8(input, _mm_set1_epi8('.'));
+
+  __m128i sequential =
+      _mm_setr_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+  __m128i dotscounts = _mm_and_si128(dots, sequential);
+
+  __m128i marked = dots;
+  dotscounts = _mm_blendv_epi8(
+      _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1), dotscounts, marked);
+  marked =
+      _mm_or_si128(marked, _mm_alignr_epi8(_mm_setzero_si128(), marked, 1));
+
+  dotscounts = _mm_blendv_epi8(
+      _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 2), dotscounts, marked);
+
+  marked =
+      _mm_or_si128(marked, _mm_alignr_epi8(_mm_setzero_si128(), marked, 2));
+  dotscounts = _mm_blendv_epi8(
+      _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 4), dotscounts, marked);
+  marked =
+      _mm_or_si128(marked, _mm_alignr_epi8(_mm_setzero_si128(), marked, 4));
+  dotscounts = _mm_blendv_epi8(
+      _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 8), dotscounts, marked);
+
+  __m128i next = _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1);
+  dotscounts = _mm_sub_epi8(next, dotscounts);
+
+  // need to subtract one to the counters.
+  dotscounts = _mm_sub_epi8(dotscounts, _mm_set1_epi8(1));
+
+  // shift it
+  __m128i marked_input = _mm_blendv_epi8(input, dotscounts, dots);
   _mm_storeu_si128((__m128i *)dst, marked_input);
   // dst += 16;
   return (size_t)(src - srcinit);

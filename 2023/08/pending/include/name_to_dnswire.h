@@ -11,7 +11,7 @@
 // Returns the number of bytes consumed, at most 15 bytes are consumed, 
 // if more, then it will not have processed the whole name.
 size_t name_to_dnswire_simd(const char *src, uint8_t *dst);
-
+size_t name_to_dnswire_simd_fast(const char *src, uint8_t *dst);
 
 size_t name_to_dnswire(const char *src, uint8_t *dst);
 

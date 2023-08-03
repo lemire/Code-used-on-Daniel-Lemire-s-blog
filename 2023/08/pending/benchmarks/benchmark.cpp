@@ -58,7 +58,13 @@ int main() {
   output.resize(1024);
   volatile uint64_t sum{};
 
-
+  pretty_print(inputs.size(), bytes, "name_to_dnswire_simd_fast",
+               bench([&inputs, &output, &sum]() {
+                 for (const std::string &s : inputs) {
+                   sum += name_to_dnswire_simd_fast(s.data(),
+                                               output.data());
+                 }
+               }));
   pretty_print(inputs.size(), bytes, "name_to_dnswire_simd",
                bench([&inputs, &output, &sum]() {
                  for (const std::string &s : inputs) {
