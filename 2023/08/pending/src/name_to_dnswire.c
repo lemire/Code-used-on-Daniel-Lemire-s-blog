@@ -325,26 +325,25 @@ size_t name_to_dnswire_simd_fast(const char *src, uint8_t *dst) {
   __m128i dots = _mm_cmpeq_epi8(input, _mm_set1_epi8('.'));
 
   __m128i sequential =
-      _mm_setr_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+      _mm_setr_epi8(-128, -127, -126, -125, -124, -123, -122, -121, -120, -119,
+                    -118, -117, -116, -115, -114, -113);
   __m128i dotscounts = _mm_and_si128(dots, sequential);
 
-  __m128i marked = dots;
-  dotscounts = _mm_blendv_epi8(
-      _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1), dotscounts, marked);
-  marked =
-      _mm_or_si128(marked, _mm_alignr_epi8(_mm_setzero_si128(), marked, 1));
+  dotscounts =
+      _mm_blendv_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1),
+                      dotscounts, dotscounts);
 
-  dotscounts = _mm_blendv_epi8(
-      _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 2), dotscounts, marked);
+  dotscounts =
+      _mm_blendv_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 2),
+                      dotscounts, dotscounts);
 
-  marked =
-      _mm_or_si128(marked, _mm_alignr_epi8(_mm_setzero_si128(), marked, 2));
-  dotscounts = _mm_blendv_epi8(
-      _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 4), dotscounts, marked);
-  marked =
-      _mm_or_si128(marked, _mm_alignr_epi8(_mm_setzero_si128(), marked, 4));
-  dotscounts = _mm_blendv_epi8(
-      _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 8), dotscounts, marked);
+  dotscounts =
+      _mm_blendv_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 4),
+                      dotscounts, dotscounts);
+
+  dotscounts =
+      _mm_blendv_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 8),
+                      dotscounts, dotscounts);
 
   __m128i next = _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1);
   dotscounts = _mm_sub_epi8(next, dotscounts);
