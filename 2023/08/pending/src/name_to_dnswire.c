@@ -330,20 +330,20 @@ size_t name_to_dnswire_simd_fast(const char *src, uint8_t *dst) {
   __m128i dotscounts = _mm_and_si128(dots, sequential);
 
   dotscounts =
-      _mm_blendv_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1),
-                      dotscounts, dotscounts);
+      _mm_min_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1),
+                      dotscounts);
 
   dotscounts =
-      _mm_blendv_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 2),
-                      dotscounts, dotscounts);
+      _mm_min_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 2),
+                      dotscounts);
 
   dotscounts =
-      _mm_blendv_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 4),
-                      dotscounts, dotscounts);
+      _mm_min_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 4),
+                      dotscounts);
 
   dotscounts =
-      _mm_blendv_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 8),
-                      dotscounts, dotscounts);
+      _mm_min_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 8),
+                      dotscounts);
 
   __m128i next = _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1);
   dotscounts = _mm_sub_epi8(next, dotscounts);
