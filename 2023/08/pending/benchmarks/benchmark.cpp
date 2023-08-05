@@ -1,6 +1,7 @@
 
 #include "performancecounters/benchmarker.h"
 #include <algorithm>
+#include <fstream>
 #include <random>
 #include <stdlib.h>
 #include <vector>
@@ -37,14 +38,46 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
   printf("\n");
 }
 
-int main() {
-
+int main(int argc, char **argv) {
   std::vector<std::string> inputs;
-  for (size_t i = 0; i < 10000; i++) {
-    std::string ref = database[rand() % database.size()];
-    ref.reserve(32);
-    inputs.push_back(ref);
+
+  if (argc == 1) {
+    printf("You may pass a CSV file from "
+           "https://s3-us-west-1.amazonaws.com/umbrella-static/index.html, "
+           "e.g., top-1m.csv\n");
+    printf(
+        "wget "
+        "http://s3-us-west-1.amazonaws.com/umbrella-static/top-1m.csv.zip\n");
+    printf("unzip top-1m.csv.zip\n");
+    printf("./benchmark top-1m.csv  \n");
+    printf("\nUsing synth. data instead.\n");
+    for (size_t i = 0; i < 10000; i++) {
+      std::string ref = database[rand() % database.size()];
+      ref.reserve(ref.size() + 32);
+      inputs.push_back(ref);
+    }
+  } else {
+    std::ifstream input(argv[1]);
+    size_t volume = 0;
+    for (std::string line; std::getline(input, line);) {
+      size_t pos = line.find(',');
+      if (pos != std::string::npos) {
+        std::string ref = line.substr(pos + 1);
+        ref.erase(
+            std::find_if(ref.rbegin(), ref.rend(),
+                         [](unsigned char ch) { return !std::isspace(ch); })
+                .base(),
+            ref.end());
+        volume += ref.size();
+        ref.reserve(ref.size() + 32);
+        inputs.push_back(ref);
+      }
+    }
+    std::cout << "loaded " << inputs.size() << " names" << std::endl;
+    std::cout << "average length " << double(volume) / inputs.size()
+              << " bytes/name" << std::endl;
   }
+
   if (!collector.has_events()) {
     printf("Performance counters unavailable. Consider running in privileged "
            "mode (e.g., sudo).\n");
@@ -57,32 +90,16 @@ int main() {
   std::vector<uint8_t> output;
   output.resize(1024);
   volatile uint64_t sum{};
-  pretty_print(inputs.size(), bytes, "name_to_dnswire_simd_full",
-               bench([&inputs, &output, &sum]() {
-                 for (const std::string &s : inputs) {
-                   sum += name_to_dnswire_simd_fast(s.data(),
-                                               output.data());
-                 }
-               }));
-  pretty_print(inputs.size(), bytes, "name_to_dnswire_simd_fast",
-               bench([&inputs, &output, &sum]() {
-                 for (const std::string &s : inputs) {
-                   sum += name_to_dnswire_simd_fast(s.data(),
-                                               output.data());
-                 }
-               }));
   pretty_print(inputs.size(), bytes, "name_to_dnswire_simd",
                bench([&inputs, &output, &sum]() {
                  for (const std::string &s : inputs) {
-                   sum += name_to_dnswire_simd(s.data(),
-                                               output.data());
+                   sum += name_to_dnswire_simd(s.data(), output.data());
                  }
                }));
   pretty_print(inputs.size(), bytes, "name_to_dnswire",
                bench([&inputs, &output, &sum]() {
                  for (const std::string &s : inputs) {
-                   sum += name_to_dnswire(s.data(),
-                                               output.data());
+                   sum += name_to_dnswire(s.data(), output.data());
                  }
                }));
 }

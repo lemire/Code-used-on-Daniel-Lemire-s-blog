@@ -5,16 +5,12 @@
 #include <stdint.h>
 
 
+// Convert a DNS name into wire format: dots are replaced by length.
 // This expectation is that this takes a name, such as "lemire.me" or "6c 65 6d 69 72 65 2e 6d 65"
 // (the string can be followed by anything, including a null character), and converts it to the wire format:
 // "06 6c 65 6d 69 72 65 02 6d 65 00".
-// Returns the number of bytes consumed, at most 15 bytes are consumed, 
-// if more, then it will not have processed the whole name.
+// Returns the number of bytes consumed.
 size_t name_to_dnswire_simd(const char *src, uint8_t *dst);
-size_t name_to_dnswire_simd_fast(const char *src, uint8_t *dst);
-
-// does not validate wire format (successive dots or dots further than 63 bytes away are allowed)
-size_t name_to_dnswire_simd_full(const char *src, uint8_t *dst);
 
 size_t name_to_dnswire(const char *src, uint8_t *dst);
 
