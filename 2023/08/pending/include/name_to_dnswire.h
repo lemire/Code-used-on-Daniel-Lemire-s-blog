@@ -13,6 +13,9 @@
 size_t name_to_dnswire_simd(const char *src, uint8_t *dst);
 size_t name_to_dnswire_simd_fast(const char *src, uint8_t *dst);
 
+// does not validate wire format (successive dots or dots further than 63 bytes away are allowed)
+size_t name_to_dnswire_simd_full(const char *src, uint8_t *dst);
+
 size_t name_to_dnswire(const char *src, uint8_t *dst);
 
 #endif // NAME_TO_DNSWIRE_H
