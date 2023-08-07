@@ -40,6 +40,13 @@ bool simple_test() {
     printf("%02x ", out[i]);
   }
   printf("\n");
+  read = name_to_dnswire(basic.c_str(), out.data());
+  read += 2;
+  printf("name_to_dnswire_scalar_labels output:\n");
+  for (size_t i = 0; i < read; i++) {
+    printf("%02x ", out[i]);
+  }
+  printf("\n");
 
   printf("\nSUCCESS\n");
   return true;
@@ -134,6 +141,14 @@ bool random_test() {
     size_t read2 = name_to_dnswire_simd(basic.c_str(), out2.data());
     out2.resize(read2);
     if (out1 != out2) {
+      std::cout << basic << std::endl;
+      abort();
+    }
+    std::vector<uint8_t> out3;
+    out3.resize(basic.size() + 32);
+    size_t read3 = name_to_dnswire_scalar_labels(basic.c_str(), out3.data());
+    out3.resize(read3);
+    if (out1 != out3) {
       std::cout << basic << std::endl;
       abort();
     }

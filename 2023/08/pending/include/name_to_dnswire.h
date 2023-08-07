@@ -14,4 +14,6 @@ size_t name_to_dnswire_simd(const char *src, uint8_t *dst);
 
 size_t name_to_dnswire(const char *src, uint8_t *dst);
 
+size_t name_to_dnswire_scalar_labels(const char *src, uint8_t *dst);
+
 #endif // NAME_TO_DNSWIRE_H
