@@ -110,7 +110,7 @@ static inline __m128i dot_to_counters(__m128i input,
   __m128i next = _mm_alignr_epi8(*previous_dotcounts, dotscounts, 1);
   *previous_dotcounts = dotscounts; // save it for later
 
-  dotscounts = _mm_sub_epi8(next, dotscounts);
+  dotscounts = _mm_subs_epu8(next, dotscounts);
   // need to subtract one to the counters.
   dotscounts = _mm_sub_epi8(dotscounts, _mm_set1_epi8(1));
   return _mm_blendv_epi8(input, dotscounts, dots);
@@ -132,7 +132,7 @@ static inline __m128i dot_to_counters_no_previous(__m128i input) {
                             dotscounts);
   __m128i next = _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1);
 
-  dotscounts = _mm_sub_epi8(next, dotscounts);
+  dotscounts = _mm_subs_epu8(next, dotscounts);
   // need to subtract one to the counters.
   dotscounts = _mm_sub_epi8(dotscounts, _mm_set1_epi8(1));
   return _mm_blendv_epi8(input, dotscounts, dots);
