@@ -55,10 +55,7 @@ bool simple_test() {
 bool longer_test() {
   printf("===\n");
   std::string basic =
-      "0000.000000000.000000000.000.0000000000.00.000000.00.000.0000."
-      "0000000000000.00000.000000000000.00.00.0.0000.000.0000000000.00000000."
-      "00.000.00000000000.0.0000000000000.00000.0000.0000.0.000.000000000.00."
-      "000000.00.000.000.00";
+      "00";
   printf("input:\n");
   for (size_t i = 0; i < basic.size(); i++) {
     printf("%02x ", basic[i]);
@@ -98,6 +95,27 @@ bool longer_test() {
     }
   }
 
+  std::vector<uint8_t> out3;
+  out3.resize(basic.size() + 32);
+  size_t read3 = name_to_dnswire_avx(basic.c_str(), out3.data());
+  read3 += 2;
+  printf("name_to_dnswire_avx output:\n");
+  for (size_t i = 0; i < read3; i++) {
+    printf("%02x ", out3[i]);
+  }
+  printf("\n");
+  if (read != read3) {
+    printf("lengths don't match\n");
+    return false;
+  }
+  for (size_t i = 0; i < read; i++) {
+    if (out[i] != out3[i]) {
+      printf("%02x %02x %s\n", out[i], out3[i],
+             out[i] == out2[i] ? "" : "<===");
+      match = false;
+      last_diff = i;
+    }
+  }
   if (match) {
     printf("\nSUCCESS\n");
   } else {
@@ -149,6 +167,14 @@ bool random_test() {
     size_t read3 = name_to_dnswire_scalar_labels(basic.c_str(), out3.data());
     out3.resize(read3);
     if (out1 != out3) {
+      std::cout << basic << std::endl;
+      abort();
+    }
+    std::vector<uint8_t> out4;
+    out3.resize(basic.size() + 32);
+    size_t read4 = name_to_dnswire_avx(basic.c_str(), out4.data());
+    out3.resize(read4);
+    if (out1 != out4) {
       std::cout << basic << std::endl;
       abort();
     }
