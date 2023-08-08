@@ -97,7 +97,9 @@ static inline __m128i dot_to_counters(__m128i input,
       _mm_setr_epi8(-128, -127, -126, -125, -124, -123, -122, -121, -120, -119,
                     -118, -117, -116, -115, -114, -113);
   __m128i dotscounts = _mm_and_si128(dots, sequential);
-  dotscounts = _mm_min_epi8(_mm_alignr_epi8(*previous_dotcounts, dotscounts, 1),
+  __m128i origdotscounts = dotscounts;
+  __m128i shifted = _mm_alignr_epi8(*previous_dotcounts, dotscounts, 1);
+  dotscounts = _mm_min_epi8(shifted,
                             dotscounts);
   dotscounts = _mm_min_epi8(_mm_alignr_epi8(*previous_dotcounts, dotscounts, 1),
                             dotscounts);
@@ -109,10 +111,9 @@ static inline __m128i dot_to_counters(__m128i input,
                             dotscounts);
   __m128i next = _mm_alignr_epi8(*previous_dotcounts, dotscounts, 1);
   *previous_dotcounts = dotscounts; // save it for later
-
-  dotscounts = _mm_subs_epu8(next, dotscounts);
+  dotscounts = _mm_subs_epu8(next, origdotscounts);
   // need to subtract one to the counters.
-  dotscounts = _mm_sub_epi8(dotscounts, _mm_set1_epi8(1));
+  dotscounts = _mm_subs_epu8(dotscounts, _mm_set1_epi8(1));
   return _mm_blendv_epi8(input, dotscounts, dots);
 }
 
@@ -122,6 +123,7 @@ static inline __m128i dot_to_counters_no_previous(__m128i input) {
       _mm_setr_epi8(-128, -127, -126, -125, -124, -123, -122, -121, -120, -119,
                     -118, -117, -116, -115, -114, -113);
   __m128i dotscounts = _mm_and_si128(dots, sequential);
+  __m128i origdotscounts = dotscounts;
   dotscounts = _mm_min_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1),
                             dotscounts);
   dotscounts = _mm_min_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 2),
@@ -131,10 +133,9 @@ static inline __m128i dot_to_counters_no_previous(__m128i input) {
   dotscounts = _mm_min_epi8(_mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 8),
                             dotscounts);
   __m128i next = _mm_alignr_epi8(_mm_setzero_si128(), dotscounts, 1);
-
-  dotscounts = _mm_subs_epu8(next, dotscounts);
+  dotscounts = _mm_subs_epu8(next, origdotscounts);
   // need to subtract one to the counters.
-  dotscounts = _mm_sub_epi8(dotscounts, _mm_set1_epi8(1));
+  dotscounts = _mm_subs_epu8(dotscounts, _mm_set1_epi8(1));
   return _mm_blendv_epi8(input, dotscounts, dots);
 }
 
@@ -154,7 +155,6 @@ size_t name_to_dnswire_simd(const char *src, uint8_t *dst) {
   // we have reached the end.
   input = pad_with_dots(input, m);
   size_t consumed_length = (size_t)(src + _tzcnt_u16(m) - srcinit);
-
   if (src > srcinit) { // we need to unwind
     __m128i previous = _mm_setzero_si128();
     do {
@@ -174,6 +174,5 @@ size_t name_to_dnswire_simd(const char *src, uint8_t *dst) {
   } else {
     _mm_storeu_si128((__m128i *)dst, dot_to_counters_no_previous(input));
   }
-  dst[consumed_length + 1] = 0;
   return consumed_length;
 }
