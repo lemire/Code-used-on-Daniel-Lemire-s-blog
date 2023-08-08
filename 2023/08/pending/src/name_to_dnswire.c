@@ -99,8 +99,7 @@ static inline __m128i dot_to_counters(__m128i input,
   __m128i dotscounts = _mm_and_si128(dots, sequential);
   __m128i origdotscounts = dotscounts;
   __m128i shifted = _mm_alignr_epi8(*previous_dotcounts, dotscounts, 1);
-  dotscounts = _mm_min_epi8(shifted,
-                            dotscounts);
+  dotscounts = _mm_min_epi8(shifted, dotscounts);
   dotscounts = _mm_min_epi8(_mm_alignr_epi8(*previous_dotcounts, dotscounts, 1),
                             dotscounts);
   dotscounts = _mm_min_epi8(_mm_alignr_epi8(*previous_dotcounts, dotscounts, 2),
