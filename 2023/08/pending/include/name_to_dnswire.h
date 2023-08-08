@@ -11,6 +11,7 @@
 // "06 6c 65 6d 69 72 65 02 6d 65 00".
 // Returns the number of bytes consumed.
 size_t name_to_dnswire_simd(const char *src, uint8_t *dst);
+size_t name_to_dnswire_avx(const char *src, uint8_t *dst);
 
 size_t name_to_dnswire(const char *src, uint8_t *dst);
 
