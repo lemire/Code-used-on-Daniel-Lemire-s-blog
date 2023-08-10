@@ -90,6 +90,12 @@ int main(int argc, char **argv) {
   std::vector<uint8_t> output;
   output.resize(1024);
   volatile uint64_t sum{};
+  pretty_print(inputs.size(), bytes, "name_to_dnswire_idx_avx",
+               bench([&inputs, &output, &sum]() {
+                 for (const std::string &s : inputs) {
+                   sum += name_to_dnswire_idx_avx(s.data(), output.data());
+                 }
+               }));
   pretty_print(inputs.size(), bytes, "name_to_dnswire_avx",
                bench([&inputs, &output, &sum]() {
                  for (const std::string &s : inputs) {

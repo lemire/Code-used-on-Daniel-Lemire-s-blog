@@ -55,13 +55,13 @@ bool simple_test() {
 bool longer_test() {
   printf("===\n");
   std::string basic =
-      "00";
+      "000.0.0.000.000.0000.00.0000.0.0.0.000.00000.0.0.0.0000.0000.0.000";
   printf("input:\n");
   for (size_t i = 0; i < basic.size(); i++) {
     printf("%02x ", basic[i]);
   }
   printf("\n");
-  basic.reserve(basic.size() + 32);
+  basic.reserve(basic.size() + 128);
   std::vector<uint8_t> out;
   out.resize(basic.size() + 32);
   size_t read = name_to_dnswire(basic.c_str(), out.data());
@@ -116,6 +116,29 @@ bool longer_test() {
       last_diff = i;
     }
   }
+
+
+  std::vector<uint8_t> out5;
+  out5.resize(basic.size() + 32);
+  size_t read5 = name_to_dnswire_idx_avx(basic.c_str(), out5.data());
+  read5 += 2;
+  printf("name_to_dnswire_idx_avx output:\n");
+  for (size_t i = 0; i < read5; i++) {
+    printf("%02x ", out5[i]);
+  }
+  printf("\n");
+  if (read != read5) {
+    printf("lengths don't match %zu %zu\n", read, read5);
+    return false;
+  }
+  for (size_t i = 0; i < read; i++) {
+    if (out[i] != out5[i]) {
+      printf("%02x %02x %s\n", out[i], out5[i],
+             out[i] == out5[i] ? "" : "<===");
+      match = false;
+      last_diff = i;
+    }
+  }
   if (match) {
     printf("\nSUCCESS\n");
   } else {
@@ -128,10 +151,11 @@ bool random_test() {
   for (size_t i = 0; i < 100000; i++) {
     std::string basic;
     basic.resize(rand() % 255, '0');
+    
     if (basic.size() <= 1) {
       basic.resize(2, '0');
     }
-    basic.reserve(basic.size() + 32);
+    basic.reserve(basic.size() + 128);
     size_t number_of_dots = rand() % basic.size();
     for (size_t k = 0; k < number_of_dots; k++) {
       size_t location = rand() % basic.size();
@@ -178,11 +202,20 @@ bool random_test() {
       std::cout << basic << std::endl;
       abort();
     }
+
+    std::vector<uint8_t> out5;
+    out5.resize(basic.size() + 128);
+    size_t read5 = name_to_dnswire_idx_avx(basic.c_str(), out5.data());
+    out5.resize(read5);
+    if (out1 != out5) {
+      std::cout << basic << std::endl;
+      abort();
+    }
   }
   printf("\nSUCCESS\n");
-  return true;
+  return true; 
 }
 
 int main() {
-  return (random_test()) ? EXIT_SUCCESS : EXIT_FAILURE;
+ return (random_test()) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
