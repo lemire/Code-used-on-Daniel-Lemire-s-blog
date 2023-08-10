@@ -90,6 +90,10 @@ int main(int argc, char **argv) {
   std::vector<uint8_t> output;
   output.resize(1024);
   volatile uint64_t sum{};
+  printf("name_to_dnswire_idx_avx is simdjson-like\n");
+  printf("name_to_dnswire_avx is Prefix-Minimum\n");
+  printf("name_to_dnswire is conventional\n");
+  printf("\n");
   pretty_print(inputs.size(), bytes, "name_to_dnswire_idx_avx",
                bench([&inputs, &output, &sum]() {
                  for (const std::string &s : inputs) {
@@ -120,4 +124,5 @@ int main(int argc, char **argv) {
                    sum += name_to_dnswire(s.data(), output.data());
                  }
                }));
+
 }
