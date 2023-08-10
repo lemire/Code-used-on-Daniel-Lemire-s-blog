@@ -108,6 +108,12 @@ int main(int argc, char **argv) {
                    sum += name_to_dnswire_simd(s.data(), output.data());
                  }
                }));
+  pretty_print(inputs.size(), bytes, "name_to_dnswire_scalar_labels",
+               bench([&inputs, &output, &sum]() {
+                 for (const std::string &s : inputs) {
+                   sum += name_to_dnswire_scalar_labels(s.data(), output.data());
+                 }
+               }));
   pretty_print(inputs.size(), bytes, "name_to_dnswire",
                bench([&inputs, &output, &sum]() {
                  for (const std::string &s : inputs) {
