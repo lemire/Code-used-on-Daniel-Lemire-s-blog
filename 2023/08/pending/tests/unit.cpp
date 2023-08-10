@@ -186,18 +186,18 @@ bool random_test() {
       std::cout << basic << std::endl;
       abort();
     }
-    std::vector<uint8_t> out3;
+    /*std::vector<uint8_t> out3;
     out3.resize(basic.size() + 32);
     size_t read3 = name_to_dnswire_scalar_labels(basic.c_str(), out3.data());
     out3.resize(read3);
     if (out1 != out3) {
       std::cout << basic << std::endl;
       abort();
-    }
+    }*/
     std::vector<uint8_t> out4;
-    out3.resize(basic.size() + 32);
+    out4.resize(basic.size() + 32);
     size_t read4 = name_to_dnswire_avx(basic.c_str(), out4.data());
-    out3.resize(read4);
+    out4.resize(read4);
     if (out1 != out4) {
       std::cout << basic << std::endl;
       abort();

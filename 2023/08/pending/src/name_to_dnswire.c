@@ -376,10 +376,15 @@ void printbinary(uint64_t n) {
 }
 
 size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
+  // There is an obvious loop structure which could be used to shorten
+  // the function.
   del_dots_t dd1 = compute_index_avx(src, dst + 1);
   if ((dd1.dots & 1) == 1) {
     return 0;
   }
+  //////////
+  // Check if input first in 64 bytes.
+  //////////
   if (dd1.delimiter != 0) {
     uint64_t length = _tzcnt_u64(dd1.delimiter);
     dd1.dots = (((uint64_t)1 << length) - 1) & dd1.dots;
@@ -420,6 +425,9 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
   if ((dd1.dots & ((dd2.dots << 63) | dd1.dots >> 1))) {
     return 0;
   }
+  //////////
+  // Check if input first in 128 bytes.
+  //////////
   if (dd2.delimiter != 0) {
     uint64_t length = _tzcnt_u64(dd2.delimiter);
 
@@ -465,6 +473,9 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
   if ((dd2.dots & ((dd3.dots << 63) | dd2.dots >> 1))) {
     return 0;
   }
+  //////////
+  // Check if input first in 192 bytes.
+  //////////
   if (dd3.delimiter != 0) {
 
     uint64_t length = _tzcnt_u64(dd3.delimiter);
@@ -523,6 +534,9 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
   if ((dd3.dots & ((dd4.dots << 63) | dd3.dots >> 1))) {
     return 0;
   }
+  //////////
+  // Check if input first in 256 bytes.
+  //////////
   if (dd4.delimiter != 0) {
     uint64_t length = _tzcnt_u64(dd4.delimiter);
     dd4.dots = (((uint64_t)1 << length) - 1) & dd4.dots;
@@ -585,5 +599,8 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
     dstwriter[t + 1] = (uint8_t)(length - t - 1);
     return length;
   }
+  //////////
+  // The input is too long, we reject it.
+  //////////
   return 0;
 }
