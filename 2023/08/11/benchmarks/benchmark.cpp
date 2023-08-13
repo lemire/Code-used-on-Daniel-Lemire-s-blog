@@ -51,9 +51,15 @@ int main(int argc, char **argv) {
   printf("characters = %zu\n", characters);
 
   volatile uint64_t sum{};
-  pretty_print(input_data.size(), characters, "utf8_to_latin1_avx512",
+  pretty_print(input_data.size(), characters, "utf8_to_latin1_avx512_orig",
                bench([&input_data, &output, &sum, &characters]() {
-                   size_t r = utf8_to_latin1_avx512(input_data.data(), input_data.size(), output.data());
+                   size_t r = utf8_to_latin1_avx512_orig(input_data.data(), input_data.size(), output.data());
+                   if(r != characters) {printf("%zu %zu\n", r, characters); abort(); }
+                   sum += r;
+               }));
+  pretty_print(input_data.size(), characters, "utf8_to_latin1_avx512_fast",
+               bench([&input_data, &output, &sum, &characters]() {
+                   size_t r = utf8_to_latin1_avx512_fast(input_data.data(), input_data.size(), output.data());
                    if(r != characters) { abort(); }
                    sum += r;
                }));
