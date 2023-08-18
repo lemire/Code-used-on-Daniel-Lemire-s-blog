@@ -34,7 +34,7 @@ size_t latin1_to_utf8(const char *buf, size_t len, char *utf8_output) {
 
     unsigned char byte = data[pos];
     if ((byte & 0x80) == 0) { // if ASCII
-      // will generate one UTF-8 bytes
+      // will generate one UTF-8 byte
       *utf8_output++ = (char)(byte);
       pos++;
     } else {
