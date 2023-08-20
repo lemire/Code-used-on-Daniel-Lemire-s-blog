@@ -46,6 +46,24 @@ bool random_test() {
       abort();
     }
 
+    std::string output3;
+    output3.resize(basic.size() * 2);
+    size_t r3 = latin1_to_utf8_avx512_InstLatX64(basic.data(), basic.size(), output3.data());
+    output3.resize(r3);
+    if (output1 != output3) {
+      if(r1 != r3) {
+        printf("lengths do not match %zu %zu\n", r1, r3);
+        abort();
+      }
+      for(size_t i = 0; i < basic.size(); i++) {
+        printf("%02x \n", (unsigned)basic[i]&0xff);
+      }
+      for(size_t i = 0; i < r1; i++) {
+        printf("%02x %02x %s \n", (unsigned)output1[i]&0xff, (unsigned)output3[i]&0xff, output1[i]!=output3[i]?"<==":"") ;
+      }
+      abort();
+    }
+
   }
   printf("\nSUCCESS\n");
   return true; 
