@@ -51,17 +51,19 @@ int main(int argc, char **argv) {
   printf("characters = %zu\n", characters);
 
   volatile uint64_t sum{};
+  pretty_print(input_data.size(), characters, "latin1_to_utf8_avx512_InstLatX64",
+               bench([&input_data, &output, &sum, &characters]() {
+                   size_t r = latin1_to_utf8_avx512_InstLatX64(input_data.data(), input_data.size(), output.data());
+                   sum += r;
+               }));
   pretty_print(input_data.size(), characters, "latin1_to_utf8_avx512",
                bench([&input_data, &output, &sum, &characters]() {
                    size_t r = latin1_to_utf8_avx512(input_data.data(), input_data.size(), output.data());
-                //   if(r != characters) {printf("%zu %zu\n", r, characters); abort(); }
                    sum += r;
                }));
   pretty_print(input_data.size(), characters, "latin1_to_utf8",
                bench([&input_data, &output, &sum, &characters]() {
                    size_t r = latin1_to_utf8(input_data.data(), input_data.size(), output.data());
-              //     if(r != characters) { abort(); }
                    sum += r;
                }));
-
   }
