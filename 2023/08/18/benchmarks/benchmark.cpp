@@ -13,7 +13,7 @@ extern "C" {
 
 void pretty_print(size_t volume, size_t bytes, std::string name,
                   event_aggregate agg) {
-  printf("%-30s : ", name.c_str());
+  printf("%-40s : ", name.c_str());
   printf(" %5.2f GB/s ", bytes / agg.fastest_elapsed_ns());
   printf(" %5.1f Ma/s ", volume * 1000.0 / agg.fastest_elapsed_ns());
   printf(" %5.2f ns/d ", agg.fastest_elapsed_ns() / volume);
