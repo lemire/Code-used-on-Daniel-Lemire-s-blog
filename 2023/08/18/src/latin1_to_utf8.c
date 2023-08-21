@@ -68,6 +68,42 @@ void print8(const char *name, __m512i x) {
   printf("\n");
 }
 
+size_t latin1_to_utf8_avx512_InstLatX64_2(const char *buf, size_t len, char *utf8_output) {
+  char *start = utf8_output;
+  size_t pos = 0;
+  __m512i concat = _mm512_set1_epi64(0x3036202610160006);
+  for (; pos + 32 <= len; pos += 32) {
+    __m256i input = _mm256_loadu_si256((__m256i *)(buf + pos));
+    uint32_t nonascii = (uint32_t)_mm256_movemask_epi8(input);
+    int output_size = 32 + _mm_popcnt_u32(nonascii);
+    uint64_t compmask = ~_pdep_u64(~nonascii, UINT64_C(0x5555555555555555));
+    __m512i input16   = _mm512_cvtepi8_epi16(input);
+    __m512i concat16  = _mm512_multishift_epi64_epi8(concat, input16);
+    __m512i output16  = _mm512_ternarylogic_epi32(concat16, _mm512_and_epi32(input16, _mm512_set1_epi32(0x40004000)), _mm512_set1_epi32((int)0xffc3ffc3), 0x20);
+    __m512i output    = _mm512_maskz_compress_epi8(compmask, output16);
+    __mmask64 write_mask = _bzhi_u64(~0ULL, (long long unsigned int)output_size);
+    _mm512_mask_storeu_epi8(utf8_output, write_mask, output);
+    utf8_output += output_size;
+  }
+  if (pos < len) {
+    __mmask32 load_mask = _bzhi_u32(~0U, (unsigned int)(len - pos));
+    __m256i input = _mm256_maskz_loadu_epi8(load_mask, (__m256i *)(buf + pos));
+    uint32_t nonascii = (uint32_t)_mm256_movemask_epi8(input);
+    long long unsigned int output_size =
+        (long long unsigned int)(len - pos + (size_t)_mm_popcnt_u32(nonascii));
+    uint64_t compmask = ~_pdep_u64(~nonascii, UINT64_C(0x5555555555555555));
+    __m512i input16   = _mm512_cvtepi8_epi16(input);
+    __m512i concat16  = _mm512_multishift_epi64_epi8(concat, input16);
+    __m512i output16  = _mm512_ternarylogic_epi32(concat16, _mm512_and_epi32(input16, _mm512_set1_epi32(0x40004000)), _mm512_set1_epi32((int)0xffc3ffc3), 0x20);
+    __m512i output    = _mm512_maskz_compress_epi8(compmask, output16);
+    __mmask64 write_mask = _bzhi_u64(~0ULL, output_size);
+    _mm512_mask_storeu_epi8(utf8_output, write_mask, output);
+    utf8_output += output_size;
+  }
+  return (size_t)(utf8_output - start);
+}
+
+
 size_t latin1_to_utf8_avx512_InstLatX64(const char *buf, size_t len, char *utf8_output) {
   char *start = utf8_output;
   size_t pos = 0;

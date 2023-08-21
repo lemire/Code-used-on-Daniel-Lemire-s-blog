@@ -21,7 +21,7 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
     printf(" %5.2f GHz ", agg.fastest_cycles() / agg.fastest_elapsed_ns());
     printf(" %5.2f c/d ", agg.fastest_cycles() / volume);
     printf(" %5.2f i/d ", agg.fastest_instructions() / volume);
-    printf(" %5.1f c/b ", agg.fastest_cycles() / bytes);
+    printf(" %5.2f c/b ", agg.fastest_cycles() / bytes);
     printf(" %5.2f i/b ", agg.fastest_instructions() / bytes);
     printf(" %5.2f i/c ", agg.fastest_instructions() / agg.fastest_cycles());
   }
@@ -65,6 +65,11 @@ int main(int argc, char **argv) {
   pretty_print(input_data.size(), characters, "latin1_to_utf8_avx512_my_nobranch",
                bench([&input_data, &output, &sum, &characters]() {
                    size_t r = latin1_to_utf8_avx512_my_nobranch(input_data.data(), input_data.size(), output.data());
+                   sum += r;
+               }));
+  pretty_print(input_data.size(), characters, "latin1_to_utf8_avx512_InstLatX64_2",
+               bench([&input_data, &output, &sum, &characters]() {
+                   size_t r = latin1_to_utf8_avx512_InstLatX64_2(input_data.data(), input_data.size(), output.data());
                    sum += r;
                }));
   pretty_print(input_data.size(), characters, "latin1_to_utf8_avx512_InstLatX64",

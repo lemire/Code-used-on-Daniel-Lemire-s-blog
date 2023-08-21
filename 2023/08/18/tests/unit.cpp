@@ -19,7 +19,7 @@ bool random_test() {
   printf("random_test\n");
   for (size_t i = 0; i < 1000000; i++) {
     std::string basic;
-    basic.resize(rand() % 32, '0');
+    basic.resize(rand() % 1024, '0');
     for (size_t k = 0; k < basic.size(); k++) {
       basic[k] = rand();
     }
