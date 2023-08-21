@@ -51,6 +51,22 @@ int main(int argc, char **argv) {
   printf("characters = %zu\n", characters);
 
   volatile uint64_t sum{};
+
+  pretty_print(input_data.size(), characters, "latin1_to_utf8_avx512_my_branch1",
+               bench([&input_data, &output, &sum, &characters]() {
+                   size_t r = latin1_to_utf8_avx512_my_branch1(input_data.data(), input_data.size(), output.data());
+                   sum += r;
+               }));
+  pretty_print(input_data.size(), characters, "latin1_to_utf8_avx512_my_branch0",
+               bench([&input_data, &output, &sum, &characters]() {
+                   size_t r = latin1_to_utf8_avx512_my_branch0(input_data.data(), input_data.size(), output.data());
+                   sum += r;
+               }));
+  pretty_print(input_data.size(), characters, "latin1_to_utf8_avx512_my_nobranch",
+               bench([&input_data, &output, &sum, &characters]() {
+                   size_t r = latin1_to_utf8_avx512_my_nobranch(input_data.data(), input_data.size(), output.data());
+                   sum += r;
+               }));
   pretty_print(input_data.size(), characters, "latin1_to_utf8_avx512_InstLatX64",
                bench([&input_data, &output, &sum, &characters]() {
                    size_t r = latin1_to_utf8_avx512_InstLatX64(input_data.data(), input_data.size(), output.data());

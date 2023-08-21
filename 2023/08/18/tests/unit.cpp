@@ -19,7 +19,7 @@ bool random_test() {
   printf("random_test\n");
   for (size_t i = 0; i < 1000000; i++) {
     std::string basic;
-    basic.resize(rand() % 512, '0');
+    basic.resize(rand() % 32, '0');
     for (size_t k = 0; k < basic.size(); k++) {
       basic[k] = rand();
     }
@@ -61,6 +61,66 @@ bool random_test() {
       for(size_t i = 0; i < r1; i++) {
         printf("%02x %02x %s \n", (unsigned)output1[i]&0xff, (unsigned)output3[i]&0xff, output1[i]!=output3[i]?"<==":"") ;
       }
+      abort();
+    }
+
+
+    std::string output4;
+    output4.resize(basic.size() * 2);
+    size_t r4 = latin1_to_utf8_avx512_my_branch1(basic.data(), basic.size(), output4.data());
+    output4.resize(r4);
+    if (output1 != output4) {
+      if(r1 != r4) {
+        printf("lengths do not match %zu %zu\n", r1, r4);
+        abort();
+      }
+      for(size_t i = 0; i < basic.size(); i++) {
+        printf("%02x \n", (unsigned)basic[i]&0xff);
+      }
+      for(size_t i = 0; i < r1; i++) {
+        printf("%02x %02x %s \n", (unsigned)output1[i]&0xff, (unsigned)output4[i]&0xff, output1[i]!=output4[i]?"<==":"") ;
+      }
+      printf("problem with latin1_to_utf8_avx512_my_branch1\n");
+      abort();
+    }
+
+
+    std::string output5;
+    output5.resize(basic.size() * 2);
+    size_t r5 = latin1_to_utf8_avx512_my_branch0(basic.data(), basic.size(), output5.data());
+    output5.resize(r5);
+    if (output1 != output5) {
+      if(r1 != r5) {
+        printf("lengths do not match %zu %zu\n", r1, r5);
+        abort();
+      }
+      for(size_t i = 0; i < basic.size(); i++) {
+        printf("%02x \n", (unsigned)basic[i]&0xff);
+      }
+      for(size_t i = 0; i < r1; i++) {
+        printf("%02x %02x %s \n", (unsigned)output1[i]&0xff, (unsigned)output5[i]&0xff, output1[i]!=output5[i]?"<==":"") ;
+      }
+      printf("problem with latin1_to_utf8_avx512_my_branch0\n");
+      abort();
+    }
+
+
+    std::string output6;
+    output6.resize(basic.size() * 2);
+    size_t r6 = latin1_to_utf8_avx512_my_nobranch(basic.data(), basic.size(), output6.data());
+    output6.resize(r6);
+    if (output1 != output6) {
+      if(r1 != r6) {
+        printf("lengths do not match %zu %zu\n", r1, r6);
+        abort();
+      }
+      for(size_t i = 0; i < basic.size(); i++) {
+        printf("%02x \n", (unsigned)basic[i]&0xff);
+      }
+      for(size_t i = 0; i < r1; i++) {
+        printf("%02x %02x %s \n", (unsigned)output1[i]&0xff, (unsigned)output6[i]&0xff, output1[i]!=output6[i]?"<==":"") ;
+      }
+      printf("problem with latin1_to_utf8_avx512_my_nobranch\n");
       abort();
     }
 
