@@ -310,6 +310,82 @@ bool no_inline_dfa3(std::string_view input) {
   return state == dfa_states2[DFA_STATE_MATCH];
 }
 
+static uint8_t mask_data[6][256];
+
+void init_mask_data() {
+  const static char* valid[] = {"https", "http", "ftp", "file", "ws", "wss"};
+
+  for (size_t i = 0; i < 6; i++) {
+    for (size_t j = 0; j < 6; j++) {
+      if (j <= strlen(valid[i])) {
+	mask_data[j][(uint8_t)valid[i][j]] |= 1 << i;
+      } else {
+	for (size_t k = 0; k < 256; k++) {
+	  mask_data[j][(uint8_t)valid[i][k]] |= 1 << i;
+	}
+      }
+    }
+  }
+}
+
+bool mask(std::string_view input) {
+  uint8_t mask = ~0;
+  const char *str = input.data();
+
+  for (size_t i = 0; i < 6; i++) {
+    mask &= mask_data[i][(uint8_t)str[i]];
+
+    if (!mask)
+      break;
+  }
+
+  return mask;
+}
+
+__attribute__((noinline))
+bool no_inline_mask(std::string_view input) {
+  uint8_t mask = ~0;
+  const char *str = input.data();
+
+  for (size_t i = 0; i < 6; i++) {
+    mask &= mask_data[i][(uint8_t)str[i]];
+
+    if (!mask)
+      break;
+  }
+
+  return mask;
+}
+
+bool mask2(std::string_view input) {
+  uint8_t mask = ~0;
+  size_t j = 0;
+  const char *str = input.data();
+
+  for (size_t i = 0; i < 6; i++) {
+    uint8_t c = str[j];
+    mask &= mask_data[j][c];
+    j += c != 0;
+  }
+
+  return mask;
+}
+
+__attribute__((noinline))
+bool no_inline_mask2(std::string_view input) {
+  uint8_t mask = ~0;
+  size_t j = 0;
+  const char *str = input.data();
+
+  for (size_t i = 0; i < 6; i++) {
+    uint8_t c = str[j];
+    mask &= mask_data[j][c];
+    j += c != 0;
+  }
+
+  return mask;
+}
+
 bool dfa_is_special(std::string_view input) {
   uint8_t state = DFA_STATE_INIT;
   uint64_t inputu = string_to_uint64(input);
@@ -358,6 +434,31 @@ bool no_inline_dfa3_is_special(std::string_view input) {
   }
 
   return state == dfa_states2[DFA_STATE_MATCH];
+}
+
+bool mask3_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+  const char *str = (char *)&inputu;
+  uint8_t mask1, mask2, mask3;
+
+  mask1 = mask_data[0][(uint8_t)str[0]] & mask_data[1][(uint8_t)str[1]];
+  mask2 = mask_data[2][(uint8_t)str[2]] & mask_data[3][(uint8_t)str[3]];
+  mask3 = mask_data[4][(uint8_t)str[4]] & mask_data[5][(uint8_t)str[5]];
+
+  return mask1 & mask2 & mask3;
+}
+
+__attribute__((noinline))
+bool no_inline_mask3_is_special(std::string_view input) {
+  uint64_t inputu = string_to_uint64(input);
+  const char *str = (char *)&inputu;
+  uint8_t mask1, mask2, mask3;
+
+  mask1 = mask_data[0][(uint8_t)str[0]] & mask_data[1][(uint8_t)str[1]];
+  mask2 = mask_data[2][(uint8_t)str[2]] & mask_data[3][(uint8_t)str[3]];
+  mask3 = mask_data[4][(uint8_t)str[4]] & mask_data[5][(uint8_t)str[5]];
+
+  return mask1 & mask2 & mask3;
 }
 
 bool fast_is_special(std::string_view input) {
@@ -523,6 +624,7 @@ void simulation(size_t N) {
   std::vector<std::string_view> data = populate(N);
   init_dfa_states();
   init_dfa_states2();
+  init_mask_data();
 
   {
     uint64_t start = nano();
@@ -617,6 +719,44 @@ void simulation(size_t N) {
     double t = double(finish - start) / (N * count);
 
     printf("dfa3 %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += mask(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("mask %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += mask2(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("mask2 %f ns/string, matches = %zu \n", t, matches);
   }
 
   {
@@ -794,6 +934,24 @@ void simulation(size_t N) {
       count++;
       matches = 0;
       for (auto v : data) {
+        matches += mask3_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("mask3_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
         matches += branchless_is_special(v);
       }
       finish = nano();
@@ -897,6 +1055,44 @@ void simulation(size_t N) {
     double t = double(finish - start) / (N * count);
 
     printf("no_inline_dfa3 %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_mask(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_mask %f ns/string, matches = %zu \n", t, matches);
+  }
+
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_mask2(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_mask2 %f ns/string, matches = %zu \n", t, matches);
   }
 
   {
@@ -1081,6 +1277,24 @@ void simulation(size_t N) {
     double t = double(finish - start) / (N * count);
 
     printf("no_inline_dfa3_is_special %f ns/string, matches = %zu \n", t, matches);
+  }
+  {
+    uint64_t start = nano();
+    uint64_t finish = start;
+    size_t count{0};
+    size_t matches{0};
+    uint64_t threshold = 500000000;
+    for (; finish - start < threshold;) {
+      count++;
+      matches = 0;
+      for (auto v : data) {
+        matches += no_inline_mask3_is_special(v);
+      }
+      finish = nano();
+    }
+    double t = double(finish - start) / (N * count);
+
+    printf("no_inline_mask3_is_special %f ns/string, matches = %zu \n", t, matches);
   }
 }
 int main() { simulation(8192); simulation(65536); }
