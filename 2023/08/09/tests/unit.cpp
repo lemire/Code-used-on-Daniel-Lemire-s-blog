@@ -218,7 +218,17 @@ bool random_test() {
       std::cout << basic << std::endl;
       abort();
     }
+#ifdef __AVX512F__
+    std::vector<uint8_t> out6;
+    out6.resize(basic.size() + 128);
+    size_t read6 = name_to_dnswire_idx_avx512(basic.c_str(), out6.data());
+    out6.resize(read6);
+    if (out1 != out6) {
+      std::cout << basic << std::endl;
+      abort();
+    }
   }
+#endif
   printf("\nSUCCESS\n");
   return true; 
 }

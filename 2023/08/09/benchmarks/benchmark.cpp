@@ -94,6 +94,14 @@ int main(int argc, char **argv) {
   printf("name_to_dnswire_avx is Prefix-Minimum\n");
   printf("name_to_dnswire is conventional\n");
   printf("\n");
+#ifdef __AVX512F__
+  pretty_print(inputs.size(), bytes, "name_to_dnswire_idx_avx512",
+               bench([&inputs, &output, &sum]() {
+                 for (const std::string &s : inputs) {
+                   sum += name_to_dnswire_idx_avx512(s.data(), output.data());
+                 }
+               }));
+#endif
   pretty_print(inputs.size(), bytes, "name_to_dnswire_idx_avx",
                bench([&inputs, &output, &sum]() {
                  for (const std::string &s : inputs) {

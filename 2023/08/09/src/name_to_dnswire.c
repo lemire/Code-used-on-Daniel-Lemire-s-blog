@@ -363,6 +363,251 @@ static inline del_dots_t compute_index_avx(const char *src, uint8_t *dst) {
   return dd;
 }
 
+#ifdef __AVX512F__
+
+__attribute__((always_inline))
+static inline del_dots_t compute_index_avx512(const char *src, uint8_t *dst) {
+  __m512i input = _mm512_loadu_si512((const __m512i *)src);
+  _mm512_storeu_si512((__m512i *)(dst), input);
+  __m512i mask = _mm512_set_epi8(0, 0, 0, 0, 59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 40, 0, 0, 0, 0, 0, 34, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 10, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  uint64_t M = _mm512_cmpeq_epi8_mask(input, _mm512_permutexvar_epi8(input, mask));
+  uint64_t D = _mm512_cmpeq_epi8_mask(input, _mm512_set1_epi8('.'));
+  del_dots_t dd = {M, D};
+  return dd;
+}
+
+
+
+size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
+  // There is an obvious loop structure which could be used to shorten
+  // the function.
+  del_dots_t dd1 = compute_index_avx512(src, dst + 1);
+  if ((dd1.dots & 1) == 1) {
+    return 0;
+  }
+  //////////
+  // Check if input first in 64 bytes.
+  //////////
+  if (dd1.delimiter != 0) {
+    uint64_t length = _tzcnt_u64(dd1.delimiter);
+    dd1.dots = (((uint64_t)1 << length) - 1) & dd1.dots;
+
+    if (dd1.dots & (dd1.dots << 1)) {
+      return 0;
+    }
+    uint8_t *dstwriter = dst;
+
+    // We have a virtual '1' bit right before dd1.dots.
+    // We have that t points at the index of the current dot, starting
+    // with -1.
+    // We mark the position of the next dot as nt.
+    // We start at location t + 1 the difference nt - t - 1.
+    // Then move t to nt, delete the bits in dots, and so forth.
+    uint64_t t = (uint64_t)0 - 1;
+    if (dd1.dots) {
+
+      uint64_t nt = _tzcnt_u64(dd1.dots);
+      dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+      t = nt;
+      dd1.dots ^= (uint64_t)1 << nt;
+      while (dd1.dots) {
+        nt = _tzcnt_u64(dd1.dots);
+        dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+        t = nt;
+        dd1.dots ^= (uint64_t)1 << nt;
+      }
+    }
+    dstwriter[t + 1] = (uint8_t)(length - t - 1);
+    return length;
+  }
+  del_dots_t dd2 = compute_index_avx512(src + 64, dst + 1 + 64);
+
+  if (dd1.dots == 0) {
+    return 0;
+  }
+  if ((dd1.dots & ((dd2.dots << 63) | dd1.dots >> 1))) {
+    return 0;
+  }
+  //////////
+  // Check if input first in 128 bytes.
+  //////////
+  if (dd2.delimiter != 0) {
+    uint64_t length = _tzcnt_u64(dd2.delimiter);
+
+    dd2.dots = (((uint64_t)1 << length) - 1) & dd2.dots;
+    length += 64;
+    if (dd2.dots & (dd2.dots >> 1)) {
+      return 0;
+    }
+    uint8_t *dstwriter = dst;
+    uint64_t t = (uint64_t)0 - 1;
+    uint64_t nt = _tzcnt_u64(dd1.dots);
+    dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+    t = nt;
+    dd1.dots ^= (uint64_t)1 << nt;
+    while (dd1.dots) {
+      nt = _tzcnt_u64(dd1.dots);
+      dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+      t = nt;
+      dd1.dots ^= (uint64_t)1 << nt;
+    }
+    if (dd2.dots) {
+      nt = _tzcnt_u64(dd2.dots) + 64;
+      if (nt - t > 64) {
+        return 0;
+      }
+      dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+      t = nt;
+      dd2.dots ^= (uint64_t)1 << (t & 63);
+      while (dd2.dots) {
+        nt = _tzcnt_u64(dd2.dots) + 64;
+        dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+        t = nt;
+        dd2.dots ^= (uint64_t)1 << (t & 63);
+      }
+    }
+    dstwriter[t + 1] = (uint8_t)(length - t - 1);
+    return length;
+  }
+  del_dots_t dd3 = compute_index_avx512(src + 64 * 2, dst + 1 + 64 * 2);
+  if (dd2.dots == 0) {
+    return 0;
+  }
+  if ((dd2.dots & ((dd3.dots << 63) | dd2.dots >> 1))) {
+    return 0;
+  }
+  //////////
+  // Check if input first in 192 bytes.
+  //////////
+  if (dd3.delimiter != 0) {
+
+    uint64_t length = _tzcnt_u64(dd3.delimiter);
+    dd3.dots = (((uint64_t)1 << length) - 1) & dd3.dots;
+    length += 128;
+    if (dd3.dots & (dd3.dots >> 1)) {
+      return 0;
+    }
+    uint8_t *dstwriter = dst;
+    uint64_t t = _tzcnt_u64(dd1.dots);
+    dstwriter[0] = (uint8_t)t;
+    dd1.dots ^= (uint64_t)1 << t;
+    uint64_t nt;
+    while (dd1.dots) {
+      nt = _tzcnt_u64(dd1.dots);
+      dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+      t = nt;
+      dd1.dots ^= (uint64_t)1 << t;
+    }
+    nt = _tzcnt_u64(dd2.dots) + 64;
+    if (nt - t > 64) {
+      return 0;
+    }
+    dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+    t = nt;
+    dd2.dots ^= (uint64_t)1 << (t & 63);
+    while (dd2.dots) {
+      nt = _tzcnt_u64(dd2.dots) + 64;
+      dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+      t = nt;
+      dd2.dots ^= (uint64_t)1 << (t & 63);
+    }
+    if (dd3.dots) {
+
+      nt = _tzcnt_u64(dd3.dots) + 128;
+      if (nt - t > 64) {
+        return 0;
+      }
+      dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+      t = nt;
+      dd3.dots ^= (uint64_t)1 << (t & 63);
+      while (dd3.dots) {
+        nt = _tzcnt_u64(dd3.dots) + 128;
+        dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+        t = nt;
+        dd3.dots ^= (uint64_t)1 << (t & 63);
+      }
+    }
+    dstwriter[t + 1] = (uint8_t)(length - t - 1);
+    return length;
+  }
+  del_dots_t dd4 = compute_index_avx512(src + 64 * 3, dst + 1 + 64 * 3);
+  if (dd3.dots == 0) {
+    return 0;
+  }
+  if ((dd3.dots & ((dd4.dots << 63) | dd3.dots >> 1))) {
+    return 0;
+  }
+  //////////
+  // Check if input first in 256 bytes.
+  //////////
+  if (dd4.delimiter != 0) {
+    uint64_t length = _tzcnt_u64(dd4.delimiter);
+    dd4.dots = (((uint64_t)1 << length) - 1) & dd4.dots;
+    length += 192;
+    if (dd4.dots & (dd4.dots >> 1)) {
+      return 0;
+    }
+    uint8_t *dstwriter = dst;
+    uint64_t t = _tzcnt_u64(dd1.dots);
+    dstwriter[0] = (uint8_t)t;
+    dd1.dots ^= (uint64_t)1 << t;
+    uint64_t nt;
+    while (dd1.dots) {
+      nt = _tzcnt_u64(dd1.dots);
+      dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+      t = nt;
+      dd1.dots ^= (uint64_t)1 << t;
+    }
+    nt = _tzcnt_u64(dd2.dots) + 64;
+    if (nt - t > 64) {
+      return 0;
+    }
+    dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+    t = nt;
+    dd2.dots ^= (uint64_t)1 << (t & 63);
+    while (dd2.dots) {
+      nt = _tzcnt_u64(dd2.dots) + 64;
+      dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+      t = nt;
+      dd2.dots ^= (uint64_t)1 << (t & 63);
+    }
+    nt = _tzcnt_u64(dd3.dots) + 128;
+    if (nt - t > 64) {
+      return 0;
+    }
+    dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+    t = nt;
+    dd3.dots ^= (uint64_t)1 << (t & 63);
+    while (dd3.dots) {
+      nt = _tzcnt_u64(dd3.dots) + 128;
+      dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+      t = nt;
+      dd3.dots ^= (uint64_t)1 << (t & 63);
+    }
+    if (dd4.dots) {
+      nt = _tzcnt_u64(dd4.dots) + 192;
+      if (nt - t > 64) {
+        return 0;
+      }
+      dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+      t = nt;
+      dd4.dots ^= (uint64_t)1 << (t & 63);
+      while (dd4.dots) {
+        nt = _tzcnt_u64(dd4.dots) + 192;
+        dstwriter[t + 1] = (uint8_t)(nt - t - 1);
+        t = nt;
+        dd4.dots ^= (uint64_t)1 << (t & 63);
+      }
+    }
+    dstwriter[t + 1] = (uint8_t)(length - t - 1);
+    return length;
+  }
+  //////////
+  // The input is too long, we reject it.
+  //////////
+  return 0;
+}
+#endif
 void printbinary(uint64_t n) {
   for (size_t i = 0; i < 64; i++) {
     if (n & 1)
