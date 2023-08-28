@@ -3,7 +3,6 @@
 #include <vector>
 
 
-static __uint128_t g_lehmer64_state;
 
 /**
 * D. H. Lehmer, Mathematical methods in large-scale computing units.
@@ -16,7 +15,7 @@ static __uint128_t g_lehmer64_state;
 * Mathematical
 * Society 68.225 (1999): 249-260.
 */
-static inline uint64_t lehmer64() {
+static inline uint64_t lehmer64(__uint128_t &g_lehmer64_state) {
   g_lehmer64_state *= UINT64_C(0xda942042e4dd58b5);
   return g_lehmer64_state >> 64;
 }
@@ -36,12 +35,13 @@ int main() {
     
     constexpr size_t trials = 1000;
     size_t collisions = 0;
-    g_lehmer64_state = 123456789;
     #pragma omp parallel for reduction(+:collisions)
     for(size_t i = 0; i < trials; i++) {
+        __uint128_t g_lehmer64_state = 123456789 + i;
+
         std::vector<uint64_t> array(array_size);
         for(size_t k = 0; k< array_size; k++) {
-            array[k] = lehmer64();
+            array[k] = lehmer64(g_lehmer64_state);
         }
         if (has_collision(array.data(), array_size)) {
             collisions++;
