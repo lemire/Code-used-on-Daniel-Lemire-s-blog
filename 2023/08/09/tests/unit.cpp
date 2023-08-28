@@ -48,6 +48,21 @@ bool simple_test() {
   }
   printf("\n");
 
+  read = name_to_dnswire_avx(basic.c_str(), out.data());
+  read += 2;
+  printf("name_to_dnswire_avx output:\n");
+  for (size_t i = 0; i < read; i++) {
+    printf("%02x ", out[i]);
+  }
+  printf("\n");
+
+  read = name_to_dnswire_idx_avx(basic.c_str(), out.data());
+  read += 2;
+  printf("name_to_dnswire_idx_avx output:\n");
+  for (size_t i = 0; i < read; i++) {
+    printf("%02x ", out[i]);
+  }
+  printf("\n");
   printf("\nSUCCESS\n");
   return true;
 }
@@ -186,14 +201,6 @@ bool random_test() {
       std::cout << basic << std::endl;
       abort();
     }
-    /*std::vector<uint8_t> out3;
-    out3.resize(basic.size() + 32);
-    size_t read3 = name_to_dnswire_scalar_labels(basic.c_str(), out3.data());
-    out3.resize(read3);
-    if (out1 != out3) {
-      std::cout << basic << std::endl;
-      abort();
-    }*/
     std::vector<uint8_t> out4;
     out4.resize(basic.size() + 32);
     size_t read4 = name_to_dnswire_avx(basic.c_str(), out4.data());
@@ -217,5 +224,6 @@ bool random_test() {
 }
 
 int main() {
+ if(!simple_test()) { return EXIT_FAILURE; }
  return (random_test()) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
