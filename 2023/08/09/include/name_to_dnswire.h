@@ -13,6 +13,9 @@
 size_t name_to_dnswire_simd(const char *src, uint8_t *dst);
 size_t name_to_dnswire_avx(const char *src, uint8_t *dst);
 size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst);
+#ifdef __AVX512F__
+size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst);
+#endif
 
 size_t name_to_dnswire(const char *src, uint8_t *dst);
 
