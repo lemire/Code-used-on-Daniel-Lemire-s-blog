@@ -15,8 +15,8 @@ void remove_negatives(const int32_t *input, int64_t count, int32_t *output) {
     svbool_t positive = svcmpge_n_s32(while_mask, in, 0);
     svint32_t in_positive = svcompact_s32(positive, in);
     svst1_s32(while_mask, output + j, in_positive);
-    i += svcntw();
-    j += svcntp_b32(while_mask, positive);
+    i += svcntw(); // can use svqincw_n_s64(i, 1);
+    j += svcntp_b32(while_mask, positive); // might be able to use vqincw_pat_n_s64 ?
     while_mask = svwhilelt_b32(i, count);
   } while (svptest_any(svptrue_b32(), while_mask));
 }
@@ -54,7 +54,7 @@ void remove_negatives_unrolled(const int32_t *input, int64_t count, int32_t *out
       svst1_s32(all_mask, output + j, in3);
       j += svcntp_b32(all_mask, pos3);
 
-      input += 4*vl_u32;
+      input += 4*vl_u32; // can use svqincw_n_s64(input, 4);
   }
 
   int64_t i = 0;
@@ -66,7 +66,7 @@ void remove_negatives_unrolled(const int32_t *input, int64_t count, int32_t *out
     svbool_t positive = svcmpge_n_s32(while_mask, in, 0);
     svint32_t in_positive = svcompact_s32(positive, in);
     svst1_s32(while_mask, output + j, in_positive);
-    i += svcntw();
+    i += svcntw(); // can use svqincw_n_s64(i, 1);
     j += svcntp_b32(while_mask, positive);
     while_mask = svwhilelt_b32(i, count);
   } while (svptest_any(svptrue_b32(), while_mask));

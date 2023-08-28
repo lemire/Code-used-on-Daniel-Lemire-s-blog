@@ -21,7 +21,7 @@ size_t trimspaces(const char *s, size_t len, char *out) {
 size_t sve_trimspaces(const char *s, size_t len, char *out) {
   uint8_t *out8 = reinterpret_cast<uint8_t *>(out);
   size_t i = 0;
-  for (; i + svcntw() <= len; i += svcntw()) {
+  for (; i + svcntw() <= len; i += svcntw()) { // can use i = svqincw_n_s64(i, 1);
     svuint32_t input = svld1sb_u32(svptrue_b32(), (const int8_t *)s + i);
     svbool_t matches = svcmpne_n_u32(svptrue_b32(), input, 32);
     svuint32_t compressed = svcompact_u32(matches, input);
@@ -44,7 +44,7 @@ size_t sve_trimspaces(const char *s, size_t len, char *out) {
 size_t sve_trimspaces_unrolled(const char *s, size_t len, char *out) {
   uint8_t *out8 = reinterpret_cast<uint8_t *>(out);
   size_t i = 0;
-  for (; i + 4*svcntw() <= len; i += 4*svcntw()) {
+  for (; i + 4*svcntw() <= len; i += 4*svcntw()) { // can use i = svqincw_n_s64(i, 4);
     svuint32_t input1 = svld1sb_u32(svptrue_b32(), (const int8_t *)s + i);
     svuint32_t input2 = svld1sb_u32(svptrue_b32(), (const int8_t *)s + i + svcntw());
     svuint32_t input3 = svld1sb_u32(svptrue_b32(), (const int8_t *)s + i + 2*svcntw());
@@ -67,7 +67,7 @@ size_t sve_trimspaces_unrolled(const char *s, size_t len, char *out) {
     out8 += svcntp_b32(svptrue_b32(), matches4);
 
   }
-  for (; i + svcntw() <= len; i += svcntw()) {
+  for (; i + svcntw() <= len; i += svcntw()) { // can use svqincw_n_s64(i, 1);
     svuint32_t input = svld1sb_u32(svptrue_b32(), (const int8_t *)s + i);
     svbool_t matches = svcmpne_n_u32(svptrue_b32(), input, 32);
     svuint32_t compressed = svcompact_u32(matches, input);
@@ -91,7 +91,7 @@ size_t sve_trimspaces_oneloop_alt(const char *s, size_t len, char *out) {
   svbool_t all = svptrue_b32();
   svbool_t Pg;
   // see http://www.cse.iitm.ac.in/~rupesh/events/arm2021/CDAC%20-%20Overview%20of%20the%20Arm%20ISA%20for%20HPC.pdf
-  for (; svptest_first(all,Pg=svwhilelt_b32(i, len)); i += svcntw()) {
+  for (; svptest_first(all,Pg=svwhilelt_b32(i, len)); i += svcntw()) { // can use svqincw_n_s64(i, 1);
     svbool_t read_mask = svwhilelt_b32(i, len);
     svuint32_t input = svld1sb_u32(read_mask, (const int8_t *)s + i);
     svbool_t matches = svcmpne_n_u32(read_mask, input, 32);
@@ -106,7 +106,7 @@ size_t sve_trimspaces_oneloop_alt(const char *s, size_t len, char *out) {
 size_t sve_trimspaces_oneloop(const char *s, size_t len, char *out) {
   uint8_t *out8 = reinterpret_cast<uint8_t *>(out);
   size_t i = 0;
-  for (; i < len; i += svcntw()) {
+  for (; i < len; i += svcntw()) { // can use svqincw_n_s64(i, 1);
     svbool_t read_mask = svwhilelt_b32(i, len);
     svuint32_t input = svld1sb_u32(read_mask, (const int8_t *)s + i);
     svbool_t matches = svcmpne_n_u32(read_mask, input, 32);
