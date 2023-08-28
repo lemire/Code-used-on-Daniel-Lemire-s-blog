@@ -62,7 +62,7 @@ __attribute__((noinline)) uint64_t utf8_length_faster(const uint8_t *data,
     // compare to threshold (0x80)
     uint8x16_t withhighbit = vcgeq_u8(input, threshold);
     // vertical addition
-    result -= vaddvq_s8(withhighbit);
+    result -= vaddvq_s8(vreinterpretq_s8_u8(withhighbit));
   }
   // scalar tail
   for (uint8_t j = 0; j < rem; j++) {
