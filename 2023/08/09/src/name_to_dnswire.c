@@ -667,10 +667,10 @@ size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
     while (dots) {
       base = count;
       count = _tzcnt_u64(dots);
-      const uint64_t x = count - base;
+      const uint64_t diff = count - base;
       dots &= dots - 1;
-      octets[label] = (uint8_t)(x - 1);
-      label += x;
+      octets[label] = (uint8_t)(diff - 1);
+      label += diff;
     }
 
     octets[label] = (uint8_t)((length - count) - 1);
@@ -679,7 +679,7 @@ size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
   }
 
   if (likely(delimiter))
-    return length;
+    return length + 1;
 
   // labels in domain names are limited to 63 octets. track length octets
   // (dots) in 64-bit wide bitmap. shift by length of block last copied to
@@ -714,10 +714,10 @@ size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
       while (dots) {
         base = count;
         count = _tzcnt_u64(dots);
-        const uint64_t x = count - base;
+        const uint64_t diff = count - base;
         dots &= dots - 1;
-        octets[label] = (uint8_t)(x - 1);
-        label += x;
+        octets[label] = (uint8_t)(diff - 1);
+        label += diff;
       }
 
       octets[label] = (uint8_t)((length - count) - 1);
