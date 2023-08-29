@@ -108,6 +108,12 @@ int main(int argc, char **argv) {
                    sum += name_to_dnswire_idx_avx(s.data(), output.data());
                  }
                }));
+  pretty_print(inputs.size(), bytes, "name_to_dnswire_loop",
+               bench([&inputs, &output, &sum]() {
+                 for (const std::string &s : inputs) {
+                   sum += name_to_dnswire_loop(s.data(), output.data());
+                 }
+               }));
   pretty_print(inputs.size(), bytes, "name_to_dnswire_avx",
                bench([&inputs, &output, &sum]() {
                  for (const std::string &s : inputs) {

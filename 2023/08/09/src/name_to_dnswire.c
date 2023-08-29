@@ -620,6 +620,58 @@ void printbinary(uint64_t n) {
   printf("\n");
 }
 
+// simplified version of name_to_dnswire_idx_avx
+size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
+{
+  const char *text = src;
+  uint8_t *label = dst, *wire = label + 1;
+  // labels in domain names are limited to 63 octets. track length octets
+  // (dots) in 64-bit wide bitmap. shift by length of block last copied to
+  // detect null-labels and labels exceeding 63 octets (zero)
+  uint64_t labels = 1llu << 63; // virtual length octet preceding first label
+
+  *label = 0;
+
+  for (uint64_t delimiter = 0; !delimiter; ) {
+    // real world domain names quickly exceed 16 octets (www.example.com is
+    // encoded as 3www7example3com0, or 18 octets), but rarely exceed 32
+    // octets. encode in 32-byte blocks.
+    const __m256i input = _mm256_loadu_si256((const __m256i *)text);
+    _mm256_storeu_si256((__m256i *)wire, input);
+
+    delimiter = delimiter_mask_avx(input);
+    uint64_t dots = (uint32_t)_mm256_movemask_epi8(
+      _mm256_cmpeq_epi8(input, _mm256_set1_epi8('.')));
+
+    uint64_t limit = delimiter | (1llu << 32);
+    uint64_t length = _tzcnt_u64(limit);
+
+    // FIXME: account for escape sequences here in production
+    dots &= (1llu << length) - 1;
+    text += length;
+    wire += length;
+    labels = (dots << (64 - length)) | (labels >> length);
+    if (!labels || labels & (labels >> 1))
+      return 0;
+
+    if (dots) {
+      length = _tzcnt_u64(dots);
+      dots >>= length + 1;
+      *label += (uint8_t)length;
+
+      while (dots) {
+        length = _tzcnt_u64(dots);
+        dots >>= length + 1;
+        *label = (uint8_t)length;
+        label += length + 1;
+      }
+    }
+    *label = (uint8_t)(wire - label) - 1;
+  }
+
+  return (size_t)(wire - dst);
+}
+
 size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
   // There is an obvious loop structure which could be used to shorten
   // the function.
