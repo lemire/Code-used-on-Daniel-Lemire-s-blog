@@ -620,17 +620,21 @@ void printbinary(uint64_t n) {
   printf("\n");
 }
 
+#define likely(params) __builtin_expect(!!(params), 1)
+#define unlikely(params) __builtin_expect(!!(params), 0)
+
 // simplified version of name_to_dnswire_idx_avx
 size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
 {
   const char *text = src;
-  uint8_t *label = dst, *wire = label + 1;
+  uint8_t *octets = dst, *wire = octets + 1;
   // labels in domain names are limited to 63 octets. track length octets
   // (dots) in 64-bit wide bitmap. shift by length of block last copied to
   // detect null-labels and labels exceeding 63 octets (zero)
   uint64_t labels = 1llu << 63; // virtual length octet preceding first label
+  uint64_t label = 0;
 
-  *label = 0;
+  octets[label] = 0;
 
   for (uint64_t delimiter = 0; !delimiter; ) {
     // real world domain names quickly exceed 16 octets (www.example.com is
@@ -644,6 +648,7 @@ size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
       _mm256_cmpeq_epi8(input, _mm256_set1_epi8('.')));
 
     uint64_t limit = delimiter | (1llu << 32);
+    uint64_t count = 0;
     uint64_t length = _tzcnt_u64(limit);
 
     // FIXME: account for escape sequences here in production
@@ -651,22 +656,32 @@ size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
     text += length;
     wire += length;
     labels = (dots << (64 - length)) | (labels >> length);
-    if (!labels || labels & (labels >> 1))
+    // check for null labels, i.e. ".."
+    if (unlikely(labels & (labels >> 1)))
       return 0;
 
     if (dots) {
-      length = _tzcnt_u64(dots);
-      dots >>= length + 1;
-      *label += (uint8_t)length;
+      uint64_t base;
+      base = count = _tzcnt_u64(dots);
+      dots &= dots - 1;
+      octets[label] += (uint8_t)count;
+      label += count + 1;
 
       while (dots) {
-        length = _tzcnt_u64(dots);
-        dots >>= length + 1;
-        *label = (uint8_t)length;
-        label += length + 1;
+        count = _tzcnt_u64(dots);
+        dots &= dots - 1;
+        octets[label] = (uint8_t)((count - base) - 1);
+        label += count - base;
+        base = count;
       }
+
+      octets[label] = (uint8_t)((length - count) - 1);
+    } else {
+      // check if label exceeds 63 octets
+      if (!labels)
+        return 0;
+      octets[label] += (uint8_t)length;
     }
-    *label = (uint8_t)(wire - label) - 1;
   }
 
   return (size_t)(wire - dst);
