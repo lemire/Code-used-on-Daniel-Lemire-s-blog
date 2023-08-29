@@ -77,7 +77,20 @@ int main(int argc, char **argv) {
     std::cout << "average length " << double(volume) / inputs.size()
               << " bytes/name" << std::endl;
   }
-
+  std::vector<size_t> lengths(17);
+  for (const std::string &s : inputs) {
+    size_t sd32 = s.size() / 32;
+    if(sd32 > 16) {
+      printf("Warning: overly long name: %s\n", s.c_str());
+    } else {
+      lengths[sd32]++;
+    }
+  }
+  while(!lengths.empty() && lengths.back() == 0) { lengths.resize(lengths.size() - 1); }
+  for(size_t i = 0; i < lengths.size(); i++) {
+    printf("string with lengths between %zu and %zu : %zu (%0.2f %%)\n", i*32, i*32+31, lengths[i], double(lengths[i]) * 100 /inputs.size());
+  }
+  printf("\n");
   if (!collector.has_events()) {
     printf("Performance counters unavailable. Consider running in privileged "
            "mode (e.g., sudo).\n");
