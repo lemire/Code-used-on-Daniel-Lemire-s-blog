@@ -390,7 +390,7 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
   //////////
   if (dd1.delimiter != 0) {
     uint64_t length = _tzcnt_u64(dd1.delimiter);
-    dd1.dots = (((uint64_t)1 << length) - 1) & dd1.dots;
+    dd1.dots &= dd1.delimiter - 1;
 
     if (dd1.dots & (dd1.dots << 1)) {
       return 0;
@@ -409,12 +409,12 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
       uint64_t nt = _tzcnt_u64(dd1.dots);
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd1.dots ^= (uint64_t)1 << nt;
+      dd1.dots &= dd1.dots - 1;
       while (dd1.dots) {
         nt = _tzcnt_u64(dd1.dots);
         dstwriter[t + 1] = (uint8_t)(nt - t - 1);
         t = nt;
-        dd1.dots ^= (uint64_t)1 << nt;
+        dd1.dots &= dd1.dots - 1;
       }
     }
     dstwriter[t + 1] = (uint8_t)(length - t - 1);
@@ -434,7 +434,7 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
   if (dd2.delimiter != 0) {
     uint64_t length = _tzcnt_u64(dd2.delimiter);
 
-    dd2.dots = (((uint64_t)1 << length) - 1) & dd2.dots;
+    dd2.dots &= dd2.delimiter - 1;
     length += 64;
     if (dd2.dots & (dd2.dots >> 1)) {
       return 0;
@@ -444,12 +444,12 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
     uint64_t nt = _tzcnt_u64(dd1.dots);
     dstwriter[t + 1] = (uint8_t)(nt - t - 1);
     t = nt;
-    dd1.dots ^= (uint64_t)1 << nt;
+    dd1.dots &= dd1.dots - 1;
     while (dd1.dots) {
       nt = _tzcnt_u64(dd1.dots);
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd1.dots ^= (uint64_t)1 << nt;
+      dd1.dots &= dd1.dots - 1;
     }
     if (dd2.dots) {
       nt = _tzcnt_u64(dd2.dots) + 64;
@@ -458,12 +458,12 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
       }
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd2.dots ^= (uint64_t)1 << (t & 63);
+      dd2.dots &= dd2.dots - 1;;
       while (dd2.dots) {
         nt = _tzcnt_u64(dd2.dots) + 64;
         dstwriter[t + 1] = (uint8_t)(nt - t - 1);
         t = nt;
-        dd2.dots ^= (uint64_t)1 << (t & 63);
+        dd2.dots &= dd2.dots - 1;;
       }
     }
     dstwriter[t + 1] = (uint8_t)(length - t - 1);
@@ -480,9 +480,8 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
   // Check if input first in 192 bytes.
   //////////
   if (dd3.delimiter != 0) {
-
     uint64_t length = _tzcnt_u64(dd3.delimiter);
-    dd3.dots = (((uint64_t)1 << length) - 1) & dd3.dots;
+    dd3.dots &= dd3.delimiter - 1;
     length += 128;
     if (dd3.dots & (dd3.dots >> 1)) {
       return 0;
@@ -490,13 +489,13 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
     uint8_t *dstwriter = dst;
     uint64_t t = _tzcnt_u64(dd1.dots);
     dstwriter[0] = (uint8_t)t;
-    dd1.dots ^= (uint64_t)1 << t;
+    dd1.dots &= dd1.dots - 1;
     uint64_t nt;
     while (dd1.dots) {
       nt = _tzcnt_u64(dd1.dots);
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd1.dots ^= (uint64_t)1 << t;
+      dd1.dots &= dd1.dots - 1;
     }
     nt = _tzcnt_u64(dd2.dots) + 64;
     if (nt - t > 64) {
@@ -504,12 +503,12 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
     }
     dstwriter[t + 1] = (uint8_t)(nt - t - 1);
     t = nt;
-    dd2.dots ^= (uint64_t)1 << (t & 63);
+    dd2.dots &= dd2.dots - 1;;
     while (dd2.dots) {
       nt = _tzcnt_u64(dd2.dots) + 64;
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd2.dots ^= (uint64_t)1 << (t & 63);
+      dd2.dots &= dd2.dots - 1;;
     }
     if (dd3.dots) {
 
@@ -519,12 +518,12 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
       }
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd3.dots ^= (uint64_t)1 << (t & 63);
+      dd3.dots &= dd3.dots - 1;
       while (dd3.dots) {
         nt = _tzcnt_u64(dd3.dots) + 128;
         dstwriter[t + 1] = (uint8_t)(nt - t - 1);
         t = nt;
-        dd3.dots ^= (uint64_t)1 << (t & 63);
+        dd3.dots &= dd3.dots - 1;
       }
     }
     dstwriter[t + 1] = (uint8_t)(length - t - 1);
@@ -542,7 +541,7 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
   //////////
   if (dd4.delimiter != 0) {
     uint64_t length = _tzcnt_u64(dd4.delimiter);
-    dd4.dots = (((uint64_t)1 << length) - 1) & dd4.dots;
+    dd4.dots &= dd4.delimiter - 1;
     length += 192;
     if (dd4.dots & (dd4.dots >> 1)) {
       return 0;
@@ -550,13 +549,13 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
     uint8_t *dstwriter = dst;
     uint64_t t = _tzcnt_u64(dd1.dots);
     dstwriter[0] = (uint8_t)t;
-    dd1.dots ^= (uint64_t)1 << t;
+    dd1.dots &= dd1.dots - 1;
     uint64_t nt;
     while (dd1.dots) {
       nt = _tzcnt_u64(dd1.dots);
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd1.dots ^= (uint64_t)1 << t;
+      dd1.dots &= dd1.dots - 1;
     }
     nt = _tzcnt_u64(dd2.dots) + 64;
     if (nt - t > 64) {
@@ -564,12 +563,12 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
     }
     dstwriter[t + 1] = (uint8_t)(nt - t - 1);
     t = nt;
-    dd2.dots ^= (uint64_t)1 << (t & 63);
+    dd2.dots &= dd2.dots - 1;;
     while (dd2.dots) {
       nt = _tzcnt_u64(dd2.dots) + 64;
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd2.dots ^= (uint64_t)1 << (t & 63);
+      dd2.dots &= dd2.dots - 1;;
     }
     nt = _tzcnt_u64(dd3.dots) + 128;
     if (nt - t > 64) {
@@ -577,12 +576,12 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
     }
     dstwriter[t + 1] = (uint8_t)(nt - t - 1);
     t = nt;
-    dd3.dots ^= (uint64_t)1 << (t & 63);
+    dd3.dots &= dd3.dots - 1;
     while (dd3.dots) {
       nt = _tzcnt_u64(dd3.dots) + 128;
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd3.dots ^= (uint64_t)1 << (t & 63);
+      dd3.dots &= dd3.dots - 1;
     }
     if (dd4.dots) {
       nt = _tzcnt_u64(dd4.dots) + 192;
@@ -591,12 +590,12 @@ size_t name_to_dnswire_idx_avx512(const char *src, uint8_t *dst) {
       }
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd4.dots ^= (uint64_t)1 << (t & 63);
+      dd4.dots &= dd4.dots - 1;
       while (dd4.dots) {
         nt = _tzcnt_u64(dd4.dots) + 192;
         dstwriter[t + 1] = (uint8_t)(nt - t - 1);
         t = nt;
-        dd4.dots ^= (uint64_t)1 << (t & 63);
+        dd4.dots &= dd4.dots - 1;
       }
     }
     dstwriter[t + 1] = (uint8_t)(length - t - 1);
@@ -632,7 +631,7 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
   //////////
   if (dd1.delimiter != 0) {
     uint64_t length = _tzcnt_u64(dd1.delimiter);
-    dd1.dots = (((uint64_t)1 << length) - 1) & dd1.dots;
+    dd1.dots &= dd1.delimiter - 1;
 
     if (dd1.dots & (dd1.dots << 1)) {
       return 0;
@@ -651,12 +650,12 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
       uint64_t nt = _tzcnt_u64(dd1.dots);
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd1.dots ^= (uint64_t)1 << nt;
+      dd1.dots &= dd1.dots - 1;
       while (dd1.dots) {
         nt = _tzcnt_u64(dd1.dots);
         dstwriter[t + 1] = (uint8_t)(nt - t - 1);
         t = nt;
-        dd1.dots ^= (uint64_t)1 << nt;
+        dd1.dots &= dd1.dots - 1;
       }
     }
     dstwriter[t + 1] = (uint8_t)(length - t - 1);
@@ -676,7 +675,7 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
   if (dd2.delimiter != 0) {
     uint64_t length = _tzcnt_u64(dd2.delimiter);
 
-    dd2.dots = (((uint64_t)1 << length) - 1) & dd2.dots;
+    dd2.dots &= dd2.delimiter - 1;
     length += 64;
     if (dd2.dots & (dd2.dots >> 1)) {
       return 0;
@@ -686,12 +685,12 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
     uint64_t nt = _tzcnt_u64(dd1.dots);
     dstwriter[t + 1] = (uint8_t)(nt - t - 1);
     t = nt;
-    dd1.dots ^= (uint64_t)1 << nt;
+    dd1.dots &= dd1.dots - 1;
     while (dd1.dots) {
       nt = _tzcnt_u64(dd1.dots);
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd1.dots ^= (uint64_t)1 << nt;
+      dd1.dots &= dd1.dots - 1;
     }
     if (dd2.dots) {
       nt = _tzcnt_u64(dd2.dots) + 64;
@@ -700,12 +699,12 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
       }
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd2.dots ^= (uint64_t)1 << (t & 63);
+      dd2.dots &= dd2.dots - 1;;
       while (dd2.dots) {
         nt = _tzcnt_u64(dd2.dots) + 64;
         dstwriter[t + 1] = (uint8_t)(nt - t - 1);
         t = nt;
-        dd2.dots ^= (uint64_t)1 << (t & 63);
+        dd2.dots &= dd2.dots - 1;;
       }
     }
     dstwriter[t + 1] = (uint8_t)(length - t - 1);
@@ -724,7 +723,7 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
   if (dd3.delimiter != 0) {
 
     uint64_t length = _tzcnt_u64(dd3.delimiter);
-    dd3.dots = (((uint64_t)1 << length) - 1) & dd3.dots;
+    dd3.dots &= dd3.delimiter - 1;
     length += 128;
     if (dd3.dots & (dd3.dots >> 1)) {
       return 0;
@@ -732,13 +731,13 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
     uint8_t *dstwriter = dst;
     uint64_t t = _tzcnt_u64(dd1.dots);
     dstwriter[0] = (uint8_t)t;
-    dd1.dots ^= (uint64_t)1 << t;
+    dd1.dots &= dd1.dots - 1;
     uint64_t nt;
     while (dd1.dots) {
       nt = _tzcnt_u64(dd1.dots);
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd1.dots ^= (uint64_t)1 << t;
+      dd1.dots &= dd1.dots - 1;
     }
     nt = _tzcnt_u64(dd2.dots) + 64;
     if (nt - t > 64) {
@@ -746,12 +745,12 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
     }
     dstwriter[t + 1] = (uint8_t)(nt - t - 1);
     t = nt;
-    dd2.dots ^= (uint64_t)1 << (t & 63);
+    dd2.dots &= dd2.dots - 1;;
     while (dd2.dots) {
       nt = _tzcnt_u64(dd2.dots) + 64;
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd2.dots ^= (uint64_t)1 << (t & 63);
+      dd2.dots &= dd2.dots - 1;;
     }
     if (dd3.dots) {
 
@@ -761,12 +760,12 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
       }
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd3.dots ^= (uint64_t)1 << (t & 63);
+      dd3.dots &= dd3.dots - 1;
       while (dd3.dots) {
         nt = _tzcnt_u64(dd3.dots) + 128;
         dstwriter[t + 1] = (uint8_t)(nt - t - 1);
         t = nt;
-        dd3.dots ^= (uint64_t)1 << (t & 63);
+        dd3.dots &= dd3.dots - 1;
       }
     }
     dstwriter[t + 1] = (uint8_t)(length - t - 1);
@@ -784,7 +783,7 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
   //////////
   if (dd4.delimiter != 0) {
     uint64_t length = _tzcnt_u64(dd4.delimiter);
-    dd4.dots = (((uint64_t)1 << length) - 1) & dd4.dots;
+    dd4.dots &= dd4.delimiter - 1;
     length += 192;
     if (dd4.dots & (dd4.dots >> 1)) {
       return 0;
@@ -792,13 +791,13 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
     uint8_t *dstwriter = dst;
     uint64_t t = _tzcnt_u64(dd1.dots);
     dstwriter[0] = (uint8_t)t;
-    dd1.dots ^= (uint64_t)1 << t;
+    dd1.dots &= dd1.dots - 1;
     uint64_t nt;
     while (dd1.dots) {
       nt = _tzcnt_u64(dd1.dots);
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd1.dots ^= (uint64_t)1 << t;
+      dd1.dots &= dd1.dots - 1;
     }
     nt = _tzcnt_u64(dd2.dots) + 64;
     if (nt - t > 64) {
@@ -806,12 +805,12 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
     }
     dstwriter[t + 1] = (uint8_t)(nt - t - 1);
     t = nt;
-    dd2.dots ^= (uint64_t)1 << (t & 63);
+    dd2.dots &= dd2.dots - 1;;
     while (dd2.dots) {
       nt = _tzcnt_u64(dd2.dots) + 64;
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd2.dots ^= (uint64_t)1 << (t & 63);
+      dd2.dots &= dd2.dots - 1;;
     }
     nt = _tzcnt_u64(dd3.dots) + 128;
     if (nt - t > 64) {
@@ -819,12 +818,12 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
     }
     dstwriter[t + 1] = (uint8_t)(nt - t - 1);
     t = nt;
-    dd3.dots ^= (uint64_t)1 << (t & 63);
+    dd3.dots &= dd3.dots - 1;
     while (dd3.dots) {
       nt = _tzcnt_u64(dd3.dots) + 128;
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd3.dots ^= (uint64_t)1 << (t & 63);
+      dd3.dots &= dd3.dots - 1;
     }
     if (dd4.dots) {
       nt = _tzcnt_u64(dd4.dots) + 192;
@@ -833,12 +832,12 @@ size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
       }
       dstwriter[t + 1] = (uint8_t)(nt - t - 1);
       t = nt;
-      dd4.dots ^= (uint64_t)1 << (t & 63);
+      dd4.dots &= dd4.dots - 1;
       while (dd4.dots) {
         nt = _tzcnt_u64(dd4.dots) + 192;
         dstwriter[t + 1] = (uint8_t)(nt - t - 1);
         t = nt;
-        dd4.dots ^= (uint64_t)1 << (t & 63);
+        dd4.dots &= dd4.dots - 1;
       }
     }
     dstwriter[t + 1] = (uint8_t)(length - t - 1);
