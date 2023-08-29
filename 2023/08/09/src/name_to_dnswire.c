@@ -628,30 +628,75 @@ size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
 {
   const char *text = src;
   uint8_t *octets = dst, *wire = octets + 1;
-  // labels in domain names are limited to 63 octets. track length octets
-  // (dots) in 64-bit wide bitmap. shift by length of block last copied to
-  // detect null-labels and labels exceeding 63 octets (zero)
-  uint64_t labels = 1llu << 63; // virtual length octet preceding first label
   uint64_t label = 0;
 
   octets[label] = 0;
 
-  for (uint64_t delimiter = 0; !delimiter; ) {
-    // real world domain names quickly exceed 16 octets (www.example.com is
-    // encoded as 3www7example3com0, or 18 octets), but rarely exceed 32
-    // octets. encode in 32-byte blocks.
-    const __m256i input = _mm256_loadu_si256((const __m256i *)text);
+  // real world domain names quickly exceed 16 octets (www.example.com is
+  // encoded as 3www7example3com0, or 18 octets), but rarely exceed 32
+  // octets. encode in 32-byte blocks.
+  __m256i input = _mm256_loadu_si256((const __m256i *)text);
+  _mm256_storeu_si256((__m256i *)wire, input);
+
+  const __m256i dot = _mm256_set1_epi8('.');
+
+  uint64_t delimiter = delimiter_mask_avx(input);
+  uint64_t dots = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(input, dot));
+
+  uint64_t limit = delimiter | (1llu << 32);
+  uint64_t length = _tzcnt_u64(limit);
+
+  if (unlikely(dots & 1llu)) // root (single ".") is a special case
+    return length == 1;
+
+  // FIXME: account for escape sequences
+
+  dots &= (1llu << length) - 1;
+  text += length;
+  wire += length;
+  // check for null labels, i.e. ".."
+  if (unlikely(dots & (dots >> 1)))
+    return 0;
+
+  if (dots) {
+    uint64_t base, count = _tzcnt_u64(dots);
+    dots &= dots - 1;
+    octets[label] = (uint8_t)count;
+    label += count + 1;
+
+    while (dots) {
+      base = count;
+      count = _tzcnt_u64(dots);
+      const uint64_t x = count - base;
+      dots &= dots - 1;
+      octets[label] = (uint8_t)(x - 1);
+      label += x;
+    }
+
+    octets[label] = (uint8_t)((length - count) - 1);
+  } else {
+    octets[label] = (uint8_t)length;
+  }
+
+  if (likely(delimiter))
+    return length;
+
+  // labels in domain names are limited to 63 octets. track length octets
+  // (dots) in 64-bit wide bitmap. shift by length of block last copied to
+  // detect null-labels and labels exceeding 63 octets (zero)
+  uint64_t labels = (dots << (64 - length)) | ((1llu << 63) >> length);
+
+  do {
+    input = _mm256_loadu_si256((const __m256i *)text);
     _mm256_storeu_si256((__m256i *)wire, input);
 
     delimiter = delimiter_mask_avx(input);
-    uint64_t dots = (uint32_t)_mm256_movemask_epi8(
-      _mm256_cmpeq_epi8(input, _mm256_set1_epi8('.')));
+    dots = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(input, dot));
 
-    uint64_t limit = delimiter | (1llu << 32);
-    uint64_t count = 0;
-    uint64_t length = _tzcnt_u64(limit);
+    limit = delimiter | (1llu << 32);
+    length = _tzcnt_u64(limit);
 
-    // FIXME: account for escape sequences here in production
+    // FIXME: account for escape sequences
     dots &= (1llu << length) - 1;
     text += length;
     wire += length;
@@ -661,18 +706,18 @@ size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
       return 0;
 
     if (dots) {
-      uint64_t base;
-      base = count = _tzcnt_u64(dots);
+      uint64_t base, count = _tzcnt_u64(dots);
       dots &= dots - 1;
       octets[label] += (uint8_t)count;
       label += count + 1;
 
       while (dots) {
-        count = _tzcnt_u64(dots);
-        dots &= dots - 1;
-        octets[label] = (uint8_t)((count - base) - 1);
-        label += count - base;
         base = count;
+        count = _tzcnt_u64(dots);
+        const uint64_t x = count - base;
+        dots &= dots - 1;
+        octets[label] = (uint8_t)(x - 1);
+        label += x;
       }
 
       octets[label] = (uint8_t)((length - count) - 1);
@@ -682,7 +727,7 @@ size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
         return 0;
       octets[label] += (uint8_t)length;
     }
-  }
+  } while (!delimiter);
 
   return (size_t)(wire - dst);
 }
