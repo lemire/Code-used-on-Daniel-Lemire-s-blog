@@ -39,16 +39,20 @@ int main() {
     fflush(NULL);
     size_t trials = 500 / theory;
     size_t collisions = 0;
-#pragma omp parallel for reduction(+ : collisions)
-    for (size_t i = 0; i < trials; i++) {
-      __uint128_t g_lehmer64_state = 123456789 * i;
-      std::vector<uint32_t> array(array_size);
-      for (size_t k = 0; k < array_size; k++) {
-        array[k] = lehmer64(g_lehmer64_state);
-      }
-      if (has_collision(array.data(), array_size)) {
-        collisions++;
-      }
+    #pragma omp parallel for reduction(+:collisions)
+    for(size_t i = 0; i < trials; i++) {
+        __uint128_t g_lehmer64_state = 123456789 + i;
+
+        std::vector<uint64_t> array(array_size);
+        for(size_t k = 0; k< array_size; k++) {
+            array[k] = lehmer64(g_lehmer64_state);
+        }
+        if (has_collision(array.data(), array_size)) {
+            collisions++;
+            printf("!");
+        }
+        printf(".");
+        fflush(stdout);
     }
     double measured = (double)collisions / trials;
     printf("%f\t error: %f %%\n", measured,

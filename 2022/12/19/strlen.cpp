@@ -17,7 +17,7 @@ size_t sve_strlen(const char *s) {
       // register is no larger than 256 bytes.
       return len + svlastb_u8(svbrka_z(matches, matches), svindex_u8(0, 1));
     }
-    len += svcntb();
+    len += svcntb(); // can be replaced with len = svqincb_n_u64(len, 1);
   }
 }
 
@@ -45,7 +45,7 @@ size_t sve_strlen_yaroshevskiy(const char *s) {
       svbool_t before_nuls = svbrkb_z(svptrue_b8(), matches);
       return len + svcntp_b8(before_nuls, before_nuls);
     }
-    len += svcntb();
+    len += svcntb(); // len = svqincb_n_u64(len, 1);
   }
 }
 
