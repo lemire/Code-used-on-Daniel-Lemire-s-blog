@@ -623,112 +623,104 @@ void printbinary(uint64_t n) {
 #define unlikely(params) __builtin_expect(!!(params), 0)
 
 // simplified version of name_to_dnswire_idx_avx
-size_t name_to_dnswire_loop(const char *src, uint8_t *dst)
+size_t name_to_dnswire_loop(const char *text, uint8_t *wire)
 {
-  const char *text = src;
-  uint8_t *octets = dst, *wire = octets + 1;
   uint64_t label = 0;
-
-  octets[label] = 0;
+  const char *textp = text;
+  uint8_t *wirep = wire + 1;
+  wire[0] = 0;
 
   // real world domain names quickly exceed 16 octets (www.example.com is
   // encoded as 3www7example3com0, or 18 octets), but rarely exceed 32
   // octets. encode in 32-byte blocks.
-  __m256i input = _mm256_loadu_si256((const __m256i *)text);
-  _mm256_storeu_si256((__m256i *)wire, input);
+  __m256i input = _mm256_loadu_si256((const __m256i *)textp);
+  _mm256_storeu_si256((__m256i *)wirep, input);
 
   const __m256i dot = _mm256_set1_epi8('.');
 
   uint64_t delimiter = delimiter_mask_avx(input);
   uint64_t dots = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(input, dot));
+  uint64_t length = _tzcnt_u64(delimiter | (1llu << 32));
+  delimiter &= -delimiter;
 
-  uint64_t limit = delimiter | (1llu << 32);
-  uint64_t length = _tzcnt_u64(limit);
-
-  if (unlikely(dots & 1llu)) // root (single ".") is a special case
+  // check for root, i.e. "."
+  if (unlikely(dots & 1llu))
     return length == 1;
 
-  // FIXME: account for escape sequences
-
-  dots &= (1llu << length) - 1;
-  text += length;
-  wire += length;
+  dots &= delimiter - 1;
   // check for null labels, i.e. ".."
   if (unlikely(dots & (dots >> 1)))
     return 0;
 
-  if (dots) {
-    uint64_t base, count = _tzcnt_u64(dots);
+  if (likely(dots)) {
+    uint64_t count = _tzcnt_u64(dots);
     dots &= dots - 1;
-    octets[label] = (uint8_t)count;
-    label += count + 1;
+    wire[label] = (uint8_t)count;
+    label = count + 1;
 
     while (dots) {
-      base = count;
       count = _tzcnt_u64(dots);
-      const uint64_t diff = count - base;
       dots &= dots - 1;
-      octets[label] = (uint8_t)(diff - 1);
-      label += diff;
+      wire[label] = (uint8_t)(count - label);
+      label = count + 1;
     }
-
-    octets[label] = (uint8_t)((length - count) - 1);
-  } else {
-    octets[label] = (uint8_t)length;
   }
+
+  wire[label] = (uint8_t)(length - label);
 
   if (likely(delimiter))
     return length + 1;
 
-  // labels in domain names are limited to 63 octets. track length octets
-  // (dots) in 64-bit wide bitmap. shift by length of block last copied to
-  // detect null-labels and labels exceeding 63 octets (zero)
-  uint64_t labels = (dots << (64 - length)) | ((1llu << 63) >> length);
+  textp += length;
+  wirep += length;
+  uint64_t maybe_dot = dots >> (length - 1);
 
   do {
-    input = _mm256_loadu_si256((const __m256i *)text);
-    _mm256_storeu_si256((__m256i *)wire, input);
+    input = _mm256_loadu_si256((const __m256i *)textp);
+    _mm256_storeu_si256((__m256i *)wirep, input);
 
     delimiter = delimiter_mask_avx(input);
     dots = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(input, dot));
+    const uint64_t base = length;
+    uint64_t count = _tzcnt_u64(delimiter | (1llu << 32));
+    delimiter &= -delimiter;
 
-    limit = delimiter | (1llu << 32);
-    length = _tzcnt_u64(limit);
+    textp += count;
+    wirep += count;
+    length += count;
 
     // FIXME: account for escape sequences
-    dots &= (1llu << length) - 1;
-    text += length;
-    wire += length;
-    labels = (dots << (64 - length)) | (labels >> length);
+    dots &= delimiter - 1;
     // check for null labels, i.e. ".."
-    if (unlikely(labels & (labels >> 1)))
+    if (unlikely(dots & ((dots >> 1) | maybe_dot)))
       return 0;
 
-    if (dots) {
-      uint64_t base, count = _tzcnt_u64(dots);
+    maybe_dot = dots >> (count - 1);
+    if (likely(dots)) {
+      count = _tzcnt_u64(dots) + base;
       dots &= dots - 1;
-      octets[label] += (uint8_t)count;
-      label += count + 1;
+      wire[label] = (uint8_t)(count - label);
+      // check if label exceeds 63 octets
+      if (unlikely(count - label > 63))
+        return 0;
+      label = count + 1;
 
       while (dots) {
-        base = count;
-        count = _tzcnt_u64(dots);
-        const uint64_t diff = count - base;
+        count = _tzcnt_u64(dots) + base;
         dots &= dots - 1;
-        octets[label] = (uint8_t)(diff - 1);
-        label += diff;
+        wire[label] = (uint8_t)(count - label);
+        label = count + 1;
       }
-
-      octets[label] = (uint8_t)((length - count) - 1);
     } else {
       // check if label exceeds 63 octets
-      if (!labels)
+      if (length - label > 63)
         return 0;
-      octets[label] += (uint8_t)length;
     }
+
+    wire[label] = (uint8_t)(length - label);
   } while (!delimiter);
 
-  return (size_t)(wire - dst);
+  return (size_t)length + 1;
 }
 
 size_t name_to_dnswire_idx_avx(const char *src, uint8_t *dst) {
