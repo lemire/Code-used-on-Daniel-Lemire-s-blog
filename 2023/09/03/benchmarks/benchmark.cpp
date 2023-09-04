@@ -58,6 +58,24 @@ int main(int argc, char **argv) {
                        exit(1);
                    }
                }));
+  pretty_print(input_data.size(), identifiers, "count_identifiers_neon_strager",
+               bench([&input_data, &sum, &identifiers]() {
+                   size_t r = count_identifiers_neon_strager(input_data.data(), input_data.size());
+                   sum += r;
+                   if(r != identifiers) {
+                       printf("FAIL %zu %zu\n", r, identifiers);
+                       exit(1);
+                   }
+               }));
+  pretty_print(input_data.size(), identifiers, "count_identifiers_neon_strager_ranges",
+               bench([&input_data, &sum, &identifiers]() {
+                   size_t r = count_identifiers_neon_strager_ranges(input_data.data(), input_data.size());
+                   sum += r;
+                   if(r != identifiers) {
+                       printf("FAIL %zu %zu\n", r, identifiers);
+                       exit(1);
+                   }
+               }));
   pretty_print(input_data.size(), identifiers, "count_identifiers",
                bench([&input_data, &sum, &identifiers]() {
                    size_t r = count_identifiers(input_data.data(), input_data.size());
@@ -67,4 +85,4 @@ int main(int argc, char **argv) {
                        exit(1);
                    }
                }));
-  }
+}
