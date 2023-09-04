@@ -163,7 +163,7 @@ bool longer_test() {
 }
 
 bool random_test() {
-  for (size_t i = 0; i < 100000; i++) {
+  for (size_t i = 0; i < 200000; i++) {
     std::string basic;
     basic.resize(rand() % 255, '0');
     
