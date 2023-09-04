@@ -134,3 +134,163 @@ size_t count_identifiers_neon(const char *source, size_t size) {
 
   return count;
 }
+
+struct identifier_neon_state_strager {
+  uint32_t identifier_doublemask;
+  uint32_t leading_identifier_doublemask;
+};
+
+// Explanation:
+// https://github.com/quick-lint/quick-lint-js/blob/08ee4ea76bca1cc67e37e0b535e35ec76a4d0ce9/src/quick-lint-js/port/simd-neon-arm.h#L21
+//
+// quick-lint-js finds bugs in JavaScript programs.
+// Copyright (C) 2020  Matthew "strager" Glazar
+//
+// This file is part of quick-lint-js.
+//
+// quick-lint-js is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// quick-lint-js is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with quick-lint-js.  If not, see <https://www.gnu.org/licenses/>.
+//
+// ---
+//
+// Portions of this file are
+// Copyright (c) 2014-2020, Arm Limited.
+// Source:
+// https://github.com/ARM-software/optimized-routines/blob/7a9fd1603e1179b044406fb9b6cc5770d736cde7/string/aarch64/memchr.S
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+static uint32_t to_bitdoublemask_neon_strager(uint8x16_t v) {
+  uint8x16_t magic = {
+    0x01, 0x04, 0x10, 0x40, 0x01, 0x04, 0x10, 0x40,
+    0x01, 0x04, 0x10, 0x40, 0x01, 0x04, 0x10, 0x40,
+  };
+  uint8x16_t garbage = v;  // arbitrary
+  uint8x16_t mixed_0 = vandq_u8(magic, v);
+  uint8x16_t mixed_1 = vpaddq_u8(mixed_0, garbage);
+  uint8x16_t mixed_2 = vpaddq_u8(mixed_1, mixed_1);
+  return vgetq_lane_u32(vreinterpretq_u32_u8(mixed_2), 0);
+}
+// End MIT+GPL-licenced code.
+
+// Identical to identifier_neon but using to_bitdoublemask_neon_strager.
+static struct identifier_neon_state_strager identifier_neon_strager(const char *source) {
+  const uint8x16_t low_nibble_mask = (uint8x16_t){
+      42, 62, 62, 62, 62, 62, 62, 62, 62, 62, 60, 20, 20, 20, 20, 21};
+  const uint8x16_t high_nibble_mask =
+      (uint8x16_t){0, 0, 0, 2, 16, 33, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0};
+  uint8x16_t chars = vld1q_u8((const uint8_t *)source);
+  uint8x16_t low =
+      vqtbl1q_u8(low_nibble_mask, vandq_u8(chars, vdupq_n_u8(0xf)));
+  uint8x16_t high = vqtbl1q_u8(high_nibble_mask, vshrq_n_u8(chars, 4));
+  uint8x16_t v = vtstq_u8(low, high);
+  uint8x16_t v_no_number = vtstq_u8(low, vandq_u8(high, vdupq_n_u8(61)));
+  return (struct identifier_neon_state_strager){to_bitdoublemask_neon_strager(v),
+                                                to_bitdoublemask_neon_strager(v_no_number)};
+}
+
+size_t count_identifiers_neon_strager(const char *source, size_t size) {
+  size_t count = 0;
+  const char *end = source + size;
+  if (size >= 16) {
+    const char *end16 = source + size - 16;
+    uint32_t lastbit = 0;
+    while (source <= end16) {
+      struct identifier_neon_state_strager m = identifier_neon_strager(source);
+      uint32_t mask =
+          m.leading_identifier_doublemask & ~(m.identifier_doublemask << 2 | lastbit);
+
+      count += (size_t)__builtin_popcount(mask);
+      lastbit = m.identifier_doublemask >> 30;
+      source += 16;
+    }
+    if (lastbit) {
+      source = parse_identifier(source, end);
+    }
+  }
+
+
+  while (source < end) {
+    uint8_t c = identifier_map[(unsigned)*source++& 0xff];
+    if(c) {
+      count += (c == 255);
+      source = parse_identifier(source, end);
+    }
+  }
+
+  return count;
+}
+
+static struct identifier_neon_state_strager identifier_neon_strager_ranges(const char *source) {
+  uint8x16_t chars = vld1q_u8((const uint8_t *)source);
+
+  uint8x16_t chars_lower = vorrq_u8(chars, vdupq_n_u8('a' - 'A'));
+  uint8x16_t is_alpha = vandq_u8(vcleq_u8(vdupq_n_u8('a'), chars_lower), vcleq_u8(chars_lower, vdupq_n_u8('z')));
+  uint8x16_t is_symbol = vceqq_u8(chars, vdupq_n_u8('_'));
+  uint8x16_t is_digit = vandq_u8(vcleq_u8(vdupq_n_u8('0'), chars), vcleq_u8(chars, vdupq_n_u8('9')));
+  uint8x16_t is_ident_start = vorrq_u8(is_alpha, is_symbol);
+
+  uint32_t is_digit_doublemask = to_bitdoublemask_neon_strager(is_digit);
+  uint32_t is_ident_start_doublemask = to_bitdoublemask_neon_strager(is_ident_start);
+  return (struct identifier_neon_state_strager){
+    is_ident_start_doublemask | is_digit_doublemask,
+    is_ident_start_doublemask,
+  };
+}
+
+size_t count_identifiers_neon_strager_ranges(const char *source, size_t size) {
+  size_t count = 0;
+  const char *end = source + size;
+  if (size >= 16) {
+    const char *end16 = source + size - 16;
+    uint32_t lastbit = 0;
+    while (source <= end16) {
+      struct identifier_neon_state_strager m = identifier_neon_strager_ranges(source);
+      uint32_t mask =
+          m.leading_identifier_doublemask & ~(m.identifier_doublemask << 2 | lastbit);
+
+      count += (size_t)__builtin_popcount(mask);
+      lastbit = m.identifier_doublemask >> 30;
+      source += 16;
+    }
+    if (lastbit) {
+      source = parse_identifier(source, end);
+    }
+  }
+
+
+  while (source < end) {
+    uint8_t c = identifier_map[(unsigned)*source++& 0xff];
+    if(c) {
+      count += (c == 255);
+      source = parse_identifier(source, end);
+    }
+  }
+
+  return count;
+}
