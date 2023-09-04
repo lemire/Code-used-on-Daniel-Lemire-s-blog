@@ -46,6 +46,8 @@ int main(int argc, char **argv) {
                     std::istreambuf_iterator<char>());
   volatile uint64_t sum{};
   size_t identifiers = count_identifiers(input_data.data(), input_data.size());
+  printf("%zu identifiers\n", identifiers);
+  printf("%zu bytes\n", input_data.size());
 
   pretty_print(input_data.size(), identifiers, "count_identifiers_neon",
                bench([&input_data, &sum, &identifiers]() {
