@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
   printf("%zu identifiers\n", identifiers);
   printf("%zu bytes\n", input_data.size());
 
-  pretty_print(input_data.size(), identifiers, "count_identifiers_neon",
+  pretty_print(identifiers, input_data.size(), "count_identifiers_neon",
                bench([&input_data, &sum, &identifiers]() {
                    size_t r = count_identifiers_neon(input_data.data(), input_data.size());
                    sum += r;
@@ -58,7 +58,16 @@ int main(int argc, char **argv) {
                        exit(1);
                    }
                }));
-  pretty_print(input_data.size(), identifiers, "count_identifiers_neon_strager",
+  pretty_print(identifiers, input_data.size(),"count_identifiers_neon_blob",
+               bench([&input_data, &sum, &identifiers]() {
+                   size_t r = count_identifiers_neon_blob(input_data.data(), input_data.size());
+                   sum += r;
+                   if(r != identifiers) {
+                       printf("FAIL %zu %zu\n", r, identifiers);
+                       exit(1);
+                   }
+               }));
+  pretty_print(identifiers, input_data.size(),"count_identifiers_neon_strager",
                bench([&input_data, &sum, &identifiers]() {
                    size_t r = count_identifiers_neon_strager(input_data.data(), input_data.size());
                    sum += r;
@@ -67,7 +76,7 @@ int main(int argc, char **argv) {
                        exit(1);
                    }
                }));
-  pretty_print(input_data.size(), identifiers, "count_identifiers_neon_strager_ranges",
+  pretty_print(identifiers, input_data.size(),"count_identifiers_neon_strager_ranges",
                bench([&input_data, &sum, &identifiers]() {
                    size_t r = count_identifiers_neon_strager_ranges(input_data.data(), input_data.size());
                    sum += r;
@@ -76,7 +85,7 @@ int main(int argc, char **argv) {
                        exit(1);
                    }
                }));
-  pretty_print(input_data.size(), identifiers, "count_identifiers",
+  pretty_print(identifiers, input_data.size(),"count_identifiers",
                bench([&input_data, &sum, &identifiers]() {
                    size_t r = count_identifiers(input_data.data(), input_data.size());
                    sum += r;

@@ -294,3 +294,79 @@ size_t count_identifiers_neon_strager_ranges(const char *source, size_t size) {
 
   return count;
 }
+
+
+/****/
+
+
+ 
+static uint64_t to_bitmask_neon_blob(uint8x16_t v0, uint8x16_t v1, uint8x16_t v2, uint8x16_t v3) {
+  uint8x16_t t0 = vbslq_u8(vdupq_n_u8(0x55), v0, v1); // 01010101...
+  uint8x16_t t1 = vbslq_u8(vdupq_n_u8(0x55), v2, v3); // 23232323...
+  uint8x16_t combined = vbslq_u8(vdupq_n_u8(0x33), t0, t1); // 01230123...
+  uint8x8_t sum = vshrn_n_u16(vreinterpretq_u16_u8(combined), 4);
+  return vget_lane_u64(vreinterpret_u64_u8(sum), 0);
+}
+ 
+struct identifier_neon_state_blob {
+  uint8x16_t identifiers;
+  uint8x16_t numbers;
+};
+ 
+// Parsing Gigabytes of JSON per Second, The VLDB Journal, 28(6), 2019
+// https://arxiv.org/abs/1902.08318
+static struct identifier_neon_state_blob identifier_neon_blob(uint8x16_t chars) {
+  const uint8x16x2_t thresh_table = (uint8x16x2_t){
+    (uint8x16_t){127, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64},
+    (uint8x16_t){'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 127, 127, 127, 127, 'A'}
+  };
+  
+  // lookup threshold values to compare against
+  uint8x16_t lookup = vandq_u8(chars, vdupq_n_u8(96 ^ 255));
+  uint8x16_t thresh = vqtbl2q_u8(thresh_table, lookup);
+  
+  // compare equal for numbers, compare greater-equal for identifiers (but need to match underscore without matching against character 127, so implement this compare by causing 127 to wrap around)
+  uint8x16_t v = vcgtq_s8(vreinterpretq_s8_u8(vaddq_u8(chars, vdupq_n_u8(1))), vreinterpretq_s8_u8(thresh));
+  uint8x16_t v_num = vceqq_u8(chars, thresh);
+  return (struct identifier_neon_state_blob){v, v_num};
+}
+ 
+size_t count_identifiers_neon_blob(const char *source, size_t size) {
+  size_t count = 0;
+  const char *end = source + size;
+  if (size >= 64) {
+    const char *end64 = source + size - 64;
+    uint64_t lastbit = 0;
+    while (source <= end64) {
+      uint8x16x4_t chars = vld4q_u8((const uint8_t *)source);
+      struct identifier_neon_state_blob m0 = identifier_neon_blob(chars.val[0]);
+      struct identifier_neon_state_blob m1 = identifier_neon_blob(chars.val[1]);
+      struct identifier_neon_state_blob m2 = identifier_neon_blob(chars.val[2]);
+      struct identifier_neon_state_blob m3 = identifier_neon_blob(chars.val[3]);
+      
+      uint64_t number_mask = to_bitmask_neon_blob(m0.numbers, m1.numbers, m2.numbers, m3.numbers);
+      uint64_t identifier_mask = to_bitmask_neon_blob(m0.identifiers, m1.identifiers, m2.identifiers, m3.identifiers);
+      
+      uint64_t mask =
+          identifier_mask & ~number_mask & ~(identifier_mask << 1 | lastbit);
+ 
+      count += (size_t)__builtin_popcountll(mask);
+      lastbit = identifier_mask >> 63;
+      source += 64;
+    }
+    if (lastbit) {
+      source = parse_identifier(source, end);
+    }
+  }
+ 
+ 
+  while (source < end) {
+    uint8_t c = identifier_map[(unsigned)*source++& 0xff];
+    if(c) {
+      count += (c == 255);
+      source = parse_identifier(source, end);
+    }
+  }
+ 
+  return count;
+}
