@@ -86,6 +86,8 @@ struct identifier_neon_state {
   uint16_t leading_identifier_mask;
 };
 
+// Parsing Gigabytes of JSON per Second, The VLDB Journal, 28(6), 2019
+// https://arxiv.org/abs/1902.08318
 static struct identifier_neon_state identifier_neon(const char *source) {
   const uint8x16_t low_nibble_mask = (uint8x16_t){
       42, 62, 62, 62, 62, 62, 62, 62, 62, 62, 60, 20, 20, 20, 20, 21};
@@ -100,22 +102,6 @@ static struct identifier_neon_state identifier_neon(const char *source) {
   return (struct identifier_neon_state){to_bitmask_neon(v),
                                         to_bitmask_neon(v_no_number)};
 }
-/*
-print8(const char *source) {
-  for(size_t i = 0; i < 16; i++) {
-    printf("%c", identifier_map[(unsigned)source[i]& 0xff]?(leading_identifier_map[(unsigned)source[i]&0xff]?'L':'I'):'_');
-
-  }
-  printf("\n");
-for(size_t i = 0; i < 16; i++) {
-    printf("%02x ", (unsigned)source[i]&0xff);
-  }
-  printf("\n");
-for(size_t i = 0; i < 16; i++) {
-    printf("%c ", ((unsigned)source[i]<128 && (unsigned)source[i]>=' ')?source[i]:'_');
-  }
-  printf("\n");
-}*/
 
 size_t count_identifiers_neon(const char *source, size_t size) {
   size_t count = 0;
