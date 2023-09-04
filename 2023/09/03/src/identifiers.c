@@ -296,7 +296,7 @@ size_t count_identifiers_neon_strager_ranges(const char *source, size_t size) {
 }
 
 
-/****/
+/** Credit for the blog implementation: Perforated Blob **/
 
 
  
