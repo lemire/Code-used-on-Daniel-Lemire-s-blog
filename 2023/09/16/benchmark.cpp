@@ -41,36 +41,49 @@ void counter(volatile uint64_t *counterpt) {
   }
 }
 template <int align> uint64_t threaded_counter() {
-  A<align> a[4];
-  static_assert(sizeof(a) == 4 * align);
+  A<align> a[8];
+  static_assert(sizeof(a) == 8 *align);
   a[0].count = 1;
   a[1].count = 2;
   a[2].count = 3;
   a[3].count = 4;
+  a[4].count = 5;
+  a[5].count = 6;
+  a[6].count = 7;
+  a[7].count = 8;
 
   std::thread t1(counter, &a[0].count);
   std::thread t2(counter, &a[1].count);
   std::thread t3(counter, &a[2].count);
   std::thread t4(counter, &a[3].count);
+  std::thread t5(counter, &a[4].count);
+  std::thread t6(counter, &a[5].count);
+  std::thread t7(counter, &a[6].count);
+  std::thread t8(counter, &a[7].count);
 
   t1.join();
   t2.join();
   t3.join();
   t4.join();
-  return a[0].count + a[1].count + a[2].count + a[3].count;
+  t5.join();
+  t6.join();
+  t7.join();
+  t8.join();
+  return a[0].count + a[1].count + a[2].count + a[3].count + a[4].count +
+         a[5].count + a[6].count + a[7].count;
 }
 
 int main(int argc, char **argv) {
   uint64_t counter = 0;
 
-  pretty_print(4 * iterations, 4 * iterations * sizeof(uint64_t), "8-byte",
+  pretty_print(8 *iterations, 8 *iterations * sizeof(uint64_t), "8-byte",
                bench([&counter]() { counter += threaded_counter<8>(); }));
-  pretty_print(4 * iterations, 4 * iterations * sizeof(uint64_t), "16-byte",
+  pretty_print(8 *iterations, 8 *iterations * sizeof(uint64_t), "16-byte",
                bench([&counter]() { counter += threaded_counter<16>(); }));
-  pretty_print(4 * iterations, 4 * iterations * sizeof(uint64_t), "64-byte",
+  pretty_print(8 *iterations, 8 *iterations * sizeof(uint64_t), "64-byte",
                bench([&counter]() { counter += threaded_counter<64>(); }));
-  pretty_print(4 * iterations, 4 * iterations * sizeof(uint64_t), "128-byte",
+  pretty_print(8 *iterations, 8 *iterations * sizeof(uint64_t), "128-byte",
                bench([&counter]() { counter += threaded_counter<128>(); }));
-  pretty_print(4 * iterations, 4 * iterations * sizeof(uint64_t), "1024-byte",
+  pretty_print(8 *iterations, 8 *iterations * sizeof(uint64_t), "1024-byte",
                bench([&counter]() { counter += threaded_counter<1024>(); }));
 }
