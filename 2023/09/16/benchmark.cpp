@@ -1,13 +1,15 @@
 
 #include "performancecounters/benchmarker.h"
 #include <algorithm>
+#include <chrono>
+#include <cstdlib>
+#include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <random>
 #include <stdlib.h>
+#include <thread>
 #include <vector>
-#include <filesystem>
-#include <iostream>
-
 
 void pretty_print(size_t volume, size_t bytes, std::string name,
                   event_aggregate agg) {
@@ -26,62 +28,49 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
   printf("\n");
 }
 
-#include <thread>
-#include <chrono>
-#include <cstdlib>
-#include <vector>
-#include <iostream>
- 
-template <int align>
-struct alignas(align) A
-{
-    uint64_t count = rand();
+template <int align> struct alignas(align) A {
+  volatile uint64_t count;
 };
 
-constexpr size_t iterations = 10'000'000;
+constexpr size_t iterations = 100'000'000;
 
 // compilers seemingly struggle to optimize this away
-void counter(uint64_t* counterpt) {
-    for(int i = 0; i < iterations; i++) {
-        *counterpt = 3 * *counterpt * *counterpt  + 1;
-    }
+void counter(volatile uint64_t *counterpt) {
+  for (size_t i = 0; i < iterations; i++) {
+    *counterpt = 3 * *counterpt * *counterpt + 1;
+  }
 }
-template <int align>
-uint64_t threaded_counter() {
-    A<align> a[4];
-    static_assert(sizeof(a) == 4*align);
-    std::thread t1(counter, &a[0].count);
-    std::thread t2(counter, &a[1].count);
-    std::thread t3(counter, &a[2].count);
-    std::thread t4(counter, &a[3].count);
+template <int align> uint64_t threaded_counter() {
+  A<align> a[4];
+  static_assert(sizeof(a) == 4 * align);
+  a[0].count = 1;
+  a[1].count = 2;
+  a[2].count = 3;
+  a[3].count = 4;
 
-    t1.join();
-    t2.join();
-    t3.join();
-    t4.join();
-    //printf("%lu %lu %lu %lu\n", a[0].count, a[1].count, a[2].count, a[3].count);
+  std::thread t1(counter, &a[0].count);
+  std::thread t2(counter, &a[1].count);
+  std::thread t3(counter, &a[2].count);
+  std::thread t4(counter, &a[3].count);
 
-    return a[0].count + a[1].count + a[2].count + a[3].count;
+  t1.join();
+  t2.join();
+  t3.join();
+  t4.join();
+  return a[0].count + a[1].count + a[2].count + a[3].count;
 }
 
 int main(int argc, char **argv) {
   uint64_t counter = 0;
 
-  pretty_print(4*iterations, 4*iterations*sizeof(uint64_t), "8-byte",
-               bench([&counter]() {
-                counter += threaded_counter<8>();
-               }));
-  pretty_print(4*iterations, 4*iterations*sizeof(uint64_t), "16-byte",
-               bench([&counter]() {
-                counter += threaded_counter<16>();
-               }));
-  pretty_print(4*iterations, 4*iterations*sizeof(uint64_t), "64-byte",
-               bench([&counter]() {
-                counter += threaded_counter<64>();
-               }));
-  pretty_print(4*iterations, 4*iterations*sizeof(uint64_t), "128-byte",
-               bench([&counter]() {
-                counter += threaded_counter<128>();
-               }));
-
+  pretty_print(4 * iterations, 4 * iterations * sizeof(uint64_t), "8-byte",
+               bench([&counter]() { counter += threaded_counter<8>(); }));
+  pretty_print(4 * iterations, 4 * iterations * sizeof(uint64_t), "16-byte",
+               bench([&counter]() { counter += threaded_counter<16>(); }));
+  pretty_print(4 * iterations, 4 * iterations * sizeof(uint64_t), "64-byte",
+               bench([&counter]() { counter += threaded_counter<64>(); }));
+  pretty_print(4 * iterations, 4 * iterations * sizeof(uint64_t), "128-byte",
+               bench([&counter]() { counter += threaded_counter<128>(); }));
+  pretty_print(4 * iterations, 4 * iterations * sizeof(uint64_t), "1024-byte",
+               bench([&counter]() { counter += threaded_counter<1024>(); }));
 }
