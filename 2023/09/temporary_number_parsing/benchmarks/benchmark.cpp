@@ -37,13 +37,15 @@ int main(int argc, char **argv) {
     input.push_back(std::to_string(rand()));
     volume += input.back().size();
   }
-  pretty_print(numbers, volume, "parse_unsigned_avx512",
-               bench([&input, &sum]() {
-                 for (const std::string &s : input) {
-                   sum += *parse_unsigned_avx512(
-                       s.data(), s.data() + s.size());
-                 }
-               }));
+  pretty_print(
+      numbers, volume, "parse_unsigned_avx512", bench([&input, &sum]() {
+        uint64_t value;
+        for (const std::string &s : input) {
+          if (parse_unsigned_avx512(s.data(), s.data() + s.size(), value)) {
+            sum += value;
+          }
+        }
+      }));
 
   pretty_print(numbers, volume, "std::from_chars", bench([&input, &sum]() {
                  for (const std::string &s : input) {
@@ -58,15 +60,21 @@ int main(int argc, char **argv) {
                  }
                }));
   pretty_print(numbers, volume, "parse_unsigned", bench([&input, &sum]() {
+                 uint64_t value;
                  for (const std::string &s : input) {
-                   sum += *parse_unsigned(s.c_str());
+                   if (parse_unsigned(s.c_str(), value)) {
+                     sum += value;
+                   }
                  }
                }));
 
   pretty_print(
       numbers, volume, "parse_unsigned_bounded", bench([&input, &sum]() {
+        uint64_t value;
         for (const std::string &s : input) {
-          sum += *parse_unsigned_bounded(s.data(), s.data() + s.size());
+          if (parse_unsigned_bounded(s.data(), s.data() + s.size(), value)) {
+            sum += value;
+          }
         }
       }));
 }

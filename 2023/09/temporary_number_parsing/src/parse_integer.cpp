@@ -14,7 +14,7 @@ template <typename I> inline bool parse_digit(const uint8_t c, I &i) {
 }
 
 // Parse any number from 0 to 18,446,744,073,709,551,615
-std::optional<uint64_t> parse_unsigned(const char *src) noexcept {
+bool parse_unsigned(const char *src, uint64_t& value) noexcept {
   const uint8_t *p = (const uint8_t *)src;
   const uint8_t *const start_digits = p;
   uint64_t i = 0;
@@ -23,28 +23,29 @@ std::optional<uint64_t> parse_unsigned(const char *src) noexcept {
   }
   size_t digit_count = size_t(p - start_digits);
   if ((digit_count == 0) || (digit_count > 20)) {
-    return std::nullopt;
+    return false;
   }
   if ((digit_count > 1) && ('0' == *start_digits)) {
-    return std::nullopt;
+    return false;
   }
   if (digit_count == 20) {
     if (src[0] != uint8_t('1') || i <= uint64_t(INT64_MAX)) {
-      return std::nullopt;
+      return false;
     }
   }
-  return i;
+  value = i;
+  return true;
 }
 
-std::optional<uint64_t>
+bool
 parse_unsigned_bounded(const char *start_digits,
-                       const char *end_digits) noexcept {
+                       const char *end_digits, uint64_t& value) noexcept {
   size_t digit_count = size_t(end_digits - start_digits);
   if ((digit_count == 0) || (digit_count > 20)) {
-    return std::nullopt;
+    return false;
   }
   if (('0' == *start_digits) && (digit_count > 1)) {
-    return std::nullopt;
+    return false;
   }
   const uint8_t *p = (const uint8_t *)start_digits;
   uint64_t i = 0;
@@ -52,19 +53,20 @@ parse_unsigned_bounded(const char *start_digits,
     p++;
   }
   if ((const char *)p != end_digits) {
-    return std::nullopt;
+    return false;
   }
   if (digit_count == 20) {
     if (start_digits[0] != uint8_t('1') || i <= uint64_t(INT64_MAX)) {
-      return std::nullopt;
+      return false;
     }
   }
-  return i;
+  value = i;
+  return true;
 }
 
-std::optional<uint64_t>
+bool
 parse_unsigned_bounded_reverse(const char *start_digits,
-                               const char *end_digits) noexcept {
+                               const char *end_digits, uint64_t& value) noexcept {
   size_t digit_count = size_t(end_digits - start_digits);
   const static uint64_t table[21][10] = {
       {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
@@ -112,26 +114,27 @@ parse_unsigned_bounded_reverse(const char *start_digits,
        4659767778871345152ULL, 14659767778871345152ULL, 6213023705161793536ULL,
        16213023705161793536ULL}};
   if ((digit_count == 0) || (digit_count > 20)) {
-    return std::nullopt;
+    return false;
   }
   if (('0' == *start_digits) && (digit_count > 1)) {
-    return std::nullopt;
+    return false;
   }
   const uint8_t *p = (const uint8_t *)end_digits;
   uint64_t i = 0;
   size_t counter = 0;
   while (counter < digit_count) {
     if ((p[-counter] - '0') > 9) {
-      return std::nullopt;
+      return false;
     }
     i += table[counter++][p[-counter] - '0'];
   }
   if (digit_count == 20) {
     if (start_digits[0] != uint8_t('1') || i <= uint64_t(INT64_MAX)) {
-      return std::nullopt;
+      return false;
     }
   }
-  return i;
+  value = i;
+  return true;
 }
 
 #include <x86intrin.h>
@@ -228,15 +231,15 @@ inline simd32x4 parse_8digit_integers_simd_reverse(simd8x32 base10_8bit) {
 }
 
 // Based on an initial design by John Keiser.
-std::optional<uint64_t>
+bool
 parse_unsigned_avx512(const char *start,
-                                         const char *end) noexcept {
+                                         const char *end, uint64_t& value) noexcept {
   size_t digit_count = size_t(end - start);
   if ((digit_count == 0) || (digit_count > 20)) {
-    return std::nullopt;
+    return false;
   }
   if ((digit_count > 1) && ('0' == *start)) {
-    return std::nullopt;
+    return false;
   }
   // Load bytes
   const simd8x32 ASCII_ZERO = _mm256_set1_epi8('0');
@@ -246,7 +249,7 @@ parse_unsigned_avx512(const char *start,
   simd8x32 base10_8bit = _mm256_maskz_sub_epi8(mask, in, ASCII_ZERO);
   auto nondigits = _mm256_mask_cmpgt_epu8_mask(mask, base10_8bit, NINE);
   if (nondigits) {
-    return std::nullopt;
+    return false;
   }
 
   // Convert bytes to a 32-digit base-10 integer by subtracting '0'.
@@ -255,20 +258,23 @@ parse_unsigned_avx512(const char *start,
   // Maximum 64-bit unsigned integer is 1844 67440737 09551615 (20 digits)
   uint64_t result_1digit = (uint64_t)_mm_extract_epi32(base10e8_32bit, 3);
   if ((mask & 0xffffff) == 0) {
-    return result_1digit;
+    value = result_1digit;
+    return true;
   }
 
   uint64_t middle_part = (uint64_t)_mm_extract_epi32(base10e8_32bit, 2);
 
   uint64_t result_2digit = result_1digit + 100000000 * middle_part;
   if ((mask & 0xffff) == 0) {
-    return result_2digit;
+    value = result_2digit;
+    return true;
   }
   uint64_t high_part = (uint64_t)_mm_extract_epi32(base10e8_32bit, 1);
 
   uint64_t result = result_2digit + 10000000000000000 * high_part;
   if (high_part > 1844 || result < result_2digit) {
-    return std::nullopt;
+    return false;
   }
-  return result;
+  value = result;
+  return true;
 }
