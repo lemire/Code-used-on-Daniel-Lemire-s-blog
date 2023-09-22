@@ -1,8 +1,8 @@
 all:   parse_integer.o unit benchmark benchmark-clang
 benchmark: benchmarks/benchmark.cpp parse_integer.o 
-	c++ -std=c++17 -O3 -Wall -o benchmark benchmarks/benchmark.cpp parse_integer.o  -Iinclude -Ibenchmarks
+	c++ -std=c++17 -O3 -Wall -o benchmark benchmarks/benchmark.cpp parse_integer.o  -Iinclude -Ibenchmarks -march=icelake-server
 benchmark-clang: benchmarks/benchmark.cpp parse_integer-clang.o 
-	c++ -std=c++17 -O3 -Wall -o benchmark-clang benchmarks/benchmark.cpp parse_integer-clang.o   -Iinclude -Ibenchmarks
+	c++ -std=c++17 -O3 -Wall -o benchmark-clang benchmarks/benchmark.cpp parse_integer-clang.o   -Iinclude -Ibenchmarks -march=icelake-server
 
 unit: tests/unit.cpp  parse_integer.o
 	c++ -std=c++17  -Wall -Wextra -O3 parse_integer.o  -o unit tests/unit.cpp -Iinclude
