@@ -4,6 +4,9 @@ The `parse_unsigned_avx512` function is between 1.5x (GCC) to 3x faster (clang) 
 It is based on an initial design by John Keiser.
 
 
+
+Note that this is without constant hoisting, we pay the full price of function calls.
+
 ```
 $ make
 $ ./benchmark-clang
