@@ -1,6 +1,6 @@
 This assumes a recent AVX-512 processor.
 
-The `parse_unsigned_avx512` function is between 1.5x (GCC) to 3x faster (clang) than conventional number parsing routines. Importantly, it does not 'cheat': it does not assume that the input is padded in any way. However, we require that you pass a pointer to the end of the digits.
+The `parse_unsigned_avx512` function is 2.8x faster than conventional number parsing routines. Importantly, it does not 'cheat': it does not assume that the input is padded in any way. However, we require that you pass a pointer to the end of the digits.
 It is based on an initial design by John Keiser.
 
 
