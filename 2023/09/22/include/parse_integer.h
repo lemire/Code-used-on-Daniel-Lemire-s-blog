@@ -20,5 +20,6 @@ parse_unsigned_bounded_reverse(const char *start_digits,
 // end_digits should be the *end* of the digit sequence.
 bool parse_unsigned_avx512(const char *start_digits,
                                               const char *end_digits, uint64_t& value) noexcept;
-
+bool parse_unsigned_avx512_perforated(const char *start_digits,
+                                              const char *end_digits, uint64_t& value) noexcept;
 #endif // PARSE_INTEGER_H

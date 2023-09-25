@@ -93,6 +93,73 @@ parse_unsigned_avx512_inline(const char *start,
   return true;
 }
 
+
+bool
+parse_unsigned_avx512_perforated_inline(const char *start,
+                                         const char *end, uint64_t& value) noexcept {
+  size_t digit_count = size_t(end - start);
+  if ((digit_count == 0) || (digit_count > 20)) {
+    return false;
+  }
+  if (digit_count == 1) {
+    value = *start ^ '0';
+    return true;
+  }
+  if ('0' == *start) {
+    return false;
+  }
+  
+  const simd8x32 ASCII_ZERO = _mm256_set1_epi8('0');
+  const simd8x32 NINE = _mm256_set1_epi8(9);
+  const simd8x32 BASE10E4_MUL = _mm256_set1_epi32(0x010a19fa);
+  const __m128i TENK = _mm_set1_epi64x(10000);
+  
+  if (digit_count <= 16) {
+    // if it's rare to engage with larger numbers, take this shortcut
+    uint16_t mask = uint16_t(0xffff << (16 - digit_count));
+    simd8x16 in = _mm_mask_loadu_epi8(_mm256_castsi256_si128(ASCII_ZERO), mask, end - 16);
+    simd8x16 base10_8bit = _mm_xor_si128(in, _mm256_castsi256_si128(ASCII_ZERO));
+    auto nondigits = _mm_cmpgt_epu8_mask(base10_8bit, _mm256_castsi256_si128(NINE));
+    if (nondigits) {
+      return false;
+    }
+    
+    simd32x4 base10e4_32bit = _mm_mask_slli_epi16(base10_8bit, 0x55, base10_8bit, 2);
+    base10e4_32bit = _mm_dpbusd_epi32(_mm_setzero_si128(), _mm256_castsi256_si128(BASE10E4_MUL), base10e4_32bit);
+    __m128i base10e8_64bit = _mm_madd52lo_epu64(_mm_srli_epi64(base10e4_32bit, 32), base10e4_32bit, TENK);
+    // alternative to above line: _mm_packus_epi32 + _mm_madd_epi16
+    value = (uint64_t)_mm_extract_epi32(base10e8_64bit, 2) + (uint64_t)_mm_cvtsi128_si32(base10e8_64bit) * 100'000'000;
+    return true;
+    
+  } else {
+    uint32_t mask = (0xfffff >> digit_count) ^ 0xfffff;
+    simd8x32 in = _mm256_mask_loadu_epi8(ASCII_ZERO, mask, end - 20);
+    simd8x32 base10_8bit = _mm256_xor_si256(in, ASCII_ZERO);
+    auto nondigits = _mm256_cmpgt_epu8_mask(base10_8bit, NINE);
+    if (nondigits) {
+      return false;
+    }
+    
+    __m256i base10e4_32bit = _mm256_mask_slli_epi16(base10_8bit, 0x555, base10_8bit, 2);
+    base10e4_32bit = _mm256_dpbusd_epi32(_mm256_setzero_si256(), BASE10E4_MUL, base10e4_32bit);
+    __m128i base10e8_64bit = _mm256_castsi256_si128(base10e4_32bit);
+    __m128i low10e8_64bit = _mm256_castsi256_si128(_mm256_permute4x64_epi64(base10e4_32bit, _MM_SHUFFLE(3,3,2,3)));
+    
+    base10e8_64bit = _mm_shuffle_epi8(base10e8_64bit, _mm_set_epi32(-1, 0x0d0c0908, -1, 0x05040100));
+    base10e8_64bit = _mm_madd_epi16(base10e8_64bit, _mm_set1_epi32(0x1'2710));
+    base10e8_64bit = _mm_madd52lo_epu64(low10e8_64bit, base10e8_64bit, TENK);
+    
+    uint64_t high_part = (uint64_t)_mm_cvtsi128_si64(base10e8_64bit);
+    uint64_t low_part = (uint64_t)_mm_extract_epi64(base10e8_64bit, 1);
+    if (high_part >= 184'467'440'000) {
+      if (high_part > 184'467'440'000 || low_part > 73'709'551'615) return false;
+    }
+    value = low_part + 100'000'000 * high_part;
+
+    return true;
+  }
+}
+
 void pretty_print(size_t volume, size_t bytes, std::string name,
                   event_aggregate agg) {
   printf("%-40s : ", name.c_str());
@@ -129,7 +196,15 @@ int main(int argc, char **argv) {
           }
         }
       }));
-
+  pretty_print(
+      numbers, volume, "parse_unsigned_avx512_perforated_inline", bench([&input, &sum]() {
+        uint64_t value;
+        for (const std::string &s : input) {
+          if (parse_unsigned_avx512_perforated_inline(s.data(), s.data() + s.size(), value)) {
+            sum += value;
+          }
+        }
+      }));
   pretty_print(
       numbers, volume, "parse_unsigned_avx512", bench([&input, &sum]() {
         uint64_t value;
@@ -139,7 +214,15 @@ int main(int argc, char **argv) {
           }
         }
       }));
-
+  pretty_print(
+      numbers, volume, "parse_unsigned_avx512_perforated", bench([&input, &sum]() {
+        uint64_t value;
+        for (const std::string &s : input) {
+          if (parse_unsigned_avx512_perforated(s.data(), s.data() + s.size(), value)) {
+            sum += value;
+          }
+        }
+      }));
   pretty_print(numbers, volume, "std::from_chars", bench([&input, &sum]() {
                  for (const std::string &s : input) {
                    uint64_t val;
