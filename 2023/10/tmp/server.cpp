@@ -1,12 +1,13 @@
 #include "httplib.h"
-
+using namespace httplib;
+#include <format>
 int main() {
-  using namespace httplib;
 
   Server svr;
 
-  svr.Get("/hi", [](const Request& req, Response& res) {
-    res.set_content("Hello World!", "text/plain");
+  svr.Post("/simple", [](const Request& req, Response& res) {
+    auto url = req.body;
+    res.set_content(std::format(R"({"parsed":"{}"})",req.body), "application/json");
   });
 
   // Match the request path against a regular expression
