@@ -1,18 +1,3 @@
-Running benchmarks
-
-- Install the dependencies
-```shell
-npm install
-```
-
-- Run the server
-
-```shell
-npm start
-```
-
-
-- Run the benchmark in another shell
 
   - Install autocannon (if needed)
 
@@ -23,11 +8,52 @@ npm start
   - Start the benchmark (URL parsing):
 
     ```shell
-    autocannon -m 'POST' -H 'content-type=application/json' -b '{ "url": "https://www.google.com/hello-world?query=search#value" }' http://localhost:3000/href
-    ```
-  - Start the benchmark (trivial string return):
-
-    ```shell
-    autocannon -m 'POST' -H 'content-type=application/json' -b '{ "url": "https://www.google.com/hello-world?query=search#value" }' http://localhost:3000/simple
+    autocannon -m 'GET' http://localhost:3000/simple
     ```
 
+
+# Sample results 
+
+Go:
+
+```
+┌─────────┬──────┬──────┬───────┬──────┬─────────┬─────────┬───────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev   │ Max   │
+├─────────┼──────┼──────┼───────┼──────┼─────────┼─────────┼───────┤
+│ Latency │ 0 ms │ 0 ms │ 0 ms  │ 1 ms │ 0.02 ms │ 0.15 ms │ 16 ms │
+└─────────┴──────┴──────┴───────┴──────┴─────────┴─────────┴───────┘
+┌───────────┬────────┬────────┬─────────┬─────────┬───────┬──────────┬────────┐
+│ Stat      │ 1%     │ 2.5%   │ 50%     │ 97.5%   │ Avg   │ Stdev    │ Min    │
+├───────────┼────────┼────────┼─────────┼─────────┼───────┼──────────┼────────┤
+│ Req/Sec   │ 28687  │ 28687  │ 34335   │ 59999   │ 40988 │ 10203.61 │ 28681  │
+├───────────┼────────┼────────┼─────────┼─────────┼───────┼──────────┼────────┤
+│ Bytes/Sec │ 3.5 MB │ 3.5 MB │ 4.19 MB │ 7.32 MB │ 5 MB  │ 1.24 MB  │ 3.5 MB │
+└───────────┴────────┴────────┴─────────┴─────────┴───────┴──────────┴────────┘
+
+Req/Bytes counts sampled once per second.
+# of samples: 10
+
+410k requests in 10.02s, 50 MB read
+```
+
+Node.js v16.20.0 (JavaScript)
+
+```
+┌─────────┬──────┬──────┬───────┬──────┬─────────┬─────────┬───────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg     │ Stdev   │ Max   │
+├─────────┼──────┼──────┼───────┼──────┼─────────┼─────────┼───────┤
+│ Latency │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │ 0.01 ms │ 0.16 ms │ 24 ms │
+└─────────┴──────┴──────┴───────┴──────┴─────────┴─────────┴───────┘
+┌───────────┬─────────┬─────────┬─────────┬─────────┬─────────┬──────────┬─────────┐
+│ Stat      │ 1%      │ 2.5%    │ 50%     │ 97.5%   │ Avg     │ Stdev    │ Min     │
+├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼──────────┼─────────┤
+│ Req/Sec   │ 18511   │ 18511   │ 53215   │ 54911   │ 47375.2 │ 11426.29 │ 18496   │
+├───────────┼─────────┼─────────┼─────────┼─────────┼─────────┼──────────┼─────────┤
+│ Bytes/Sec │ 3.13 MB │ 3.13 MB │ 8.99 MB │ 9.28 MB │ 8.01 MB │ 1.93 MB  │ 3.13 MB │
+└───────────┴─────────┴─────────┴─────────┴─────────┴─────────┴──────────┴─────────┘
+
+Req/Bytes counts sampled once per second.
+# of samples: 10
+
+474k requests in 10.02s, 80.1 MB read
+```
