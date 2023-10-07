@@ -12,4 +12,16 @@ npm start
 ```
 
 
+Alternatively:
 
+
+
+```shell
+bun install
+```
+
+- Run the server
+
+```shell
+bun run index.js
+```
