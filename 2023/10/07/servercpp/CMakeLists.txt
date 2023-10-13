@@ -9,6 +9,7 @@ set(CMAKE_C_STANDARD 11)
 # add executables
 add_executable(hello-libhv hello-libhv.cpp)
 add_executable(hello-cinatra hello-cinatra.cpp)
+add_executable(hello-h2o hello-h2o.cpp)
 
 # add dependencies
 # You can add CPM.cmake like so:
@@ -22,6 +23,14 @@ CPMAddPackage(
   GIT_TAG 2422dfe4fd48a668b94d01afb72a5bcbe0b28df8
   OPTIONS "ENABLE_SANITIZER OFF" "BUILD_UNIT_TESTS OFF" "BUILD_EXAMPLES OFF" "BUILD PRESS_TOOL OFF"
 )
+
+set(h2o_options)
+list(APPEND h2o_options "WITH_MRUBY OFF")
+CPMAddPackage(NAME h2o GIT_REPOSITORY https://github.com/h2o/h2o GIT_TAG v2.2.6 VERSION 2.2.6 OPTIONS "${h2o_options}")
+
+add_library(h2o-headers INTERFACE)
+target_include_directories(h2o-headers INTERFACE
+  $<BUILD_INTERFACE:${h2o_SOURCE_DIR}/include/>)
 
 add_library(cinatra-headers INTERFACE)
 target_include_directories(cinatra-headers INTERFACE
@@ -38,3 +47,4 @@ CPMAddPackage("gh:ithewei/libhv@1.3.1")
 # link dependencies
 target_link_libraries(hello-libhv hv fmt::fmt)
 target_link_libraries(hello-cinatra cinatra-headers fmt::fmt)
+target_link_libraries(hello-h2o libh2o-evloop h2o-headers fmt::fmt)
