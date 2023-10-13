@@ -3,18 +3,29 @@ cmake_minimum_required(VERSION 3.10)
 project(cpp_servers
   LANGUAGES CXX C
 )
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 11)
 
 # add executables
 add_executable(hello-libhv hello-libhv.cpp)
+add_executable(hello-cinatra hello-cinatra.cpp)
 
 # add dependencies
 # You can add CPM.cmake like so:
 # mkdir -p cmake
 # wget -O cmake/CPM.cmake https://github.com/cpm-cmake/CPM.cmake/releases/latest/download/get_cpm.cmake
 include(cmake/CPM.cmake)
+#CPMAddPackage("gh:qicosmos/cinatra#2422dfe4fd48a668b94d01afb72a5bcbe0b28df8")
+CPMAddPackage(
+  NAME cinatra
+  GITHUB_REPOSITORY "qicosmos/cinatra"
+  GIT_TAG 2422dfe4fd48a668b94d01afb72a5bcbe0b28df8
+  OPTIONS "ENABLE_SANITIZER OFF"
+)
 
+add_library(cinatra-headers INTERFACE)
+target_include_directories(cinatra-headers INTERFACE
+  $<BUILD_INTERFACE:${cinatra_SOURCE_DIR}/include/>)
 #CPMAddPackage(
 #  NAME lithium
 #  GITHUB_REPOSITORY "matt-42/lithium"
@@ -26,3 +37,4 @@ CPMAddPackage("gh:ithewei/libhv@1.3.1")
 
 # link dependencies
 target_link_libraries(hello-libhv hv fmt::fmt)
+target_link_libraries(hello-cinatra cinatra-headers fmt::fmt)
