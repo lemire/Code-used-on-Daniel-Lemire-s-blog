@@ -8,7 +8,6 @@ set(CMAKE_C_STANDARD 11)
 
 # add executables
 add_executable(hello-libhv hello-libhv.cpp)
-add_executable(hello-httplib hello-httplib.cpp)
 
 # add dependencies
 # You can add CPM.cmake like so:
@@ -27,4 +26,3 @@ CPMAddPackage("gh:ithewei/libhv@1.3.1")
 
 # link dependencies
 target_link_libraries(hello-libhv hv fmt::fmt)
-target_link_libraries(hello-httplib httplib fmt::fmt)
