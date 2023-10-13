@@ -10,12 +10,15 @@ set(CMAKE_C_STANDARD 11)
 add_executable(hello-libhv hello-libhv.cpp)
 add_executable(hello-cinatra hello-cinatra.cpp)
 add_executable(hello-h2o hello-h2o.cpp)
+add_executable(hello-facil hello-facil.cpp)
 
 # add dependencies
 # You can add CPM.cmake like so:
 # mkdir -p cmake
 # wget -O cmake/CPM.cmake https://github.com/cpm-cmake/CPM.cmake/releases/latest/download/get_cpm.cmake
 include(cmake/CPM.cmake)
+CPMAddPackage("gh:boazsegev/facil.io#0.7.6")
+
 #CPMAddPackage("gh:qicosmos/cinatra#2422dfe4fd48a668b94d01afb72a5bcbe0b28df8")
 CPMAddPackage(
   NAME cinatra
@@ -48,3 +51,4 @@ CPMAddPackage("gh:ithewei/libhv@1.3.1")
 target_link_libraries(hello-libhv hv fmt::fmt)
 target_link_libraries(hello-cinatra cinatra-headers fmt::fmt)
 target_link_libraries(hello-h2o libh2o-evloop h2o-headers fmt::fmt)
+target_link_libraries(hello-facil facil.io fmt::fmt)
