@@ -229,7 +229,7 @@ static int setup_ssl(const char *cert_file, const char *key_file, const char *ci
 int main(int argc, char **argv)
 {
     h2o_hostconf_t *hostconf;
-    h2o_access_log_filehandle_t *logfh = h2o_access_log_open_handle("/dev/stdout", NULL, H2O_LOGCONF_ESCAPE_APACHE);
+    h2o_access_log_filehandle_t *logfh = NULL; //h2o_access_log_open_handle("/dev/stdout", NULL, H2O_LOGCONF_ESCAPE_APACHE);
     h2o_pathconf_t *pathconf;
 
     signal(SIGPIPE, SIG_IGN);
