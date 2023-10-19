@@ -10,7 +10,7 @@ set(CMAKE_C_STANDARD 11)
 add_executable(hello-libhv hello-libhv.cpp)
 add_executable(hello-cinatra hello-cinatra.cpp)
 add_executable(hello-h2o hello-h2o.cpp)
-add_executable(hello-facil hello-facil.cpp)
+add_executable(hello-facil hello-facil.c)
 
 # add dependencies
 # You can add CPM.cmake like so:
