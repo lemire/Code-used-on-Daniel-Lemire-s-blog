@@ -18,7 +18,7 @@ std::string string_escape(const std::string_view file_path) {
 std::string find_string_escape(std::string_view str) {
   std::string escaped_file_path;
   size_t pos = 0;
-  while ((pos = str.find('&', pos)) != std::string_view::npos) {
+  while ((pos = str.find('%', pos)) != std::string_view::npos) {
     escaped_file_path += str.substr(0, pos + 1);
     escaped_file_path += "25";
     str = str.substr(pos + 1);
