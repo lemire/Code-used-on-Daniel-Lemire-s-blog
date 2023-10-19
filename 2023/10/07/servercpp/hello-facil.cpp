@@ -1,5 +1,6 @@
+extern "C" { 
 #include "http.h" /* the HTTP facil.io extension */
-
+}
 // We'll use this callback in `http_listen`, to handles HTTP requests
 void on_request(http_s *request);
 
