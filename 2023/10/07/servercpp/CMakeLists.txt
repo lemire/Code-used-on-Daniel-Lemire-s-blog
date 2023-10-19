@@ -43,6 +43,7 @@ target_include_directories(cinatra-headers INTERFACE
 #  GITHUB_REPOSITORY "matt-42/lithium"
 #  GIT_TAG 9ce90b
 #)
+CPMAddPackage("gh:the-moisrex/webpp#fe12840")
 CPMAddPackage("gh:fmtlib/fmt#7.1.3")
 CPMAddPackage("gh:ithewei/libhv@1.3.1")
 #CPMAddPackage("gh:yhirose/cpp-httplib@0.14.1")

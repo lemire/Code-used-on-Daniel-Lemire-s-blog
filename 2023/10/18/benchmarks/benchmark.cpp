@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
   size_t sum = 0;
   pretty_print(input.size(), volume, "find_string_escape", bench([&input, &sum]() {
                  for (const std::string &s : input) {
-                   sum += string_escape(s).size();
+                   sum += find_string_escape(s).size();
                  }
                }));
   pretty_print(input.size(), volume, "string_escape", bench([&input, &sum]() {
