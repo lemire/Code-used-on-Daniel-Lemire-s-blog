@@ -30,6 +30,14 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
 
 int main(int argc, char **argv) {
   std::vector<std::string> input;
+  bool adversarial = false;
+  if(argc > 1) {
+    if(std::string_view(argv[1])=="--adversarial") {
+      adversarial = true;
+      printf("All characters become '%%'.\n");
+    }
+  }
+  
 
   std::ifstream fs("isaacs_files.txt");
   if (!fs) {
@@ -38,6 +46,9 @@ int main(int argc, char **argv) {
   }
   size_t volume = 0;
   for (std::string line; std::getline(fs, line);) {
+    if(adversarial) {
+      std::fill(line.begin(), line.end(), '%');
+    }
     input.push_back(line);
     volume += line.size();
   }
@@ -46,6 +57,11 @@ int main(int argc, char **argv) {
   std::cout << "volume " << volume << " bytes" << std::endl;
 
   size_t sum = 0;
+  pretty_print(input.size(), volume, "find_string_escape_node", bench([&input, &sum]() {
+                 for (const std::string &s : input) {
+                   sum += find_string_escape_node(s).size();
+                 }
+               }));
   pretty_print(input.size(), volume, "find_string_escape", bench([&input, &sum]() {
                  for (const std::string &s : input) {
                    sum += find_string_escape(s).size();
