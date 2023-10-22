@@ -14,7 +14,7 @@ bool basic_test() {
   printf("basic_test\n");
   std::string input = "fdsfds%fdsfds";
   std::string expected = "fdsfds%25fdsfds";
-  if (find_string_escape(input) == expected && string_escape(input) == expected && stream_escape(input) == expected) {
+  if (find_string_escape_node(input) == expected && string_escape(input) == expected && stream_escape(input) == expected) {
     printf("SUCCESS\n");
     return true;
   }

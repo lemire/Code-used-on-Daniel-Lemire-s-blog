@@ -34,16 +34,26 @@ std::string find_string_escape_node(std::string_view file_path) {
   return escaped_file_path;
 }
 
-std::string find_string_escape(std::string_view str) {
-  std::string escaped_file_path;
-  size_t pos = 0;
-  while ((pos = str.find('%', pos)) != std::string_view::npos) {
-    escaped_file_path += str.substr(0, pos + 1);
-    escaped_file_path += "25";
-    str = str.substr(pos + 1);
-    pos = 0;
+
+
+// designed to look like node pull request with character counting
+std::string find_string_escape_node_count(std::string_view file_path) {
+  // Avoid unnecessary allocations.
+  size_t pos = file_path.empty() ? std::string_view::npos : file_path.find('%');
+  if (pos == std::string_view::npos) {
+    return std::string(file_path);
   }
-  escaped_file_path += str;
+  // Escape '%' characters to a temporary string.
+  std::string escaped_file_path;
+  size_t count = (size_t)std::count_if(file_path.begin(), file_path.end(),[]( char c ){ return c =='%'; });
+  escaped_file_path.reserve(file_path.size() + count * 2);
+  do {
+    escaped_file_path += file_path.substr(0, pos + 1);
+    escaped_file_path += "25";
+    file_path = file_path.substr(pos + 1);
+    pos = file_path.empty() ? std::string_view::npos : file_path.find('%');
+  } while (pos != std::string_view::npos);
+  escaped_file_path += file_path;
   return escaped_file_path;
 }
 

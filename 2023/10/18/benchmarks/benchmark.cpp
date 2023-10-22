@@ -62,9 +62,9 @@ int main(int argc, char **argv) {
                    sum += find_string_escape_node(s).size();
                  }
                }));
-  pretty_print(input.size(), volume, "find_string_escape", bench([&input, &sum]() {
+  pretty_print(input.size(), volume, "find_string_escape_node_count", bench([&input, &sum]() {
                  for (const std::string &s : input) {
-                   sum += find_string_escape(s).size();
+                   sum += find_string_escape_node_count(s).size();
                  }
                }));
   pretty_print(input.size(), volume, "string_escape", bench([&input, &sum]() {
