@@ -29,6 +29,12 @@ __attribute__((noinline)) std::string grab_static_string(size_t idx) {
   return options[idx];
 }
 
+__attribute__((noinline)) const std::string& grab_static_string_ref(size_t idx) {
+  const static std::string options[] = {"https", "http", "ftp",   "file",
+                                        "ws",    "wss",  "httpr", "filer"};
+  return options[idx];
+}
+
 __attribute__((noinline)) std::string_view grab_static(size_t idx) {
   const static std::string_view options[] = {"https", "http", "ftp",   "file",
                                              "ws",    "wss",  "httpr", "filer"};
@@ -43,8 +49,8 @@ __attribute__((noinline)) std::string_view grab(size_t idx) {
 
 volatile size_t counter = 0;
 
-std::tuple<double, double, double, double> simulation(const size_t N) {
-  double t1, t2, t3, t4;
+std::tuple<double, double, double, double, double> simulation(const size_t N) {
+  double t1, t2, t3, t4, t5;
 
   {
 
@@ -82,7 +88,18 @@ std::tuple<double, double, double, double> simulation(const size_t N) {
     uint64_t finish = nano();
     t4 = double(finish - start) / N;
   }
-  return {t1, t2, t3, t4};
+
+  {
+
+    uint64_t start = nano();
+    for (size_t i = 0; i < N; i++) {
+      counter += grab_static_string_ref(i % 8).size();
+    }
+    uint64_t finish = nano();
+    t5 = double(finish - start) / N;
+  }
+  
+  return {t1, t2, t3, t4, t5};
 }
 
 void demo() {
@@ -90,23 +107,25 @@ void demo() {
   double avg2 = 0;
   double avg3 = 0;
   double avg4 = 0;
+  double avg5 = 0;
 
   size_t times = 100;
 
   for (size_t i = 0; i < times; i++) {
-    auto [t1, t2, t3, t4] = simulation(10000);
+    auto [t1, t2, t3, t4, t5] = simulation(10000);
     avg1 += t1;
     avg2 += t2;
     avg3 += t3;
     avg4 += t4;
+    avg5 += t5;
   }
   avg1 /= times;
   avg2 /= times;
   avg3 /= times;
-
   avg4 /= times;
+  avg5 /= times;
 
-  std::cout << avg1 << " " << avg2 << " " << avg3 << " " << avg4 << std::endl;
+  std::cout << avg1 << " " << avg2 << " " << avg3 << " " << avg4 << " " << avg5 << std::endl;
 }
 
 int main() {
