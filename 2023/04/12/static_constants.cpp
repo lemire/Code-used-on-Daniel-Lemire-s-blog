@@ -131,7 +131,7 @@ void demo() {
 int main() {
   puts("We report ns/string_view (first constexpr static, then const "
        "static).\n");
-  for (size_t i = 0; i < 10; i++) {
+  for (size_t i = 0; i < 20; i++) {
     demo();
   }
   printf("bogus: %zu \n", counter);
