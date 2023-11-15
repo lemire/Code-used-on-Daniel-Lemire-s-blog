@@ -81,6 +81,8 @@
 
 bool sse_type(const char *type_string, uint16_t *type);
 bool sse_upper_type(const char *type_string, uint16_t *type);
+bool swar_upper_len(const char *str, size_t len, uint16_t *type);
+bool sse_upper_len(const char *str, size_t len, uint16_t *type);
 bool sse_table(const char *type_string, uint16_t *type);
 size_t sse_length(const char *type_string);
 #endif // SSE_TYPE_H
