@@ -1875,6 +1875,20 @@ int main() {
                    sum += t;
                  }
                }));
+  pretty_print(N, bytes, "swar_upper_len", bench([&test_data, &sum]() {
+                 for (const std::string &s : test_data) {
+                   uint16_t t;
+                   swar_upper_len(s.data(), s.length(), &t); // should check error
+                   sum += t;
+                 }
+               }));
+  pretty_print(N, bytes, "sse_upper_len", bench([&test_data, &sum]() {
+                 for (const std::string &s : test_data) {
+                   uint16_t t;
+                   sse_upper_len(s.data(), s.length(), &t); // should check error
+                   sum += t;
+                 }
+               }));
   pretty_print(N, bytes, "sse_table", bench([&test_data, &sum]() {
                  for (const std::string &s : test_data) {
                    uint16_t t;

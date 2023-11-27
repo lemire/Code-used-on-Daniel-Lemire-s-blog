@@ -48,6 +48,7 @@ bool simple_test() {
     std::string main = strings[i];
     std::cout << "testing: " << main << std::endl;
 
+    size_t n = main.length();
     main.resize(16);
     uint16_t type;
 
@@ -60,6 +61,22 @@ bool simple_test() {
       return false;
     }
     if (!sse_upper_type(main.data(), &type)) {
+      printf("expected success\n");
+      return false;
+    }
+    if (type != expected[i]) {
+      printf("bad type\n");
+      return false;
+    }
+    if (!swar_upper_len(main.data(), n, &type)) {
+      printf("expected success\n");
+      return false;
+    }
+    if (type != expected[i]) {
+      printf("bad type\n");
+      return false;
+    }
+    if (!sse_upper_len(main.data(), main.length(), &type)) {
       printf("expected success\n");
       return false;
     }
