@@ -67,7 +67,7 @@ int parse_uint8_naive(const char *str, size_t len, uint8_t *num) {
   *num = (uint8_t)n;
   return n < 256 && len && len < 4;
 }
-// based on parse_uint8_fastswar optimized by Perforated Blob
+// based on parse_uint8_fastswar optimized by Perforated Bob
 int parse_uint8_fastswar_bob(const char *str, size_t len, uint8_t *num) {
   union {
     uint8_t as_str[4];
