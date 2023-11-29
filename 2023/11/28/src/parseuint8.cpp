@@ -24,9 +24,9 @@ int parse_uint8_swar(const char *str, size_t len, uint8_t *num) {
   *num = (uint8_t)y;
   return (digits.as_int & 0xf0f0f0f0) == 0 && y < 256 && len != 0 && len < 4;
 }
-
 // based on parse_uint8_swar by Jeroen Koekkoek, adapted by Daniel Lemire
 int parse_uint8_fastswar(const char *str, size_t len, uint8_t *num) {
+  if(len == 0 || len > 3) { return 0; }
   union {
     uint8_t as_str[4];
     uint32_t as_int;
@@ -36,15 +36,15 @@ int parse_uint8_fastswar(const char *str, size_t len, uint8_t *num) {
   // flip 0x30, detect non-digits
   digits.as_int ^= 0x30303030lu;
   // shift off trash bytes, technically undefined behaviour when ((4 - len) * 8) is not
-  // in [0,32)
+  // in [0,32) prior to C17 / C++14.
   digits.as_int <<= ((4 - len) * 8);
   // check all digits
   uint32_t all_digits = ((digits.as_int & 0xf0f0f0f0) |
                          ((0x76767676 + digits.as_int) & 0x80808080)) == 0;
   *num = (uint8_t)((UINT64_C(0x640a0100) * digits.as_int) >> 32);
-  return all_digits & ((__builtin_bswap32(digits.as_int) <= 0x020505)) &
-         ((len != 0)) & ((len < 4));
+  return all_digits & ((__builtin_bswap32(digits.as_int) <= 0x020505));
 }
+
 int parse_uint8_fromchars(const char *str, size_t len, uint8_t *num) {
   auto [p, ec] = std::from_chars(str, str + len, *num);
   return (ec == std::errc());

@@ -70,8 +70,6 @@ int main(int argc, char **argv) {
     std::cout << "volume " << volume << " bytes" << std::endl;
 
     size_t sum = 0;
-
-
     pretty_print(
         input.size(), volume, "parse_uint8_fastswar", bench([&input, &sum]() {
           for (const std::string &s : input) {
