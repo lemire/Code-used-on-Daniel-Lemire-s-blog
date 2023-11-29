@@ -70,15 +70,7 @@ int main(int argc, char **argv) {
     std::cout << "volume " << volume << " bytes" << std::endl;
 
     size_t sum = 0;
-    pretty_print(
-        input.size(), volume, "parse_uint8_swar", bench([&input, &sum]() {
-          for (const std::string &s : input) {
-            uint8_t result;
-            parse_uint8_swar(s.data(), s.size(),
-                             &result); // technically, should check error
-            sum += result;
-          }
-        }));
+
 
     pretty_print(
         input.size(), volume, "parse_uint8_fastswar", bench([&input, &sum]() {
@@ -86,6 +78,15 @@ int main(int argc, char **argv) {
             uint8_t result;
             parse_uint8_fastswar(s.data(), s.size(),
                                  &result); // technically, should check error
+            sum += result;
+          }
+        }));
+    pretty_print(
+        input.size(), volume, "parse_uint8_swar", bench([&input, &sum]() {
+          for (const std::string &s : input) {
+            uint8_t result;
+            parse_uint8_swar(s.data(), s.size(),
+                             &result); // technically, should check error
             sum += result;
           }
         }));

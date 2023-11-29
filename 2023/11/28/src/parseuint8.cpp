@@ -36,10 +36,13 @@ int parse_uint8_fastswar(const char *str, size_t len, uint8_t *num) {
   // flip 0x30, detect non-digits
   digits.as_int ^= 0x30303030lu;
   // shift off trash bytes
-  digits.as_int <<= (4 - (len & 0x3)) * 8;
+  digits.as_int <<= ((4 - len) * 8);
+  // check all digits
+  uint32_t all_digits = ((digits.as_int & 0xf0f0f0f0) |
+                         ((0x76767676 + digits.as_int) & 0x80808080)) == 0;
   *num = (uint8_t)((UINT64_C(0x640a0100) * digits.as_int) >> 32);
-  return (digits.as_int & 0xf0f0f0f0) == 0 &&
-         __builtin_bswap32(digits.as_int) <= 0x020505 && len != 0 && len < 4;
+  return all_digits & ((__builtin_bswap32(digits.as_int) <= 0x020505)) &
+         ((len != 0)) & ((len < 4));
 }
 int parse_uint8_fromchars(const char *str, size_t len, uint8_t *num) {
   auto [p, ec] = std::from_chars(str, str + len, *num);

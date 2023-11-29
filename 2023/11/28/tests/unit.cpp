@@ -65,6 +65,29 @@ bool basic_test() {
       return false;
     }
   }
+  for (uint i = 0; i <= 0xffffff; i++) {
+    int r1, r2;
+    uint8_t result;
+    r1 = parse_uint8_fastswar((const char*)&i, 1, &result);
+    r2 = parse_uint8_naive((const char*)&i, 1, &result);
+    if(r1 != r2) {
+      printf("mismatch1 %d\n", i);
+      return false;      
+    }
+    r1 = parse_uint8_fastswar((const char*)&i, 2, &result);
+    r2 = parse_uint8_naive((const char*)&i, 2, &result);
+    if(r1 != r2) {
+      printf("mismatch2 %d\n", i);
+      return false;      
+    }
+    r1 = parse_uint8_fastswar((const char*)&i, 3, &result);
+    r2 = parse_uint8_naive((const char*)&i, 3, &result);
+    if(r1 != r2) {
+      printf("mismatch3 %d\n", i);
+      return false;      
+    }
+  }
+
   printf("SUCCESS\n");
   return true;
 }
