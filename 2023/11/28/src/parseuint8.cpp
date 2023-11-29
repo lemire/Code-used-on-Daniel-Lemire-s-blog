@@ -35,7 +35,8 @@ int parse_uint8_fastswar(const char *str, size_t len, uint8_t *num) {
   memcpy(&digits.as_int, str, sizeof(digits));
   // flip 0x30, detect non-digits
   digits.as_int ^= 0x30303030lu;
-  // shift off trash bytes
+  // shift off trash bytes, technically undefined behaviour when ((4 - len) * 8) is not
+  // in [0,32)
   digits.as_int <<= ((4 - len) * 8);
   // check all digits
   uint32_t all_digits = ((digits.as_int & 0xf0f0f0f0) |
