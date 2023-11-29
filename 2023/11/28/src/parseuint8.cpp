@@ -25,7 +25,7 @@ int parse_uint8_swar(const char *str, size_t len, uint8_t *num) {
   return (digits.as_int & 0xf0f0f0f0) == 0 && y < 256 && len != 0 && len < 4;
 }
 // based on parse_uint8_swar by Jeroen Koekkoek, fixed and optimized by Daniel
-// Lemire
+// Lemire, with optimizations by Jean-Marc Bourguet
 int parse_uint8_fastswar(const char *str, size_t len, uint8_t *num) {
   if (len == 0 || len > 3) {
     return 0;
