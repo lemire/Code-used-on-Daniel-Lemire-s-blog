@@ -39,9 +39,8 @@ int parse_uint8_fastswar(const char *str, size_t len, uint8_t *num) {
   // in [0,32) prior to C17 / C++14.
   digits.as_int <<= ((4 - len) * 8);
   // check all digits
-  uint32_t all_digits = ((digits.as_int & 0xf0f0f0f0) |
-                         ((0x76767676 + digits.as_int) & 0x80808080)) == 0;
-  *num = (uint8_t)((UINT64_C(0x640a0100) * digits.as_int) >> 32);
+  uint32_t all_digits = ((digits.as_int | (0x06060606 + digits.as_int)) & 0xF0F0F0F0) == 0;
+  *num = (uint8_t)((0x640a01 * digits.as_int) >> 24);
   return all_digits & ((__builtin_bswap32(digits.as_int) <= 0x020505));
 }
 
