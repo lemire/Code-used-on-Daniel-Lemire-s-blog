@@ -13,6 +13,7 @@
 // parse_uint8_swar is not correct and left as a reference, reads 4 bytes at str with every call
 int parse_uint8_swar(const char *str, size_t len, uint8_t *num);
 // parse_uint8_fastswar is correct and fast, reads 4 bytes at str with every call
+// Assumes a little-endian system which is almost surely correct unless you own a mainframe computer from IBM
 int parse_uint8_fastswar(const char *str, size_t len, uint8_t *num);
 // parse_uint8_fromchars is correct 
 int parse_uint8_fromchars(const char *str, size_t len, uint8_t *num);
