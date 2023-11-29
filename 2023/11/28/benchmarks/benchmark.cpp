@@ -29,76 +29,83 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
 }
 
 int main(int argc, char **argv) {
-  std::vector<std::string> input;
+  srandom(1234);
+  for (size_t z = 0; z < 2; z++) {
+    std::vector<std::string> input;
 
-  size_t volume = 0;
-  for (size_t i = 0; i < 10000; i++) {
-    uint8_t val = random() % 256;
-    auto s = std::to_string(val);
-    s.reserve(4);
-    input.push_back(s);
-    volume += s.size();
-    uint8_t result;
-    parse_uint8_swar(s.data(), s.size(), &result);
-    if (result != val) {
-      printf("parse_uint8_swar %d %d\n", result, val);
-      abort();
+    bool randomflag = (z == 0);
+    printf("random: %d\n", randomflag);
+
+    size_t volume = 0;
+    for (size_t i = 0; i < 20000; i++) {
+
+      uint8_t val = randomflag ? (random() % 256): (i % 256);
+      auto s = std::to_string(val);
+      s.reserve(4);
+      input.push_back(s);
+      volume += s.size();
+      uint8_t result;
+      parse_uint8_swar(s.data(), s.size(), &result);
+      if (result != val) {
+        printf("parse_uint8_swar %d %d\n", result, val);
+        abort();
+      }
+      parse_uint8_fastswar(s.data(), s.size(), &result);
+      if (result != val) {
+        printf("parse_uint8_fastswar %d %d\n", result, val);
+        abort();
+      }
+      parse_uint8_fromchars(s.data(), s.size(), &result);
+      if (result != val) {
+        printf("parse_uint8_fromchars %d %d\n", result, val);
+        abort();
+      }
+      parse_uint8_naive(s.data(), s.size(), &result);
+      if (result != val) {
+        printf("parse_uint8_naive %d %d\n", result, val);
+        abort();
+      }
     }
-    parse_uint8_fastswar(s.data(), s.size(), &result);
-    if (result != val) {
-      printf("parse_uint8_fastswar %d %d\n", result, val);
-      abort();
-    }
-    parse_uint8_fromchars(s.data(), s.size(), &result);
-    if (result != val) {
-      printf("parse_uint8_fromchars %d %d\n", result, val);
-      abort();
-    }
-    parse_uint8_naive(s.data(), s.size(), &result);
-    if (result != val) {
-      printf("parse_uint8_naive %d %d\n", result, val);
-      abort();
-    }
+
+    std::cout << "volume " << volume << " bytes" << std::endl;
+
+    size_t sum = 0;
+    pretty_print(
+        input.size(), volume, "parse_uint8_swar", bench([&input, &sum]() {
+          for (const std::string &s : input) {
+            uint8_t result;
+            parse_uint8_swar(s.data(), s.size(),
+                             &result); // technically, should check error
+            sum += result;
+          }
+        }));
+
+    pretty_print(
+        input.size(), volume, "parse_uint8_fastswar", bench([&input, &sum]() {
+          for (const std::string &s : input) {
+            uint8_t result;
+            parse_uint8_fastswar(s.data(), s.size(),
+                                 &result); // technically, should check error
+            sum += result;
+          }
+        }));
+    pretty_print(
+        input.size(), volume, "parse_uint8_fromchars", bench([&input, &sum]() {
+          for (const std::string &s : input) {
+            uint8_t result;
+            parse_uint8_fromchars(s.data(), s.size(),
+                                  &result); // technically, should check error
+            sum += result;
+          }
+        }));
+    pretty_print(
+        input.size(), volume, "parse_uint8_naive", bench([&input, &sum]() {
+          for (const std::string &s : input) {
+            uint8_t result;
+            parse_uint8_naive(s.data(), s.size(),
+                              &result); // technically, should check error
+            sum += result;
+          }
+        }));
   }
-
-  std::cout << "volume " << volume << " bytes" << std::endl;
-
-  size_t sum = 0;
-  pretty_print(input.size(), volume, "parse_uint8_swar",
-               bench([&input, &sum]() {
-                 for (const std::string &s : input) {
-                   uint8_t result;
-                   parse_uint8_swar(s.data(), s.size(),
-                                    &result); // technically, should check error
-                   sum += result;
-                 }
-               }));
-
-  pretty_print(
-      input.size(), volume, "parse_uint8_fastswar", bench([&input, &sum]() {
-        for (const std::string &s : input) {
-          uint8_t result;
-          parse_uint8_fastswar(s.data(), s.size(),
-                            &result); // technically, should check error
-          sum += result;
-        }
-      }));
-  pretty_print(
-      input.size(), volume, "parse_uint8_fromchars", bench([&input, &sum]() {
-        for (const std::string &s : input) {
-          uint8_t result;
-          parse_uint8_fromchars(s.data(), s.size(),
-                                &result); // technically, should check error
-          sum += result;
-        }
-      }));
-  pretty_print(
-      input.size(), volume, "parse_uint8_naive", bench([&input, &sum]() {
-        for (const std::string &s : input) {
-          uint8_t result;
-          parse_uint8_naive(s.data(), s.size(),
-                            &result); // technically, should check error
-          sum += result;
-        }
-      }));
 }

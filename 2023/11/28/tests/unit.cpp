@@ -38,6 +38,33 @@ bool basic_test() {
       return false;
     }
   }
+
+  for (uint i = 256; i <= 1024; i++) {
+    std::string input = std::to_string(i);
+    input.reserve(4);
+    int r;
+    uint8_t result;
+    r = parse_uint8_swar(input.data(), input.size(), &result);
+    if (r) {
+      printf("swar FAILURE %d\n", i);
+      return false;
+    }
+    r = parse_uint8_fastswar(input.data(), input.size(), &result);
+    if (r) {
+      printf("swar2 FAILURE %d\n", i);
+      return false;
+    }
+    r = parse_uint8_fromchars(input.data(), input.size(), &result);
+    if (r) {
+      printf("fromchars FAILURE %d\n", i);
+      return false;
+    }
+    r = parse_uint8_naive(input.data(), input.size(), &result);
+    if (r) {
+      printf("naive FAILURE %d\n", i);
+      return false;
+    }
+  }
   printf("SUCCESS\n");
   return true;
 }

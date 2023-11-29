@@ -2,9 +2,9 @@
 
 #include <charconv>
 #include <cstddef>
-#include <cstring>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 
 // credit: Jeroen Koekkoek
 int parse_uint8_swar(const char *str, size_t len, uint8_t *num) {
@@ -37,9 +37,9 @@ int parse_uint8_fastswar(const char *str, size_t len, uint8_t *num) {
   digits.as_int ^= 0x30303030lu;
   // shift off trash bytes
   digits.as_int <<= (4 - (len & 0x3)) * 8;
-  uint32_t y = ((UINT64_C(0x640a0100) * digits.as_int)>>32)&0xff;
-  *num = (uint8_t)(y);
-  return (digits.as_int & 0xf0f0f0f0) == 0 && y < 256 && len != 0 && len < 4;
+  *num = (uint8_t)((UINT64_C(0x640a0100) * digits.as_int) >> 32);
+  return (digits.as_int & 0xf0f0f0f0) == 0 &&
+         __builtin_bswap32(digits.as_int) <= 0x020505 && len != 0 && len < 4;
 }
 int parse_uint8_fromchars(const char *str, size_t len, uint8_t *num) {
   auto [p, ec] = std::from_chars(str, str + len, *num);
