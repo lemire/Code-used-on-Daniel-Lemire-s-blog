@@ -27,6 +27,11 @@ bool basic_test() {
       printf("swar2 FAILURE %d\n", i);
       return false;
     }
+    parse_uint8_fastswar_bob(input.data(), input.size(), &result);
+    if (result != expected) {
+      printf("swar2 FAILURE %d\n", i);
+      return false;
+    }
     parse_uint8_fromchars(input.data(), input.size(), &result);
     if (result != expected) {
       printf("fromchars FAILURE %d\n", i);
@@ -52,6 +57,11 @@ bool basic_test() {
     r = parse_uint8_fastswar(input.data(), input.size(), &result);
     if (r) {
       printf("swar2 FAILURE %d\n", i);
+      return false;
+    }
+    r = parse_uint8_fastswar_bob(input.data(), input.size(), &result);
+    if (r) {
+      printf("swarbob FAILURE %d\n", i);
       return false;
     }
     r = parse_uint8_fromchars(input.data(), input.size(), &result);
@@ -81,6 +91,25 @@ bool basic_test() {
       return false;      
     }
     r1 = parse_uint8_fastswar((const char*)&i, 3, &result);
+    r2 = parse_uint8_naive((const char*)&i, 3, &result);
+    if(r1 != r2) {
+      printf("mismatch3 %d\n", i);
+      return false;      
+    }
+
+    r1 = parse_uint8_fastswar_bob((const char*)&i, 1, &result);
+    r2 = parse_uint8_naive((const char*)&i, 1, &result);
+    if(r1 != r2) {
+      printf("mismatch1 %d\n", i);
+      return false;      
+    }
+    r1 = parse_uint8_fastswar_bob((const char*)&i, 2, &result);
+    r2 = parse_uint8_naive((const char*)&i, 2, &result);
+    if(r1 != r2) {
+      printf("mismatch2 %d\n", i);
+      return false;      
+    }
+    r1 = parse_uint8_fastswar_bob((const char*)&i, 3, &result);
     r2 = parse_uint8_naive((const char*)&i, 3, &result);
     if(r1 != r2) {
       printf("mismatch3 %d\n", i);

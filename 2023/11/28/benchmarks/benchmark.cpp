@@ -71,6 +71,15 @@ int main(int argc, char **argv) {
 
     size_t sum = 0;
     pretty_print(
+        input.size(), volume, "parse_uint8_fastswar_bob", bench([&input, &sum]() {
+          for (const std::string &s : input) {
+            uint8_t result;
+            parse_uint8_fastswar_bob(s.data(), s.size(),
+                                 &result); // technically, should check error
+            sum += result;
+          }
+        }));
+     pretty_print(
         input.size(), volume, "parse_uint8_fastswar", bench([&input, &sum]() {
           for (const std::string &s : input) {
             uint8_t result;

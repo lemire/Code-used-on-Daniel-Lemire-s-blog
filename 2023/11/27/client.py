@@ -5,10 +5,9 @@ import time
 
 async def client1():
     async with websockets.connect('ws://localhost:8080') as websocket:
-        message = 'client 1!'
         round_trips = 0
         start = time.time_ns()
-        await websocket.send(message)
+        await websocket.send('allo')
         while True:
             response = await websocket.recv()
             round_trips += 1
@@ -20,10 +19,9 @@ async def client1():
 
 async def client2():
     async with websockets.connect('ws://localhost:8080') as websocket:
-        message = 'client 2!'
         while True:
             response = await websocket.recv()
-            await websocket.send(message)
+            await websocket.send('allo!')
 
 async def main():
     task1 = asyncio.create_task(client1())
