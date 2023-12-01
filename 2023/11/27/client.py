@@ -15,7 +15,7 @@ async def client1():
                 end = time.time_ns()
                 duration = (end - start)/1000000000
                 print("rate: ",round_trips/duration," round trips per second")
-            await websocket.send(message)
+            await websocket.send('allo')
 
 async def client2():
     async with websockets.connect('ws://localhost:8080') as websocket:
