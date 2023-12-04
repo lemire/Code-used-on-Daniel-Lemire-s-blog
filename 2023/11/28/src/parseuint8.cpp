@@ -124,6 +124,7 @@ int parse_uint8_lutold(const char *str, size_t len, uint8_t *num) {
   return (result >> 8) == len;
 }
 
+// credit: Nick Powell, modified by D. Lemire
 int parse_uint8_lut(const char *str, size_t len, uint8_t *num) {
   if (len > 3)
     return 0;
