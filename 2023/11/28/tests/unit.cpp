@@ -42,7 +42,7 @@ bool basic_test() {
       printf("naive FAILURE %d\n", i);
       return false;
     }
-    parse_uint8_naive_md(input.data(), input.size(), &result);
+    parse_uint8_lut(input.data(), input.size(), &result);
     if (result != expected) {
       printf("naive FAILURE %d\n", i);
       return false;
@@ -79,7 +79,7 @@ bool basic_test() {
       printf("naive FAILURE %d\n", i);
       return false;
     }
-    r = parse_uint8_naive_md(input.data(), input.size(), &result);
+    r = parse_uint8_lut(input.data(), input.size(), &result);
     if (r) {
       printf("naive FAILURE %d\n", i);
       return false;
@@ -88,63 +88,61 @@ bool basic_test() {
   for (uint i = 0; i <= 0xffffff; i++) {
     int r1, r2;
     uint8_t result;
-    r1 = parse_uint8_fastswar((const char*)&i, 1, &result);
-    r2 = parse_uint8_naive((const char*)&i, 1, &result);
-    if(r1 != r2) {
+    r1 = parse_uint8_fastswar((const char *)&i, 1, &result);
+    r2 = parse_uint8_naive((const char *)&i, 1, &result);
+    if (r1 != r2) {
       printf("mismatch1 %d\n", i);
-      return false;      
+      return false;
     }
-    r1 = parse_uint8_fastswar((const char*)&i, 2, &result);
-    r2 = parse_uint8_naive((const char*)&i, 2, &result);
-    if(r1 != r2) {
+    r1 = parse_uint8_fastswar((const char *)&i, 2, &result);
+    r2 = parse_uint8_naive((const char *)&i, 2, &result);
+    if (r1 != r2) {
       printf("mismatch2 %d\n", i);
-      return false;      
+      return false;
     }
-    r1 = parse_uint8_fastswar((const char*)&i, 3, &result);
-    r2 = parse_uint8_naive((const char*)&i, 3, &result);
-    if(r1 != r2) {
+    r1 = parse_uint8_fastswar((const char *)&i, 3, &result);
+    r2 = parse_uint8_naive((const char *)&i, 3, &result);
+    if (r1 != r2) {
       printf("mismatch3 %d\n", i);
-      return false;      
+      return false;
     }
 
-    r1 = parse_uint8_fastswar_bob((const char*)&i, 1, &result);
-    r2 = parse_uint8_naive((const char*)&i, 1, &result);
-    if(r1 != r2) {
+    r1 = parse_uint8_fastswar_bob((const char *)&i, 1, &result);
+    r2 = parse_uint8_naive((const char *)&i, 1, &result);
+    if (r1 != r2) {
       printf("mismatch1 %d\n", i);
-      return false;      
+      return false;
     }
-    r1 = parse_uint8_fastswar_bob((const char*)&i, 2, &result);
-    r2 = parse_uint8_naive((const char*)&i, 2, &result);
-    if(r1 != r2) {
+    r1 = parse_uint8_fastswar_bob((const char *)&i, 2, &result);
+    r2 = parse_uint8_naive((const char *)&i, 2, &result);
+    if (r1 != r2) {
       printf("mismatch2 %d\n", i);
-      return false;      
+      return false;
     }
-    r1 = parse_uint8_fastswar_bob((const char*)&i, 3, &result);
-    r2 = parse_uint8_naive((const char*)&i, 3, &result);
-    if(r1 != r2) {
+    r1 = parse_uint8_fastswar_bob((const char *)&i, 3, &result);
+    r2 = parse_uint8_naive((const char *)&i, 3, &result);
+    if (r1 != r2) {
       printf("mismatch3 %d\n", i);
-      return false;      
+      return false;
     }
 
-
-
-    r1 = parse_uint8_naive_md((const char*)&i, 1, &result);
-    r2 = parse_uint8_naive((const char*)&i, 1, &result);
-    if(r1 != r2) {
-      printf("parse_uint8_naive_md mismatch1 %d\n", i);
-      return false;      
+    r1 = parse_uint8_lut((const char *)&i, 1, &result);
+    r2 = parse_uint8_naive((const char *)&i, 1, &result);
+    if (r1 != r2) {
+      printf("parse_uint8_lut mismatch1 %d\n", i);
+      return false;
     }
-    r1 = parse_uint8_naive_md((const char*)&i, 2, &result);
-    r2 = parse_uint8_naive((const char*)&i, 2, &result);
-    if(r1 != r2) {
-      printf("parse_uint8_naive_md mismatch2 %d\n", i);
-      return false;      
+    r1 = parse_uint8_lut((const char *)&i, 2, &result);
+    r2 = parse_uint8_naive((const char *)&i, 2, &result);
+    if (r1 != r2) {
+      printf("parse_uint8_lut mismatch2 %d\n", i);
+      return false;
     }
-    r1 = parse_uint8_naive_md((const char*)&i, 3, &result);
-    r2 = parse_uint8_naive((const char*)&i, 3, &result);
-    if(r1 != r2) {
-      printf("parse_uint8_naive_md mismatch3 %d\n", i);
-      return false;      
+    r1 = parse_uint8_lut((const char *)&i, 3, &result);
+    r2 = parse_uint8_naive((const char *)&i, 3, &result);
+    if (r1 != r2) {
+      printf("parse_uint8_lut mismatch3 %d\n", i);
+      return false;
     }
   }
 
@@ -152,4 +150,7 @@ bool basic_test() {
   return true;
 }
 
-int main() { return (basic_test()) ? EXIT_SUCCESS : EXIT_FAILURE; }
+int main() {
+  make_lut();
+  return (basic_test()) ? EXIT_SUCCESS : EXIT_FAILURE;
+}

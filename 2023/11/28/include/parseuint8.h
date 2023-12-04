@@ -21,7 +21,9 @@ int parse_uint8_fastswar_bob(const char *str, size_t len, uint8_t *num);
 int parse_uint8_fromchars(const char *str, size_t len, uint8_t *num);
 int parse_uint8_naive(const char *str, size_t len, uint8_t *num);
 
-int parse_uint8_naive_md(const char *str, size_t len, uint8_t *num);
 
+// look-up table, caller must first call "make_lut"
+int parse_uint8_lut(const char *str, size_t len, uint8_t *num);
+void make_lut();
 
 #endif // ESCAPE_H
