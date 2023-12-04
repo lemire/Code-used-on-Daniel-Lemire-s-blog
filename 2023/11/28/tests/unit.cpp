@@ -42,6 +42,11 @@ bool basic_test() {
       printf("naive FAILURE %d\n", i);
       return false;
     }
+    parse_uint8_naive_md(input.data(), input.size(), &result);
+    if (result != expected) {
+      printf("naive FAILURE %d\n", i);
+      return false;
+    }
   }
 
   for (uint i = 256; i <= 1024; i++) {
@@ -70,6 +75,11 @@ bool basic_test() {
       return false;
     }
     r = parse_uint8_naive(input.data(), input.size(), &result);
+    if (r) {
+      printf("naive FAILURE %d\n", i);
+      return false;
+    }
+    r = parse_uint8_naive_md(input.data(), input.size(), &result);
     if (r) {
       printf("naive FAILURE %d\n", i);
       return false;
@@ -113,6 +123,27 @@ bool basic_test() {
     r2 = parse_uint8_naive((const char*)&i, 3, &result);
     if(r1 != r2) {
       printf("mismatch3 %d\n", i);
+      return false;      
+    }
+
+
+
+    r1 = parse_uint8_naive_md((const char*)&i, 1, &result);
+    r2 = parse_uint8_naive((const char*)&i, 1, &result);
+    if(r1 != r2) {
+      printf("parse_uint8_naive_md mismatch1 %d\n", i);
+      return false;      
+    }
+    r1 = parse_uint8_naive_md((const char*)&i, 2, &result);
+    r2 = parse_uint8_naive((const char*)&i, 2, &result);
+    if(r1 != r2) {
+      printf("parse_uint8_naive_md mismatch2 %d\n", i);
+      return false;      
+    }
+    r1 = parse_uint8_naive_md((const char*)&i, 3, &result);
+    r2 = parse_uint8_naive((const char*)&i, 3, &result);
+    if(r1 != r2) {
+      printf("parse_uint8_naive_md mismatch3 %d\n", i);
       return false;      
     }
   }

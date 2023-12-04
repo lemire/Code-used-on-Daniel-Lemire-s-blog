@@ -81,3 +81,24 @@ int parse_uint8_fastswar_bob(const char *str, size_t len, uint8_t *num) {
   return ((((digits.as_int + 0x767676) | digits.as_int) & 0x808080) == 0) &&
          ((len ^ 3) < 3) && __builtin_bswap32(digits.as_int) <= 0x020505ff;
 }
+
+// credit: Michael Dunphy
+int parse_uint8_naive_md(const char *str, size_t len, uint8_t *num) {
+  if (--len > 2) return 0;
+  static const uint8_t sf[] = {0,0,1,10,100}; // scale factor
+  uint64_t d1, d2, d3, s1, s2, s3, n;
+  d1 = (uint64_t)str[0] - (uint64_t)'0';
+  d2 = (uint64_t)str[1] - (uint64_t)'0';
+  d3 = (uint64_t)str[2] - (uint64_t)'0';
+  printf("d1 %zu\n", d1);
+  printf("d2 %zu\n", d2);
+  printf("d3 %zu\n", d3);
+  s1 = (uint64_t)sf[len+2];
+  s2 = (uint64_t)sf[len+1];
+  s3 = (uint64_t)sf[len];
+  n = s1*d1 + s2*d2 + s3*d3;
+  *num = (uint8_t)n;
+  printf("n %zu\n", n);
+
+  return n < 256 && d1<10 && d2<10 && d3<10;
+}

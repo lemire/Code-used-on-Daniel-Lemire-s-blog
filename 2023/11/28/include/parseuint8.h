@@ -21,6 +21,7 @@ int parse_uint8_fastswar_bob(const char *str, size_t len, uint8_t *num);
 int parse_uint8_fromchars(const char *str, size_t len, uint8_t *num);
 int parse_uint8_naive(const char *str, size_t len, uint8_t *num);
 
+int parse_uint8_naive_md(const char *str, size_t len, uint8_t *num);
 
 
 #endif // ESCAPE_H
