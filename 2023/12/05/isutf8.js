@@ -5,6 +5,7 @@ import { existsSync, createWriteStream, readFileSync, mkdirSync } from "node:fs"
 import { isUtf8 } from "node:buffer";
 import path from "node:path";
 import axios from "axios";
+import valid8 from "valid-8";
 
 const fixturesFolderPath = new URL('fixtures', import.meta.url).pathname;
 const urls = [
@@ -47,17 +48,40 @@ await axios.all(all_promises);
 
 var lengths = [];
 
+
+for (let source of urls) {
+    const filename = get_filename(source);
+    const file_content = readFileSync(filename);
+    lengths.push(file_content.length);
+  
+    bench(filename+":valid8", () => {
+        if(!valid8(file_content)) { console.log("not UTF-8"); }
+    });
+}
+
+for (let source of urls) {
+    const filename = get_filename(source);
+    const file_content = readFileSync(filename);
+    lengths.push(file_content.length);
+  
+    bench(filename+":TextDecoder", () => {
+        new TextDecoder("utf8", { fatal: true }).decode(file_content)
+    });
+}
 for (let source of urls) {
   const filename = get_filename(source);
   const file_content = readFileSync(filename);
   lengths.push(file_content.length);
 
-  bench(filename, () => {
+  bench(filename+":isUtf8", () => {
     if(!isUtf8(file_content)) { console.log("not UTF-8"); }
   });
 }
 
+
+
+
 let z = await run();
-for (let i = 0; i<urls.length; i++) {
-  console.log(`${urls[i]}: ${lengths[i] / z["benchmarks"][i]["stats"].avg}  length : ${lengths[i]} time : ${z["benchmarks"][i]["stats"].avg} ns   `);
+for (let i = 0; i<lengths.length; i++) {
+  console.log(`${z["benchmarks"][i].name.padStart(50)}: ${lengths[i] / z["benchmarks"][i]["stats"].avg}  GB/s `);
 }
