@@ -53,7 +53,7 @@ for (let source of urls) {
   lengths.push(file_content.length);
 
   bench(filename, () => {
-    isUtf8(file_content);
+    if(!isUtf8(file_content)) { console.log("not UTF-8"); }
   });
 }
 
