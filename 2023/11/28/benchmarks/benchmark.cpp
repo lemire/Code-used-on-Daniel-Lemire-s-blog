@@ -29,6 +29,7 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
 }
 
 int main(int argc, char **argv) {
+  make_lut();
   srandom(1234);
   for (size_t z = 0; z < 2; z++) {
     std::vector<std::string> input;
@@ -74,8 +75,9 @@ int main(int argc, char **argv) {
         input.size(), volume, "parse_uint8_fastswar_bob", bench([&input, &sum]() {
           for (const std::string &s : input) {
             uint8_t result;
-            parse_uint8_fastswar_bob(s.data(), s.size(),
+            int r = parse_uint8_fastswar_bob(s.data(), s.size(),
                                  &result); // technically, should check error
+            if(!r) { abort(); }
             sum += result;
           }
         }));
@@ -83,8 +85,19 @@ int main(int argc, char **argv) {
         input.size(), volume, "parse_uint8_fastswar", bench([&input, &sum]() {
           for (const std::string &s : input) {
             uint8_t result;
-            parse_uint8_fastswar(s.data(), s.size(),
+            int r = parse_uint8_fastswar(s.data(), s.size(),
                                  &result); // technically, should check error
+            if(!r) { abort(); }
+            sum += result;
+          }
+        }));
+    pretty_print(
+        input.size(), volume, "parse_uint8_lut", bench([&input, &sum]() {
+          for (const std::string &s : input) {
+            uint8_t result;
+            int r = parse_uint8_lut(s.data(), s.size(),
+                                 &result); // technically, should check error
+            if(!r) { abort(); }
             sum += result;
           }
         }));
@@ -92,8 +105,9 @@ int main(int argc, char **argv) {
         input.size(), volume, "parse_uint8_swar", bench([&input, &sum]() {
           for (const std::string &s : input) {
             uint8_t result;
-            parse_uint8_swar(s.data(), s.size(),
+            int r = parse_uint8_swar(s.data(), s.size(),
                              &result); // technically, should check error
+            if(!r) { abort(); }
             sum += result;
           }
         }));
@@ -101,8 +115,9 @@ int main(int argc, char **argv) {
         input.size(), volume, "parse_uint8_fromchars", bench([&input, &sum]() {
           for (const std::string &s : input) {
             uint8_t result;
-            parse_uint8_fromchars(s.data(), s.size(),
+            int r = parse_uint8_fromchars(s.data(), s.size(),
                                   &result); // technically, should check error
+            if(!r) { abort(); }
             sum += result;
           }
         }));
@@ -110,8 +125,9 @@ int main(int argc, char **argv) {
         input.size(), volume, "parse_uint8_naive", bench([&input, &sum]() {
           for (const std::string &s : input) {
             uint8_t result;
-            parse_uint8_naive(s.data(), s.size(),
+            int r = parse_uint8_naive(s.data(), s.size(),
                               &result); // technically, should check error
+            if(!r) { abort(); }
             sum += result;
           }
         }));

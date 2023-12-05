@@ -16,6 +16,7 @@ int main() {
   uint32_t output2 = 2;
   for (uint64_t low = 0; low <= 0xFFFFFFFF; low++) {
     uint64_t fullmult = low + ((uint64_t)output1 << 32);
+    // (0x95c11c128eba7c7d*0xd989bcacc137dcd5)%2**64 = 1
     uint64_t reversedstate = 0x95c11c128eba7c7d * fullmult;
     uint64_t pristine = reversedstate;
     if (xorshift(&reversedstate) != output1)

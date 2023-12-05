@@ -81,3 +81,58 @@ int parse_uint8_fastswar_bob(const char *str, size_t len, uint8_t *num) {
   return ((((digits.as_int + 0x767676) | digits.as_int) & 0x808080) == 0) &&
          ((len ^ 3) < 3) && __builtin_bswap32(digits.as_int) <= 0x020505ff;
 }
+
+#include <string>
+#include <vector>
+
+std::vector<uint16_t> lut_vector{};
+
+inline uint32_t make_lut_index_masked(const char *str, size_t len) {
+  if (len > 3)
+    return 0;
+  uint32_t mask = 0xffffffff >> 8 * (4 - len);
+  uint32_t out = *reinterpret_cast<const uint32_t *>(str);
+  out &= mask;
+  return out;
+}
+
+void make_lut() {
+  lut_vector.resize(256 * 256 * 256);
+  std::fill(lut_vector.begin(), lut_vector.end(), 4 << 8);
+  for (size_t val = 0; val <= 255; val++) {
+    std::string s = std::to_string(val);
+    uint32_t key = make_lut_index_masked(s.data(), s.size());
+    lut_vector[key] = (uint16_t)(val | (s.size() << 8));
+    // We also allow zero padding:
+    while (s.size() < 3) {
+      s = '0' + s;
+      uint32_t key = make_lut_index_masked(s.data(), s.size());
+      lut_vector[key] = (uint16_t)(val | (s.size() << 8));
+    }
+  }
+}
+
+int parse_uint8_lutold(const char *str, size_t len, uint8_t *num) {
+  if (len > 3)
+    return 0;
+  uint32_t key;
+  memcpy(&key, str, 4);
+  uint32_t mask = 0xffffffff >> 8 * (4 - len);
+  key &= mask;
+  uint16_t result = lut_vector[key];
+  *num = static_cast<uint8_t>(result);
+  return (result >> 8) == len;
+}
+
+// credit: Nick Powell, modified by D. Lemire
+int parse_uint8_lut(const char *str, size_t len, uint8_t *num) {
+  if (len > 3)
+    return 0;
+  uint32_t key;
+  memcpy(&key, str, 4);
+  uint32_t mask = 0xffffffff >> (8 * (4 - len));
+  key &= mask;
+  uint16_t val = lut_vector[key];
+  *num = uint8_t(val);
+  return (val >> 8) == len;
+}
