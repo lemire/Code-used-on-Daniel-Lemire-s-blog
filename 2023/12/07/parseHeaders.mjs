@@ -2,6 +2,7 @@ import { bench, group, run } from "mitata";
 import { treeparseHeaders } from "./tree.js";
 import { basicparseHeaders } from "./conventional.js";
 import { trieparseHeaders } from "./trie.js";
+import { ternarytreeparseHeaders } from "./ternarytree.js";
 
 const headers = Array.from(
   [
@@ -101,6 +102,11 @@ group("parseHeaders", () => {
   bench("treeparseHeaders", () => {
     for (let x of headers) {
       treeparseHeaders(x, undefined, true);
+    }
+  });
+  bench("ternarytreeparseHeaders", () => {
+    for (let x of headers) {
+      ternarytreeparseHeaders(x, undefined, true);
     }
   });
 });

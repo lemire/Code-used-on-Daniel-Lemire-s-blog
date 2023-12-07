@@ -1,4 +1,3 @@
-//const { headerNameLowerCasedRecord } = require("./constants");
 import { headerNameLowerCasedRecord } from "./constants.js";
 export function basicparseHeaders(headers, obj = {}) {
   // For H2 support
