@@ -84,7 +84,7 @@ const headers = Array.from(
 bench("noop", () => {});
 bench("noop", () => {});
 group("parseHeaders", () => {
-  bench("naiveparseHeaders", () => {
+  bench("naive", () => {
     for (let x of headers) {
       naiveparseHeaders(x);
     }
@@ -94,17 +94,17 @@ group("parseHeaders", () => {
       basicparseHeaders(x);
     }
   });
-  bench("switchparseHeaders", () => {
+  bench("switch", () => {
     for (let x of headers) {
       switchparseHeaders(x);
     }
   });
-  bench("ternarytreeparseHeaders", () => {
+  bench("ternary tree", () => {
     for (let x of headers) {
       ternarytreeparseHeaders(x, undefined, true);
     }
   });
-  bench("treeparseHeaders", () => {
+  bench("digital search trie", () => {
     for (let x of headers) {
       treeparseHeaders(x, undefined, true);
     }
