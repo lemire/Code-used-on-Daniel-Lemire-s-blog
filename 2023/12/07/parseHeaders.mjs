@@ -1,8 +1,8 @@
 import { bench, group, run } from "mitata";
 import { treeparseHeaders } from "./tree.js";
 import { basicparseHeaders } from "./conventional.js";
-import { trieparseHeaders } from "./trie.js";
 import { ternarytreeparseHeaders } from "./ternarytree.js";
+import { switchparseHeaders } from "./switch.js";
 
 const headers = Array.from(
   [
@@ -89,9 +89,9 @@ const headersIrregular = Object.entries({
 bench("noop", () => {});
 bench("noop", () => {});
 group("parseHeaders", () => {
-  bench("trieparseHeaders", () => {
+  bench("switchparseHeaders", () => {
     for (let x of headers) {
-      trieparseHeaders(x);
+      switchparseHeaders(x);
     }
   });
   bench("basic", () => {
