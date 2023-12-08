@@ -2050,7 +2050,8 @@ export function switchparseHeaders(headers, obj = {}) {
 
   for (let i = 0; i < headers.length; i += 2) {
     const key = headers[i];
-    const lowerCasedKey = toLowerCase(key);
+    
+    const lowerCasedKey = typeof key === "string" ? key.toLowerCase() : toLowerCase(key);
     let val = obj[lowerCasedKey];
 
     if (!val) {
