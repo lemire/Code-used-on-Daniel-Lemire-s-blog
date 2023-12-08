@@ -1,8 +1,16 @@
 echo "conventional"
-node --expose-gc  conventionalmem.mjs
+for i in {1..3}; do
+  node --expose-gc  conventionalmem.mjs
+done
 echo "switch"
-node --expose-gc  switchmem.mjs
+for i in {1..3}; do
+  node --expose-gc  switchmem.mjs
+done
 echo "ternary"
-node --expose-gc  ternarytreemem.mjs
+for i in {1..3}; do
+  node --expose-gc  ternarytreemem.mjs
+done
 echo "tree"
-node --expose-gc  treemem.mjs
+for i in {1..3}; do
+  node --expose-gc  treemem.mjs
+done
