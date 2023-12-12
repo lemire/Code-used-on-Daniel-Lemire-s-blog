@@ -57,6 +57,12 @@ int main(int argc, char **argv) {
   std::cout << "volume " << volume << " bytes" << std::endl;
 
   size_t sum = 0;
+  
+  pretty_print(input.size(), volume, "string_escape_path_StokeWillie", bench([&input, &sum]() {
+                for (const std::string &s : input) {
+                  sum += string_escape_path_StokeWillie(s).size();
+                }
+              }));
   pretty_print(input.size(), volume, "find_string_escape_node", bench([&input, &sum]() {
                  for (const std::string &s : input) {
                    sum += find_string_escape_node(s).size();

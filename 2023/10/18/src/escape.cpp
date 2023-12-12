@@ -5,6 +5,27 @@
 #include <stdio.h>
 #include <string.h>
 
+
+// credit StokeWillie
+std::string string_escape_path_StokeWillie(const std::string_view file_path) {
+  size_t count = size_t(std::count(file_path.begin(), file_path.end(), '%'));
+  if (count == 0) {
+    return std::string(file_path);
+  }
+  std::string escaped_file_path(file_path.size() + count * 2, '%');
+  auto start = file_path.begin();
+  auto diese = std::find(start, file_path.end(), '%');
+  auto target = std::copy(start, diese, escaped_file_path.begin());
+  do {
+    *target++ = '2';
+    *target++ = '5';
+    start = diese + 1;
+    diese = std::find(start, file_path.end(), '%');
+    target = std::copy(start, diese, target);
+  } while (diese != file_path.end());
+  return escaped_file_path;
+}
+
 std::string string_escape(const std::string_view file_path) {
   std::string escaped_file_path;
   for (size_t i = 0; i < file_path.length(); ++i) {
