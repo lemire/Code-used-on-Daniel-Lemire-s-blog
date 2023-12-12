@@ -110,6 +110,7 @@ group("parseHeaders", () => {
     }
   });
 });
-await new Promise((resolve) => setTimeout(resolve, 7000));
+await new Promise((resolve) => setTimeout(resolve, 10000));
 
+await run();
 await run();
