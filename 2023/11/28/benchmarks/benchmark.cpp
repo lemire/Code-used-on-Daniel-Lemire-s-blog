@@ -66,11 +66,26 @@ int main(int argc, char **argv) {
         printf("parse_uint8_naive %d %d\n", result, val);
         abort();
       }
+      parse_uint8_switch_case(s.data(), s.size(), &result);
+      if (result != val) {
+        printf("parse_uint8_switch_case %d %d\n", result, val);
+        abort();
+      }
     }
 
     std::cout << "volume " << volume << " bytes" << std::endl;
 
     size_t sum = 0;
+    pretty_print(
+        input.size(), volume, "parse_uint8_switch_case", bench([&input, &sum]() {
+          for (const std::string &s : input) {
+            uint8_t result;
+            int r = parse_uint8_switch_case(s.data(), s.size(),
+                                 &result); // technically, should check error
+            if(!r) { abort(); }
+            sum += result;
+          }
+        }));
     pretty_print(
         input.size(), volume, "parse_uint8_fastswar_bob", bench([&input, &sum]() {
           for (const std::string &s : input) {

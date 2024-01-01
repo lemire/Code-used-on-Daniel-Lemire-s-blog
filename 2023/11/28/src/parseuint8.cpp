@@ -136,3 +136,27 @@ int parse_uint8_lut(const char *str, size_t len, uint8_t *num) {
   *num = uint8_t(val);
   return (val >> 8) == len;
 }
+
+int parse_uint8_switch_case(const char *str, size_t len, uint8_t *num) {
+  uint8_t hi, mid, lo;
+  #define as_u8(x) ((uint8_t)((x) - '0'))
+  switch(len) {
+    case 1:
+    *num = as_u8(str[0]);
+    return *num < 10;
+    case 2:
+    hi = as_u8(str[0]);
+    lo = as_u8(str[1]);
+    *num = hi * 10 + lo;
+    return (hi < 10) && (lo < 10);
+    case 3:
+    hi = as_u8(str[0]);
+    mid = as_u8(str[1]);
+    lo = as_u8(str[2]);
+    *num = hi * 100 + mid * 10 + lo;
+    return (hi < 10) && (mid < 10) && (lo < 10);
+    default:
+    return 0;
+  }
+  #undef as_u8
+}

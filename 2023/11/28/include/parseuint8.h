@@ -26,4 +26,7 @@ int parse_uint8_naive(const char *str, size_t len, uint8_t *num);
 int parse_uint8_lut(const char *str, size_t len, uint8_t *num);
 void make_lut();
 
+//
+int parse_uint8_switch_case(const char *str, size_t len, uint8_t *num);
+
 #endif // ESCAPE_H
