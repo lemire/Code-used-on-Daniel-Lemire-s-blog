@@ -87,6 +87,15 @@ int main(int argc, char **argv) {
           }
         }));
     pretty_print(
+        input.size(), volume, "parse_uint8_nocheck", bench([&input, &sum]() {
+          for (const std::string &s : input) {
+            uint8_t result;
+            parse_uint8_nocheck(s.data(), s.size(),
+                                 &result); // technically, should check error
+            sum += result;
+          }
+        }));
+    pretty_print(
         input.size(), volume, "parse_uint8_fastswar_bob", bench([&input, &sum]() {
           for (const std::string &s : input) {
             uint8_t result;

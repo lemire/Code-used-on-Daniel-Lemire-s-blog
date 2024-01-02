@@ -29,4 +29,6 @@ void make_lut();
 //
 int parse_uint8_switch_case(const char *str, size_t len, uint8_t *num);
 
+
+void parse_uint8_nocheck(const char *str, size_t len, uint8_t *num);
 #endif // ESCAPE_H

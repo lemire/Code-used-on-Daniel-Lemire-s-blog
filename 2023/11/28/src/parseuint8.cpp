@@ -160,3 +160,12 @@ int parse_uint8_switch_case(const char *str, size_t len, uint8_t *num) {
   }
   #undef as_u8
 }
+
+void parse_uint8_nocheck(const char *str, size_t len, uint8_t *num) {
+  const uint32_t shr = ((len << 3) - 8) & 0x18;
+  uint32_t dgts;
+
+  memcpy(&dgts, str, sizeof(dgts));
+  dgts &= 0x000f0f0flu;
+  *num = (uint8_t)((0x640a01 * dgts) >> shr);
+}
