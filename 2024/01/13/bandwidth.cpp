@@ -47,7 +47,7 @@ int main() {
     for(size_t threads = 1; threads <= std::thread::hardware_concurrency(); threads++) {
         double bw = estimate_bandwidth(threads, data.data(), data_volume);
         // best out of three
-        for(size_t i = 0; i < 2; i++) {
+        for(size_t i = 0; i < 10; i++) {
             double cbw = estimate_bandwidth(threads, data.data(), data_volume);
             if(cbw > bw) {
                 bw = cbw;
