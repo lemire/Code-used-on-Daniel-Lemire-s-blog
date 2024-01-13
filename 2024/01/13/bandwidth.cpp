@@ -46,6 +46,7 @@ int main() {
     }
     for(size_t threads = 1; threads <= std::thread::hardware_concurrency(); threads++) {
         double bw = estimate_bandwidth(threads, data.data(), data_volume);
-        printf("threads: %lu, bandwidth %.1f GB/s\n", threads, bw);
+        // number of threads + bandwidth in GB/s
+        printf("%lu %.1f \n", threads, bw);
     }
 }
