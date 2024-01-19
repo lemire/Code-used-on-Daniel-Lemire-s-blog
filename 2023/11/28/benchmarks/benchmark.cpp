@@ -105,6 +105,16 @@ int main(int argc, char **argv) {
             sum += result;
           }
         }));
+    pretty_print(
+        input.size(), volume, "parse_uint8_fastswar_david", bench([&input, &sum]() {
+          for (const std::string &s : input) {
+            uint8_t result;
+            int r = parse_uint8_fastswar_david(s.data(), s.size(),
+                                 &result); // technically, should check error
+            if(!r) { abort(); }
+            sum += result;
+          }
+        }));
      pretty_print(
         input.size(), volume, "parse_uint8_fastswar", bench([&input, &sum]() {
           for (const std::string &s : input) {

@@ -17,7 +17,9 @@ int parse_uint8_swar(const char *str, size_t len, uint8_t *num);
 int parse_uint8_fastswar(const char *str, size_t len, uint8_t *num);
 // like parse_uint8_fastswar, but might be faster under some compilers
 int parse_uint8_fastswar_bob(const char *str, size_t len, uint8_t *num);
-// parse_uint8_fromchars is correct 
+// like parse_uint8_fastswar, but removes a branch
+int parse_uint8_fastswar_david(const char *str, size_t len, uint8_t *num);
+// parse_uint8_fromchars is correct
 int parse_uint8_fromchars(const char *str, size_t len, uint8_t *num);
 int parse_uint8_naive(const char *str, size_t len, uint8_t *num);
 

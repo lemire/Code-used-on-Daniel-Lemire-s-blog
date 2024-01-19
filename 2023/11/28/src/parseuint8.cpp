@@ -82,6 +82,32 @@ int parse_uint8_fastswar_bob(const char *str, size_t len, uint8_t *num) {
          ((len ^ 3) < 3) && __builtin_bswap32(digits.as_int) <= 0x020505ff;
 }
 
+// Optimized differently by David Fetter
+int parse_uint8_fastswar_david(const char *str, size_t len, uint8_t *num) {
+	/* Pre-compute the needed values of (4-len)*8. Position 0 is not used, but
+	 * is there to avoid more computation and off-by-one funnies */
+	static int the_shift[4] = {0, 24, 16, 8};
+    union {
+        uint8_t as_str[4];
+        uint32_t as_int;
+    } digits;
+	if (len == 0 || len > 3) {
+		return 0;
+    }
+
+	memcpy(&digits, str, sizeof(digits));
+
+	/* Flip 0x30, detect non-digits */
+	digits.as_int ^= 0x30303030lu;
+
+	/* Shift off trash bytes. */
+	digits.as_int <<= the_shift[len];
+
+	uint32_t all_digits = ((digits.as_int | (0x06060606 + digits.as_int)) & 0xf0f0f0f0) == 0;
+	*num = (uint8_t)((0x640a01 * digits.as_int) >> 24);
+	return all_digits & ((__builtin_bswap32(digits.as_int) <= 0x020505));
+}
+
 #include <string>
 #include <vector>
 
