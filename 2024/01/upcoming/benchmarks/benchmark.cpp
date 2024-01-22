@@ -22,11 +22,17 @@ uint64_t sum(const uint8_t *data, size_t start, size_t len, size_t skip = 1) {
 }
 
 
-double estimate_bandwidth(const uint8_t* data, size_t data_volume) {
-    size_t segment_length = data_volume;
+double estimate_bandwidth(float** data, size_t M, size_t N) {
+    size_t segment_length = N;
     size_t cache_line = 64;
+    size_t data_volume = M * N;
     std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-    sum(data, 0, segment_length, cache_line);
+    uint64_t s = 0;
+      for (size_t i = 0; i < M; i++) {
+        const uint8_t *thisdata = (const uint8_t *)data[i];
+        s += sum(thisdata, 0, segment_length, cache_line);
+    }
+    (void)s;
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
     std::chrono::duration<double, std::nano>  elapsed = end - start;
     return data_volume / elapsed.count();
@@ -38,7 +44,7 @@ double estimate_bandwidth(const uint8_t* data, size_t data_volume) {
  * cannot keep the matrix in cache, but it should be able
  * to keep the array.
  */
-
+__attribute__ ((noinline))
 float multiply(float *v1, float *v2, size_t N) {
   __m512 acc = _mm512_setzero_ps();
   for (size_t i = 0; i < N; i += sizeof(__m512)) {
@@ -49,6 +55,7 @@ float multiply(float *v1, float *v2, size_t N) {
   return _mm512_reduce_add_ps(acc);
 }
 
+__attribute__ ((noinline))
 float multiply_nt(float *v1, float *v2, size_t N) {
   __m512 acc = _mm512_setzero_ps();
   for (size_t i = 0; i < N; i += sizeof(__m512)) {
@@ -59,6 +66,7 @@ float multiply_nt(float *v1, float *v2, size_t N) {
   return _mm512_reduce_add_ps(acc);
 }
 
+__attribute__ ((noinline))
 std::vector<float> multiply(float *v1, float **v2, size_t M, size_t N) {
   std::vector<float> res(M);
   for (size_t i = 0; i < M; i++) {
@@ -67,6 +75,7 @@ std::vector<float> multiply(float *v1, float **v2, size_t M, size_t N) {
   return res;
 }
 
+__attribute__ ((noinline))
 std::vector<float> multiply_nt(float *v1, float **v2, size_t M, size_t N) {
   std::vector<float> res(M);
   for (size_t i = 0; i < M; i++) {
@@ -99,7 +108,7 @@ void init(float *v, size_t N) {
   }
 }
 int main(int argc, char **argv) {
-  printf("please be patient, this will take a few seconds...\n")
+  printf("please be patient, this will take a few seconds...\n");
   const size_t N = 32 * 1024 * 1024;
   const size_t M = 512;
   float *v1 = (float *)aligned_alloc(64, N);
@@ -110,7 +119,7 @@ int main(int argc, char **argv) {
     init(v2[i], N/sizeof(float));
   }
   size_t volume = N * M + N;
-  std::cout << "bandwidth " << estimate_bandwidth((uint8_t*)v1, N) << " GB/s"<< std::endl;
+  std::cout << "bandwidth " << estimate_bandwidth(v2, M, N) << " GB/s"<< std::endl;
 
   std::vector<float> v;
   pretty_print(volume / sizeof(__m512), volume, "multiply", bench([&v, v1, v2, M, N]() {
