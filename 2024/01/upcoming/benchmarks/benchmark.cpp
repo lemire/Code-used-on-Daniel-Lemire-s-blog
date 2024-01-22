@@ -10,9 +10,31 @@
 #include <vector>
 #include <x86intrin.h>
 
+volatile size_t g_sum = 0;
+__attribute__ ((noinline))
+uint64_t sum(const uint8_t *data, size_t start, size_t len, size_t skip = 1) {
+    uint64_t sum = 0;
+    for (size_t i = start; i < len; i+= skip) {
+        sum += data[i];
+    }
+    g_sum += sum;
+    return sum;
+}
+
+
+double estimate_bandwidth(const uint8_t* data, size_t data_volume) {
+    size_t segment_length = data_volume;
+    size_t cache_line = 64;
+    std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+    sum(data, 0, segment_length, cache_line);
+    std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+    std::chrono::duration<double, std::nano>  elapsed = end - start;
+    return data_volume / elapsed.count();
+}
+
 /***
- * We take a 16 MB array and we multiply it with a matrix
- * containing 256 rows/columns of 16 MB. The processor
+ * We take a large array and we multiply it with a matrix
+ * containing many rows/columns of 16 MB. The processor
  * cannot keep the matrix in cache, but it should be able
  * to keep the array.
  */
@@ -77,22 +99,24 @@ void init(float *v, size_t N) {
   }
 }
 int main(int argc, char **argv) {
+  printf("please be patient, this will take a few seconds...\n")
   const size_t N = 32 * 1024 * 1024;
-  const size_t M = 256;
+  const size_t M = 512;
   float *v1 = (float *)aligned_alloc(64, N);
   init(v1, N/sizeof(float));
-  float **v2 = (float **)aligned_alloc(64, 256 * sizeof(float *));
-  for (size_t i = 0; i < 256; i++) {
+  float **v2 = (float **)aligned_alloc(64, M * sizeof(float *));
+  for (size_t i = 0; i < M; i++) {
     v2[i] = (float *)aligned_alloc(64, N);
     init(v2[i], N/sizeof(float));
   }
-  size_t volume = N * 256 ;
+  size_t volume = N * M + N;
+  std::cout << "bandwidth " << estimate_bandwidth((uint8_t*)v1, N) << " GB/s"<< std::endl;
 
   std::vector<float> v;
-  pretty_print(volume/ sizeof(__m512), volume, "multiply", bench([&v, v1, v2, M, N]() {
+  pretty_print(volume / sizeof(__m512), volume, "multiply", bench([&v, v1, v2, M, N]() {
                  v = multiply(v1, v2, M, N / sizeof(float));
                }));
-  pretty_print(volume/ sizeof(__m512), volume, "multiply_nt", bench([&v, v1, v2, M, N]() {
+  pretty_print(volume / sizeof(__m512), volume, "multiply_nt", bench([&v, v1, v2, M, N]() {
                  v = multiply_nt(v1, v2, M, N / sizeof(float));
                }));
 }
