@@ -88,6 +88,13 @@ void pretty_print(
   printf(" %32s ", "");
   printf(" %8.2f cycles/float  ", aggregate.best.cycles() / number_of_floats);
   printf("\n");
+
+  printf(" %32s ", "");
+  printf(" %8.2f branches/float  ", aggregate.best.branches() / number_of_floats);
+  printf("\n");
+
+  printf(" %32s ", "");
+  printf(" %8.2f branch miss/float  ", aggregate.best.branch_misses() / number_of_floats);
   printf(" %32s ", "");
   printf(" %8.2f instructions/cycle ",
          aggregate.best.instructions() / aggregate.best.cycles());

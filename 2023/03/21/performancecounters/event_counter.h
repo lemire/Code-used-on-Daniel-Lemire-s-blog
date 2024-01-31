@@ -32,13 +32,16 @@ struct event_count {
   enum event_counter_types {
     CPU_CYCLES,
     INSTRUCTIONS,
+    BRANCH_MISSES=2,
+    BRANCH=4
   };
 
   double elapsed_sec() const { return std::chrono::duration<double>(elapsed).count(); }
   double elapsed_ns() const { return std::chrono::duration<double, std::nano>(elapsed).count(); }
   double cycles() const { return static_cast<double>(event_counts[CPU_CYCLES]); }
   double instructions() const { return static_cast<double>(event_counts[INSTRUCTIONS]); }
-
+  double branch_misses() const { return static_cast<double>(event_counts[BRANCH_MISSES]); }
+  double branches() const { return static_cast<double>(event_counts[BRANCH]); }
   event_count& operator=(const event_count& other) {
     this->elapsed = other.elapsed;
     this->event_counts = other.event_counts;
