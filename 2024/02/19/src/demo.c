@@ -6,7 +6,7 @@
 #include <time.h>
 
 
-__attribute__((noinline)) float
+__attribute__((noinline)) __attribute__((optimize("no-tree-vectorize"))) float
 sum(float *data, size_t N) {
   double counter = 0;
   for (size_t i = 0; i < N; i++) {
