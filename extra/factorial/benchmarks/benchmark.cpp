@@ -108,8 +108,13 @@ int main(int argc, char **argv) {
   volatile size_t counter = 0;
   printf("Verifying");
   for(size_t i = 1; i < N; i++) {
-    if(factorial(i) != pair_factorial(i)) {
+    uint64_t a = factorial(i);
+    if(a != pair_factorial(i)) {
       std::cerr << "Error: " << i << " " << factorial(i) << " " << pair_factorial(i) << std::endl;
+      return EXIT_FAILURE;
+    }
+    if(a != pair_factorial_unrolled(i)) {
+      std::cerr << "Error: " << i << " " << factorial(i) << " " << pair_factorial_unrolled(i) << std::endl;
       return EXIT_FAILURE;
     }
     if(i%(N/10) == 0) {
