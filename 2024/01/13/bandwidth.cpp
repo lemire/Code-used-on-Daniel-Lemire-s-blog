@@ -6,16 +6,19 @@
 #include <iostream>
 
 volatile size_t g_sum = 0;
+
+template <bool prefetch>
 __attribute__ ((noinline))
 uint64_t sum(const uint8_t *data, size_t start, size_t len, size_t skip = 1) {
     uint64_t sum = 0;
     for (size_t i = start; i < len; i+= skip) {
         sum += data[i];
+        if(prefetch) { __builtin_prefetch(&data[i + 4096], 1, 3); }
     }
     g_sum += sum;
     return sum;
 }
-
+template <bool prefetch>
 double estimate_bandwidth(size_t threads_count, const uint8_t* data, size_t data_volume) {
     std::vector<std::thread> threads;
     threads.reserve(threads_count);
@@ -23,10 +26,10 @@ double estimate_bandwidth(size_t threads_count, const uint8_t* data, size_t data
     size_t cache_line = 64;
     std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
     if(threads_count == 1) {
-        sum(data, 0, segment_length, cache_line);
+        sum<prefetch>(data, 0, segment_length, cache_line);
     } else {
         for (size_t i = 0; i < threads_count; i++) {
-            threads.emplace_back(sum, data, segment_length*i, segment_length*(i+1), cache_line);
+            threads.emplace_back(sum<prefetch>, data, segment_length*i, segment_length*(i+1), cache_line);
         }
         for (std::thread &t : threads) {
             t.join();
@@ -44,16 +47,26 @@ int main() {
     for (size_t i = 0; i < data_volume; i++) {
         data[i] = 1;
     }
+    size_t N = 3;
     for(size_t threads = 1; threads <= std::thread::hardware_concurrency(); threads++) {
-        double bw = estimate_bandwidth(threads, data.data(), data_volume);
-        // best out of three
-        for(size_t i = 0; i < 10; i++) {
-            double cbw = estimate_bandwidth(threads, data.data(), data_volume);
+        double bw = estimate_bandwidth<false>(threads, data.data(), data_volume);
+        // best out of N
+        for(size_t i = 0; i < N; i++) {
+            double cbw = estimate_bandwidth<false>(threads, data.data(), data_volume);
             if(cbw > bw) {
                 bw = cbw;
             }
         }
         // number of threads + bandwidth in GB/s
-        printf("%lu %.1f \n", threads, bw);
+        printf("%lu %.1f ", threads, bw);
+        bw = estimate_bandwidth<true>(threads, data.data(), data_volume);
+        // best out of N
+        for(size_t i = 0; i < N; i++) {
+            double cbw = estimate_bandwidth<true>(threads, data.data(), data_volume);
+            if(cbw > bw) {
+                bw = cbw;
+            }
+        }
+        printf("%.1f\n", bw);
     }
 }
