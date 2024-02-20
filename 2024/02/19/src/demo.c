@@ -2,9 +2,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <x86intrin.h>
 #include <time.h>
-
+#include <x86intrin.h>
 
 __attribute__((noinline)) __attribute__((optimize("no-tree-vectorize"))) float
 sum(float *data, size_t N) {
@@ -24,13 +23,29 @@ __attribute__((noinline)) float sumvec(float *data, size_t N) {
 
     counter = _mm512_add_pd(counter, part1);
     counter = _mm512_add_pd(counter, part2);
-
   }
   double sum = _mm512_reduce_add_pd(counter);
   for (size_t i = N / 16 * 16; i < N; i++) {
     sum += data[i];
   }
   return sum;
+}
+
+static const char *to_string(powercap_rapl_zone zone) {
+  switch (zone) {
+  case POWERCAP_RAPL_ZONE_PACKAGE:
+    return "package (CPU socket)";
+  case POWERCAP_RAPL_ZONE_CORE:
+    return "core (CPU)";
+  case POWERCAP_RAPL_ZONE_UNCORE:
+    return "uncore (GPU, etc.)";
+  case POWERCAP_RAPL_ZONE_DRAM:
+    return "DRAM";
+  case POWERCAP_RAPL_ZONE_PSYS:
+    return "system (PSys)";
+  default:
+    return "unknown";
+  }
 }
 
 int main() {
@@ -48,72 +63,92 @@ int main() {
       return EXIT_FAILURE;
     }
   }
-
-  for (size_t i = 0; i < npackages; i++) {
-    //  Returns 1 if supported, 0 if unsupported, a negative value in case of
-    //  error.
-    int supported =
-        powercap_rapl_is_zone_supported(&pkg[i], POWERCAP_RAPL_ZONE_PACKAGE);
-    if (supported != 1) {
-      printf("RAPL is not supported on package %d\n", i);
-    }
-  }
-
-  uint64_t energy_uj1[npackages];
-  uint64_t energy_uj2[npackages];
+  printf("Initializing array\n");
   size_t N = 120040001;
   float *data = (float *)malloc(N * sizeof(float));
   for (size_t i = 0; i < N; i++) {
     data[i] = (float)1;
   }
-  for (size_t j = 0; j < npackages; j++) {
-    if (powercap_rapl_get_energy_uj(&pkg[j], POWERCAP_RAPL_ZONE_PACKAGE,
-                                    &energy_uj1[j])) {
-      printf("failed to get energy on package %d\n", j);
-      break;
+  powercap_rapl_zone zones[] = {
+      POWERCAP_RAPL_ZONE_PACKAGE, POWERCAP_RAPL_ZONE_CORE,
+      POWERCAP_RAPL_ZONE_UNCORE, POWERCAP_RAPL_ZONE_DRAM,
+      POWERCAP_RAPL_ZONE_PSYS};
+  for (size_t z = 0; z < sizeof(zones) / sizeof(powercap_rapl_zone); z++) {
+    powercap_rapl_zone zone = zones[z];
+    printf("\nTesting %s\n", to_string(zone));
+    bool supported[npackages];
+    bool has_one_supported = false;
+    for (size_t i = 0; i < npackages; i++) {
+      //  Returns 1 if supported, 0 if unsupported, a negative value in case of
+      //  error.
+      supported[i] = powercap_rapl_is_zone_supported(&pkg[i], zone);
+      if (supported[i] != 1) {
+        printf("RAPL is not supported on package %d\n", i);
+      } else {
+        has_one_supported = true;
+      }
     }
-  }
-  clock_gettime( CLOCK_REALTIME, &start);
-  printf("sum %f\n", sum(data, N));
-  clock_gettime( CLOCK_REALTIME, &stop);
-  for (size_t j = 0; j < npackages; j++) {
-    if (powercap_rapl_get_energy_uj(&pkg[j], POWERCAP_RAPL_ZONE_PACKAGE,
-                                    &energy_uj2[j])) {
-      printf("failed to get energy on package %d\n", j);
-      break;
+    if (!has_one_supported) {
+      printf("No supported packages for %s\n", to_string(zone));
+      continue;
     }
-  }
-  double nano = ( stop.tv_sec - start.tv_sec ) * 1e9
-             + (double)( stop.tv_nsec - start.tv_nsec );
-  for (size_t j = 0; j < npackages; j++) {
-    printf("package %d energy (uj): %lu, per iter %f per nano %f\n", j,
-           energy_uj2[j] - energy_uj1[j],
-           (double)(energy_uj2[j] - energy_uj1[j]) / N, (double)(energy_uj2[j] - energy_uj1[j]) / nano);
-  }
 
-  for (size_t j = 0; j < npackages; j++) {
-    if (powercap_rapl_get_energy_uj(&pkg[j], POWERCAP_RAPL_ZONE_PACKAGE,
-                                    &energy_uj1[j])) {
-      printf("failed to get energy on package %d\n", j);
-      break;
+    for (size_t trial = 0; trial < 3; trial++) {
+
+      printf("trial %d\n", trial);
+
+      uint64_t energy_uj1[npackages];
+      uint64_t energy_uj2[npackages];
+
+      for (size_t j = 0; j < npackages; j++) {
+        if (powercap_rapl_get_energy_uj(&pkg[j], zone, &energy_uj1[j])) {
+          printf("failed to get energy on package %d\n", j);
+          break;
+        }
+      }
+      clock_gettime(CLOCK_REALTIME, &start);
+      printf("sum %f\n", sum(data, N));
+      clock_gettime(CLOCK_REALTIME, &stop);
+      for (size_t j = 0; j < npackages; j++) {
+        if (powercap_rapl_get_energy_uj(&pkg[j], zone, &energy_uj2[j])) {
+          printf("failed to get energy on package %d\n", j);
+          break;
+        }
+      }
+      double nano = (stop.tv_sec - start.tv_sec) * 1e9 +
+                    (double)(stop.tv_nsec - start.tv_nsec);
+      for (size_t j = 0; j < npackages; j++) {
+        printf("package %d energy (uj): %lu, per iter %f per nano %f\n", j,
+               energy_uj2[j] - energy_uj1[j],
+               (double)(energy_uj2[j] - energy_uj1[j]) / N,
+               (double)(energy_uj2[j] - energy_uj1[j]) / nano);
+      }
+
+      for (size_t j = 0; j < npackages; j++) {
+        if (powercap_rapl_get_energy_uj(&pkg[j], zone, &energy_uj1[j])) {
+          printf("failed to get energy on package %d\n", j);
+          break;
+        }
+      }
+      clock_gettime(CLOCK_REALTIME, &start);
+      printf("sumvec %f\n", sumvec(data, N));
+      clock_gettime(CLOCK_REALTIME, &stop);
+      nano = (stop.tv_sec - start.tv_sec) * 1e9 +
+             (double)(stop.tv_nsec - start.tv_nsec);
+      for (size_t j = 0; j < npackages; j++) {
+        if (powercap_rapl_get_energy_uj(&pkg[j], zone, &energy_uj2[j])) {
+          printf("failed to get energy on package %d\n", j);
+          break;
+        }
+      }
+      for (size_t j = 0; j < npackages; j++) {
+        printf("package %d energy (uj): %lu, per iter %f per nano %f\n", j,
+               energy_uj2[j] - energy_uj1[j],
+               (double)(energy_uj2[j] - energy_uj1[j]) / N,
+               (double)(energy_uj2[j] - energy_uj1[j]) / nano);
+      }
+      printf("\n");
     }
-  }
-  clock_gettime( CLOCK_REALTIME, &start);
-  printf("sumvec %f\n", sumvec(data, N));
-  clock_gettime( CLOCK_REALTIME, &stop);
-  nano = ( stop.tv_sec - start.tv_sec ) * 1e9
-             + (double)( stop.tv_nsec - start.tv_nsec );
-  for (size_t j = 0; j < npackages; j++) {
-    if (powercap_rapl_get_energy_uj(&pkg[j], POWERCAP_RAPL_ZONE_PACKAGE,
-                                    &energy_uj2[j])) {
-      printf("failed to get energy on package %d\n", j);
-      break;
-    }
-  }
-  for (size_t j = 0; j < npackages; j++) {
-    printf("package %d energy (uj): %lu, per iter %f per nano %f\n", j,
-           energy_uj2[j] - energy_uj1[j],
-           (double)(energy_uj2[j] - energy_uj1[j]) / N, (double)(energy_uj2[j] - energy_uj1[j]) / nano);
   }
   free(data);
 
@@ -121,36 +156,3 @@ int main() {
     powercap_rapl_destroy(&pkg[i]);
   }
 }
-/*
-
-    int supported = powercap_rapl_is_zone_supported(&pkg,
-   POWERCAP_RAPL_ZONE_PACKAGE); printf("powercap_rapl_is_zone_supported: %d\n",
-   supported);
-
-
-    for(size_t i = 0; i < 3; i++) {
-        size_t n = 10000000*(i+1);
-        if(powercap_rapl_get_energy_uj(&pkg, POWERCAP_RAPL_ZONE_PACKAGE,
-   &energy_uj1)) { printf("failed to get energy\n"); break;
-        }
-        printf("count %d\n", count(n));
-        if(powercap_rapl_get_energy_uj(&pkg, POWERCAP_RAPL_ZONE_PACKAGE,
-   &energy_uj2)) { printf("failed to get energy\n"); break;
-        }
-        printf("energy (uj): %lu, per iter %f\n", energy_uj2-energy_uj1,
-   (double)(energy_uj2-energy_uj1)/n);
-    }
-
-    //r = powercap_rapl_get_energy_uj(&pkg, POWERCAP_RAPL_ZONE_PACKAGE,
-   &energy_uj1);
-    //printf("sum %f\n", sum(data, N));
-    //r = powercap_rapl_get_energy_uj(&pkg, POWERCAP_RAPL_ZONE_PACKAGE,
-   &energy_uj2);
-    //printf("energy (uj): %lu, per iter %f\n", energy_uj2-energy_uj1,
-   (double)(energy_uj2-energy_uj1)/N);
-
-    free(data);
-
-    powercap_rapl_destroy(&pkg);
-*/
-//}
