@@ -28,6 +28,47 @@ uint64_t pair_factorial(uint64_t n) {
   return pd;
 }
 
+
+__attribute__ ((noinline))
+uint64_t pair_factorial_unrolled(uint64_t n) {
+  if(n <= 1) { return 1; }
+  uint64_t r = n;
+  uint64_t s = 1;
+  uint64_t rs = r * s;
+  uint64_t dt = r - s - 1;
+  uint64_t pd = rs;
+  while(dt >= 8) {// unroll
+    rs += dt;
+    pd *= rs;
+    dt -= 2;
+    rs += dt;
+    pd *= rs;
+    dt -= 2;
+    rs += dt;
+    pd *= rs;
+    dt -= 2;
+    rs += dt;
+    pd *= rs;
+    dt -= 2;
+  }
+  while(dt >= 4) {// unroll
+    rs += dt;
+    pd *= rs;
+    rs += dt - 2;
+    pd *= rs;
+    dt -= 4;
+  }
+  while(dt >= 2) {
+    rs += dt;
+    pd *= rs;
+    dt -= 2;
+  }
+  if(n % 2) {
+    pd *= (n+1) / 2;
+  }
+  return pd;
+}
+
 __attribute__ ((noinline))
 uint64_t factorial(uint64_t n) {
   uint64_t pd = 1;
@@ -85,6 +126,11 @@ int main(int argc, char **argv) {
   pretty_print(N, volume, "pair_factorial", bench([&counter]() {
       for(uint64_t i = 1; i < N; i++) {
         counter += pair_factorial(i);
+      }
+  }));
+  pretty_print(N, volume, "pair_factorial_unrolled", bench([&counter]() {
+      for(uint64_t i = 1; i < N; i++) {
+        counter += pair_factorial_unrolled(i);
       }
   }));
 }
