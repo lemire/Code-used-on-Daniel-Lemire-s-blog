@@ -12,6 +12,7 @@
 
 # Ignore object files
 *.o
+*.a
 
 # vscode files
 .vscode
