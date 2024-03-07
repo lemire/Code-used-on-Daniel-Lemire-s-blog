@@ -1,1 +1,0 @@
-g++-4.7 -std=c++0x  -Ofast -std=c++0x -o test test.cpp

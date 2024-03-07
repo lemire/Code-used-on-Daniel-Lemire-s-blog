@@ -1,4 +1,0 @@
-
-Type `make` and `./parsefloats`.
-
-

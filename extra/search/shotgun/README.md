@@ -1,8 +1,0 @@
-Usage:
-
-```
-make 
-./shotguntest
-```
-
-

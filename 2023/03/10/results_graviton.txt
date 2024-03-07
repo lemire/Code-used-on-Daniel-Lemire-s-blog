@@ -1,8 +1,0 @@
-scalar
-9964
-cycles/bytes 1.76265 instructions/bytes 7.03031 instructions/cycle 3.9885
-
-sve
-9964
-cycles/bytes 0.491369 instructions/bytes 1.13529 instructions/cycle 2.31046
-

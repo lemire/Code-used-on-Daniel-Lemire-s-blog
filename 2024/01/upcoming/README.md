@@ -1,1 +1,0 @@
-Assumes AVX-512

@@ -1,3 +1,0 @@
-```
-go run server.go
-```
