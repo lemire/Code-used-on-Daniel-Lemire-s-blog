@@ -102,6 +102,16 @@ struct performance_counters {
         other.instructions < instructions ? other.instructions : instructions;
     return *this;
   }
+  inline performance_counters &max(const performance_counters &other) {
+      cycles = other.cycles > cycles ? other.cycles : cycles;
+      branches = other.branches > branches ? other.branches : branches;
+      missed_branches = other.missed_branches > missed_branches
+                            ? other.missed_branches
+                            : missed_branches;
+      instructions =
+          other.instructions > instructions ? other.instructions : instructions;
+      return *this;
+    }
   inline performance_counters &operator+=(const performance_counters &other) {
     cycles += other.cycles;
     branches += other.branches;
