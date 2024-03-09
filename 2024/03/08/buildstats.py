@@ -119,3 +119,32 @@ plt.grid(True)
 plt.savefig('44parliament.png')
 print("See 44parliament.png")
 print("done")
+
+
+
+
+
+# Apply PCA
+pca = PCA(n_components=3)
+principal_components = pca.fit_transform(scaled_data)
+print(pca.explained_variance_ratio_)
+# Create a DataFrame with the principal components
+pc_df = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2', 'PC3'])
+pc_df['Caucus'] = data.columns
+print(pc_df.head(10))
+
+# Plot the original columns projected onto the principal components
+fig = plt.figure(figsize=(8, 6))
+ax = fig.add_subplot(projection='3d')
+ax.set_xlim(-30, 30)  # Set x-axis limits from -30 to 30
+ax.set_ylim(-30, 30) 
+ax.set_zlim(-30, 30) 
+ax.scatter(pc_df['PC1'], pc_df['PC2'], pc_df['PC3'], alpha=0.6)
+
+for xi, yi, zi, label in pc_df[['PC1', 'PC2', 'PC3', 'Caucus']].values:
+    ax.text(xi, yi, zi, label, va='bottom', ha='center')  # Label each point with its value
+plt.title('Federal caucus votes  projected in 3D (44th parliament of Canada)')
+plt.grid(True)
+plt.savefig('44parliament3d.png')
+print("See 44parliament3d.png")
+print("done")
