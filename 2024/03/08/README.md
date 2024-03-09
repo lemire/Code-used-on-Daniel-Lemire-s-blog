@@ -7,6 +7,7 @@ pip3 install requests
 python3 grabvotes.py 
 ```
 
+Statistical analysis:
 ```
 pip3 install pandas matplotlib scikit-learn
 python3 buildstats.py
