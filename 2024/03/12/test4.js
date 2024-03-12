@@ -1,7 +1,7 @@
 const fs = require('fs');
 const readFileSync = fs.readFileSync;
 async function f(name, options) {
-    return await readFileSync(name, options);
+    return readFileSync(name, options);
 }
 
 let start = Date.now();
