@@ -78,6 +78,8 @@ struct performance_counters {
   double branches;
   double missed_branches;
   double instructions;
+  performance_counters()
+        : cycles(0), branches(0), missed_branches(0), instructions(0) {}
   performance_counters(uint64_t c, uint64_t b, uint64_t m, uint64_t i)
       : cycles(c), branches(b), missed_branches(m), instructions(i) {}
   performance_counters(double c, double b, double m, double i)
@@ -147,7 +149,7 @@ struct performance_counters_holder
         instructions.push_back(counters.instructions);
     }
     
-    inline performance_counters get_average()
+    inline performance_counters avg()
     {
         performance_counters result(0.0);
         for (size_t i = 0; i < cycles.size(); i++)
@@ -169,7 +171,7 @@ struct performance_counters_holder
         std::sort(instructions.begin(), instructions.end());
     }
     
-    inline performance_counters get_percentile(double percentile)
+    inline performance_counters percentile(double percentile)
     {
         if(!sorted)
         {
@@ -185,7 +187,7 @@ struct performance_counters_holder
         return result;
     }
     
-    inline performance_counters get_min()
+    inline performance_counters min()
     {
         if(!sorted)
         {
@@ -200,7 +202,7 @@ struct performance_counters_holder
         return result;
     }
     
-    inline performance_counters get_max()
+    inline performance_counters max()
     {
         if(!sorted)
         {
