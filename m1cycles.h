@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
 
 /*
  * Adapted by D. Lemire
@@ -127,6 +128,92 @@ struct performance_counters {
     instructions /= numerator;
     return *this;
   }
+};
+
+
+struct performance_counters_holder
+{
+    std::vector<double> cycles;
+    std::vector<double> branches;
+    std::vector<double> missed_branches;
+    std::vector<double> instructions;
+    bool sorted = false;
+    
+    inline void push_back(const performance_counters &counters)
+    {
+        cycles.push_back(counters.cycles);
+        branches.push_back(counters.branches);
+        missed_branches.push_back(counters.missed_branches);
+        instructions.push_back(counters.instructions);
+    }
+    
+    inline performance_counters get_average()
+    {
+        performance_counters result(0.0);
+        for (size_t i = 0; i < cycles.size(); i++)
+        {
+            result.cycles += cycles[i];
+            result.branches += branches[i];
+            result.missed_branches += missed_branches[i];
+            result.instructions += instructions[i];
+        }
+        result /= cycles.size();
+        return result;
+    }
+    
+    inline void sort()
+    {
+        std::sort(cycles.begin(), cycles.end());
+        std::sort(branches.begin(), branches.end());
+        std::sort(missed_branches.begin(), missed_branches.end());
+        std::sort(instructions.begin(), instructions.end());
+    }
+    
+    inline performance_counters get_percentile(double percentile)
+    {
+        if(!sorted)
+        {
+            sort();
+            sorted = true;
+        }
+        performance_counters result(0.0);
+        size_t index = cycles.size() * percentile;
+        result.cycles = cycles[index];
+        result.branches = branches[index];
+        result.missed_branches = missed_branches[index];
+        result.instructions = instructions[index];
+        return result;
+    }
+    
+    inline performance_counters get_min()
+    {
+        if(!sorted)
+        {
+            sort();
+            sorted = true;
+        }
+        performance_counters result(0.0);
+        result.cycles = cycles.front();
+        result.branches = branches.front();
+        result.missed_branches = missed_branches.front();
+        result.instructions = instructions.front();
+        return result;
+    }
+    
+    inline performance_counters get_max()
+    {
+        if(!sorted)
+        {
+            sort();
+            sorted = true;
+        }
+        performance_counters result(0.0);
+        result.cycles = cycles.back();
+        result.branches = branches.back();
+        result.missed_branches = missed_branches.back();
+        result.instructions = instructions.back();
+        return result;
+    }
 };
 
 inline performance_counters operator-(const performance_counters &a,
