@@ -6,7 +6,11 @@ import time
 from pyxorfilter import Xor8, Xor16, Fuse8, Fuse16
 
 print("generating data")
-data = [uuid.uuid4() for i in range(2000000)]
+data = [uuid.uuid4() for i in range(1000000)]
+
+N = 1000000
+testdata = [uuid.uuid4() for i in range(N)]
+
 print("Number of keys", len(data))
 
 for filtertype in [Xor8, Xor16, Fuse8, Fuse16]:
@@ -27,11 +31,11 @@ for filtertype in [Xor8, Xor16, Fuse8, Fuse16]:
         assert filter.contains(d)
 
     # estimate false positive rate
-    N = 1000000
+    
     count = 0
     start = time.time()
-    for i in range(N):
-        count += filter.contains(uuid.uuid4())
+    for x in testdata:
+        count += filter.contains(x)
     end = time.time()
     querytime = end - start
     fpp = count/N*100.0
