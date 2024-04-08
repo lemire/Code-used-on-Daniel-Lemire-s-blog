@@ -216,6 +216,15 @@ struct performance_counters_holder
         result.instructions = instructions.back();
         return result;
     }
+    
+    void clear()
+    {
+        cycles.clear();
+        branches.clear();
+        missed_branches.clear();
+        instructions.clear();
+        sorted = false;
+    }
 };
 
 inline performance_counters operator-(const performance_counters &a,
