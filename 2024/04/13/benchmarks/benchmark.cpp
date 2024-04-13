@@ -34,7 +34,7 @@ bool assert_me(bool condition) {
 }
 
 int main(int argc, char **argv) {
-  const size_t N = 64;
+  const size_t N = 128;
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_int_distribution<uint64_t> dis;
@@ -46,13 +46,26 @@ int main(int argc, char **argv) {
   // Generate random values and append them to the vector
   std::generate_n(std::back_inserter(vector1), N, generator);
   std::generate_n(std::back_inserter(vector2), N, generator);
+  size_t total = 0;
+  size_t coprime = 0;
+  uint64_t largest = 0;
   for (uint64_t x : vector1) {
     for (uint64_t y : vector2) {
       assert_me(binary_extended_gcd(x, y).gcd == extended_gcd(x, y).gcd);
       assert_me(std::gcd(x, y) == extended_gcd(x, y).gcd);
       assert_me(std::gcd(x, y) == binary_gcd(x, y));
+      if(extended_gcd(x, y).gcd > largest) {
+        largest = extended_gcd(x, y).gcd;
+      }
+      if(extended_gcd(x, y).gcd == 1) {
+        coprime++;
+      }
+      total++;
     }
   }
+  printf("coprime ratio: %f\n", (double)coprime / total);
+  printf("largest gcd: %lu\n", largest);
+
   size_t volume = (N - 1) * (N - 1);
   volatile uint64_t counter = 0;
   pretty_print(volume, volume * sizeof(uint64_t) * 2, "extended_gcd",
