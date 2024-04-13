@@ -1,10 +1,10 @@
 
 #include "performancecounters/benchmarker.h"
 #include <algorithm>
-#include <random>
 #include <cstdio>
-#include <string>
 #include <numeric>
+#include <random>
+#include <string>
 
 #include "gcd.h"
 
@@ -25,6 +25,14 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
   printf("\n");
 }
 
+bool assert_me(bool condition) {
+  if (!condition) {
+    printf("assertion failed\n");
+    exit(1);
+  }
+  return true;
+}
+
 int main(int argc, char **argv) {
   const size_t N = 64;
   std::random_device rd;
@@ -38,7 +46,13 @@ int main(int argc, char **argv) {
   // Generate random values and append them to the vector
   std::generate_n(std::back_inserter(vector1), N, generator);
   std::generate_n(std::back_inserter(vector2), N, generator);
-
+  for (uint64_t x : vector1) {
+    for (uint64_t y : vector2) {
+      assert_me(binary_extended_gcd(x, y).gcd == extended_gcd(x, y).gcd);
+      assert_me(std::gcd(x, y) == extended_gcd(x, y).gcd);
+      assert_me(std::gcd(x, y) == binary_gcd(x, y));
+    }
+  }
   size_t volume = (N - 1) * (N - 1);
   volatile uint64_t counter = 0;
   pretty_print(volume, volume * sizeof(uint64_t) * 2, "extended_gcd",
@@ -46,6 +60,14 @@ int main(int argc, char **argv) {
                  for (uint64_t x : vector1) {
                    for (uint64_t y : vector2) {
                      counter = counter + extended_gcd(x, y).gcd;
+                   }
+                 }
+               }));
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "binary_extended_gcd",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + binary_extended_gcd(x, y).gcd;
                    }
                  }
                }));
