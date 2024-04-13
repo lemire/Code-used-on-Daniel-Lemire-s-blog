@@ -1,11 +1,12 @@
 
 #include "performancecounters/benchmarker.h"
+#include <algorithm>
 #include <random>
 #include <cstdio>
 #include <string>
 #include <numeric>
 
-import gcd;
+#include "gcd.h"
 
 void pretty_print(size_t volume, size_t bytes, std::string name,
                   event_aggregate agg) {
