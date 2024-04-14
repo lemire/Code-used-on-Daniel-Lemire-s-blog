@@ -49,6 +49,8 @@ int main(int argc, char **argv) {
   size_t total = 0;
   size_t coprime = 0;
   uint64_t largest = 0;
+  auto b1 = extended_gcd(212u, 31u);
+  assert_me(b1.x * 212 + b1.y * 31 == b1.gcd);
   for (uint64_t x : vector1) {
     for (uint64_t y : vector2) {
       assert_me(binary_extended_gcd(x, y).gcd == extended_gcd(x, y).gcd);
