@@ -26,6 +26,27 @@ template <typename int_type> int_type binary_gcd(int_type u, int_type v) {
   return u << shift;
 }
 
+
+template <typename int_type>
+int_type binary_gcd_paolo(int_type u, int_type v) {
+  if (u == 0) {
+    return v;
+  }
+  if (v == 0) {
+    return u;
+  }
+  auto shift = std::countr_zero(u | v);
+  u >>= std::countr_zero(u);
+  do {
+    int_type t = v >> std::countr_zero(v);
+    if (u > t)
+      v = u - t, u = t;
+    else
+      v = t - u;
+  } while (v != 0);
+  return u << shift;
+}
+
 template <typename int_type> struct bezout {
   int_type gcd;
   int_type x;
