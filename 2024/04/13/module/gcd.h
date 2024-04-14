@@ -26,9 +26,9 @@ template <typename int_type> int_type binary_gcd(int_type u, int_type v) {
   return u << shift;
 }
 
-
+// credit: Paolo Bonzini
 template <typename int_type>
-int_type binary_gcd_paolo(int_type u, int_type v) {
+int_type binary_gcd_noswap(int_type u, int_type v) {
   if (u == 0) {
     return v;
   }

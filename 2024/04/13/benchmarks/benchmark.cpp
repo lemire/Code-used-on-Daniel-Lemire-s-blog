@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
       assert_me(binary_extended_gcd(x, y).gcd == extended_gcd(x, y).gcd);
       assert_me(std::gcd(x, y) == extended_gcd(x, y).gcd);
       assert_me(std::gcd(x, y) == binary_gcd(x, y));
-      assert_me(binary_gcd_paolo(x, y) == binary_gcd(x, y));
+      assert_me(binary_gcd_noswap(x, y) == binary_gcd(x, y));
       if(extended_gcd(x, y).gcd > largest) {
         largest = extended_gcd(x, y).gcd;
       }
@@ -101,11 +101,11 @@ int main(int argc, char **argv) {
                    }
                  }
                }));
-  pretty_print(volume, volume * sizeof(uint64_t) * 2, "binary_gcd_paolo",
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "binary_gcd_noswap",
                bench([&counter, &vector1, &vector2]() {
                  for (uint64_t x : vector1) {
                    for (uint64_t y : vector2) {
-                     counter = counter + binary_gcd_paolo(x, y);
+                     counter = counter + binary_gcd_noswap(x, y);
                    }
                  }
                }));
