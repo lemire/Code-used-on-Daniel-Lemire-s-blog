@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
   assert_me(b1.x * 212 + b1.y * 31 == b1.gcd);
   bool is_binary_extended_correct = true;
   bool is_extended_correct = true;
+  bool is_one_extended_correct = true;
 
   for (uint64_t x : vector1) {
     for (uint64_t y : vector2) {
@@ -64,6 +65,14 @@ int main(int argc, char **argv) {
         printf("# extended_gcd is incorrect\n");
         printf("#   x: %llu, y: %llu\n", (long long unsigned)x, (long long unsigned)y);
         printf("#   bezout.x: %llu, bezout.y: %llu, gcd: %llu\n", (long long unsigned)(be1.x), (long long unsigned)(be1.y), (long long unsigned)(be1.gcd));
+      }
+      auto be11 = extended_one_gcd(x, y);
+      if((be11.x != be1.x) && is_one_extended_correct) {
+        is_one_extended_correct = false;
+        printf("# extended_gcd is incorrect\n");
+        printf("#   x: %llu, y: %llu\n", (long long unsigned)x, (long long unsigned)y);
+        printf("#   bezout.x: %llu, bezout.y: %llu, gcd: %llu\n", (long long unsigned)(be1.x), (long long unsigned)(be1.y), (long long unsigned)(be1.gcd));
+        printf("#   bezout.x: %llu, bezout.y: %llu, gcd: %llu\n", (long long unsigned)(be11.x), (long long unsigned)(be11.y), (long long unsigned)(be11.gcd));
       }
       auto be2 = binary_extended_gcd(x, y);
       if((be2.x * x + be2.y * y != be2.gcd) && is_binary_extended_correct) {
@@ -90,6 +99,14 @@ int main(int argc, char **argv) {
 
   size_t volume = (N - 1) * (N - 1);
   volatile uint64_t counter = 0;
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "extended_one_gcd",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + extended_one_gcd(x, y).gcd;
+                   }
+                 }
+               }));
   pretty_print(volume, volume * sizeof(uint64_t) * 2, "extended_gcd",
                bench([&counter, &vector1, &vector2]() {
                  for (uint64_t x : vector1) {
