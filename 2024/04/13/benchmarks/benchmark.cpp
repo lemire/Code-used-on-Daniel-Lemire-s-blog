@@ -34,7 +34,7 @@ bool assert_me(bool condition) {
 }
 
 int main(int argc, char **argv) {
-  const size_t N = 128;
+  const size_t N = 2048;
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_int_distribution<uint64_t> dis;
@@ -51,8 +51,27 @@ int main(int argc, char **argv) {
   uint64_t largest = 0;
   auto b1 = extended_gcd(212u, 31u);
   assert_me(b1.x * 212 + b1.y * 31 == b1.gcd);
+  bool is_binary_extended_correct = true;
+  bool is_extended_correct = true;
+
   for (uint64_t x : vector1) {
     for (uint64_t y : vector2) {
+
+      auto be1 = extended_gcd(x, y);
+      assert_me(be1.x * x + be1.y * y == be1.gcd);
+      if((be1.x * x + be1.y * y != be1.gcd) && is_extended_correct) {
+        is_extended_correct = false;
+        printf("# extended_gcd is incorrect\n");
+        printf("#   x: %llu, y: %llu\n", (long long unsigned)x, (long long unsigned)y);
+        printf("#   bezout.x: %llu, bezout.y: %llu, gcd: %llu\n", (long long unsigned)(be1.x), (long long unsigned)(be1.y), (long long unsigned)(be1.gcd));
+      }
+      auto be2 = binary_extended_gcd(x, y);
+      if((be2.x * x + be2.y * y != be2.gcd) && is_binary_extended_correct) {
+        is_binary_extended_correct = false;
+        printf("# binary_extended_gcd is incorrect\n");
+        printf("#   x: %llu, y: %llu\n", (long long unsigned)x, (long long unsigned)y);
+        printf("#   bezout.x: %llu, bezout.y: %llu, gcd: %llu\n", (long long unsigned)(be2.x), (long long unsigned)(be2.y), (long long unsigned)(be2.gcd));
+      }
       assert_me(binary_extended_gcd(x, y).gcd == extended_gcd(x, y).gcd);
       assert_me(std::gcd(x, y) == extended_gcd(x, y).gcd);
       assert_me(std::gcd(x, y) == binary_gcd(x, y));
