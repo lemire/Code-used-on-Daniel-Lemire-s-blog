@@ -75,7 +75,7 @@ bezout<int_type> extended_gcd(int_type u, int_type v) {
   return {r.old_value, s.old_value, t.old_value};
 }
 
-
+// This algorithm is not correct, it does not return the correct Bézout coefficients
 template <std::unsigned_integral int_type>
 bezout<int_type> binary_extended_gcd(int_type a, int_type b) {
   int_type u = 1;
