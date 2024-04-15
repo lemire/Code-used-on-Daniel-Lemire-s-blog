@@ -80,11 +80,15 @@ bezout<int_type> extended_gcd(int_type u, int_type v) {
 // std::max(a, b) >= std::numeric_limits<int_type>::max() / 8
 template <std::unsigned_integral int_type>
 bezout<int_type> binary_extended_gcd(int_type a, int_type b) {
-  auto r = std::countr_zero(a | b);
+  using sint_type = typename std::make_signed<int_type>::type;
+
+  if (a == 0) return {b, 0, !!b}; // {0, 0, 0} if b == 0 else {b, 0, 1}
+  if (b == 0) return {a, 1, 0};
+
+  auto r = countr_zero(a | b);
   a >>= r;
   b >>= r;
 
-  using sint_type = typename std::make_signed<int_type>::type;
   sint_type x = (sint_type)a;
   sint_type y = (sint_type)b;
   sint_type s = 1;
@@ -104,7 +108,7 @@ bezout<int_type> binary_extended_gcd(int_type a, int_type b) {
     }
     while ((y & 1) == 0) { // b is even
       y /= 2;
-      if (!((u | v) & 1)) {
+      if (((u | v) & 1) == 0) {
         u /= 2;
         v /= 2;
       } else {
