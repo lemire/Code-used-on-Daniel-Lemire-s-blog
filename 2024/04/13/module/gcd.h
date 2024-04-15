@@ -76,6 +76,8 @@ bezout<int_type> extended_gcd(int_type u, int_type v) {
 }
 
 // From section 14.61 in https://cacr.uwaterloo.ca/hac/
+// signed integer overflow may occur if
+// std::max(a, b) >= std::numeric_limits<int_type>::max() / 8
 template <std::unsigned_integral int_type>
 bezout<int_type> binary_extended_gcd(int_type a, int_type b) {
   auto r = std::countr_zero(a | b);
@@ -121,7 +123,10 @@ bezout<int_type> binary_extended_gcd(int_type a, int_type b) {
     }
   }
 
-  // Enable below if you want to make sure that |x| + |y| is the minimal (primary) and x <= y (secondarily)
+  // Enable below if you want to make sure that
+  // |x| + |y| is the minimal (primary)
+  // and x <= y (secondarily)
+
   // if (y > 1) {
   //   a /= (int_type)y;
   //   b /= (int_type)y;
