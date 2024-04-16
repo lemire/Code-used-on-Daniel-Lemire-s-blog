@@ -75,52 +75,103 @@ bezout<int_type> extended_gcd(int_type u, int_type v) {
   return {r.old_value, s.old_value, t.old_value};
 }
 
-// This algorithm is not correct, it does not return the correct Bézout coefficients
+// From section 14.61 in https://cacr.uwaterloo.ca/hac/
+// Warning: signed integer overflow may occur if
+// std::max(a, b) >= std::numeric_limits<int_type>::max() / 8
 template <std::unsigned_integral int_type>
 bezout<int_type> binary_extended_gcd(int_type a, int_type b) {
-  int_type u = 1;
-  int_type v = 0;
-  int_type s = 0;
-  int_type t = 1;
+  using sint_type = typename std::make_signed<int_type>::type;
+
+  if (a == 0) return {b, 0, !!b}; // {0, 0, 0} if b == 0 else {b, 0, 1}
+  if (b == 0) return {a, 1, 0};
+
+  bool swapped = false;
+  if (a > b) {
+    swapped = true;
+    std::swap(a, b);
+  }
+
   auto r = std::countr_zero(a | b);
   a >>= r;
   b >>= r;
 
-  auto alpha = a;
-  auto beta = b;
-  while ((a & 1) == 0) { // a is even
-    a = a >> 1;
-    if (((u | v) & 1) == 0) {
-      u = u >> 1;
-      v = v >> 1;
-    } else {
-      u = u + beta;
-      u = u >> 1;
-      v = v - alpha;
-      v = v >> 1;
-    }
-  }
-  while (a != b) {
-    if ((b & 1) == 0) {
-      b = b >> 1;
+  sint_type x = (sint_type)a;
+  sint_type y = (sint_type)b;
+  sint_type s = 1;
+  sint_type t = 0;
+  sint_type u = 0;
+  sint_type v = 1;
+  while (x) {
+    while ((x & 1) == 0) { // a is even
+      x /= 2;
       if (((s | t) & 1) == 0) {
-        s = s >> 1;
-        t = t >> 1;
+        s /= 2;
+        t /= 2;
       } else {
-        s = s + beta;
-        s = s >> 1;
-        t = t - alpha;
-        t = t >> 1;
+        s = std::midpoint(s, (sint_type)b);
+        t = std::midpoint(t, -(sint_type)a);
       }
-    } else if (b < a) {
-      std::swap(a, b);
-      std::swap(u, v);
-      std::swap(s, t);
+    }
+    while ((y & 1) == 0) { // b is even
+      y /= 2;
+      if (((u | v) & 1) == 0) {
+        u /= 2;
+        v /= 2;
+      } else {
+        u = std::midpoint(u, (sint_type)b);
+        v = std::midpoint(v, -(sint_type)a);
+      }
+    }
+    if (x >= y) {
+      x -= y;
+      s -= u;
+      t -= v;
     } else {
-      b = b - a;
-      s = s - u;
-      t = t - v;
+      y -= x;
+      u -= s;
+      v -= t;
     }
   }
-  return {a << r, s, t};
+
+  if (swapped) {
+    std::swap(u, v);
+    std::swap(s, t);
+  }
+
+  // Enable below if you want to make sure that
+  // |x| + |y| is the minimal (primary)
+  // and x <= y (secondarily)
+
+  // if (y > 1) {
+  //   a /= (int_type)y;
+  //   b /= (int_type)y;
+  // }
+  // if (a && (int_type)std::abs(v) >= a) {
+  //   sint_type _ = v / (sint_type)a;
+  //   v -= _ * (sint_type)a;
+  //   u += _ * (sint_type)b;
+  // }
+  // if (b && (int_type)std::abs(u) >= b) {
+  //   sint_type _ = u / (sint_type)b;
+  //   u -= _ * (sint_type)b;
+  //   v += _ * (sint_type)a;
+  // }
+  // {
+  //   sint_type u_ = u + (sint_type)b;
+  //   sint_type v_ = v - (sint_type)a;
+  //   if (std::abs(u_) + std::abs(v_) <= std::abs(u) + std::abs(v)) {
+  //     u = u_;
+  //     v = v_;
+  //   }
+  // }
+  // {
+  //   sint_type u_ = u - (sint_type)b;
+  //   sint_type v_ = v + (sint_type)a;
+  //   if (std::abs(u_) + std::abs(v_) <= std::abs(u) + std::abs(v)) {
+  //     u = u_;
+  //     v = v_;
+  //   }
+  // }
+
+  return {(int_type)y << r, (int_type)u, (int_type)v};
 }

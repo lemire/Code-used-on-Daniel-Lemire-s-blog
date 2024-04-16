@@ -37,11 +37,24 @@ int main(int argc, char **argv) {
   const size_t N = 2048;
   std::random_device rd;
   std::mt19937_64 gen(rd());
-  std::uniform_int_distribution<uint64_t> dis;
+  std::uniform_int_distribution<uint64_t> dis(0, std::numeric_limits<uint64_t>::max() / 16);
 
   std::vector<uint64_t> vector1;
   std::vector<uint64_t> vector2;
   auto generator = [&dis, &gen]() { return dis(gen); };
+
+  // Add some example data
+  std::vector<std::pair<uint64_t, uint64_t>> example_data {
+    {212, 31},
+    {1100087778366101931, 679891637638612258} // 88th and 87th Fibonacci number
+  };
+  for (auto [x, y] : example_data) {
+    auto b = extended_gcd(x, y);
+    assert_me(b.x * x + b.y * y == b.gcd);
+    auto be = binary_extended_gcd(x, y);
+    assert_me(be.x * x + be.y * y == be.gcd);
+    assert_me(b.gcd == be.gcd);
+  }
 
   // Generate random values and append them to the vector
   std::generate_n(std::back_inserter(vector1), N, generator);
@@ -49,8 +62,6 @@ int main(int argc, char **argv) {
   size_t total = 0;
   size_t coprime = 0;
   uint64_t largest = 0;
-  auto b1 = extended_gcd(212u, 31u);
-  assert_me(b1.x * 212 + b1.y * 31 == b1.gcd);
   bool is_binary_extended_correct = true;
   bool is_extended_correct = true;
 
