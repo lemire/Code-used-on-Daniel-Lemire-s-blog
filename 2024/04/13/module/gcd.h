@@ -147,6 +147,7 @@ bezout<int_type> binary_extended_gcd(int_type a, int_type b) {
   }
 
   if (swapped) {
+    std::swap(a, b);
     std::swap(u, v);
     std::swap(s, t);
   }
