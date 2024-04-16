@@ -75,9 +75,22 @@ bezout<int_type> extended_gcd(int_type u, int_type v) {
   return {r.old_value, s.old_value, t.old_value};
 }
 
+// This computes just one of the Bézout coefficients
+template <std::unsigned_integral int_type>
+bezout<int_type> extended_one_gcd(int_type u, int_type v) {
+  pair<int_type> r = {u, v};
+  pair<int_type> s = {1, 0};
+  while (r.new_value != 0) {
+    auto quotient = r.old_value / r.new_value;
+    r = {r.new_value, r.old_value - quotient * r.new_value};
+    s = {s.new_value, s.old_value - quotient * s.new_value};
+  }
+  return {r.old_value, s.old_value, 0};
+}
+
 // From section 14.61 in https://cacr.uwaterloo.ca/hac/
 // Warning: signed integer overflow may occur if
-// std::max(a, b) >= std::numeric_limits<int_type>::max() / 8
+// std::max(a, b) >= std::numeric_limits<int_type>::max() / 16
 template <std::unsigned_integral int_type>
 bezout<int_type> binary_extended_gcd(int_type a, int_type b) {
   using sint_type = typename std::make_signed<int_type>::type;
