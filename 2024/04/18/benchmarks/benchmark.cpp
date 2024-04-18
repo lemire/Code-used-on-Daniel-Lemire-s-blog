@@ -33,10 +33,7 @@ bool assert_me(bool condition) {
   return true;
 }
 
-
-
-int main(int argc, char **argv) {
-  const size_t N = 131072;
+size_t process(const size_t N) {
   const size_t line_length = 72;
 
   std::vector<char> vector(N, 'a');
@@ -46,14 +43,22 @@ int main(int argc, char **argv) {
 
   size_t volume = vector.size();
   pretty_print(1, volume, "copy",
-               bench([&vector, &out]() {
+               bench([&vector, &out, N]() {
                 out.resize(vector.size() + vector.size()/line_length);
                 break_lines(out.data(), vector.data(), N, line_length);
                }));
   pretty_print(1, volume, "inplace",
-               bench([&vector]() {
+               bench([&vector, N]() {
                 vector.resize(N + N/line_length);
                 break_lines_inplace(vector.data(), N, line_length);
                }));
   return out.size();
+}
+
+int main(int argc, char **argv) {
+  for(size_t size : {1024, 4096, 24000, 65000}) {
+    printf("size %zu\n", size);
+    process(size);
+  }
+
 }
