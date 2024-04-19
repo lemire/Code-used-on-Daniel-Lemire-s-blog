@@ -60,7 +60,7 @@ size_t process(const size_t N) {
 }
 
 int main(int, char **) {
-  for(size_t size = 1024; size <= 262144; size *= 2) {
+  for(size_t size = 8192; size <= 262144; size *= 2) {
     printf("size %zu\n", size);
     process(size);
   }
