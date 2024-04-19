@@ -44,8 +44,12 @@ size_t process(const size_t N) {
   size_t volume = vector.size();
   pretty_print(1, volume, "copy",
                bench([&vector, &out, N]() {
-                out.resize(vector.size() + vector.size()/line_length);
+                out.resize(N + N/line_length);
                 break_lines(out.data(), vector.data(), N, line_length);
+               }));
+  pretty_print(1, volume, "memcpy",
+               bench([&vector, &out, N]() {
+                memcpy(out.data(), vector.data(), N);
                }));
   pretty_print(1, volume, "inplace",
                bench([&vector, N]() {
@@ -55,8 +59,8 @@ size_t process(const size_t N) {
   return out.size();
 }
 
-int main(int argc, char **argv) {
-  for(size_t size : {1024, 4096, 24000, 65000}) {
+int main(int, char **) {
+  for(size_t size = 1024; size <= 262144; size *= 2) {
     printf("size %zu\n", size);
     process(size);
   }
