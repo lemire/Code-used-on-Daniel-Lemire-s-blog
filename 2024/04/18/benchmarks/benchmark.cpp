@@ -47,6 +47,16 @@ size_t process(const size_t N) {
                 out.resize(N + N/line_length);
                 break_lines(out.data(), vector.data(), N, line_length);
                }));
+  pretty_print(1, volume, "copy template",
+               bench([&vector, &out, N]() {
+                out.resize(N + N/line_length);
+                break_lines_template<72>(out.data(), vector.data(), N);
+               }));
+  pretty_print(1, volume, "copy (no inline) ",
+               bench([&vector, &out, N]() {
+                out.resize(N + N/line_length);
+                break_lines_no_inline(out.data(), vector.data(), N, line_length);
+               }));
   pretty_print(1, volume, "memcpy",
                bench([&vector, &out, N]() {
                 memcpy(out.data(), vector.data(), N);
@@ -55,6 +65,11 @@ size_t process(const size_t N) {
                bench([&vector, N]() {
                 vector.resize(N + N/line_length);
                 break_lines_inplace(vector.data(), N, line_length);
+               }));
+  pretty_print(1, volume, "inplace (no inline)",
+               bench([&vector, N]() {
+                vector.resize(N + N/line_length);
+                break_lines_inplace_no_inline(vector.data(), N, line_length);
                }));
   return out.size();
 }
