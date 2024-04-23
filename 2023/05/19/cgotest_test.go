@@ -17,6 +17,13 @@ func BenchmarkAllocate(b *testing.B) {
 	}
 }
 
+func BenchmarkAllocateDefer(b *testing.B) {
+	for j := 0; j < b.N; j++ {
+		p := Allocate()
+		defer Free(p)
+	}
+}
+
 func BenchmarkAllocateFree(b *testing.B) {
 	for j := 0; j < b.N; j++ {
 		AllocateFree()
