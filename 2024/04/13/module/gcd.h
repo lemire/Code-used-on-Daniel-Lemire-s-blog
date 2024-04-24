@@ -1,13 +1,15 @@
-#include <utility>
 #include <bit>
+#include <utility>
 
 // computes the greatest common divisor between u and v
-template <std::unsigned_integral int_type> int_type naive_gcd(int_type u, int_type v) {
+template <std::unsigned_integral int_type>
+int_type naive_gcd(int_type u, int_type v) {
   return (u % v) == 0 ? v : naive_gcd(v, u % v);
 }
 
 // computes the greatest common divisor between u and v
-template <std::unsigned_integral int_type> int_type binary_gcd(int_type u, int_type v) {
+template <std::unsigned_integral int_type>
+int_type binary_gcd(int_type u, int_type v) {
   if (u == 0) {
     return v;
   }
@@ -43,6 +45,33 @@ int_type binary_gcd_noswap(int_type u, int_type v) {
       v = u - t, u = t;
     else
       v = t - u;
+  } while (v != 0);
+  return u << shift;
+}
+
+template <class T> T hybrid_binary_gcd(T u, T v) {
+  if (u < v) {
+    std::swap(u, v);
+  }
+  if (v == 0) {
+    return u;
+  }
+  u %= v;
+  if (u == 0) {
+    return v;
+  }
+  auto zu = std::countr_zero(u);
+  auto zv = std::countr_zero(v);
+  auto shift = std::min(zu, zv);
+  u >>= zu;
+  v >>= zv;
+  do {
+    T u_minus_v = u - v;
+    if (u > v)
+      u = v, v = u_minus_v;
+    else
+      v = v - u;
+    v >>= std::countr_zero(u_minus_v);
   } while (v != 0);
   return u << shift;
 }
@@ -95,8 +124,10 @@ template <std::unsigned_integral int_type>
 bezout<int_type> binary_extended_gcd(int_type a, int_type b) {
   using sint_type = typename std::make_signed<int_type>::type;
 
-  if (a == 0) return {b, 0, !!b}; // {0, 0, 0} if b == 0 else {b, 0, 1}
-  if (b == 0) return {a, 1, 0};
+  if (a == 0)
+    return {b, 0, !!b}; // {0, 0, 0} if b == 0 else {b, 0, 1}
+  if (b == 0)
+    return {a, 1, 0};
 
   bool swapped = false;
   if (a > b) {
