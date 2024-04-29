@@ -11,7 +11,6 @@ void Stall(int* ptr)
     {
         int tmp1, tmp2;
         __asm__ volatile(
-            // same, but without ldp:
             "ldr %w0, [%2]\n"
             "ldr %w1, [%2, #4]\n"
             "str %w0, [%2]\n"
@@ -32,7 +31,6 @@ void StallNoStr(int* ptr)
     {
         int tmp1, tmp2;
         __asm__ volatile(
-            // same, but without ldp:
             "ldr %w0, [%2]\n"
             "ldr %w1, [%2, #4]\n"
             // NOTE: stp also ruins perf
