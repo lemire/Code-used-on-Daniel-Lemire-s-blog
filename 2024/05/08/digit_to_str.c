@@ -81,11 +81,12 @@ static PyObject* digit_to_str_new(PyObject* self, PyObject* args) {
 static PyObject* pyListPermanent;
 
 static PyObject* all_strings(PyObject* self) {
-    PyObject* pyList = PyList_New(0);
-    for (size_t i = 0; i < sizeof(numbers) / sizeof(numbers[0]); ++i) {
+    size_t len = sizeof(numbers) / sizeof(numbers[0]);
+    PyObject* pyList = PyList_New(len);
+    for (size_t i = 0; i < len; ++i) {
         PyObject* pyString = PyUnicode_FromString(numbers[i]);
-        PyList_Append(pyList, pyString);
-        Py_DECREF(pyString); // Decrement reference count
+        PyList_SET_ITEM(pyList, i, pyString);
+
     }
     return pyList;
 }
