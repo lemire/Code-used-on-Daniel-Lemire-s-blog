@@ -49,6 +49,85 @@ int_type binary_gcd_noswap(int_type u, int_type v) {
   return u << shift;
 }
 
+// credit: Jonathan Webster
+template <std::unsigned_integral int_type>
+int_type gcd_webster1(int_type u, int_type v) {
+  int shift;
+  if (u == 0)
+    return v;
+  if (v == 0)
+    return u;
+  shift = __builtin_ctz(u | v);
+  u >>= __builtin_ctz(u);
+  do {
+    v >>= __builtin_ctz(v);
+    if (u > v)
+      std::swap(u, v);
+    v = v - u;
+  } while (v != 0);
+  return u << shift;
+}
+
+// credit: Jonathan Webster
+// reference: https://maths-people.anu.edu.au/~brent/pub/pub077.html
+template <std::unsigned_integral int_type>
+int_type gcd_webster2(int_type u, int_type v) {
+  int shift;
+  if (u == 0)
+    return v;
+  if (v == 0)
+    return u;
+  shift = __builtin_ctz(u | v);
+  u >>= __builtin_ctz(u);
+  do {
+    v >>= __builtin_ctz(v);
+    if (u > v)
+      std::swap(u, v);
+    (2 & (u^v)) ? v = v + u : v =  v - u; // warning: might overflow!!!
+  } while (v != 0);
+  return u << shift;
+}
+
+
+// inspired by: Jonathan Webster
+// reference: https://maths-people.anu.edu.au/~brent/pub/pub077.html
+template <class T> T hybrid2_binary_gcd(T u, T v) {
+  if (u < v) {
+    std::swap(u, v);
+  }
+  if (v == 0) {
+    return u;
+  }
+  u %= v;
+  if (u == 0) {
+    return v;
+  }
+  auto zu = std::countr_zero(u);
+  auto zv = std::countr_zero(v);
+  auto shift = std::min(zu, zv);
+  u >>= zu;
+  v >>= zv;
+  do {
+    bool is_set = (2 & (u^v));
+    T u_plus_v = u + v;
+    T u_minus_v = u - v;
+    int shift = is_set ? std::countr_zero(u_plus_v) : std::countr_zero(u_minus_v);
+    if (u > v) {
+      u = v, v = is_set ? u_plus_v : u_minus_v;
+    } else {
+      v = is_set ? u_plus_v : - u_minus_v;
+    }
+    v >>= shift;
+    /*
+    v >>= __builtin_ctz(v);
+    if (u > v)
+      std::swap(u, v);
+    (2 & (u^v)) ? v = v + u : v =  v - u; // warning: might overflow!!!
+    */
+  } while (v != 0);
+  return u << shift;
+}
+
 template <class T> T hybrid_binary_gcd(T u, T v) {
   if (u < v) {
     std::swap(u, v);

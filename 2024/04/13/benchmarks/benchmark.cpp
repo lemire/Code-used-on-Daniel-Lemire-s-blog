@@ -96,6 +96,10 @@ int main(int argc, char **argv) {
       assert_me(std::gcd(x, y) == extended_gcd(x, y).gcd);
       assert_me(std::gcd(x, y) == binary_gcd(x, y));
       assert_me(std::gcd(x, y) == hybrid_binary_gcd(x, y));
+      assert_me(std::gcd(x, y) == hybrid2_binary_gcd(x, y));
+      assert_me(std::gcd(x, y) == gcd_webster1(x, y));
+      assert_me(std::gcd(x, y) == gcd_webster2(x, y));
+
       assert_me(binary_gcd_noswap(x, y) == binary_gcd(x, y));
       if(extended_gcd(x, y).gcd > largest) {
         largest = extended_gcd(x, y).gcd;
@@ -156,6 +160,31 @@ int main(int argc, char **argv) {
                  for (uint64_t x : vector1) {
                    for (uint64_t y : vector2) {
                      counter = counter + hybrid_binary_gcd(x, y);
+                   }
+                 }
+               }));
+
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "hybrid2_binary_gcd",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + hybrid2_binary_gcd(x, y);
+                   }
+                 }
+               }));
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "gcd_webster1",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + gcd_webster1(x, y);
+                   }
+                 }
+               }));
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "gcd_webster2",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + gcd_webster2(x, y);
                    }
                  }
                }));
