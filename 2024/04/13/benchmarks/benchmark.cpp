@@ -34,7 +34,7 @@ bool assert_me(bool condition) {
 }
 
 int main(int argc, char **argv) {
-  const size_t N = 2048;
+  const size_t N = 1024;
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_int_distribution<uint64_t> dis(0, std::numeric_limits<uint64_t>::max() / 16);
@@ -115,30 +115,6 @@ int main(int argc, char **argv) {
 
   size_t volume = (N - 1) * (N - 1);
   volatile uint64_t counter = 0;
-  pretty_print(volume, volume * sizeof(uint64_t) * 2, "extended_one_gcd",
-               bench([&counter, &vector1, &vector2]() {
-                 for (uint64_t x : vector1) {
-                   for (uint64_t y : vector2) {
-                     counter = counter + extended_one_gcd(x, y).gcd;
-                   }
-                 }
-               }));
-  pretty_print(volume, volume * sizeof(uint64_t) * 2, "extended_gcd",
-               bench([&counter, &vector1, &vector2]() {
-                 for (uint64_t x : vector1) {
-                   for (uint64_t y : vector2) {
-                     counter = counter + extended_gcd(x, y).gcd;
-                   }
-                 }
-               }));
-  pretty_print(volume, volume * sizeof(uint64_t) * 2, "binary_extended_gcd",
-               bench([&counter, &vector1, &vector2]() {
-                 for (uint64_t x : vector1) {
-                   for (uint64_t y : vector2) {
-                     counter = counter + binary_extended_gcd(x, y).gcd;
-                   }
-                 }
-               }));
   pretty_print(volume, volume * sizeof(uint64_t) * 2, "std::gcd",
                bench([&counter, &vector1, &vector2]() {
                  for (uint64_t x : vector1) {
@@ -201,6 +177,82 @@ int main(int argc, char **argv) {
                  for (uint64_t x : vector1) {
                    for (uint64_t y : vector2) {
                      counter = counter + naive_gcd(x, y);
+                   }
+                 }
+               }));
+
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "hybrid_pm_binary_gcd",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + hybrid_pm_binary_gcd(x, y);
+                   }
+                 }
+               }));
+
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "ui_hybrid_pm_binary_gcd",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + ui_hybrid_pm_binary_gcd(x, y);
+                   }
+                 }
+               }));
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "hybrid_binary_gcd_noswap",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + hybrid_binary_gcd_noswap(x, y);
+                   }
+                 }
+               }));
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "ui_hybrid_binary_gcd_noswap",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + ui_hybrid_binary_gcd_noswap(x, y);
+                   }
+                 }
+               }));
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "ui_pm_binary_gcd",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + ui_pm_binary_gcd(x, y);
+                   }
+                 }
+               }));
+
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "ui_binary_gcd_noswap",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + ui_binary_gcd_noswap(x, y);
+                   }
+                 }
+               }));
+
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "extended_one_gcd",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + extended_one_gcd(x, y).gcd;
+                   }
+                 }
+               }));
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "extended_gcd",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + extended_gcd(x, y).gcd;
+                   }
+                 }
+               }));
+  pretty_print(volume, volume * sizeof(uint64_t) * 2, "binary_extended_gcd",
+               bench([&counter, &vector1, &vector2]() {
+                 for (uint64_t x : vector1) {
+                   for (uint64_t y : vector2) {
+                     counter = counter + binary_extended_gcd(x, y).gcd;
                    }
                  }
                }));
