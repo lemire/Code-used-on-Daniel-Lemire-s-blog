@@ -118,12 +118,6 @@ template <class T> T hybrid2_binary_gcd(T u, T v) {
       v = is_set ? u_plus_v : - u_minus_v;
     }
     v >>= shift;
-    /*
-    v >>= __builtin_ctz(v);
-    if (u > v)
-      std::swap(u, v);
-    (2 & (u^v)) ? v = v + u : v =  v - u; // warning: might overflow!!!
-    */
   } while (v != 0);
   return u << shift;
 }
