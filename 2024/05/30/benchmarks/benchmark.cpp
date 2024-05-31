@@ -26,6 +26,7 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
 }
 
 int main(int argc, char **argv) {
+  std::string justquotes(75,'\"');
   std::vector<std::string> data = {"Hello, World!",
                                    "La vie est belle",
                                    "C++ is fun",
@@ -130,7 +131,7 @@ int main(int argc, char **argv) {
     volume += s.size();
   }
   volatile uint64_t counter = 0;
-  if(!simple_needs_escaping("\"")) {
+  if(!simple_needs_escaping(justquotes)) {
     printf("simple implementation is not correct\n");
     return 1;
   }
@@ -140,7 +141,7 @@ int main(int argc, char **argv) {
                    counter += simple_needs_escaping(s);
                  }
                }));
-  if(!branchless_needs_escaping("\"")) {
+  if(!branchless_needs_escaping(justquotes)) {
     printf("branchless implementation is not correct\n");
     return 1;
   }
@@ -150,7 +151,7 @@ int main(int argc, char **argv) {
                    counter += branchless_needs_escaping(s);
                  }
                }));
-  if(!table_needs_escaping("\"")) {
+  if(!table_needs_escaping(justquotes)) {
     printf("table implementation is not correct\n");
     return 1;
   }
@@ -161,7 +162,7 @@ int main(int argc, char **argv) {
                  }
                }));
 #if HAS_NEON || HAS_SSE2
-  if(!simd_needs_escaping("\"")) {
+  if(!simd_needs_escaping(justquotes)) {
     printf("SIMD implementation is not correct\n");
     return 1;
   }
