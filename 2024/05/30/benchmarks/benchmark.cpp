@@ -130,18 +130,30 @@ int main(int argc, char **argv) {
     volume += s.size();
   }
   volatile uint64_t counter = 0;
+  if(!simple_needs_escaping("\"")) {
+    printf("simple implementation is not correct\n");
+    return 1;
+  }
   pretty_print(data.size(), volume, "simple_needs_escaping",
                bench([&data, &counter]() {
                  for (const std::string &s : data) {
                    counter += simple_needs_escaping(s);
                  }
                }));
+  if(!branchless_needs_escaping("\"")) {
+    printf("branchless implementation is not correct\n");
+    return 1;
+  }
   pretty_print(data.size(), volume, "branchless_needs_escaping",
                bench([&data, &counter]() {
                  for (const std::string &s : data) {
                    counter += branchless_needs_escaping(s);
                  }
                }));
+  if(!table_needs_escaping("\"")) {
+    printf("table implementation is not correct\n");
+    return 1;
+  }
   pretty_print(data.size(), volume, "table_needs_escaping",
                bench([&data, &counter]() {
                  for (const std::string &s : data) {
@@ -149,6 +161,10 @@ int main(int argc, char **argv) {
                  }
                }));
 #if HAS_NEON || HAS_SSE2
+  if(!simd_needs_escaping("\"")) {
+    printf("SIMD implementation is not correct\n");
+    return 1;
+  }
   pretty_print(data.size(), volume, "simd_needs_escaping",
                bench([&data, &counter]() {
                  for (const std::string &s : data) {
