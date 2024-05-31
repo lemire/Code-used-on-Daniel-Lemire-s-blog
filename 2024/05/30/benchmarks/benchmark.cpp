@@ -26,8 +26,8 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
 }
 
 int main(int argc, char **argv) {
-  std::string justquotes(75,'\"');
-  std::string justbackslash(75,'\\');
+  std::string justquotes(64,'\"');
+  std::string justbackslash(64,'\\');
 
   std::vector<std::string> data = {"Hello, World!",
                                    "La vie est belle",
