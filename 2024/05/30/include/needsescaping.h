@@ -2,16 +2,15 @@
 #include <cstdint>
 static constexpr std::array<uint8_t, 256> json_quotable_character =
     []() constexpr {
-  std::array<uint8_t, 256> result{};
-  for (int i = 0; i < 32; i++) {
-    result[i] = 1;
-  }
-  for (int i : {'"', '\\'}) {
-    result[i] = 1;
-  }
-  return result;
-}
-();
+      std::array<uint8_t, 256> result{};
+      for (int i = 0; i < 32; i++) {
+        result[i] = 1;
+      }
+      for (int i : {'"', '\\'}) {
+        result[i] = 1;
+      }
+      return result;
+    }();
 
 constexpr inline bool simple_needs_escaping(std::string_view v) {
   for (char c : v) {
@@ -62,13 +61,17 @@ inline bool simd_needs_escaping(std::string_view view) {
   uint8x16_t running{0};
   for (; i + 15 < view.size(); i += 16) {
     uint8x16_t word = vld1q_u8((const uint8_t *)view.data() + i);
-    running = vorrq_u8(running, vceqq_u8(vqtbl1q_u8(rnt, vandq_u8(word, vdupq_n_u8(15))), word));
+    running = vorrq_u8(
+        running,
+        vceqq_u8(vqtbl1q_u8(rnt, vandq_u8(word, vdupq_n_u8(15))), word));
     running = vorrq_u8(running, vcltq_u8(word, vdupq_n_u8(32)));
   }
   if (i < view.size()) {
     uint8x16_t word =
         vld1q_u8((const uint8_t *)view.data() + view.length() - 16);
-    running = vorrq_u8(running, vceqq_u8(vqtbl1q_u8(rnt, vandq_u8(word, vdupq_n_u8(15))), word));
+    running = vorrq_u8(
+        running,
+        vceqq_u8(vqtbl1q_u8(rnt, vandq_u8(word, vdupq_n_u8(15))), word));
     running = vorrq_u8(running, vcltq_u8(word, vdupq_n_u8(32)));
   }
   return vmaxvq_u32(vreinterpretq_u32_u8(running)) != 0;
