@@ -60,6 +60,8 @@ inline bool simd_needs_escaping(std::string_view view) {
   const uint8x16_t rnt = vld1q_u8(rnt_array);
   uint8x16_t running{0};
   for (; i + 15 < view.size(); i += 16) {
+    // We could potentially save one instruction:
+    // running = vorrq_u8( running, vceqq_u8( vqtbl1q_u8(rnt, vshrq_n_u8(word, 5)), vmaxq_u8(word, vdupq_n_u8(31))));
     uint8x16_t word = vld1q_u8((const uint8_t *)view.data() + i);
     running = vorrq_u8(
         running,
