@@ -148,11 +148,12 @@ int main(int argc, char **argv) {
                    counter += table_needs_escaping(s);
                  }
                }));
-
+#if HAS_NEON || HAS_SSE2
   pretty_print(data.size(), volume, "simd_needs_escaping",
                bench([&data, &counter]() {
                  for (const std::string &s : data) {
                    counter += simd_needs_escaping(s);
                  }
                }));
+#endif
 }
