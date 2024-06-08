@@ -78,4 +78,14 @@ int main(int argc, char **argv) {
                      start++;
                  }
                }));
+  pretty_print(size, volume, "AdvanceStringTableSimpler", bench([&data, &count]() {
+                 const char *start = data.data();
+                 const char *end = start + data.size();
+                 while (start < end) {
+                   count = *start;
+                   AdvanceStringTableSimpler(start, end);
+                   if (start < end)
+                     start++;
+                 }
+               }));
 }

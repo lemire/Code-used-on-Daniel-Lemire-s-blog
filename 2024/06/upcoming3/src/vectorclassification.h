@@ -69,6 +69,32 @@ void AdvanceStringTable(const char *&start, const char *end) {
   }
 }
 
+
+void AdvanceStringTableSimpler(const char *&start, const char *end) {
+  uint8x16_t low_nibble_mask = {0, 0, 0, 0, 0, 0, 0x26, 0, 0, 0, 0, 0, 0x3c, 0xd, 0, 0};
+  uint8x16_t v0f = vmovq_n_u8(0xf);
+  uint8x16_t bit_mask = {16, 15, 14, 13, 12, 11, 10, 9, 8,
+                            7, 6, 5, 4, 3, 2, 1};
+  static constexpr auto stride = 16;
+  for (; start + (stride - 1) < end; start += stride) {
+    uint8x16_t data = vld1q_u8(reinterpret_cast<const uint8_t *>(start));
+    uint8x16_t lowpart = vqtbl1q_u8(low_nibble_mask, vandq_u8(data, v0f));
+    uint8x16_t matchesones = vceqq_u8(lowpart, data);
+    if(vmaxvq_u32(matchesones) != 0) {
+uint8x16_t matches = vandq_u8(bit_mask, matchesones);
+    int m = vmaxvq_u8(matches);
+    if(m != 0) {
+      start += 16 - m;
+      return;
+    }    }
+    
+  }  
+  for (;start < end; start++) {
+    if(*start == '<' || *start == '&' || *start == '\r' || *start == '\0') {
+      return;
+    }
+  }
+}
 #else
 #include <emmintrin.h>
 
@@ -103,6 +129,10 @@ void AdvanceString(const char*& start, const char* end) {
 }
 
 void AdvanceStringTable(const char *&start, const char *end) {
+  AdvanceString(start, end);
+}
+
+void AdvanceStringTableSimpler(const char *&start, const char *end) {
   AdvanceString(start, end);
 }
 #endif

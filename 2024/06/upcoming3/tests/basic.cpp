@@ -59,5 +59,11 @@ int main() {
   } else {
     std::cout << "AdvanceStringTable passed" << std::endl;
   }
+  if (!run_basic(AdvanceStringTableSimpler)) {
+    std::cerr << "AdvanceStringTableSimpler failed" << std::endl;
+    return EXIT_FAILURE;
+  } else {
+    std::cout << "AdvanceStringTableSimpler passed" << std::endl;
+  }
   return EXIT_SUCCESS;
 }
