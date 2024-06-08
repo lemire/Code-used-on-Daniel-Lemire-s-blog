@@ -2,8 +2,6 @@
 
 #include <cstdint>
 #include <span>
-#include <arm_neon.h>
-
 void NaiveAdvanceString(const char *&start, const char *end) {
   for (;start < end; start++) {
     if(*start == '<' || *start == '&' || *start == '\r' || *start == '\0') {
@@ -11,6 +9,10 @@ void NaiveAdvanceString(const char *&start, const char *end) {
     }
   }
 }
+#if defined(__aarch64__) 
+#include <arm_neon.h>
+
+
 void AdvanceString(const char *&start, const char *end) {
   uint8x16_t quote_mask = vmovq_n_u8('<');
   uint8x16_t escape_mask = vmovq_n_u8('&');
@@ -66,3 +68,41 @@ void AdvanceStringTable(const char *&start, const char *end) {
     }
   }
 }
+
+#else
+#include <emmintrin.h>
+
+void AdvanceString(const char*& start, const char* end) {
+    const __m128i quote_mask = _mm_set1_epi8('<');
+    const __m128i escape_mask = _mm_set1_epi8('&');
+    const __m128i newline_mask = _mm_set1_epi8('\r');
+    const __m128i zero_mask = _mm_set1_epi8('\0');
+
+    static constexpr auto stride = 16;
+    for (; start + (stride - 1) < end; start += stride) {
+        __m128i data = _mm_loadu_si128(reinterpret_cast<const __m128i*>(start));
+        __m128i quotes = _mm_cmpeq_epi8(data, quote_mask);
+        __m128i escapes = _mm_cmpeq_epi8(data, escape_mask);
+        __m128i newlines = _mm_cmpeq_epi8(data, newline_mask);
+        __m128i zeros = _mm_cmpeq_epi8(data, zero_mask);
+        __m128i mask = _mm_or_si128(_mm_or_si128(quotes, zeros), _mm_or_si128(escapes, newlines));
+        int m = _mm_movemask_epi8(mask);
+        if (m != 0) {
+            start += __builtin_ctz(m);
+            return;
+        }
+    }
+
+    // Process any remaining bytes (less than 16)
+    while (start < end) {
+        if (*start == '<' || *start == '&' || *start == '\r' || *start == '\0') {
+            return;
+        }
+        start++;
+    }
+}
+
+void AdvanceStringTable(const char *&start, const char *end) {
+  AdvanceString(start, end);
+}
+#endif
