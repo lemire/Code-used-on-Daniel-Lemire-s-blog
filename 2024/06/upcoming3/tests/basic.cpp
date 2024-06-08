@@ -1,5 +1,6 @@
 #include "vectorclassification.h"
 #include <cstdlib>
+#include <functional>
 #include <iostream>
 #include <string_view>
 using namespace std::literals;

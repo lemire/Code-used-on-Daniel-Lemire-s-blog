@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "vectorclassification.h"
-std::string load_file_content(std::string_view filename) {
+std::string load_file_content(std::string filename) {
   std::ifstream file(filename);
   if (!file.is_open()) {
     std::cerr << "Error opening file: " << filename << std::endl;
