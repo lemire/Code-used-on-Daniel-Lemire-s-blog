@@ -2,6 +2,8 @@
 
 #include <cstddef>
 #include <memory>
+#include <stdexcept>
+
 
 template <typename T> struct Matrix {
   Matrix(size_t rows, size_t cols)
