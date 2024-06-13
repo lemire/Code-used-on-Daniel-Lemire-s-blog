@@ -11,7 +11,7 @@
 void pretty_print(size_t, size_t doubles, std::string name,
                   event_aggregate agg) {
   printf("%-40s : ", name.c_str());
-  printf(" %5.2f Gvalue/s ", doubles / agg.fastest_elapsed_ns());
+  printf(" %5.2f Kvalue/s ", doubles * 1000 * 1000 / agg.fastest_elapsed_ns());
   printf(" %5.2f ns/value ", agg.fastest_elapsed_ns() / doubles);
 
   if (collector.has_events()) {
@@ -25,7 +25,7 @@ void pretty_print(size_t, size_t doubles, std::string name,
 
 int main(int argc, char **argv) {
   size_t size = 100;
-  size_t volume = size * size * size;
+  size_t volume = 1;
   Matrix<double> a(size, size);
   Matrix<double> b(size, size);
   Matrix<double> c = allocate_multiply(a, b);
