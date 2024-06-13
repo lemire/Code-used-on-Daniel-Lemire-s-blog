@@ -46,8 +46,8 @@ void multiply_ikj(const Matrix<T> &a, const Matrix<T> &b, Matrix<T> &c) {
 template <typename T>
 void multiply_ijk(const Matrix<T> &a, const Matrix<T> &b, Matrix<T> &c) {
   for (size_t i = 0; i < a.rows; i++) {
-    for (size_t k = 0; k < a.cols; k++) {
-      for (size_t j = 0; j < b.cols; j++) {
+    for (size_t j = 0; j < b.cols; j++) {
+      for (size_t k = 0; k < a.cols; k++) {
         c(i, j) += a(i, k) * b(k, j);
       }
     }
