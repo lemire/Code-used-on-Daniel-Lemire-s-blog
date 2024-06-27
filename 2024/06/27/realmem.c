@@ -1,6 +1,5 @@
-#include <malloc.h>
 #include <stdio.h>
-
+#include <stdlib.h>
 #if __linux__
 #include <malloc.h>
 size_t available(const void *ptr) {
@@ -11,11 +10,13 @@ size_t available(const void *ptr) {
 size_t available(const void *ptr) {
   return malloc_size(ptr);
 }
+#else
+#error "Unsupported platform"
 #endif
-int main() {
-  for (size_t i = 1; i < 1000; i++) {
+int main(void) {
+  for (size_t i = 1; i < 100; i++) {
     char *c = (char *)malloc(i);
-    printf("%d %d %d\n", i, available(c), available(c) - i);
+    printf("%zu %zu %zu\n", i, available(c), available(c) - i);
     free(c);
   }
 }
