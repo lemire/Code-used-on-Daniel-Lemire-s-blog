@@ -69,7 +69,6 @@ void AdvanceStringTable(const char *&start, const char *end) {
   }
 }
 
-
 void AdvanceStringTableSimpler(const char *&start, const char *end) {
   uint8x16_t low_nibble_mask = {0, 0, 0, 0, 0, 0, 0x26, 0, 0, 0, 0, 0, 0x3c, 0xd, 0, 0};
   uint8x16_t v0f = vmovq_n_u8(0xf);
@@ -80,12 +79,13 @@ void AdvanceStringTableSimpler(const char *&start, const char *end) {
     uint8x16_t data = vld1q_u8(reinterpret_cast<const uint8_t *>(start));
     uint8x16_t lowpart = vqtbl1q_u8(low_nibble_mask, vandq_u8(data, v0f));
     uint8x16_t matchesones = vceqq_u8(lowpart, data);
-    uint8x16_t matches = vandq_u8(bit_mask, matchesones);
-    int m = vmaxvq_u8(matches);
-    if(m != 0) {
+    if(vmaxvq_u32(vreinterpretq_u32_u8(matchesones)) != 0) {
+      uint8x16_t matches = vandq_u8(bit_mask, matchesones);
+      int m = vmaxvq_u8(matches);
       start += 16 - m;
-      return;
+      return;    
     }
+
   }  
   for (;start < end; start++) {
     if(*start == '<' || *start == '&' || *start == '\r' || *start == '\0') {
