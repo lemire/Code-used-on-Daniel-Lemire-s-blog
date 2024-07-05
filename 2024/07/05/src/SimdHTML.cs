@@ -53,7 +53,7 @@ namespace SimdHTML
                 Vector128<byte> low_nibble_lut128 = Vector128.Create(
                     0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0);
                 Vector256<byte> low_nibble_lut = Vector256.Create(low_nibble_lut128, low_nibble_lut128);
-                Vector256<byte> v0f = Vector128.Create((byte)0x0F);
+                Vector256<byte> v0f = Vector256.Create((byte)0x0F);
 
 
                 const int stride = 32;
