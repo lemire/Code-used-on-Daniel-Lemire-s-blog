@@ -10,12 +10,14 @@ namespace SimdHTML
     public static class FastScan
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static void NaiveAdvanceString(ref byte* start, byte* end)
+        public unsafe static void NaiveAdvanceString(ref byte* startm, byte* end)
         {
+            byte* start = startm;
             while (start < end)
             {
                 if (*start == '<' || *start == '&' || *start == '\r' || *start == '\0')
                 {
+                    startm = start;
                     return;
                 }
                 start++;
@@ -23,8 +25,9 @@ namespace SimdHTML
 
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static void SIMDAdvanceString(ref byte* start, byte* end)
+        public unsafe static void SIMDAdvanceString(ref byte* startm, byte* end)
         {
+            byte* start = startm;
             if (AdvSimd.Arm64.IsSupported)
             {
                 Vector128<byte> low_nibble_mask = Vector128.Create(0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0);
@@ -43,11 +46,13 @@ namespace SimdHTML
                         Vector128<byte> matches = AdvSimd.And(bit_mask, matchesones);
                         int m = AdvSimd.Arm64.MaxAcross(matches).ToScalar();
                         start += 16 - m;
+                        startm = start;
                         return;
                     }
                     start += stride;
                 }
-            } else if (Avx2.IsSupported)
+            }
+            else if (Avx2.IsSupported)
             {
                 // credit : Harold Aptroot
                 Vector128<byte> low_nibble_lut128 = Vector128.Create(
@@ -66,11 +71,13 @@ namespace SimdHTML
                     if (mask != 0)
                     {
                         start += BitOperations.TrailingZeroCount(mask);
+                        startm = start;
                         return;
                     }
                     start += stride;
                 }
-            } else if (Ssse3.IsSupported)
+            }
+            else if (Ssse3.IsSupported)
             {
                 // credit : Harold Aptroot
                 Vector128<byte> low_nibble_lut = Vector128.Create(
@@ -89,6 +96,7 @@ namespace SimdHTML
                     if (mask != 0)
                     {
                         start += BitOperations.TrailingZeroCount(mask);
+                        startm = start;
                         return;
                     }
                     start += stride;
@@ -100,6 +108,7 @@ namespace SimdHTML
             {
                 if (*start == '<' || *start == '&' || *start == '\r' || *start == '\0')
                 {
+                    startm = start;
                     return;
                 }
                 start++;
