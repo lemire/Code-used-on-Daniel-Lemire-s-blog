@@ -111,6 +111,7 @@ namespace SimdHTML
                 }
                 start++;
             }
+            startm = start;
         }
     }
 }
