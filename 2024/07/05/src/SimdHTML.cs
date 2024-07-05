@@ -35,7 +35,7 @@ namespace SimdHTML
                 while (start + (stride - 1) < end)
                 {
                     Vector128<byte> data = AdvSimd.LoadVector128((byte*)start);
-                    Vector128<byte> lowpart = AdvSimd.Arm64.VectorTableLookup(low_nibble_mask, data);
+                    Vector128<byte> lowpart = AdvSimd.Arm64.VectorTableLookup(low_nibble_mask, data & v0f);
                     Vector128<byte> matchesones = AdvSimd.CompareEqual(lowpart, data);
                     if (matchesones != Vector128<byte>.Zero)
                     {
