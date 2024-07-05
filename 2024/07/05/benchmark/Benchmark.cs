@@ -168,7 +168,24 @@ namespace SimdHTMLBenchmarks
         {
             if (allLinesUtf8 != null)
             {
-                RunHTMLScanBenchmark(allLinesUtf8, (ref byte* s, byte* e) => SimdHTML.FastScan.SIMDAdvanceString(ref s, e));
+                unsafe
+                {
+                    fixed (byte* pUtf8 = allLinesUtf8)
+                    {
+                        byte* start = pUtf8;
+                        byte* end = pUtf8 + allLinesUtf8.Length;
+                        while (start != end)
+                        {
+                            SimdHTML.FastScan.SIMDAdvanceString(ref start, end);
+                            if (start == end)
+                            {
+                                break;
+                            }
+                            start++;
+                        }
+                    }
+                }
+                // RunHTMLScanBenchmark(allLinesUtf8, (ref byte* s, byte* e) => SimdHTML.FastScan.SIMDAdvanceString(ref s, e));
             }
 
         }
@@ -180,7 +197,24 @@ namespace SimdHTMLBenchmarks
         {
             if (allLinesUtf8 != null)
             {
-                RunHTMLScanBenchmark(allLinesUtf8, (ref byte* s, byte* e) => SimdHTML.FastScan.NaiveAdvanceString(ref s, e));
+                unsafe
+                {
+                    fixed (byte* pUtf8 = allLinesUtf8)
+                    {
+                        byte* start = pUtf8;
+                        byte* end = pUtf8 + allLinesUtf8.Length;
+                        while (start != end)
+                        {
+                            SimdHTML.FastScan.NaiveAdvanceString(ref start, end);
+                            if (start == end)
+                            {
+                                break;
+                            }
+                            start++;
+                        }
+                    }
+                }
+                // RunHTMLScanBenchmark(allLinesUtf8, (ref byte* s, byte* e) => SimdHTML.FastScan.NaiveAdvanceString(ref s, e));
             }
         }
 
