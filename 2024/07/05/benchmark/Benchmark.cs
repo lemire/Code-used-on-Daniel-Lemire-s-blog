@@ -235,7 +235,6 @@ namespace SimdHTMLBenchmarks
                     }
 
                 }
-                // RunHTMLScanBenchmark(allLinesUtf8, (ref byte* s, byte* e) => SimdHTML.FastScan.NaiveAdvanceString(ref s, e));
             }
         }
 
