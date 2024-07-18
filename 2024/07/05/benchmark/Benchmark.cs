@@ -238,7 +238,6 @@ namespace SimdHTMLBenchmarks
             }
         }
 
-
     }
 
 
