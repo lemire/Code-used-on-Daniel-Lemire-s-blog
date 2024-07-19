@@ -52,6 +52,29 @@ namespace SimdHTML
                     start += stride;
                 }
             }
+            // We deliberately disable it
+            else  if (false) // Vector512.IsHardwareAccelerated && Avx512F.IsSupported && Avx512BW.IsSupported && Avx512Vbmi.IsSupported)
+            {
+                Vector512<byte> low_nibble_lut = Vector512.Create(0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0,
+                0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0,
+                0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0,
+                0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0);
+                const int stride = 64;
+                while (start + (stride - 1) < end)
+                {
+                    Vector512<byte> data = Avx512F.LoadVector512((byte*)start);
+                    Vector512<byte> transform = Avx512BW.Shuffle(low_nibble_lut, data);
+                    Vector512<byte> matches_transform = Avx512BW.CompareEqual(transform, data);
+                    UInt64 mask = matches_transform.ExtractMostSignificantBits();;
+                    if(mask != 0)
+                    {
+                        start += BitOperations.TrailingZeroCount(mask);
+                        startm = start;
+                        return;
+                    }
+                    start += stride;
+                }
+            }
             else if (Avx2.IsSupported)
             {
                 // credit : Harold Aptroot
