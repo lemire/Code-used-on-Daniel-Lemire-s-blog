@@ -164,8 +164,9 @@ namespace SimdHTMLBenchmarks
         [Benchmark]
         [BenchmarkCategory("default")]
 
-        public unsafe void SIMDHTMLScan()
+        public unsafe int SIMDHTMLScan()
         {
+            int count = 0;
             if (allLinesUtf8 != null)
             {
                 unsafe
@@ -181,20 +182,53 @@ namespace SimdHTMLBenchmarks
                             {
                                 break;
                             }
+                            count += *start;
                             start++;
                         }
                     }
                 }
-                // RunHTMLScanBenchmark(allLinesUtf8, (ref byte* s, byte* e) => SimdHTML.FastScan.SIMDAdvanceString(ref s, e));
             }
+            return count;
+        }
+
+
+
+        [Benchmark]
+        [BenchmarkCategory("default")]
+
+        public unsafe int NEONHTMLScan()
+        {
+            int count = 0;
+            if (allLinesUtf8 != null && AdvSimd.Arm64.IsSupported)
+            {
+                
+                unsafe
+                {
+                    fixed (byte* pUtf8 = allLinesUtf8)
+                    {
+                        byte* start = pUtf8;
+                        byte* end = pUtf8 + allLinesUtf8.Length;
+                        SimdHTML.NeonMatch match = new SimdHTML.NeonMatch(start, end);
+                        while (match.Advance())
+                        {
+                            count += *match.Get();
+                            match.Consume();
+                        }
+            
+                    }
+                }
+            }
+            return count;
 
         }
 
         [Benchmark]
         [BenchmarkCategory("default")]
 
-        public unsafe void HTMLScan()
+        public unsafe int HTMLScan()
         {
+            int count = 0;
+
             if (allLinesUtf8 != null)
             {
                 unsafe
@@ -210,19 +244,22 @@ namespace SimdHTMLBenchmarks
                             {
                                 break;
                             }
+                            count += *start;
                             start++;
                         }
                     }
                 }
             }
+            return count;
         }
         private static readonly SearchValues<byte> searchValues = SearchValues.Create(stackalloc byte[] { 0, 13, 38, 60 });
 
         [Benchmark]
         [BenchmarkCategory("default")]
 
-        public unsafe void SearchValuesBench()
+        public unsafe int SearchValuesBench()
         {
+            int count = 0;
             if (allLinesUtf8 != null)
             {
                 unsafe
@@ -232,10 +269,12 @@ namespace SimdHTMLBenchmarks
                     {
                         int first = data.IndexOfAny(searchValues);
                         data = data.Slice(first >= 0 ? first + 1 : 1);
+                        if (first >= 0) count += data[0];
                     }
 
                 }
             }
+            return count;
         }
 
     }
