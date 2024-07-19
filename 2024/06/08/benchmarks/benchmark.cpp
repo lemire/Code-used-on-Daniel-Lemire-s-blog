@@ -8,6 +8,7 @@
 #include <random>
 #include <string>
 #include <string_view>
+#include <cstring>
 
 #include "vectorclassification.h"
 std::string load_file_content(std::string filename) {
@@ -165,7 +166,7 @@ int main(int argc, char **argv) {
                  const char *end = start + data.size();
                  neon_match m(start, end);
                  while (m.advance()) {
-                   count = *m.get();
+                   count = *m.get(); // volatile assignment (compiler cannot cheat)
                    m.consume();
                  }
                }));
@@ -175,7 +176,7 @@ int main(int argc, char **argv) {
                  const char *start = data.data();
                  const char *end = start + data.size();
                  while (start < end) {
-                   count = *start;
+                   count = *start;  // volatile assignment (compiler cannot cheat)
                    NaiveAdvanceString(start, end);
                    if (start < end)
                      start++;
@@ -185,7 +186,7 @@ int main(int argc, char **argv) {
                  const char *start = data.data();
                  const char *end = start + data.size();
                  while (start < end) {
-                   count = *start;
+                   count = *start;  // volatile assignment (compiler cannot cheat)
                    AdvanceString(start, end);
                    if (start < end)
                      start++;
@@ -195,7 +196,7 @@ int main(int argc, char **argv) {
                  const char *start = data.data();
                  const char *end = start + data.size();
                  while (start < end) {
-                   count = *start;
+                   count = *start;  // volatile assignment (compiler cannot cheat)
                    AdvanceStringTable(start, end);
                    if (start < end)
                      start++;
@@ -206,7 +207,7 @@ int main(int argc, char **argv) {
                  const char *start = data.data();
                  const char *end = start + data.size();
                  while (start < end) {
-                   count = *start;
+                   count = *start;  // volatile assignment (compiler cannot cheat)
                    AdvanceStringTableSimpler(start, end);
                    if (start < end)
                      start++;
@@ -217,7 +218,7 @@ int main(int argc, char **argv) {
                  const char *start = data.data();
                  const char *end = start + data.size();
                  while (start < end) {
-                   count = *start;
+                   count = *start;  // volatile assignment (compiler cannot cheat)
                    AdvanceStringTableSimpler2(start, end);
                    if (start < end)
                      start++;
