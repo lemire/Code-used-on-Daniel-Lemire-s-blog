@@ -201,7 +201,7 @@ namespace SimdHTMLBenchmarks
             int count = 0;
             if (allLinesUtf8 != null && AdvSimd.Arm64.IsSupported)
             {
-                
+
                 unsafe
                 {
                     fixed (byte* pUtf8 = allLinesUtf8)
@@ -214,7 +214,7 @@ namespace SimdHTMLBenchmarks
                             count += *match.Get();
                             match.Consume();
                         }
-            
+
                     }
                 }
             }

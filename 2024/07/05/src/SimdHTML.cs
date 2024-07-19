@@ -8,96 +8,115 @@ using System.Numerics;
 namespace SimdHTML
 {
 
-public unsafe struct NeonMatch
-{
-  private byte* _start;
-  private readonly byte* _end;
-  private int _offset;
-  private ulong _matches;
-  private Vector128<byte> v0f;
-  private Vector128<byte> low_nibble_mask;
-  public NeonMatch(byte* start, byte* end)
-  {
-    _start = start;
-    _end = end;
-    low_nibble_mask = Vector128.Create(0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0);
-    v0f = Vector128.Create((byte)0x0F);
-    _offset = 0;
-    _matches = 0;
-
-    if (_start + 16 >= _end)
+    public unsafe struct NeonMatch
     {
-        Span<byte> buffer = stackalloc byte[16];
-        buffer.Fill(1);
-        fixed (byte* ptr = buffer)
+        private byte* _start;
+        private readonly byte* _end;
+        private int _offset;
+        private ulong _matches;
+        private Vector128<byte> v0f;
+        private Vector128<byte> low_nibble_mask;
+        public NeonMatch(byte* start, byte* end)
         {
-            Buffer.MemoryCopy(_start, ptr, 16, _end - _start);
-            Update(ptr);
+            _start = start;
+            _end = end;
+            low_nibble_mask = Vector128.Create(0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0);
+            v0f = Vector128.Create((byte)0x0F);
+            _offset = 0;
+            _matches = 0;
+
+            if (_start + 16 >= _end)
+            {
+                Span<byte> buffer = stackalloc byte[16];
+                buffer.Fill(1);
+                fixed (byte* ptr = buffer)
+                {
+                    Buffer.MemoryCopy(_start, ptr, 16, _end - _start);
+                    Update(ptr);
+                }
+            }
+            else
+            {
+                Update();
+            }
+        }
+
+        public byte* Get() => _start + _offset;
+
+        public void Consume()
+        {
+            _offset++;
+            _matches >>= 4;
+        }
+
+        public bool Advance()
+        {
+            while (_matches == 0)
+            {
+                _start += 16;
+                if (_start >= _end)
+                {
+                    return false;
+                }
+
+                if (_start + 16 >= _end)
+                {
+                    Span<byte> buffer = stackalloc byte[16];
+                    buffer.Fill(1);
+                    fixed (byte* ptr = buffer)
+                    {
+                        Buffer.MemoryCopy(_start, ptr, 16, _end - _start);
+                        Update(ptr);
+                    }
+
+                    if (_matches == 0)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    Update();
+                }
+            }
+
+            int off = BitOperations.TrailingZeroCount(_matches);
+            _matches >>= off;
+            _offset += off >> 2;
+            return true;
+        }
+
+        private void Update() => Update(_start);
+
+        private void Update(byte* s)
+        {
+            Vector128<byte> data = AdvSimd.LoadVector128(s);
+            Vector128<byte> lowpart = AdvSimd.Arm64.VectorTableLookup(low_nibble_mask, data & v0f);
+            Vector128<byte> matchesones = AdvSimd.CompareEqual(lowpart, data);
+            _matches = AdvSimd.ShiftRightLogicalNarrowingLower(matchesones.AsUInt16(), 4).AsUInt64().ToScalar();
+            _offset = 0;
+        }
+
+        public override bool Equals(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool operator ==(NeonMatch left, NeonMatch right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(NeonMatch left, NeonMatch right)
+        {
+            return !(left == right);
         }
     }
-    else
-    {
-      Update();
-    }
-  }
-
-  public byte* Get() => _start + _offset;
-
-  public void Consume()
-  {
-    _offset++;
-    _matches >>= 4;
-  }
-
-  public bool Advance()
-  {
-    while (_matches == 0)
-    {
-      _start += 16;
-      if (_start >= _end)
-      {
-        return false;
-      }
-
-      if (_start + 16 >= _end)
-      {
-        Span<byte> buffer = stackalloc byte[16];
-        buffer.Fill(1);
-        fixed (byte* ptr = buffer)
-        {
-            Buffer.MemoryCopy(_start, ptr, 16, _end - _start);
-            Update(ptr);
-        }
-        
-        if (_matches == 0)
-        {
-          return false;
-        }
-      }
-      else
-      {
-        Update();
-      }
-    }
-
-    int off = BitOperations.TrailingZeroCount(_matches);
-    _matches >>= off;
-    _offset += off >> 2;
-    return true;
-  }
-
-  private void Update() => Update(_start);
-
-  private void Update(byte* s)
-  {
-    Vector128<byte> data = AdvSimd.LoadVector128(s);
-    Vector128<byte> lowpart = AdvSimd.Arm64.VectorTableLookup(low_nibble_mask, data & v0f);
-    Vector128<byte> matchesones = AdvSimd.CompareEqual(lowpart, data);
-    _matches = AdvSimd.ShiftRightLogicalNarrowingLower(matchesones.AsUInt16(), 4).AsUInt64().ToScalar();
-    _offset = 0;
-  }
-
-}
     public static class FastScan
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -144,7 +163,7 @@ public unsafe struct NeonMatch
                 }
             }
             // We deliberately disable it
-            else  if (false) // Vector512.IsHardwareAccelerated && Avx512F.IsSupported && Avx512BW.IsSupported && Avx512Vbmi.IsSupported)
+            else if (false) // Vector512.IsHardwareAccelerated && Avx512F.IsSupported && Avx512BW.IsSupported && Avx512Vbmi.IsSupported)
             {
                 Vector512<byte> low_nibble_lut = Vector512.Create(0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0,
                 0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0,
@@ -156,8 +175,8 @@ public unsafe struct NeonMatch
                     Vector512<byte> data = Avx512F.LoadVector512((byte*)start);
                     Vector512<byte> transform = Avx512BW.Shuffle(low_nibble_lut, data);
                     Vector512<byte> matches_transform = Avx512BW.CompareEqual(transform, data);
-                    UInt64 mask = matches_transform.ExtractMostSignificantBits();;
-                    if(mask != 0)
+                    UInt64 mask = matches_transform.ExtractMostSignificantBits(); ;
+                    if (mask != 0)
                     {
                         start += BitOperations.TrailingZeroCount(mask);
                         startm = start;
