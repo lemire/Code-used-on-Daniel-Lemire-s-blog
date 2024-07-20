@@ -54,12 +54,7 @@ struct neon_match64 {
     v0f = vmovq_n_u8(0xf);
     offset = 0;
     if (start + 64 >= end) {
-      char buffer[64]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-      memcpy(buffer, start, end - start);
-      update(buffer);
+      carefulUpdate();
     } else {
       update();
     }
@@ -82,12 +77,7 @@ struct neon_match64 {
         return false;
       }
       if (start + 64 >= end) {
-        char buffer[64]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-        memcpy(buffer, start, end - start);
-        update(buffer);
+        carefulUpdate();
         if (matches == 0) {
           return false;
         }
@@ -102,12 +92,20 @@ struct neon_match64 {
   }
 
 private:
-  inline void update() { update(start); }
-  inline void update(const char *buffer) {
-    uint8x16_t data1 = vld1q_u8(reinterpret_cast<const uint8_t *>(buffer));
-    uint8x16_t data2 = vld1q_u8(reinterpret_cast<const uint8_t *>(buffer) + 16);
-    uint8x16_t data3 = vld1q_u8(reinterpret_cast<const uint8_t *>(buffer) + 32);
-    uint8x16_t data4 = vld1q_u8(reinterpret_cast<const uint8_t *>(buffer) + 48);
+  inline void carefulUpdate() {
+    uint8_t buffer[64]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    memcpy(buffer, start, end - start);
+    update(buffer);
+  }
+  inline void update() { update((const uint8_t*)start); }
+  inline void update(const uint8_t *buffer) {
+    uint8x16_t data1 = vld1q_u8(buffer);
+    uint8x16_t data2 = vld1q_u8(buffer + 16);
+    uint8x16_t data3 = vld1q_u8(buffer + 32);
+    uint8x16_t data4 = vld1q_u8(buffer + 48);
 
     uint8x16_t lowpart1 = vqtbl1q_u8(low_nibble_mask, vandq_u8(data1, v0f));
     uint8x16_t lowpart2 = vqtbl1q_u8(low_nibble_mask, vandq_u8(data2, v0f));
