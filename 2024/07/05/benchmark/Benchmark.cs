@@ -195,7 +195,6 @@ namespace SimdHTMLBenchmarks
 
         [Benchmark]
         [BenchmarkCategory("default")]
-
         public unsafe int NEONHTMLScan()
         {
             int count = 0;
@@ -219,7 +218,35 @@ namespace SimdHTMLBenchmarks
                 }
             }
             return count;
+        }
 
+
+
+        [Benchmark]
+        [BenchmarkCategory("default")]
+        public unsafe int NEON64HTMLScan()
+        {
+            int count = 0;
+            if (allLinesUtf8 != null && AdvSimd.Arm64.IsSupported)
+            {
+
+                unsafe
+                {
+                    fixed (byte* pUtf8 = allLinesUtf8)
+                    {
+                        byte* start = pUtf8;
+                        byte* end = pUtf8 + allLinesUtf8.Length;
+                        SimdHTML.NeonMatch64 match = new SimdHTML.NeonMatch64(start, end);
+                        while (match.Advance())
+                        {
+                            count += *match.Get();
+                            match.Consume();
+                        }
+
+                    }
+                }
+            }
+            return count;
         }
 
         [Benchmark]

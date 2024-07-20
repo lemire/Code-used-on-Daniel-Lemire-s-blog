@@ -8,32 +8,130 @@ using System.Numerics;
 namespace SimdHTML
 {
 
-    public unsafe struct NeonMatch
+
+    public unsafe sealed class NeonMatch64
+    {
+
+        private byte* _start;
+        private readonly byte* _end;
+        private int _offset;
+        private UInt64 _matches;
+        private static readonly Vector128<byte> v0f = Vector128.Create((byte)0x0F);
+        private static readonly Vector128<byte> low_nibble_mask = Vector128.Create(0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0);
+        private static readonly Vector128<byte> bit_mask = Vector128.Create(0x01, 0x02, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80, 0x01, 0x02, 0x4, 0x8, 0x10, 0x20, 0x40, 0x80);
+
+        public NeonMatch64(byte* start, byte* end)
+        {
+            _start = start;
+            _end = end;
+
+            _offset = 0;
+            _matches = 0;
+
+            if (_start + 64 >= _end)
+            {
+                carefulUpdate();
+            }
+            else
+            {
+                Update();
+            }
+        }
+
+        public byte* Get() => _start + _offset;
+
+        public void Consume()
+        {
+            _offset++;
+            _matches >>= 1;
+        }
+
+        public bool Advance()
+        {
+            while (_matches == 0)
+            {
+                _start += 64;
+
+                if (_start + 64 >= _end)
+                {
+                    if (_start >= _end)
+                    {
+                        return false;
+                    }
+                    carefulUpdate();
+                    if (_matches == 0)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    Update();
+                }
+            }
+
+            int off = BitOperations.TrailingZeroCount(_matches);
+            _matches >>= off;
+            _offset += off;
+            return true;
+        }
+
+        private void carefulUpdate()
+        {
+            Span<byte> buffer = stackalloc byte[64];
+            buffer.Fill(1);
+            fixed (byte* ptr = buffer)
+            {
+                Buffer.MemoryCopy(_start, ptr, 64, _end - _start);
+                Update(ptr);
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Update() => Update(_start);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Update(byte* s)
+        {
+            Vector128<byte> data1 = AdvSimd.LoadVector128(s);
+            Vector128<byte> data2 = AdvSimd.LoadVector128(s + 16);
+            Vector128<byte> data3 = AdvSimd.LoadVector128(s + 32);
+            Vector128<byte> data4 = AdvSimd.LoadVector128(s + 48);
+            Vector128<byte> lowpart1 = AdvSimd.Arm64.VectorTableLookup(low_nibble_mask, data1 & v0f);
+            Vector128<byte> lowpart2 = AdvSimd.Arm64.VectorTableLookup(low_nibble_mask, data2 & v0f);
+            Vector128<byte> lowpart3 = AdvSimd.Arm64.VectorTableLookup(low_nibble_mask, data3 & v0f);
+            Vector128<byte> lowpart4 = AdvSimd.Arm64.VectorTableLookup(low_nibble_mask, data4 & v0f);
+            Vector128<byte> matchesones1 = AdvSimd.CompareEqual(lowpart1, data1);
+            Vector128<byte> matchesones2 = AdvSimd.CompareEqual(lowpart2, data2);
+            Vector128<byte> matchesones3 = AdvSimd.CompareEqual(lowpart3, data3);
+            Vector128<byte> matchesones4 = AdvSimd.CompareEqual(lowpart4, data4);
+            Vector128<byte> sum0 = AdvSimd.Arm64.AddPairwise(matchesones1 & bit_mask, matchesones2 & bit_mask);
+            Vector128<byte> sum1 = AdvSimd.Arm64.AddPairwise(matchesones3 & bit_mask, matchesones4 & bit_mask);
+            sum0 = AdvSimd.Arm64.AddPairwise(sum0, sum1);
+            sum0 = AdvSimd.Arm64.AddPairwise(sum0, sum0);
+            _matches = sum0.AsUInt64().ToScalar();
+            _offset = 0;
+        }
+    }
+    public unsafe sealed class NeonMatch
     {
         private byte* _start;
         private readonly byte* _end;
         private int _offset;
         private ulong _matches;
-        private Vector128<byte> v0f;
-        private Vector128<byte> low_nibble_mask;
+
+        private static readonly Vector128<byte> v0f = Vector128.Create((byte)0x0F);
+        private static readonly Vector128<byte> low_nibble_mask = Vector128.Create(0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0);
+
         public NeonMatch(byte* start, byte* end)
         {
             _start = start;
             _end = end;
-            low_nibble_mask = Vector128.Create(0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0);
-            v0f = Vector128.Create((byte)0x0F);
             _offset = 0;
             _matches = 0;
 
             if (_start + 16 >= _end)
             {
-                Span<byte> buffer = stackalloc byte[16];
-                buffer.Fill(1);
-                fixed (byte* ptr = buffer)
-                {
-                    Buffer.MemoryCopy(_start, ptr, 16, _end - _start);
-                    Update(ptr);
-                }
+                carefulUpdate();
             }
             else
             {
@@ -54,20 +152,15 @@ namespace SimdHTML
             while (_matches == 0)
             {
                 _start += 16;
-                if (_start >= _end)
-                {
-                    return false;
-                }
+
 
                 if (_start + 16 >= _end)
                 {
-                    Span<byte> buffer = stackalloc byte[16];
-                    buffer.Fill(1);
-                    fixed (byte* ptr = buffer)
+                    if (_start >= _end)
                     {
-                        Buffer.MemoryCopy(_start, ptr, 16, _end - _start);
-                        Update(ptr);
+                        return false;
                     }
+                    carefulUpdate();
 
                     if (_matches == 0)
                     {
@@ -85,8 +178,19 @@ namespace SimdHTML
             _offset += off >> 2;
             return true;
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void carefulUpdate()
+        {
+            Span<byte> buffer = stackalloc byte[16];
+            buffer.Fill(1);
+            fixed (byte* ptr = buffer)
+            {
+                Buffer.MemoryCopy(_start, ptr, 16, _end - _start);
+                Update(ptr);
+            }
+        }
         private void Update() => Update(_start);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 
         private void Update(byte* s)
         {
@@ -97,25 +201,6 @@ namespace SimdHTML
             _offset = 0;
         }
 
-        public override bool Equals(object obj)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override int GetHashCode()
-        {
-            throw new NotImplementedException();
-        }
-
-        public static bool operator ==(NeonMatch left, NeonMatch right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(NeonMatch left, NeonMatch right)
-        {
-            return !(left == right);
-        }
     }
     public static class FastScan
     {
