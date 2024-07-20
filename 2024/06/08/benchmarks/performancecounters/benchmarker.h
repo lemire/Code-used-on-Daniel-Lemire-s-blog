@@ -20,5 +20,6 @@ event_aggregate bench(const function_type& function, size_t min_repeat = 10, siz
         N *= 10;
       }
     }
+    printf("N = %zu\n", N);
     return aggregate;
 }

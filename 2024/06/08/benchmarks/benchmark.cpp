@@ -94,13 +94,13 @@ struct neon_match64 {
 private:
   inline void carefulUpdate() {
     uint8_t buffer[64]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     memcpy(buffer, start, end - start);
     update(buffer);
   }
-  inline void update() { update((const uint8_t*)start); }
+  inline void update() { update((const uint8_t *)start); }
   inline void update(const uint8_t *buffer) {
     uint8x16_t data1 = vld1q_u8(buffer);
     uint8x16_t data2 = vld1q_u8(buffer + 16);
@@ -202,8 +202,7 @@ private:
   uint8x16_t low_nibble_mask;
   uint8x16_t v0f;
 };
-template <typename T>
-bool check(const char *start, const char *end) {
+template <typename T> bool check(const char *start, const char *end) {
   const char *targets = "<&\r\0";
   const char *expected = start;
   expected =
@@ -253,27 +252,35 @@ int main(int argc, char **argv) {
     check<neon_match64>(start, end);
   }
 
-  pretty_print(size, volume, "neon", bench([&data, &count]() {
-                 const char *start = data.data();
-                 const char *end = start + data.size();
-                 neon_match m(start, end);
-                 while (m.advance()) {
-                   count =
-                       *m.get(); // volatile assignment (compiler cannot cheat)
-                   m.consume();
-                 }
-               }));
+  size_t repeat = 1000;
 
-  pretty_print(size, volume, "neon64", bench([&data, &count]() {
-                 const char *start = data.data();
-                 const char *end = start + data.size();
-                 neon_match64 m(start, end);
-                 while (m.advance()) {
-                   count =
-                       *m.get(); // volatile assignment (compiler cannot cheat)
-                   m.consume();
-                 }
-               }));
+  pretty_print(
+      size * repeat, volume * repeat, "neon", bench([&data, &count, repeat]() {
+        for (size_t r = 0; r < repeat; r++) {
+          const char *start = data.data();
+          const char *end = start + data.size();
+          neon_match m(start, end);
+          while (m.advance()) {
+            count = *m.get(); // volatile assignment (compiler cannot cheat)
+            m.consume();
+          }
+        }
+      }));
+
+  pretty_print(
+      size * repeat, volume * repeat, "neon64",
+      bench([&data, &count, repeat]() {
+        for (size_t r = 0; r < repeat; r++) {
+
+          const char *start = data.data();
+          const char *end = start + data.size();
+          neon_match64 m(start, end);
+          while (m.advance()) {
+            count = *m.get(); // volatile assignment (compiler cannot cheat)
+            m.consume();
+          }
+        }
+      }));
 
 #endif
   pretty_print(size, volume, "NaiveAdvanceString", bench([&data, &count]() {
