@@ -26,29 +26,6 @@ public class RealDataBenchmark
     public string? FileName;
     byte[] allLinesUtf8 = [];
 
-    public unsafe delegate void HTMLScanFunction(ref byte* pUtf8, byte* end);
-
-    private void RunHTMLScanBenchmark(byte[] data, HTMLScanFunction HTMLScanFunction)
-    {
-        unsafe
-        {
-            fixed (byte* pUtf8 = data)
-            {
-                byte* start = pUtf8;
-                byte* end = pUtf8 + data.Length;
-                while (start != end)
-                {
-                    HTMLScanFunction(ref start, end);
-                    if (start == end)
-                    {
-                        break;
-                    }
-                    start++;
-                }
-            }
-        }
-    }
-
     [GlobalSetup]
     public void Setup()
     {
@@ -69,7 +46,7 @@ public class RealDataBenchmark
                     byte* end = pUtf8 + allLinesUtf8.Length;
                     while (start != end)
                     {
-                        SimdHTML.FastScan.SIMDAdvanceString(ref start, end);
+                        FastScan.SIMDAdvanceString(ref start, end);
                         if (start == end)
                         {
                             break;
@@ -96,7 +73,7 @@ public class RealDataBenchmark
                 {
                     byte* start = pUtf8;
                     byte* end = pUtf8 + allLinesUtf8.Length;
-                    SimdHTML.NeonMatch match = new SimdHTML.NeonMatch(start, end);
+                    var match = new NeonMatch(start, end);
                     while (match.Advance())
                     {
                         count += *match.Get();
@@ -144,7 +121,7 @@ public class RealDataBenchmark
                     byte* end = pUtf8 + allLinesUtf8.Length;
                     while (start != end)
                     {
-                        SimdHTML.FastScan.NaiveAdvanceString(ref start, end);
+                        FastScan.NaiveAdvanceString(ref start, end);
                         if (start == end)
                         {
                             break;
