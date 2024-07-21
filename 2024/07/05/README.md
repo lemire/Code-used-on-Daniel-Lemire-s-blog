@@ -1,4 +1,4 @@
-You need dotnet 8 or better on an ARM system.
+You need dotnet >=9 (preview or release) and an ARM system.
 
 ## Running Benchmarks
 

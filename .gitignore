@@ -30,3 +30,8 @@ target
 
 # mac garbage
 .DS_Store
+
+# dotnet artifacts
+bin/
+obj/
+BenchmarkDotNet.Artifacts/
