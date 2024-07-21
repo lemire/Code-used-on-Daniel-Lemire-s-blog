@@ -74,7 +74,10 @@ public unsafe struct Neon64Scanner(byte* start, byte* end)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static ulong Scan(byte* s)
     {
-        var (data1, data2, data3, data4) = AdvSimd.Arm64.Load4xVector128(s);
+        var data1 = AdvSimd.LoadVector128(s);
+        var data2 = AdvSimd.LoadVector128(s + 16);
+        var data3 = AdvSimd.LoadVector128(s + 32);
+        var data4 = AdvSimd.LoadVector128(s + 48);
         var lowpart1 = AdvSimd.Arm64.VectorTableLookup(LowNibbleMask, data1 & V0F);
         var lowpart2 = AdvSimd.Arm64.VectorTableLookup(LowNibbleMask, data2 & V0F);
         var lowpart3 = AdvSimd.Arm64.VectorTableLookup(LowNibbleMask, data3 & V0F);
