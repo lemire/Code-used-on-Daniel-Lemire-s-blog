@@ -29,7 +29,7 @@ public unsafe struct Neon64Scanner(byte* start, byte* end)
     {
         get
         {
-            var curr = start + offset;
+            var curr = start + offset - 64;
             matches >>= 1;
             offset++;
             return curr;
@@ -55,7 +55,7 @@ public unsafe struct Neon64Scanner(byte* start, byte* end)
                 }
 
                 matches = ScanShort(ptr, end);
-                start = end;
+                start = ptr + 64;
                 offset = 0;
 
                 if (matches is 0)
@@ -103,107 +103,6 @@ public unsafe struct Neon64Scanner(byte* start, byte* end)
 
         fixed (byte* ptr = buffer) return Scan(ptr);
     }
-}
-
-public unsafe struct NeonMatch
-{
-    private byte* _start;
-    private readonly byte* _end;
-    private int _offset;
-    private ulong _matches;
-
-    private static readonly Vector128<byte> v0f = Vector128.Create((byte)0x0F);
-    private static readonly Vector128<byte> low_nibble_mask = Vector128.Create(0, 0, 0, 0, 0, 0, (byte)0x26, 0, 0, 0, 0, 0, (byte)0x3c, (byte)0xd, 0, 0);
-
-    public NeonMatch(byte* start, byte* end)
-    {
-        _start = start;
-        _end = end;
-        _offset = 0;
-        _matches = 0;
-
-        if (_start + 16 >= _end)
-        {
-            carefulUpdate();
-        }
-        else
-        {
-            Update();
-        }
-    }
-
-    public byte* Get() => _start + _offset;
-
-    public void Consume()
-    {
-        _offset++;
-        _matches >>= 4;
-    }
-
-    public bool Advance()
-    {
-        while (_matches == 0)
-        {
-            _start += 16;
-
-
-            if (_start + 16 >= _end)
-            {
-                if (_start >= _end)
-                {
-                    return false;
-                }
-                carefulUpdate();
-
-                if (_matches == 0)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                Update();
-            }
-        }
-
-        int off = BitOperations.TrailingZeroCount(_matches);
-        _matches >>= off;
-        _offset += off >> 2;
-        return true;
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void carefulUpdate()
-    {
-        // 'stackalloc' blocks inlining because it is
-        // a very special construct which emits a
-        // stack cookie to guard against stack overruns
-        // and inserts a failfast path should that happen.
-        // use "inline array" instead which is automatically
-        // emitted by Roslyn (C# compiler) for idioms like this.
-        Span<byte> buffer =
-        [
-            1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1
-        ];
-
-        fixed (byte* ptr = buffer)
-        {
-            Buffer.MemoryCopy(_start, ptr, 16, _end - _start);
-            Update(ptr);
-        }
-    }
-    private void Update() => Update(_start);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void Update(byte* s)
-    {
-        Vector128<byte> data = AdvSimd.LoadVector128(s);
-        Vector128<byte> lowpart = AdvSimd.Arm64.VectorTableLookup(low_nibble_mask, data & v0f);
-        Vector128<byte> matchesones = AdvSimd.CompareEqual(lowpart, data);
-        _matches = AdvSimd.ShiftRightLogicalNarrowingLower(matchesones.AsUInt16(), 4).AsUInt64().ToScalar();
-        _offset = 0;
-    }
-
 }
 public static class FastScan
 {

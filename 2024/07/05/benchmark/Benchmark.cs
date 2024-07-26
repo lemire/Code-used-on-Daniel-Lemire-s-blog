@@ -61,32 +61,6 @@ public class RealDataBenchmark
     }
 
     [Benchmark]
-    public unsafe int NEONHTMLScan()
-    {
-        int count = 0;
-        if (allLinesUtf8 != null && AdvSimd.Arm64.IsSupported)
-        {
-
-            unsafe
-            {
-                fixed (byte* pUtf8 = allLinesUtf8)
-                {
-                    byte* start = pUtf8;
-                    byte* end = pUtf8 + allLinesUtf8.Length;
-                    var match = new NeonMatch(start, end);
-                    while (match.Advance())
-                    {
-                        count += *match.Get();
-                        match.Consume();
-                    }
-
-                }
-            }
-        }
-        return count;
-    }
-
-    [Benchmark]
     public unsafe int NEON64HTMLScan()
     {
         int count = 0;
