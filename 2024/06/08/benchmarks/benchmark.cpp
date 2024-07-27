@@ -45,7 +45,6 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
 }
 
 #if defined(__aarch64__)
-
 struct neon_match64 {
   neon_match64(const char *start, const char *end) : start(start), end(end) {
     low_nibble_mask = {0, 0, 0, 0, 0, 0, 0x26, 0, 0, 0, 0, 0, 0x3c, 0xd, 0, 0};
@@ -107,10 +106,10 @@ private:
     uint8x16_t data3 = vld1q_u8(buffer + 32);
     uint8x16_t data4 = vld1q_u8(buffer + 48);
 
-    uint8x16_t lowpart1 = vqtbl1q_u8(low_nibble_mask, vandq_u8(data1, v0f));
-    uint8x16_t lowpart2 = vqtbl1q_u8(low_nibble_mask, vandq_u8(data2, v0f));
-    uint8x16_t lowpart3 = vqtbl1q_u8(low_nibble_mask, vandq_u8(data3, v0f));
-    uint8x16_t lowpart4 = vqtbl1q_u8(low_nibble_mask, vandq_u8(data4, v0f));
+    uint8x16_t lowpart1 = vqtbl1q_u8(low_nibble_mask, data1 & v0f);
+    uint8x16_t lowpart2 = vqtbl1q_u8(low_nibble_mask, data2 & v0f);
+    uint8x16_t lowpart3 = vqtbl1q_u8(low_nibble_mask, data3 & v0f);
+    uint8x16_t lowpart4 = vqtbl1q_u8(low_nibble_mask, data4 & v0f);
 
     uint8x16_t matchesones1 = vceqq_u8(lowpart1, data1);
     uint8x16_t matchesones2 = vceqq_u8(lowpart2, data2);
