@@ -1,27 +1,30 @@
 import sys
 
+
 def count_ascii_text(file_path):
     try:
         ascii_count = 0
-        with open(file_path, 'rb') as file:
+        with open(file_path, "rb") as file:
             binary_data = file.read()
             i = 0
-            while(i < len(binary_data)):
-              byte = binary_data[i]
-              if( 32 <= byte <= 126 ):
-                j = 1
-                while(i+j < len(binary_data)):
-                  byte = binary_data[i+j]
-                  if(byte < 32 or byte > 126):
-                      break
-                  j = j + 1
-                if(j >= 16):
-                  ascii_count = ascii_count + j
-                i = i + j - 1
-              i = i + 1
+            while i < len(binary_data):
+                byte = binary_data[i]
+                if 32 <= byte <= 126:
+                    j = 1
+                    while i + j < len(binary_data):
+                        byte = binary_data[i + j]
+                        if byte < 32 or byte > 126:
+                            break
+                        j = j + 1
+                    if j >= 16:
+                        print(binary_data[i : i + j].decode("ascii"))
+                        ascii_count = ascii_count + j
+                    i = i + j - 1
+                i = i + 1
             return ascii_count
     except FileNotFoundError:
         return None
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
