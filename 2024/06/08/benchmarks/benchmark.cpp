@@ -153,7 +153,7 @@ struct neon_match64_r {
   // Call consume after you have called advance() to move on.
   void consume() {
     offset++;
-    matches >>= 1;
+    matches <<= 1;
   }
 
   // move to the next match, when starting out, it moves you to the first value
@@ -176,7 +176,7 @@ struct neon_match64_r {
       }
     }
     int off = __builtin_clzll(matches);
-    matches >>= off;
+    matches <<= off;
     offset += off;
     return true;
   }
@@ -339,6 +339,7 @@ int main(int argc, char **argv) {
     const char *end = start + data.size();
     check<neon_match>(start, end);
     check<neon_match64>(start, end);
+    check<neon_match64_r>(start, end);
   }
 
   size_t repeat = 1000;
