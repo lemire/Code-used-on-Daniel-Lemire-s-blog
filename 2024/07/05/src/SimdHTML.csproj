@@ -4,10 +4,10 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <ImplicitUsings>enable</ImplicitUsings>
     <!-- This is required for SIMD, sse c# - How to run unsafe code in "visual studio code"? - Stack Overflow https://stackoverflow.com/questions/50636693/how-to-run-unsafe-code-in-visual-studio-code -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks> 
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
 
 </Project>
