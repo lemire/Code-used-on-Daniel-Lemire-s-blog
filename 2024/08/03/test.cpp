@@ -105,7 +105,7 @@ size_t lower64(const char *srcorig, char *dstorig) {
     __m512i dst_v = tolower64(src_v);
     if (is_zero) {
       __mmask64 zero_mask = (is_zero - 1) ^ is_zero;
-      _mm512_mask_storeu_epi8(dstorig - notincluded, zero_mask, dst_v);
+      _mm512_mask_storeu_epi8(dstorig, zero_mask, dst_v);
       return __tzcnt_u64(is_zero);
     }
     _mm512_storeu_epi8(dstorig, dst_v);
