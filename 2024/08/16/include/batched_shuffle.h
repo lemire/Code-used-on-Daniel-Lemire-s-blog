@@ -9,7 +9,10 @@
 
 #include <cstdint>
 namespace batched_random {
-
+/** 
+ * Nevin Brackett-Rozinsky, Daniel Lemire, Batched Ranged Random Integer Generation, Software: Practice and Experience (to appear) 
+ * Daniel Lemire, Fast Random Integer Generation in an Interval, ACM Transactions on Modeling and Computer Simulation, Volume 29 Issue 1, February 2019 
+ */
 template <class URBG> uint64_t random_bounded(uint64_t range, URBG &&rng) {
   __uint128_t random64bit, multiresult;
   uint64_t leftover;
