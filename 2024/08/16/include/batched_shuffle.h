@@ -9,7 +9,10 @@
 
 #include <cstdint>
 namespace batched_random {
-
+/** 
+ * Nevin Brackett-Rozinsky, Daniel Lemire, Batched Ranged Random Integer Generation, Software: Practice and Experience (to appear) 
+ * Daniel Lemire, Fast Random Integer Generation in an Interval, ACM Transactions on Modeling and Computer Simulation, Volume 29 Issue 1, February 2019 
+ */
 template <class URBG> uint64_t random_bounded(uint64_t range, URBG &&rng) {
   __uint128_t random64bit, multiresult;
   uint64_t leftover;
@@ -46,7 +49,7 @@ std::pair<uint64_t, uint64_t> random_bounded_2(uint64_t range1, uint64_t range2,
   leftover = (uint64_t)multiresult;
   uint64_t result2 = (uint64_t)(multiresult >> 64); // [0, range2)
   if (leftover < product_bound) {
-    uint64_t product_bound = range2 * range1;
+    product_bound = range2 * range1;
     if (leftover < product_bound) {
       threshold = -product_bound % product_bound;
       while (leftover < threshold) {
