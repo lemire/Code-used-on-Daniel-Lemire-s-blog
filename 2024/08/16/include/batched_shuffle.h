@@ -49,7 +49,7 @@ std::pair<uint64_t, uint64_t> random_bounded_2(uint64_t range1, uint64_t range2,
   leftover = (uint64_t)multiresult;
   uint64_t result2 = (uint64_t)(multiresult >> 64); // [0, range2)
   if (leftover < product_bound) {
-    uint64_t product_bound = range2 * range1;
+    product_bound = range2 * range1;
     if (leftover < product_bound) {
       threshold = -product_bound % product_bound;
       while (leftover < threshold) {
