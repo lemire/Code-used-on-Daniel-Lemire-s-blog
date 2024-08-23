@@ -48,7 +48,7 @@ void bench_line(std::vector<uint64_t> &input) {
   size_t max_repeat = 100000;
   size_t repeat = 1;
   double tolerance = 1.1;
-  if (volume * repeat < 10000000) {
+  while (volume * repeat < 10000000) {
     repeat++;
   }
   std::mt19937_64 mtGenerator{1235};
