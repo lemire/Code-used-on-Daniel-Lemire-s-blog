@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(float_compression_benchmark)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx512fp16  -mavx512bw  -mavx512vl")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx512bf16  -mavx512bw  -mavx512vl")
 
 
 if (NOT CMAKE_BUILD_TYPE)
