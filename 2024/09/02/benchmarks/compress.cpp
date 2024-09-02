@@ -72,10 +72,7 @@ std::vector<double> loadDataFromURL(const std::string_view url) {
 
 double pretty_print(size_t volume, size_t bytes, std::string name,
                     event_aggregate agg) {
-  (void)bytes;
-  (void)name;
-  printf(" %5.1f   ", agg.elapsed_ns() / volume);
-  fflush(stdout);
+  printf("\t%-45s: %5.1f GB/s %5.1f billion floats/s \n ", name.c_str(), bytes / agg.elapsed_ns(), volume / agg.elapsed_ns());
   return agg.elapsed_ns() / volume;
 }
 
@@ -90,16 +87,23 @@ void bench(std::vector<double> &data) {
     double error = std::abs(data[i] - decompressed[i]);
     if (error > max_error) {
       max_error = error;
+      printf("approximating %f with %f \n", data[i], decompressed[i]);
     }
   }
   printf("max error: %f\n", max_error);
-  printf("%zu\t\t", volume);
+  printf("number of floats: %zu\n", volume);
   pretty_print(volume, volume * sizeof(uint64_t), "to_float16",
                bench([&data, &compressed]() {
                  to_float16(compressed.data(), data.data(), data.size());
                }));
   pretty_print(volume, volume * sizeof(uint64_t), "from_float16",
                bench([&decompressed, &compressed]() {
+                 from_float16(decompressed.data(), compressed.data(),
+                              decompressed.size());
+               }));
+  pretty_print(volume, volume * sizeof(uint64_t), "round-trip",
+               bench([&decompressed, &compressed, &data]() {
+                 to_float16(compressed.data(), data.data(), data.size());
                  from_float16(decompressed.data(), compressed.data(),
                               decompressed.size());
                }));
@@ -111,7 +115,6 @@ int main(int, char **) {
                       "simple_fastfloat_benchmark/master/data/canada.txt");
   printf("loadDataFromURL() succeeded %zu\n", data.size());
 
-  // bench_table(10000, 1000000, 5);
   bench(data);
   return EXIT_SUCCESS;
 }
