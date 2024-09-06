@@ -30,6 +30,6 @@ def download(url: str, dest_folder: str):
 
 # assume a recent version of Python.
 # This script will grab all the votes from the 44th Parliament of Canada and save them to a folder.
-for i in range(263, 657):
+for i in range(1, 853+1):
     url = f"https://www.ourcommons.ca/Members/en/votes/44/1/{i}/xml"
     download(url, "votes")

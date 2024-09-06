@@ -84,19 +84,25 @@ import pandas as pd
 del arrays['Independent']
 data = pd.DataFrame(arrays)
 print(data.corr())
+data.to_csv("votes.csv")
 
 print(data["Conservative"] - data["Liberal"])
 
 lib = data["Liberal"].sum()
 
+print("b + l", (data["Bloc Québécois"] * data["Liberal"]).sum() )
+print("b - l", (data["Bloc Québécois"].sum() - (data["Bloc Québécois"] * data["Liberal"]).sum()))
 print("b + l", (data["Bloc Québécois"] * data["Liberal"]).sum() / lib)
 print("b - l", (data["Bloc Québécois"].sum() - (data["Bloc Québécois"] * data["Liberal"]).sum()) / lib)
 
 print("lib", data["Liberal"].sum())
 
+print("c + l", (data["Conservative"] * data["Liberal"]).sum())
+
 print("c + l", (data["Conservative"] * data["Liberal"]).sum() / lib)
 print("c - l", (data["Conservative"].sum() - (data["Conservative"] * data["Liberal"]).sum())/lib)
 
+print("n + l", (data["NDP"] * data["Liberal"]).sum())
 
 print("n + l", (data["NDP"] * data["Liberal"]).sum()/lib)
 print("n - l", (data["NDP"].sum() - (data["NDP"] * data["Liberal"]).sum())/lib)
