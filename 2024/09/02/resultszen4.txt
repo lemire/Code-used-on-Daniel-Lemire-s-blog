@@ -1,0 +1,26 @@
+loadFileFromURL https://raw.githubusercontent.com/lemire/simple_fastfloat_benchmark/master/data/canada.txt 
+Downloaded 2138804 bytes
+loadDataFromURL() succeeded 111126
+approximating -65.613617 with -65.500000 
+approximating -65.619720 with -65.500000 
+approximating -65.625000 with -65.500000 
+approximating -65.636124 with -65.500000 
+approximating -66.282776 with -66.500000 
+approximating -66.228333 with -66.000000 
+approximating -66.249725 with -66.000000 
+approximating -128.319458 with -128.000000 
+approximating -128.375275 with -128.000000 
+approximating -128.406952 with -128.000000 
+approximating -128.414734 with -128.000000 
+approximating -128.416656 with -128.000000 
+approximating -128.428345 with -128.000000 
+approximating -128.444153 with -128.000000 
+approximating -128.446381 with -128.000000 
+approximating -128.504730 with -129.000000 
+approximating -128.500580 with -129.000000 
+approximating -135.500305 with -136.000000 
+max error: 0.499695
+number of floats: 111126
+        to_float16                                   :  16.3 GB/s   2.0 billion floats/s 
+        from_float16                                 :   7.4 GB/s   0.9 billion floats/s 
+        round-trip                                   :   5.0 GB/s   0.6 billion floats/s 
