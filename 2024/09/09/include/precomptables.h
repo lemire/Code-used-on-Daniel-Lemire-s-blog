@@ -43,4 +43,29 @@ precompute_string_fast() {
   return {str, off};
 }
 
+
+std::array<char, 382106> precompute_string_fast_slim() {
+  std::array<char, 382106> str;
+  char *p = &str[0];
+  constexpr auto const_int_to_str = [](uint16_t value, char *s) -> uint32_t {
+    uint32_t index = 0;
+    do {
+      s[index++] = '0' + (value % 10);
+      value /= 10;
+    } while (value != 0);
+
+    for (uint32_t i = 0; i < index / 2; ++i) {
+      char temp = s[i];
+      s[i] = s[index - i - 1];
+      s[index - i - 1] = temp;
+    }
+    s[index] = ',';
+    return index + 1;
+  };
+  for (int i = 0; i < 65536; ++i) {
+    size_t offset = const_int_to_str(i, p);
+    p += offset;
+  }
+  return str;
+}
 #endif

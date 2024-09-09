@@ -1,6 +1,7 @@
 
 #include "performancecounters/benchmarker.h"
 #include <algorithm>
+#include <bit>
 #include <charconv>
 #include <filesystem>
 #include <fstream>
@@ -28,19 +29,66 @@ void bench() {
                bench([]() { precompute_string(); }));
   pretty_print(volume, volume * sizeof(uint64_t), "precompute_string_fast",
                bench([]() { precompute_string_fast(); }));
+  pretty_print(volume, volume * sizeof(uint64_t), "precompute_string_fast_slim",
+               bench([]() { precompute_string_fast_slim(); }));
 }
 
+int fast_offset(uint32_t x) {
+  // x should be in [0, 65536].
+  static uint64_t table[] = {4294967296,  8589934582,  8589934582,  8589934582,
+                             12884901788, 12884901788, 12884901788, 17179868184,
+                             17179868184, 17179868184, 21474826480, 21474826480,
+                             21474826480, 21474826480, 25769703776, 25769703776,
+                             25769703776};
+  uint64_t digits =
+      1 +
+      ((x + table[31 - std::countl_zero(static_cast<uint32_t>(x) | 1)]) >> 32);
+  static uint64_t offsets[] = {0, 0, 0, 10, 110, 1110, 11110};
+  return x * digits - offsets[digits];
+}
+
+std::pair<uint64_t,uint64_t> fast_offset_size(uint32_t x) {
+  // x should be in [0, 65536].
+  static uint64_t table[] = {4294967296,  8589934582,  8589934582,  8589934582,
+                             12884901788, 12884901788, 12884901788, 17179868184,
+                             17179868184, 17179868184, 21474826480, 21474826480,
+                             21474826480, 21474826480, 25769703776, 25769703776,
+                             25769703776};
+  uint64_t digits =
+      1 +
+      ((x + table[31 - std::countl_zero(static_cast<uint32_t>(x) | 1)]) >> 32);
+  static uint64_t offsets[] = {0, 0, 0, 10, 110, 1110, 11110};
+  return {x * digits - offsets[digits], digits};
+}
 void bench_query() {
   size_t volume = 1 << 16;
   auto simple_table = precompute_string();
   auto [fast_table, offsets] = precompute_string_fast();
+  for (size_t i = 0; i <= volume; i++) {
+    if (fast_offset(i) != offsets[i]) {
+      std::cerr << "Error: " << i << " " << fast_offset(i) << " " << offsets[i]
+                << std::endl;
+      abort();
+    }
+  }
+
   auto GetCodeFast = [&fast_table, &offsets](uint16_t index) {
     return std::string_view(&fast_table[offsets[index]],
                             offsets[index + 1] - offsets[index]);
   };
+  auto GetCodeFastSlim = [&fast_table](uint16_t index) {
+    auto [offset,size] = fast_offset_size(index);
+    return std::string_view(&fast_table[offset], size);
+  };
   auto GetCodeSimple = [&simple_table](uint16_t index) {
     return simple_table[index];
   };
+  for(size_t i = 0; i < (1<<16); i++) {
+    if(GetCodeFastSlim(i) != GetCodeSimple(i)) {
+      std::cerr << "Error: " << i << " " << GetCodeFast(i) << " " << GetCodeFastSlim(i) << std::endl;
+      abort();
+    }
+  }
 
   std::vector<uint16_t> vec(volume);
   std::random_device rd;
@@ -64,6 +112,12 @@ void bench_query() {
                bench([&GetCodeFast, &b, &vec]() {
                  for (auto &num : vec) {
                    b = b + GetCodeFast(num).size();
+                 }
+               }));
+  pretty_print(volume, volume * sizeof(uint64_t), "GetCodeFastSlim",
+               bench([&GetCodeFastSlim, &b, &vec]() {
+                 for (auto &num : vec) {
+                   b = b + GetCodeFastSlim(num).size();
                  }
                }));
 }
