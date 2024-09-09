@@ -1,1 +1,1 @@
-This is a convention CMake project.
+This is a conventional CMake project.
