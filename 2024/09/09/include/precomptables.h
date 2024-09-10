@@ -44,6 +44,43 @@ precompute_string_fast() {
 }
 
 
+std::pair<std::array<char, 382106>, std::array<uint32_t, 65537>>
+precompute_string_really_fast() {
+  std::array<char, 382106> str;
+  std::array<uint32_t, 65537> off;
+  char buffer[6] = {'0', '0', '0', '0', '0', ','}; // 5 digits + ','
+  size_t digit_length = 2;
+  off[0] = 0;
+  char *p = &str[0];
+  for (int i = 0; i < 65536; ++i) {
+    memcpy(p, buffer + 6 - digit_length, digit_length);
+    p += digit_length;
+    off[i + 1] = off[i] + digit_length;
+    buffer[4] += 1;
+    if(buffer[4] > '9') {
+      if(digit_length == 2) { digit_length++;}
+      buffer[4] = '0';
+      buffer[3] += 1;
+      if(buffer[3] > '9') {
+        if(digit_length == 3) { digit_length++;}
+        buffer[3] = '0';
+        buffer[2] += 1;
+        if(buffer[2] > '9') {
+          if(digit_length == 4) { digit_length++;}
+          buffer[2] = '0';
+          buffer[1] += 1;
+          if(buffer[1] > '9') {
+            if(digit_length == 5) { digit_length++;}
+            buffer[1] = '0';
+            buffer[0] += 1;
+          }
+        }
+      }
+    }
+  }
+  return {str, off};
+}
+
 std::array<char, 382106> precompute_string_fast_slim() {
   std::array<char, 382106> str;
   char *p = &str[0];

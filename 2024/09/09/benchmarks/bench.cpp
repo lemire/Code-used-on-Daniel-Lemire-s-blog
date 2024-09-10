@@ -29,6 +29,8 @@ void bench() {
                bench([]() { precompute_string(); }));
   pretty_print(volume, volume * sizeof(uint64_t), "precompute_string_fast",
                bench([]() { precompute_string_fast(); }));
+  pretty_print(volume, volume * sizeof(uint64_t), "precompute_string_really_fast",
+               bench([]() { precompute_string_really_fast(); }));
   pretty_print(volume, volume * sizeof(uint64_t), "precompute_string_fast_slim",
                bench([]() { precompute_string_fast_slim(); }));
 }
@@ -64,6 +66,19 @@ void bench_query() {
   size_t volume = 1 << 16;
   auto simple_table = precompute_string();
   auto [fast_table, offsets] = precompute_string_fast();
+  auto [fast_table_r, offsets_r] = precompute_string_really_fast();
+  for(size_t i = 0; i < fast_table_r.size(); i++) {
+    if(fast_table[i] != fast_table_r[i]) {
+      std::cerr << "String Error: " << i << " '" << fast_table[i] << "' '" << fast_table_r[i] << "'" << std::endl;
+      abort();
+    }
+  }
+  for(size_t i = 0; i < offsets_r.size(); i++) {
+    if(offsets[i] != offsets_r[i]) {
+      std::cerr << "Offset Error: " << i << " " << offsets[i] << " " << offsets_r[i] << std::endl;
+      abort();
+    }
+  }
   for (size_t i = 0; i <= volume; i++) {
     if (fast_offset(i) != offsets[i]) {
       std::cerr << "Error: " << i << " " << fast_offset(i) << " " << offsets[i]
