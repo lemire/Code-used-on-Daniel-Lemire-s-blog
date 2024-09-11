@@ -43,42 +43,80 @@ precompute_string_fast() {
   return {str, off};
 }
 
-
-std::pair<std::array<char, 382106>, std::array<uint32_t, 65537>>
-precompute_string_really_fast() {
-  std::array<char, 382106> str;
-  std::array<uint32_t, 65537> off;
-  char buffer[6] = {'0', '0', '0', '0', '0', ','}; // 5 digits + ','
-  size_t digit_length = 2;
-  off[0] = 0;
+std::array<char, 6 * 65536> precompute_string_really_fast() {
+  std::array<char, 6 * 65536> str;
   char *p = &str[0];
   for (int i = 0; i < 65536; ++i) {
-    memcpy(p, buffer + 6 - digit_length, digit_length);
-    p += digit_length;
-    off[i + 1] = off[i] + digit_length;
-    buffer[4] += 1;
-    if(buffer[4] > '9') {
-      if(digit_length == 2) { digit_length++;}
-      buffer[4] = '0';
-      buffer[3] += 1;
-      if(buffer[3] > '9') {
-        if(digit_length == 3) { digit_length++;}
-        buffer[3] = '0';
-        buffer[2] += 1;
-        if(buffer[2] > '9') {
-          if(digit_length == 4) { digit_length++;}
-          buffer[2] = '0';
-          buffer[1] += 1;
-          if(buffer[1] > '9') {
-            if(digit_length == 5) { digit_length++;}
-            buffer[1] = '0';
-            buffer[0] += 1;
-          }
-        }
-      }
-    }
+    p[0] = '0' + (i / 10000);
+    p[1] = '0' + (i / 1000) % 10;
+    p[2] = '0' + (i / 100) % 10;
+    p[3] = '0' + (i / 10) % 10;
+    p[4] = '0' + i % 10;
+    p[5] = ',';
+    p += 6;
   }
-  return {str, off};
+  return str;
+}
+
+std::array<char, 8 * 65536> precompute_string_really_really_fast() {
+  std::array<char, 8 * 65536> str;
+  char *p = &str[0];
+  for (int i = 0; i < 10; ++i) {
+    p[0] = 2;
+    p[1] = 0;
+    p[2] = '0';
+    p[3] = '0';
+    p[4] = '0';
+    p[5] = '0';
+    p[6] = '0' + i % 10;
+    p[7] = ',';
+    p += 6;
+  }
+  for (int i = 10; i < 100; ++i) {
+    p[0] = 3;
+    p[1] = 0;
+    p[2] = '0';
+    p[3] = '0';
+    p[4] = '0';
+    p[5] = '0' + (i / 10) % 10;
+    p[6] = '0' + i % 10;
+    p[7] = ',';
+    p += 8;
+  }
+  for (int i = 100; i < 1000; ++i) {
+    p[0] = 4;
+    p[1] = 0;
+    p[2] = '0';
+    p[3] = '0';
+    p[4] = '0' + (i / 100) % 10;
+    p[5] = '0' + (i / 10) % 10;
+    p[6] = '0' + i % 10;
+    p[7] = ',';
+    p += 8;
+  }
+  for (int i = 1000; i < 10000; ++i) {
+    p[0] = 5;
+    p[1] = 0;
+    p[2] = '0';
+    p[3] = '0' + (i / 1000) % 10;
+    p[4] = '0' + (i / 100) % 10;
+    p[5] = '0' + (i / 10) % 10;
+    p[6] = '0' + i % 10;
+    p[7] = ',';
+    p += 8;
+  }
+  for (int i = 10000; i < 65536; ++i) {
+    p[0] = 6;
+    p[1] = 0;
+    p[2] = '0' + (i / 10000);
+    p[3] = '0' + (i / 1000) % 10;
+    p[4] = '0' + (i / 100) % 10;
+    p[5] = '0' + (i / 10) % 10;
+    p[6] = '0' + i % 10;
+    p[7] = ',';
+    p += 8;
+  }
+  return str;
 }
 
 std::array<char, 382106> precompute_string_fast_slim() {
