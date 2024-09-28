@@ -1,0 +1,34 @@
+{
+    "user": {
+      "name": "John Doe",
+      "age": 30,
+      "email": "john@cia.gov.us",
+      "address": {
+        "street": "123 Main St",
+        "city": "Springfield",
+        "state": "IL",
+        "zip": "62701"
+      },
+      "phone": [
+        {
+          "type": "home",
+          "number": "217-555-5555"
+        },
+        {
+          "type": "work",
+          "number": "217-555-5556"
+        }
+      ],
+      "children": [
+        {
+          "name": "Jane Doe",
+          "age": 5
+        },
+        {
+          "name": "Jesse Doe",
+          "age": 8
+        }
+      ],
+      "wealth": "12321321321.128888"
+    }
+  }
