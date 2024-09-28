@@ -1,4 +1,3 @@
-
 #include <simdjson.h>
 #include <fast_float/fast_float.h>
 #include <fmt/format.h>
