@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#if __has_include(<generator.h>)
+#if __has_include(<generator>)
 #include <generator>
 #define GENERATOR 1
 #endif
@@ -55,28 +55,35 @@ int main(int argc, char **argv) {
   size_t volume = data.size();
   size_t size = 1;
   volatile uint64_t count = 0;
-  const char *targets = "<&\r\0";
+  std::string_view targets = "<&\r\0";
   pretty_print(size, volume, "std", bench([&data, &count, targets]() {
                  count = 0;
-                 const char *start = data.data();
-                 const char *end = start + data.size();
-                 while (start < end) {
+                 auto start = data.begin();
+                 auto end = data.end();
+                 while (start != end) {
                    count = count + *start;
-                   start = std::find_first_of(start, end, targets,
-                                              targets + strlen(targets));
-                   if (start < end) {
+                   start = std::find_first_of(start, end, targets.begin(),
+                                              targets.end());
+                   if (start != end) {
                      start++;
                    }
                  }
                }));
+  pretty_print(size, volume, "string", bench([&data, &count, targets]() {
+                size_t location = 0;
+                while ((location = data.find_first_of(targets, location)) !=
+                       std::string::npos) {
+                  count = count + data[location];
+                  location++;
+                }}));
 #if GENERATOR
-  auto target_finder = [](std::string_view data,
-                          const char *targets) -> std::generator<const char *> {
-    const char *start = data.data();
-    const char *end = start + data.size();
-    while (start < end) {
-      start = std::find_first_of(start, end, targets,
-                                 targets + std::strlen(targets));
+auto target_finder = []<typename T>(T& data,
+    auto& targets) -> std::generator<typename T::iterator> {
+  auto start = data.begin();
+  auto end = data.end();
+  while (start != end) {
+    start = std::find_first_of(start, end, targets.begin(),
+                               targets.end());
       if (start == end) {
         co_return;
       }
@@ -86,7 +93,7 @@ int main(int argc, char **argv) {
   };
   pretty_print(size, volume, "generator",
                bench([&data, &count, targets, target_finder]() {
-                 for (const char *match : target_finder(data, targets)) {
+                 for (auto match : target_finder(data, targets)) {
                    count = count + *match;
                  };
                }));
