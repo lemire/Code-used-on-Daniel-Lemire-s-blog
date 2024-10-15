@@ -120,7 +120,7 @@ public class MyBenchmark {
     public static int replaceBackslashTable3(char[] original, char[] newArray) {
         int index = 0;
         for (char c : original) {
-            byte b = silly_table2[c%256];
+            byte b = silly_table3[c%256];
             if (c < 256 && b > 0) {
                 newArray[index++] = '\\';
                 newArray[index++] = (char)b;
