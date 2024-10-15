@@ -152,10 +152,6 @@ public class MyBenchmark {
             }
             outputstring = new char[count];
         }
-
-        @Setup(Level.Invocation)
-        public void perInvocation(){
-        }
     }
 
     @Benchmark
