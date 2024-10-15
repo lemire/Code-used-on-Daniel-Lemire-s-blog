@@ -87,8 +87,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
                 <configuration>
                     <compilerVersion>${javac.target}</compilerVersion>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>${javac.target}</source>
+                    <target>${javac.target}</target>
                     <compilerArgs>
                     <arg>-processor</arg>
                     <arg>org.openjdk.jmh.generators.BenchmarkProcessor</arg>

@@ -4,9 +4,7 @@ import org.openjdk.jmh.annotations.Benchmark;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-
-import java.util.random.RandomGenerator;
-import java.util.random.RandomGeneratorFactory;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Measurement(iterations = 10, time = 1)
 @Warmup(iterations = 5, time = 1)
@@ -145,9 +143,6 @@ public class MyBenchmark {
     @State(Scope.Benchmark)
     public static class BenchmarkState {
 
-        // better be safe and keep it the same to have reproducible results
-        private static final int SEED = 42;
-
         @Param({"65536"})
         public int size;
         public char[] inputstring;
@@ -156,7 +151,7 @@ public class MyBenchmark {
 
         @Setup(Level.Trial)
         public void setUp() {
-            RandomGenerator random = RandomGeneratorFactory.getDefault().create(SEED);
+            ThreadLocalRandom random = ThreadLocalRandom.current();
             inputstring = new char[size];
             // we want to size the output array with the worst case scenario
             int count = size;
