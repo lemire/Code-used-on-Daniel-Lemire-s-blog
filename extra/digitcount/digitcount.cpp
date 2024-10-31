@@ -3,6 +3,19 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+int int_log2(uint32_t x) { return 31 - __builtin_clz(x | 1); }
+
+int fast_digit_count(uint32_t x) {
+  static uint64_t table[] = {
+      4294967296,  8589934582,  8589934582,  8589934582,  12884901788,
+      12884901788, 12884901788, 17179868184, 17179868184, 17179868184,
+      21474826480, 21474826480, 21474826480, 21474826480, 25769703776,
+      25769703776, 25769703776, 30063771072, 30063771072, 30063771072,
+      34349738368, 34349738368, 34349738368, 34349738368, 38554705664,
+      38554705664, 38554705664, 41949672960, 41949672960, 41949672960,
+      42949672960, 42949672960};
+  return (x + table[int_log2(x)]) >> 32;
+}
 int int_log2(uint64_t x) { return 63 - __builtin_clzll(x | 1); }
 
 int digit_count(uint64_t x) {
@@ -44,5 +57,8 @@ int main() {
       break;
     }
   }
+  printf("%" PRIu64 " %d\n", 0xffffffffffffffff,
+         digit_count(0xffffffffffffffff));
+
   return 0;
 }
