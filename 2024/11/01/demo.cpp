@@ -11,6 +11,8 @@
 #include <source_location>
 #include <string_view>
 #include <vector>
+#include <version>
+
 
 using namespace std::literals::string_view_literals;
 
@@ -63,10 +65,12 @@ int main() {
   log("problem", std::source_location::current());
 
   std::vector<int> v = {1, 2, 3, 4, 5};
+
+#ifdef __cpp_lib_format_ranges
   std::println("{}", v);
   std::println("{:_^40}", v);
-
-  std::println("{}", std::views::all(v));
-  std::println("{}", std::ranges::max(v));
   std::println("{}", v | std::views::reverse);
+  std::println("{}", std::views::all(v));
+#endif
+  std::println("{}", std::ranges::max(v));
 }
