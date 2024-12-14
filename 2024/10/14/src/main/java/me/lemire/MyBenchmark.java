@@ -6,7 +6,9 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.BenchmarkParams;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.Arrays;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+import java.nio.ByteOrder;
 import java.util.BitSet;
 import java.util.Random;
 
@@ -154,7 +156,9 @@ public class MyBenchmark {
         @Param({"65536"})
         public int size;
         public char[] inputstring;
+        public byte[] latinInputString;
         public char[] outputstring;
+        public byte[] latinOutputString;
 
 
         @Setup(Level.Trial)
@@ -162,6 +166,12 @@ public class MyBenchmark {
             inputstring = new char[size];
             int outputLength = populateChars(params, (index, latinChar) -> inputstring[index] = (char) latinChar, size, specialCharPercentage);
             outputstring = new char[outputLength];
+            latinInputString = new byte[size];
+            for (int i = 0; i < size; i++) {
+                latinInputString[i] = (byte) inputstring[i];
+            }
+            // the existing algorithms can write 7 bytes more
+            latinOutputString = new byte[outputLength + 7];
         }
     }
 
@@ -192,7 +202,7 @@ public class MyBenchmark {
                 latinCharProducer.accept(i, Byte.toUnsignedInt(latinChars[latinCharIndex]));
             }
         }
-         return outputLength;
+        return outputLength;
     }
 
     private static byte[] specialCharsFor(BenchmarkParams params) {
@@ -230,6 +240,101 @@ public class MyBenchmark {
         return nonSpecialLatinChars;
     }
 
+    private static final VarHandle LONG_COMPRESS_WRITER = MethodHandles.byteArrayViewVarHandle(long[].class, ByteOrder.LITTLE_ENDIAN);
+    private static final VarHandle INT_READER = MethodHandles.byteArrayViewVarHandle(int[].class, ByteOrder.LITTLE_ENDIAN);
+
+
+    public static long transformMSBSetIntoFF(long input) {
+        // the JIT compiler won't use imul for this :P
+        return ((input >>> 7) * 0xFF);
+    }
+
+    // set the MSB of the zero bytes, zero otherwise
+    private static long setMSBonZeroBytes(long word) {
+        long tmp = (word & 0x7F7F7F7F7F7F7F7FL) + 0x7F7F7F7F7F7F7F7FL;
+        // this is necessary since we can have negative ones, which already set the MSB (!)
+        tmp = ~(tmp | word | 0x7F7F7F7F7F7F7F7FL);
+        return tmp;
+    }
+
+    private static long ffNotZeroBytes(long input) {
+        return transformMSBSetIntoFF(setMSBonZeroBytes(input) ^ 0x8080808080808080L);
+    }
+
+    public static int replaceBackslashRawCompressedTable3(byte[] original, byte[] newArray) {
+        int newArrayLength = 0;
+        int fourCharsBatches = original.length / 4;
+        for (int b = 0; b < fourCharsBatches; b++) {
+            int i = b * 4;
+            int readChars = (int) INT_READER.get(original, i);
+            long replacementWithOriginalChars = readCharsWithReplacements(readChars);
+            int digits = addReplacedChars(newArray, replacementWithOriginalChars, newArrayLength);
+            newArrayLength += digits;
+        }
+        int tail = original.length % 4;
+        if (tail > 0) {
+            long latinChars = readTailCharsWithReplacements(original, fourCharsBatches, tail);
+            int digits = addReplacedChars(newArray, latinChars, newArrayLength);
+            newArrayLength += digits;
+        }
+        return newArrayLength;
+    }
+
+    // it returns 0xRRSS_RRSS_RRSS_RRSS with RR the replacement char found on silly_table3[SS] and SS the original char
+    private static long readCharsWithReplacements(int readChars) {
+        long latinChars = Long.expand(Integer.toUnsignedLong(readChars), 0x00FF_00FF_00FF_00FFL);
+        byte b0 = silly_table3[(int) (latinChars & 0xFF)];
+        latinChars |= (long) b0 << 8;
+        byte b1 = silly_table3[(int) ((latinChars >>> 16) & 0xFF)];
+        latinChars |= (long) b1 << 24;
+        byte b2 = silly_table3[(int) ((latinChars >>> 32) & 0xFF)];
+        latinChars |= (long) b2 << 40;
+        byte b3 = silly_table3[(int) ((latinChars >>> 48) & 0xFF)];
+        latinChars |= (long) b3 << 56;
+        return latinChars;
+    }
+
+    private static long readTailCharsWithReplacements(byte[] original, int fourCharsBatches, int tail) {
+        long latinChars = 0;
+        int idx = fourCharsBatches * 4;
+        byte ch  = original[idx];
+        byte b0 = silly_table3[(ch & 0xFF)];
+        // place this near to the latinChars it refer to
+        latinChars |= ch;
+        latinChars |= (long) b0 << 8;
+        if (tail > 1) {
+            ch = original[idx + 1];
+            byte b1 = silly_table3[(ch & 0xFF)];
+            latinChars |= (long) ch << 16;
+            latinChars |= (long) b1 << 24;
+            if (tail > 2) {
+                ch =  original[idx + 2];
+                byte b2 = silly_table3[(ch & 0xFF)];
+                latinChars |= (long) ch << 32;
+                latinChars |= (long) b2 << 40;
+            }
+        }
+        return latinChars;
+    }
+
+    private static int addReplacedChars(byte[] newArray, long replacementsWithChars, int newArrayLength) {
+        // A mask which contains 0xFF for each original char to replace and 0xFF for each replacement char
+        // eg:  0x5c5c_0061_0061_0061 -> ffIfNotZero := 0xFFFF_FF00_FF00_FF00
+        long ffIfNotZero = ((ffNotZeroBytes(replacementsWithChars) & 0xFF00_FF00_FF00_FF00L) >>> 8) | 0xFF00_FF00_FF00_FF00L;
+        // uses the mask to replace each original char with '\' (0x5c)
+        // if the mask obtained at the previous step contains 0xFF
+        // otherwise we keep the original char
+        long replacedChars = (((~ffIfNotZero & (replacementsWithChars & 0x00FF_00FF_00FF_00FFL)) |
+                ffIfNotZero & 0x005c_005c_005c_005cL) | (replacementsWithChars & 0xFF00_FF00_FF00_FF00L));
+        // uses the mask to compress each pair if the replacement hasn't happened
+        // i.e. we move it to the right by 8 bits since we care only about valid replacement chars
+        long compressedChars = Long.compress(replacedChars, (ffIfNotZero << 8) | 0x00FF_00FF_00FF_00FFL);
+        LONG_COMPRESS_WRITER.set(newArray, newArrayLength, compressedChars);
+        // it's fine to use popcnt on ffIfNotZero i.e. the number of 0xFF := 4 + number of replacements
+        int digits = Long.bitCount(ffIfNotZero) / 8;
+        return digits;
+    }
+
     @Benchmark
     public void benchReplaceBackslash1(Blackhole blackhole, BenchmarkState state) {
         blackhole.consume(replaceBackslash1(state.inputstring, state.outputstring));
@@ -257,6 +362,11 @@ public class MyBenchmark {
     @Benchmark
     public void benchReplaceBackslashTable3(Blackhole blackhole, BenchmarkState state) {
         blackhole.consume(replaceBackslashTable3(state.inputstring, state.outputstring));
+    }
+
+    @Benchmark
+    public void benchReplaceBackslashRawCompressedTable3(Blackhole blackhole, BenchmarkState state) {
+        blackhole.consume(replaceBackslashRawCompressedTable3(state.latinInputString, state.latinOutputString));
     }
 
 }
