@@ -283,13 +283,13 @@ public class MyBenchmark {
     // it returns 0xRRSS_RRSS_RRSS_RRSS with RR the replacement char found on silly_table3[SS] and SS the original char
     private static long readCharsWithReplacements(int readChars) {
         long latinChars = Long.expand(Integer.toUnsignedLong(readChars), 0x00FF_00FF_00FF_00FFL);
-        byte b0 = silly_table3[(int) (latinChars & 0xFF)];
+        byte b0 = silly_table3[readChars & 0xFF];
+        byte b1 = silly_table3[((readChars >>> 8) & 0xFF)];
+        byte b2 = silly_table3[((readChars >>> 16) & 0xFF)];
+        byte b3 = silly_table3[((readChars >>> 24) & 0xFF)];
         latinChars |= (long) b0 << 8;
-        byte b1 = silly_table3[(int) ((latinChars >>> 16) & 0xFF)];
         latinChars |= (long) b1 << 24;
-        byte b2 = silly_table3[(int) ((latinChars >>> 32) & 0xFF)];
         latinChars |= (long) b2 << 40;
-        byte b3 = silly_table3[(int) ((latinChars >>> 48) & 0xFF)];
         latinChars |= (long) b3 << 56;
         return latinChars;
     }
