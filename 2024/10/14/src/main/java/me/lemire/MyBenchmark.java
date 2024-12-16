@@ -268,13 +268,13 @@ public class MyBenchmark {
             int i = b * 4;
             int readChars = (int) INT_READER.get(original, i);
             long replacementWithOriginalChars = readCharsWithReplacements(readChars);
-            int digits = addReplacedChars(newArray, replacementWithOriginalChars, newArrayLength);
+            int digits = batchDigitCount(addReplacedChars(newArray, replacementWithOriginalChars, newArrayLength));
             newArrayLength += digits;
         }
         int tail = original.length % 4;
         if (tail > 0) {
             long latinChars = readTailCharsWithReplacements(original, fourCharsBatches, tail);
-            int digits = addReplacedChars(newArray, latinChars, newArrayLength);
+            int digits = tailDigitCount(addReplacedChars(newArray, latinChars, newArrayLength), tail);
             newArrayLength += digits;
         }
         return newArrayLength;
@@ -317,7 +317,7 @@ public class MyBenchmark {
         return latinChars;
     }
 
-    private static int addReplacedChars(byte[] newArray, long replacementsWithChars, int newArrayLength) {
+    private static long addReplacedChars(byte[] newArray, long replacementsWithChars, int newArrayLength) {
         // A mask which contains 0xFF for each original char to replace and 0xFF for each replacement char
         // eg:  0x5c5c_0061_0061_0061 -> ffIfNotZero := 0xFFFF_FF00_FF00_FF00
         long ffIfNotZero = ((ffNotZeroBytes(replacementsWithChars) & 0xFF00_FF00_FF00_FF00L) >>> 8) | 0xFF00_FF00_FF00_FF00L;
@@ -325,14 +325,23 @@ public class MyBenchmark {
         // if the mask obtained at the previous step contains 0xFF
         // otherwise we keep the original char
         long replacedChars = (((~ffIfNotZero & (replacementsWithChars & 0x00FF_00FF_00FF_00FFL)) |
-                ffIfNotZero & 0x005c_005c_005c_005cL) | (replacementsWithChars & 0xFF00_FF00_FF00_FF00L));
+              ffIfNotZero & 0x005c_005c_005c_005cL) | (replacementsWithChars & 0xFF00_FF00_FF00_FF00L));
         // uses the mask to compress each pair if the replacement hasn't happened
         // i.e. we move it to the right by 8 bits since we care only about valid replacement chars
         long compressedChars = Long.compress(replacedChars, (ffIfNotZero << 8) | 0x00FF_00FF_00FF_00FFL);
         LONG_COMPRESS_WRITER.set(newArray, newArrayLength, compressedChars);
+        return ffIfNotZero;
+    }
+
+    private static int batchDigitCount(long ffIfNotZero) {
         // it's fine to use popcnt on ffIfNotZero i.e. the number of 0xFF := 4 + number of replacements
-        int digits = Long.bitCount(ffIfNotZero) / 8;
-        return digits;
+        return Long.bitCount(ffIfNotZero) / 8;
+    }
+
+    private static int tailDigitCount(long ffIfNotZero, int tail) {
+        // create a mask to filter the info for bytes which won't be part of the output
+        long mask = (1L << (tail * 16)) - 1;
+        return Long.bitCount(ffIfNotZero & mask) / 8;
     }
 
     @Benchmark
