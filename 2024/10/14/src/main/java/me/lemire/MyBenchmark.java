@@ -35,8 +35,18 @@ public class MyBenchmark {
     }
 
     private static final byte[] silly_table3;
+    private static final int[] mask_and_replacement;
 
     static {
+        mask_and_replacement = new int[256];
+        // each slot contains both the full two bytes replacement and the compression mask
+        for (int i = 0; i < 256; i++) {
+            mask_and_replacement[i] = 0xFF00_0000 | ((i & 0xFF) << 8);
+        }
+        mask_and_replacement['\\'] = 0xFFFF_005c | (('\\' & 0xFF) << 8);
+        mask_and_replacement['\n'] = 0xFFFF_005c | (('n' & 0xFF) << 8);
+        mask_and_replacement['\t'] = 0xFFFF_005c | (('t' & 0xFF) << 8);
+
         silly_table3 = new byte[256];
         silly_table3['\\'] = '\\';
         silly_table3['\n'] = 'n';
@@ -242,24 +252,8 @@ public class MyBenchmark {
 
     private static final VarHandle LONG_WRITER = MethodHandles.byteArrayViewVarHandle(long[].class, ByteOrder.LITTLE_ENDIAN);
 
-    public static long transformMSBSetIntoFF(long input) {
-        // the JIT compiler won't use imul for this :P
-        return ((input >>> 7) * 0xFF);
-    }
-
-    // set the MSB of the zero bytes, zero otherwise
-    private static long setMSBonZeroBytes(long word) {
-        long tmp = (word & 0x7F7F7F7F7F7F7F7FL) + 0x7F7F7F7F7F7F7F7FL;
-        // this is necessary since we can have negative ones, which already set the MSB (!)
-        tmp = ~(tmp | word | 0x7F7F7F7F7F7F7F7FL);
-        return tmp;
-    }
-
-    private static long ffNotZeroBytes(long input) {
-        // There is some problem with OSR compilation!
-        // if OSR is on we need to replace this with
-        // transformMSBSetIntoFF(setMSBonZeroBytes(input) ^ 0x8080808080808080L)
-        return ~transformMSBSetIntoFF(setMSBonZeroBytes(input));
+    public static void main(String[] args) {
+        replaceBackslashRawCompressedTable3(new byte[] { 'a', '\\' , 'b', '\n', 'c', '\t', 'd', 'e', '\\', '\n', 'a'}, new byte[(11 * 2) + 16]);
     }
 
     public static int replaceBackslashRawCompressedTable3(byte[] original, byte[] newArray) {
@@ -268,19 +262,40 @@ public class MyBenchmark {
         for (int b = 0; b < eightCharsBatches; b++) {
             int i = b * 8;
             long readChars =  (long) LONG_WRITER.get(original, i);
-            long replacements = readReplacements(readChars);
-            int digits = addReplacedChars(newArray, readChars, replacements, newArrayLength, 4, 8);
+            int digits = Long.bitCount(writeReplacementPart(newArray, newArrayLength, (int) (readChars & 0xFFFF_FFFFL))) / 8;
+            digits += (Long.bitCount(writeReplacementPart(newArray, newArrayLength + digits, (int)((readChars >>> 32) & 0xFFFFFFFFL))) / 8);
             newArrayLength += digits;
         }
         int tail = original.length % 8;
         if (tail > 0) {
             int i = eightCharsBatches * 8;
             long readChars = readTailChars(original, i, tail);
-            long replacements = readTailReplacements(readChars, tail);
-            int digits = addReplacedChars(newArray, readChars, replacements, newArrayLength, Math.min(tail, 4), tail);
-            newArrayLength += digits;
+            // since the compression mask for 0 is 0xFF00 we need to trust tail size
+            int additionalCharsRight = Long.bitCount(writeReplacementPart(newArray, newArrayLength, (int) (readChars & 0xFFFF_FFFFL)) & 0x00FF_00FF_00FF_00FFL) / 8;
+            int charsWrittenRight = Math.min(tail, 4) + additionalCharsRight;
+            int additionalCharsLeft = Long.bitCount(writeReplacementPart(newArray, newArrayLength + charsWrittenRight, (int)((readChars >>> 32) & 0xFFFFFFFFL)) & 0x00FF_00FF_00FF_00FFL) / 8;
+            newArrayLength += (tail + additionalCharsRight + additionalCharsLeft);
         }
         return newArrayLength;
+    }
+
+    private static long writeReplacementPart(byte[] newArray, int newArrayLength, int readChars) {
+        long compressionMask = 0;
+        long replacements = 0;
+        int b0 = mask_and_replacement[readChars & 0xFF];
+        replacements |= b0 & 0xFFFFL;
+        compressionMask |= ((b0 >>> 16) & 0xFFFFL);
+        int b1 = mask_and_replacement[((readChars >>> 8) & 0xFF)];
+        replacements |= ((b1 & 0xFFFFL) << 16);
+        compressionMask |= ((b1 >>> 16) & 0xFFFFL) << 16;
+        int b2 = mask_and_replacement[((readChars >>> 16) & 0xFF)];
+        replacements |= (b2 & 0xFFFFL) << 32;
+        compressionMask |= ((b2 >>> 16) & 0xFFFFL) << 32;
+        int b3 = mask_and_replacement[((readChars >>> 24) & 0xFF)];
+        replacements |= (b3 & 0xFFFFL) << 48;
+        compressionMask |= ((b3 >>> 16) & 0xFFFFL) << 48;
+        LONG_WRITER.set(newArray, newArrayLength, Long.compress(replacements, compressionMask));
+        return compressionMask;
     }
 
     private static long readTailChars(byte[] original, int index, int count) {
@@ -316,68 +331,6 @@ public class MyBenchmark {
             }
         }
         return chars;
-    }
-
-    private static long readTailReplacements(long chars, int count) {
-        long b0 = silly_table3[(int) chars & 0xFF] & 0xFFL;
-        long replacements = b0;
-        if (count > 1) {
-            long b1 = silly_table3[(int) ((chars >>> 8) & 0xFF)] & 0xFFL;
-            replacements |= b1 << 8;
-            if (count > 2) {
-                long b2 = silly_table3[(int) ((chars >>> 16) & 0xFF)] & 0xFFL;
-                replacements |= b2 << 16;
-                if (count > 3) {
-                    long b3 = silly_table3[(int) ((chars >>> 24) & 0xFF)] & 0xFFL;
-                    replacements |= b3 << 24;
-                    if (count > 4) {
-                        long b4 = silly_table3[(int) ((chars >>> 32) & 0xFF)] & 0xFFL;
-                        replacements |= b4 << 32;
-                        if (count > 5) {
-                            long b5 = silly_table3[(int) ((chars >>> 40) & 0xFF)] & 0xFFL;
-                            replacements |= b5 << 40;
-                            if (count > 6) {
-                                long b6 = silly_table3[(int) ((chars >>> 48) & 0xFF)] & 0xFFL;;
-                                replacements |= b6 << 48;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return replacements;
-    }
-
-    private static long readReplacements(long readChars) {
-        long b0 = silly_table3[(int) readChars & 0xFF] & 0xFFL;
-        long b1 = (silly_table3[(int) ((readChars >>> 8) & 0xFF)] & 0xFFL) << 8;
-        long b2 = (silly_table3[(int) ((readChars >>> 16) & 0xFF)] & 0xFFL) << 16;
-        long b3 = (silly_table3[(int) ((readChars >>> 24) & 0xFF)] & 0xFFL) << 24;
-        long b4 = (silly_table3[(int) ((readChars >>> 32) & 0xFF)] & 0xFFL) << 32;
-        long b5 = (silly_table3[(int) ((readChars >>> 40) & 0xFF)] & 0xFFL) << 40;
-        long b6 = (silly_table3[(int) ((readChars >>> 48) & 0xFF)] & 0xFFL) << 48;
-        long b7 = (silly_table3[(int) ((readChars >>> 56) & 0xFF)] & 0xFFL) << 56;
-        long replacements = b0 | b1 | b2 | b3 | b4 | b5 | b6 | b7;
-        return replacements;
-    }
-
-
-    private static int addReplacedChars(byte[] newArray, long chars, long replacements, int newArrayLength,
-                                        int rightCharsCount, int totalChars) {
-        // A mask which contains 0xFF for each char to replace
-        long ffIfNotZero = ffNotZeroBytes(replacements);
-        long replacedChars = (((~ffIfNotZero & chars)) | ffIfNotZero & 0x5c5c_5c5c_5c5c_5c5cL);
-        long rightCharsAndReplacements  = Long.expand(replacedChars, 0x00FF_00FF_00FF_00FFL);
-        rightCharsAndReplacements |= Long.expand(replacements, 0xFF00_FF00_FF00_FF00L);
-        long rightCompressMask = Long.expand(ffIfNotZero , 0xFF00_FF00_FF00_FF00L) | 0x00FF_00FF_00FF_00FFL;
-        LONG_WRITER.set(newArray, newArrayLength, Long.compress(rightCharsAndReplacements, rightCompressMask));
-        long leftCharsAndReplacements = Long.expand(replacedChars >>> 32, 0x00FF_00FF_00FF_00FFL);
-        leftCharsAndReplacements |= Long.expand(replacements >>> 32, 0xFF00_FF00_FF00_FF00L);
-        int rightWrittenChars = rightCharsCount + Integer.bitCount((int) (ffIfNotZero & 0xFFFFFFFFL)) / 8;
-        long leftCompressMask = Long.expand(ffIfNotZero >>> 32, 0xFF00_FF00_FF00_FF00L) | 0x00FF_00FF_00FF_00FFL;
-        LONG_WRITER.set(newArray, newArrayLength + rightWrittenChars, Long.compress(leftCharsAndReplacements, leftCompressMask));
-        final int totalWrittenChars = totalChars + Long.bitCount(ffIfNotZero) / 8;
-        return totalWrittenChars;
     }
 
     @Benchmark
