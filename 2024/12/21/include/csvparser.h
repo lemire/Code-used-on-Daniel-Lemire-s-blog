@@ -4,12 +4,30 @@
 #include <ranges>
 #include <string_view>
 
-auto get_column_cxx20(std::string_view data, size_t row_number, char delimiter = ',') {
+#if __cpp_lib_ranges_to_container >= 202202L
+auto get_column_cxx23(std::string_view data, 
+    size_t row_number, char delimiter = ',') {
   auto rows = data | std::views::split('\n');
   auto column =
       rows |
       std::views::transform(
-          [delimiter, row_number](auto &&row) -> std::ranges::subrange<const char *> {
+          [delimiter, row_number](auto &&row) {
+            auto fields = row | std::views::split(delimiter);
+            auto it = std::ranges::begin(fields);
+            std::advance(it, row_number);
+            return *it;
+          }) | std::ranges::to<std::string_view>();
+
+  return column;
+}
+#endif
+auto get_column_cxx20(std::string_view data, 
+    size_t row_number, char delimiter = ',') {
+  auto rows = data | std::views::split('\n');
+  auto column =
+      rows |
+      std::views::transform(
+          [delimiter, row_number](auto &&row) {
             auto fields = row | std::views::split(delimiter);
             auto it = std::ranges::begin(fields);
             std::advance(it, row_number);
