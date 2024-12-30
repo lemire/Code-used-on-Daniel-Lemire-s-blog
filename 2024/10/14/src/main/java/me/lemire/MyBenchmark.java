@@ -35,17 +35,20 @@ public class MyBenchmark {
     }
 
     private static final byte[] silly_table3;
-    private static final int[] mask_and_replacement;
+    private static final short[] replacementsAndCompressionTables = new short[256 * 2];
 
     static {
-        mask_and_replacement = new int[256];
-        // each slot contains both the full two bytes replacement and the compression mask
         for (int i = 0; i < 256; i++) {
-            mask_and_replacement[i] = 0xFF00_0000 | ((i & 0xFF) << 8);
+            replacementsAndCompressionTables[i * 2] = (short) ((i & 0xFF) << 8);
+            replacementsAndCompressionTables[(i * 2) + 1] = (short) 0xFF00;
         }
-        mask_and_replacement['\\'] = 0xFFFF_005c | (('\\' & 0xFF) << 8);
-        mask_and_replacement['\n'] = 0xFFFF_005c | (('n' & 0xFF) << 8);
-        mask_and_replacement['\t'] = 0xFFFF_005c | (('t' & 0xFF) << 8);
+        // we need to override the default values
+        replacementsAndCompressionTables['\\' * 2] = (short) (0x005c | (('\\' & 0xFF) << 8));
+        replacementsAndCompressionTables[('\\' * 2) + 1] = (short) 0xFFFF;
+        replacementsAndCompressionTables['\n' * 2] = (short) (0x005c | (('n' & 0xFF) << 8));
+        replacementsAndCompressionTables[('\n' * 2) + 1] = (short) 0xFFFF;
+        replacementsAndCompressionTables['\t' * 2] = (short) (0x005c | (('t' & 0xFF) << 8));
+        replacementsAndCompressionTables[('\t' * 2) + 1] = (short) 0xFFFF;
 
         silly_table3 = new byte[256];
         silly_table3['\\'] = '\\';
@@ -282,18 +285,13 @@ public class MyBenchmark {
     private static long writeReplacementPart(byte[] newArray, int newArrayLength, int readChars) {
         long compressionMask = 0;
         long replacements = 0;
-        int b0 = mask_and_replacement[readChars & 0xFF];
-        replacements |= b0 & 0xFFFFL;
-        compressionMask |= ((b0 >>> 16) & 0xFFFFL);
-        int b1 = mask_and_replacement[((readChars >>> 8) & 0xFF)];
-        replacements |= ((b1 & 0xFFFFL) << 16);
-        compressionMask |= ((b1 >>> 16) & 0xFFFFL) << 16;
-        int b2 = mask_and_replacement[((readChars >>> 16) & 0xFF)];
-        replacements |= (b2 & 0xFFFFL) << 32;
-        compressionMask |= ((b2 >>> 16) & 0xFFFFL) << 32;
-        int b3 = mask_and_replacement[((readChars >>> 24) & 0xFF)];
-        replacements |= (b3 & 0xFFFFL) << 48;
-        compressionMask |= ((b3 >>> 16) & 0xFFFFL) << 48;
+        for (int i = 0; i < 4; i++) {
+            int c = (readChars >>> (i * 8)) & 0xFF;
+            long replacement = Short.toUnsignedLong(replacementsAndCompressionTables[c * 2]);
+            long mask = Short.toUnsignedLong(replacementsAndCompressionTables[(c * 2) + 1]);
+            replacements |= (replacement << (i * 16));
+            compressionMask |= (mask << (i * 16));
+        }
         LONG_WRITER.set(newArray, newArrayLength, Long.compress(replacements, compressionMask));
         return compressionMask;
     }
