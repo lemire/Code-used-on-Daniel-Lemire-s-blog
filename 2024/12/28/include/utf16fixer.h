@@ -75,4 +75,49 @@ void replace_invalid_utf16_neon(char16_t *buffer, size_t length) {
   }
 }
 
+void replace_invalid_utf16_neon_v2(char16_t *buffer, size_t length) {
+  const int LOW_VEC = 0, HIGH_VEC = 1; // TODO: switch these two around if big endian
+  const size_t vec_size = 32;
+  size_t i = 0;
+  if (length*2 >= vec_size) {
+    uint8x16_t previous_high_surrogate_mask = vdupq_n_u8(0);
+    uint8_t *buffer8 = (uint8_t *)buffer;
+    for (; i < length*2 - vec_size; i += vec_size) {
+      uint8x16x2_t pair = vld2q_u8(buffer8 + i);
+      uint8x16_t vec = vshrq_n_u8(pair.val[HIGH_VEC], 2);
+      
+      uint8x16_t low_surrogate_mask = vceqq_u8(vec, vdupq_n_u8(0x37));
+      uint8x16_t high_surrogate_mask = vceqq_u8(vec, vdupq_n_u8(0x36));
+      
+      uint8x16_t offset_high_surrogate_mask = vextq_u8(previous_high_surrogate_mask, high_surrogate_mask, 15);
+      uint8_t next_char_type = buffer8[i + vec_size + HIGH_VEC] >> 2;
+      uint8x16_t offset_low_surrogate_mask = vextq_u8(low_surrogate_mask, vmovq_n_u8(next_char_type == 0x37 ? 0xff : 0), 1);
+      
+      uint8x16_t low_not_preceded_by_high = vbicq_u8(low_surrogate_mask, offset_high_surrogate_mask);
+      uint8x16_t high_not_followed_by_low = vbicq_u8(high_surrogate_mask, offset_low_surrogate_mask);
+      uint8x16_t invalid_pair_mask = vorrq_u8(low_not_preceded_by_high, high_not_followed_by_low);
+      
+      pair.val[HIGH_VEC] = vorrq_u8(pair.val[HIGH_VEC], invalid_pair_mask);
+      pair.val[LOW_VEC] = vbslq_u8(invalid_pair_mask, vdupq_n_u8(0xfd), pair.val[LOW_VEC]);
+      vst2q_u8(buffer8 + i, pair);
+      previous_high_surrogate_mask = high_surrogate_mask;
+    }
+    i >>= 1;
+  }
+ 
+  // Handle remaining elements or small buffers
+  for (; i < length; ++i) {
+    uint16_t surrogate_type = (uint16_t)buffer[i] >> 10;
+    if (surrogate_type == 0x36) {
+      if (i + 1 < length && is_low_surrogate(buffer[i + 1])) {
+        i++;
+      } else {
+        buffer[i] = 0xFFFD; // Replacement character
+      }
+    } else if (surrogate_type == 0x37) {
+      buffer[i] = 0xFFFD; // Replacement character
+    }
+  }
+}
+
 #endif

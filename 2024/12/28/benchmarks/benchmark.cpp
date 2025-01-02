@@ -34,6 +34,11 @@ int main(int argc, char **argv) {
   size_t volume = data.size();
   uint64_t counter = 0;
   volatile uint64_t sink = 0;
+  pretty_print(data.size(), volume, "replace_invalid_utf16_neon_v2",
+               bench([&data,&sink]() {
+                 replace_invalid_utf16_neon_v2(data.data(), data.size());
+                 sink = sink + data[0];
+               }));
   pretty_print(data.size(), volume, "replace_invalid_utf16_neon",
                bench([&data,&sink]() {
                  replace_invalid_utf16_neon(data.data(), data.size());
