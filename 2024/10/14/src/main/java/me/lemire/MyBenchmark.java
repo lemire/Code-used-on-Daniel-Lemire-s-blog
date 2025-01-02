@@ -283,15 +283,41 @@ public class MyBenchmark {
     }
 
     private static long writeReplacementPart(byte[] newArray, int newArrayLength, int readChars) {
-        long compressionMask = 0;
-        long replacements = 0;
-        for (int i = 0; i < 4; i++) {
-            int c = (readChars >>> (i * 8)) & 0xFF;
+        long compressionMask;
+        long replacements;
+        {
+            int c = (readChars >>> (0 * 8)) & 0xFF;
             long replacement = Short.toUnsignedLong(replacementsAndCompressionTables[c * 2]);
             long mask = Short.toUnsignedLong(replacementsAndCompressionTables[(c * 2) + 1]);
-            replacements |= (replacement << (i * 16));
-            compressionMask |= (mask << (i * 16));
+            replacements = (replacement << (0 * 16));
+            compressionMask = (mask << (0 * 16));
         }
+        {
+            int c = (readChars >>> (1 * 8)) & 0xFF;
+            long replacement = Short.toUnsignedLong(replacementsAndCompressionTables[c * 2]);
+            long mask = Short.toUnsignedLong(replacementsAndCompressionTables[(c * 2) + 1]);
+            replacements |= (replacement << (1 * 16));
+            compressionMask |= (mask << (1 * 16));
+        }
+        long compressionMask1;
+        long replacements1;
+        {
+            int c = (readChars >>> (2 * 8)) & 0xFF;
+            long replacement = Short.toUnsignedLong(replacementsAndCompressionTables[c * 2]);
+            long mask = Short.toUnsignedLong(replacementsAndCompressionTables[(c * 2) + 1]);
+            replacements1 = (replacement << (2 * 16));
+            compressionMask1 = (mask << (2 * 16));
+        }
+        {
+            int c = (readChars >>> (3 * 8)) & 0xFF;
+            long replacement = Short.toUnsignedLong(replacementsAndCompressionTables[c * 2]);
+            long mask = Short.toUnsignedLong(replacementsAndCompressionTables[(c * 2) + 1]);
+            replacements1 |= (replacement << (3 * 16));
+            compressionMask1 |= (mask << (3 * 16));
+        }
+        // merge both replacements and compression masks
+        replacements |= replacements1;
+        compressionMask |= compressionMask1;
         LONG_WRITER.set(newArray, newArrayLength, Long.compress(replacements, compressionMask));
         return compressionMask;
     }
