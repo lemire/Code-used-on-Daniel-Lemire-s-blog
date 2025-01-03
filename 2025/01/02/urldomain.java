@@ -9,6 +9,8 @@ public class urldomain {
 
         try {
             URI uri = new URI(url);
+	    uri.normalize();
+	    System.out.println(uri.toASCIIString());
             String host = uri.getHost();
 
             if (host == null) {

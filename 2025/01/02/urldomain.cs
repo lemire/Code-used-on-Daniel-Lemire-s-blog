@@ -7,7 +7,7 @@ using System.Net;
         try
         {
             Uri uri = new Uri(url);
-            string host = uri.Host;
+            string host = uri.IdnHost;
 
             if (string.IsNullOrEmpty(host))
             {
