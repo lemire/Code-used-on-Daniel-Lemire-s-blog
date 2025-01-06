@@ -13,7 +13,7 @@ uint64_t sum(const uint8_t *data, size_t start, size_t len, size_t skip = 1) {
     uint64_t sum = 0;
     for (size_t i = start; i < len; i+= skip) {
         sum += data[i];
-        if(prefetch) { __builtin_prefetch(&data[i + 4096], 1, 3); }
+        if(prefetch) { __builtin_prefetch(&data[i + 4096], 0, 3); }
     }
     g_sum += sum;
     return sum;
