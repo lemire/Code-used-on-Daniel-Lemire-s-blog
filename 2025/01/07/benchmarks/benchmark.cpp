@@ -34,10 +34,10 @@ int main(int argc, char **argv) {
   std::vector<uint64_t> data(100000);
   std::random_device rd;
   std::mt19937_64 gen(rd());
-  std::geometric_distribution<uint64_t> dis(0.001);
+  std::uniform_int_distribution<uint64_t> dis(0, (std::numeric_limits<uint64_t>::max)());
   std::vector<uint32_t> data32(100000);
-  std::geometric_distribution<uint32_t> dis32(0.001);
-  std::ranges::generate(data, [&]() { return dis(gen); });  
+  std::uniform_int_distribution<uint32_t> dis32(0, (std::numeric_limits<uint32_t>::max)());
+  std::ranges::generate(data, [&]() { return dis(gen); });
   std::ranges::generate(data32, [&]() { return dis32(gen); });
   size_t volume = data.size();
   volatile uint64_t counter = 0;
