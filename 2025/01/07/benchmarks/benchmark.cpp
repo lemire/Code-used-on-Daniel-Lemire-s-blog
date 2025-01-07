@@ -31,11 +31,11 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
 }
 
 int main(int argc, char **argv) {
-  std::vector<uint64_t> data(1000000);
+  std::vector<uint64_t> data(100000);
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::geometric_distribution<uint64_t> dis(0.001);
-  std::vector<uint32_t> data32(1000000);
+  std::vector<uint32_t> data32(100000);
   std::geometric_distribution<uint32_t> dis32(0.001);
   std::ranges::generate(data, [&]() { return dis(gen); });  
   std::ranges::generate(data32, [&]() { return dis32(gen); });
