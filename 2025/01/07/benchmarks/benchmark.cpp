@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
   volatile uint64_t counter = 0;
   for(size_t i = 0; i < 4; i++) {
     printf("Run %zu\n", i+1);
-  pretty_print(data.size(), volume * sizeof(uint64_t), "digit_count",
+  pretty_print(data.size(), volume, "digit_count",
                bench([&data, &counter]() {
                  for (auto v : data) {
                    counter = counter + digit_count(v);
