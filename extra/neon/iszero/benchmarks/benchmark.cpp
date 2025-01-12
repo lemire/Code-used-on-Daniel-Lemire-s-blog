@@ -131,4 +131,30 @@ int main(int argc, char **argv) {
                                                    veq_non_zero_float);
                  }));
   }
+  std::fill(data.begin(), data.end(), 0);
+
+  printf("branchy zeros\n");
+
+  for (size_t trial = 0; trial < 3; trial++) {
+    printf("Trial %zu\n", trial + 1);
+
+    pretty_print(count, volume, "veq_non_zero_max", bench([&data, &counter]() {
+                   counter = counter + branchyscan(data.data(), data.size(),
+                                                   veq_non_zero_max);
+                 }));
+    pretty_print(count, volume, "veq_non_zero_mov", bench([&data, &counter]() {
+                   counter = counter + branchyscan(data.data(), data.size(),
+                                                   veq_non_zero_mov);
+                 }));
+    pretty_print(
+        count, volume, "veq_non_zero_narrow", bench([&data, &counter]() {
+          counter =
+              counter + branchyscan(data.data(), data.size(), veq_non_zero_mov);
+        }));
+    pretty_print(count, volume, "veq_non_zero_float",
+                 bench([&data, &counter]() {
+                   counter = counter + branchyscan(data.data(), data.size(),
+                                                   veq_non_zero_float);
+                 }));
+  }
 }
