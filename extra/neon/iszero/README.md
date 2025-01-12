@@ -13,10 +13,10 @@ Potential result:
 loaded db: a15 (Apple A15)
 # check: 58823 58823 58823 58823
 Trial 1
-veq_non_zero_max                         :   4.93 GB/s  308.1 Ma/s   3.25 ns/d   3.52 GHz  11.43 c/d  11.24 i/d   0.71 c/b   0.70 i/b   0.98 i/c 
-veq_non_zero_mov                         :   4.94 GB/s  308.4 Ma/s   3.24 ns/d   3.52 GHz  11.43 c/d  11.24 i/d   0.71 c/b   0.70 i/b   0.98 i/c 
-veq_non_zero_narrow                      :   4.88 GB/s  304.7 Ma/s   3.28 ns/d   3.53 GHz  11.59 c/d  11.24 i/d   0.72 c/b   0.70 i/b   0.97 i/c 
-veq_non_zero_float                       :   5.35 GB/s  334.1 Ma/s   2.99 ns/d   3.14 GHz   9.39 c/d  10.27 i/d   0.59 c/b   0.64 i/b   1.09 i/c 
+veq_non_zero_max                         :   4.94 GB/s  308.5 Ma/s   3.24 ns/d   3.52 GHz  11.43 c/d  11.24 i/d   0.71 c/b   0.70 i/b   0.98 i/c
+veq_non_zero_mov                         :   4.94 GB/s  308.5 Ma/s   3.24 ns/d   3.53 GHz  11.43 c/d  11.24 i/d   0.71 c/b   0.70 i/b   0.98 i/c
+veq_non_zero_narrow                      :   4.93 GB/s  308.0 Ma/s   3.25 ns/d   3.52 GHz  11.44 c/d  11.24 i/d   0.72 c/b   0.70 i/b   0.98 i/c
+veq_non_zero_float                       :   3.73 GB/s  233.3 Ma/s   4.29 ns/d   3.57 GHz  15.29 c/d  10.24 i/d   0.96 c/b   0.64 i/b   0.67 i/c
 Trial 2
 veq_non_zero_max                         :   4.92 GB/s  307.7 Ma/s   3.25 ns/d   3.53 GHz  11.47 c/d  11.24 i/d   0.72 c/b   0.70 i/b   0.98 i/c 
 veq_non_zero_mov                         :   4.91 GB/s  307.0 Ma/s   3.26 ns/d   3.52 GHz  11.48 c/d  11.24 i/d   0.72 c/b   0.70 i/b   0.98 i/c 
