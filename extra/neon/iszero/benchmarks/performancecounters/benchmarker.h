@@ -20,5 +20,14 @@ event_aggregate bench(const function_type& function, size_t min_repeat = 10, siz
         N *= 10;
       }
     }
-    return aggregate;
+    event_aggregate final_aggregate{};
+    for (size_t i = 0; i < N; i++) {
+      std::atomic_thread_fence(std::memory_order_acquire);
+      collector.start();
+      function();
+      std::atomic_thread_fence(std::memory_order_release);
+      event_count allocate_count = collector.end();
+      final_aggregate << allocate_count;
+    }
+    return final_aggregate;
 }

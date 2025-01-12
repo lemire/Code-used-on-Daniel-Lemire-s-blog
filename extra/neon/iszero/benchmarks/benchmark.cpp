@@ -34,7 +34,9 @@ template <typename F> int scan(uint8_t *input, size_t length, F f) {
   for (size_t i = 0; i + 16 <= length; i += 16) {
     uint8x16_t v = vld1q_u8(input + i);
     result++;
-    i += f(v);
+    if(f(v)) {
+      i += 3;
+    }
   }
   return result;
 }
