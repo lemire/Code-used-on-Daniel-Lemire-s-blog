@@ -39,6 +39,19 @@ template <typename F> int scan(uint8_t *input, size_t length, F f) {
   return result;
 }
 
+template <typename F> int branchyscan(uint8_t *input, size_t length, F f) {
+  int result = 0;
+  for (size_t i = 0; i + 16 + 1 <= length; i += 16) {
+    uint8x16_t v = vld1q_u8(input + i);
+    result++;
+    if (f(v)) {
+      v = vld1q_u8(input + i + 1);
+      result += f(v);
+    }
+  }
+  return result;
+}
+
 void pretty_print(size_t volume, size_t bytes, std::string name,
                   event_aggregate agg) {
   printf("%-40s : ", name.c_str());
@@ -71,7 +84,7 @@ int main(int argc, char **argv) {
          scan(data.data(), data.size(), veq_non_zero_mov),
          scan(data.data(), data.size(), veq_non_zero_narrow),
          scan(data.data(), data.size(), veq_non_zero_float));
-  for (size_t trial = 0; trial < 10; trial++) {
+  for (size_t trial = 0; trial < 3; trial++) {
     printf("Trial %zu\n", trial + 1);
 
     pretty_print(count, volume, "veq_non_zero_max", bench([&data, &counter]() {
@@ -90,6 +103,30 @@ int main(int argc, char **argv) {
                  bench([&data, &counter]() {
                    counter = counter +
                              scan(data.data(), data.size(), veq_non_zero_float);
+                 }));
+  }
+  printf("branchy\n");
+
+  for (size_t trial = 0; trial < 3; trial++) {
+    printf("Trial %zu\n", trial + 1);
+
+    pretty_print(count, volume, "veq_non_zero_max", bench([&data, &counter]() {
+                   counter = counter + branchyscan(data.data(), data.size(),
+                                                   veq_non_zero_max);
+                 }));
+    pretty_print(count, volume, "veq_non_zero_mov", bench([&data, &counter]() {
+                   counter = counter + branchyscan(data.data(), data.size(),
+                                                   veq_non_zero_mov);
+                 }));
+    pretty_print(
+        count, volume, "veq_non_zero_narrow", bench([&data, &counter]() {
+          counter =
+              counter + branchyscan(data.data(), data.size(), veq_non_zero_mov);
+        }));
+    pretty_print(count, volume, "veq_non_zero_float",
+                 bench([&data, &counter]() {
+                   counter = counter + branchyscan(data.data(), data.size(),
+                                                   veq_non_zero_float);
                  }));
   }
 }
