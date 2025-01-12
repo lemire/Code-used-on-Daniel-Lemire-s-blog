@@ -29,6 +29,12 @@ int veq_non_zero_float(uint8x16_t v) {
   return (vdupd_lane_f64(vreinterpret_f64_u16(narrowed), 0) != 0.0);
 }
 
+bool is_float_safe() {
+  uint8x16_t v = {0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  uint8x8_t narrowed = vshrn_n_u16(vreinterpretq_u16_u8(v), 4);
+  return vdupd_lane_f64(vreinterpret_f64_u16(narrowed), 0) != 0;
+}
+
 template <typename F> int scan(uint8_t *input, size_t length, F f) {
   int result = 0;
   for (size_t i = 0; i + 16 <= length; i += 16) {
@@ -72,6 +78,7 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
 }
 
 int main(int argc, char **argv) {
+  printf("is_float_safe: %d\n", is_float_safe());
   std::vector<uint8_t> data(1000000);
   std::random_device rd;
   std::mt19937_64 gen(rd());
