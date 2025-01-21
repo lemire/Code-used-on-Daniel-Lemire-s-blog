@@ -50,3 +50,13 @@ print("uint64_t table[64][2] = {")
 for pair in table:
     print(f"    {{ 0x{hex(pair[0])[2:]:0>2}, 0x{hex(pair[1])[2:]:0>16}ULL }},")
 print("};")
+
+print("uint64_t tablelow[64] = {")
+for pair in table:
+    print(f"    0x{hex(pair[0])[2:]:0>2},")
+print("};")
+
+print("uint64_t tablehigh[64] = {")
+for pair in table:
+    print(f"     0x{hex(pair[1])[2:]:0>16}ULL,")
+print("};")
