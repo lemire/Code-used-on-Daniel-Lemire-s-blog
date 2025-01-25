@@ -31,7 +31,7 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
 }
 
 void check() {
-  if (digit_count(0ULL) != alternative_digit_count_two_tables(0)) {
+  if (digit_count(uint64_t(0ULL)) != alternative_digit_count_two_tables(0)) {
     printf("Error at %llu\n", 0ULL);
     return;
   }
