@@ -82,7 +82,7 @@ int main() {
   std::atomic<bool> done{false};
   std::mutex mtx;
   std::string worst_str1, worst_str2;
-  size_t number_per_thread = 5000000 / num_threads;
+  size_t number_per_thread = 500000000 / num_threads;
 
   // Launch threads, each with its own independent random generator
   // initialization
