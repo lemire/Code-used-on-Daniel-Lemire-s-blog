@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 
+static_assert(std::atomic_ref<char>::required_alignment == 1);
 void safe_memcpy(char *dest, const char *src, size_t count) {
   for (size_t i = 0; i < count; ++i) {
     char input =
