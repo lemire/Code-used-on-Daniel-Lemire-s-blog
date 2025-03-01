@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <queue>
 #include <future>
+#include <functional>
 #include <condition_variable>
 
 namespace fs = std::filesystem;
