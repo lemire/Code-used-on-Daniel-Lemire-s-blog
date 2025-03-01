@@ -66,17 +66,19 @@ void create_files() {
 
 // Function to open files in a range and count successes
 void open_files_range(int start, int end, std::atomic<int>& success_count) {
+    int success = 0;
     for (int i = start; i <= end; ++i) {
         std::string filename = "tmp/" + std::to_string(i) + ".txt";
         std::ifstream file(filename);
         if (file.is_open()) {
-            success_count.fetch_add(1, std::memory_order_relaxed);
+	    success++;
             file.close();
         } else {
             std::lock_guard<std::mutex> lock(cout_mutex);
             std::cerr << "Failed to open " << filename << std::endl;
         }
     }
+    success_count.fetch_add(success, std::memory_order_relaxed);
 }
 
 // Function to measure time with specified number of threads
