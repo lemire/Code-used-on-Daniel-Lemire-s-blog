@@ -154,7 +154,7 @@ int main() {
         // Calculate and report median time
         double median_time = calculate_median(times);
         std::lock_guard<std::mutex> lock(cout_mutex);
-        std::cout << "Median time to open 1000 files with " << threads 
+        std::cout << "Median time to open 10000 files with " << threads 
                   << " thread(s) over " << num_measurements << " runs: " 
                   << median_time << " ms" << std::endl;
     }
