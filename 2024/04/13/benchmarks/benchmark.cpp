@@ -142,6 +142,7 @@ int main(int argc, char **argv) {
                    }
                  }
                }));    
+#if OPTIONAL_FUNCTIONS
   pretty_print(volume, volume * sizeof(uint64_t) * 2, "binary_gcd",
                bench([&counter, &vector1, &vector2]() {
                  for (uint64_t x : vector1) {
@@ -150,6 +151,7 @@ int main(int argc, char **argv) {
                    }
                  }
                }));
+#endif // OPTIONAL_FUNCTIONS
   pretty_print(volume, volume * sizeof(uint64_t) * 2, "hybrid_binary_gcd",
                bench([&counter, &vector1, &vector2]() {
                  for (uint64_t x : vector1) {
@@ -158,7 +160,7 @@ int main(int argc, char **argv) {
                    }
                  }
                }));
-
+#if OPTIONAL_FUNCTIONS
   pretty_print(volume, volume * sizeof(uint64_t) * 2, "hybrid2_binary_gcd",
                bench([&counter, &vector1, &vector2]() {
                  for (uint64_t x : vector1) {
@@ -267,4 +269,5 @@ int main(int argc, char **argv) {
                    }
                  }
                }));
+#endif // OPTIONAL_FUNCTIONS
 }
