@@ -7,6 +7,20 @@ int_type naive_gcd(int_type u, int_type v) {
   return (u % v) == 0 ? v : naive_gcd(v, u % v);
 }
 
+template <std::unsigned_integral int_type>
+int_type gcd_noswap(int_type u, int_type v) {
+  if (v == 0) {
+    return u;
+  }
+  do {
+    int_type r = u % v;
+    if (r == 0)
+      return v;
+    u = v;
+    v = r;
+  } while (true);
+}
+
 // computes the greatest common divisor between u and v
 template <std::unsigned_integral int_type>
 int_type binary_gcd(int_type u, int_type v) {
