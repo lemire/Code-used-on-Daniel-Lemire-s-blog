@@ -26,7 +26,7 @@ const char *number_type_names[] = {"Normal non-zero", "Subnormal", "Zero",
 
 int classify_double(double x) {
   // Check if the number is NaN
-  if (isnan(x)) {
+  if (std::isnan(x)) {
     // Determine if it's a Quiet NaN or Signaling NaN
     // On most systems, QNaN has the MSB of the fraction set, SNaN does not
     uint64_t u;
@@ -39,12 +39,12 @@ int classify_double(double x) {
   }
 
   // Check for infinity
-  if (isinf(x)) {
+  if (std::isinf(x)) {
     return MFP_INFINITE;
   }
 
   // Check if it's subnormal (denormalized)
-  if (fpclassify(x) == FP_SUBNORMAL) {
+  if (std::fpclassify(x) == FP_SUBNORMAL) {
     return MFP_SUBNORMAL;
   }
 
@@ -91,16 +91,16 @@ int veq_non_zero_max(uint8x16_t v) {
 }
 
 int veq_non_zero_mov(uint8x16_t v) {
-  return vget_lane_u64(vqmovn_u64(vreinterpretq_u64_u8(v)), 0) != 0;
+  return vget_lane_u64(vreinterpret_u64_u32(vqmovn_u64(vreinterpretq_u64_u8(v))), 0) != 0;
 }
 
 int veq_non_zero_narrow(uint8x16_t v) {
-  return vget_lane_u64(vshrn_n_u16(vreinterpretq_u16_u8(v), 4), 0) != 0;
+  return vget_lane_u64(vreinterpret_u64_u8(vshrn_n_u16(vreinterpretq_u16_u8(v), 4)), 0) != 0;
 }
 
 int veq_non_zero_float(uint8x16_t v) {
   uint8x8_t narrowed = vshrn_n_u16(vreinterpretq_u16_u8(v), 4);
-  return (vdupd_lane_f64(vreinterpret_f64_u16(narrowed), 0) != 0.0);
+  return (vdupd_lane_f64(vreinterpret_f64_u8(narrowed), 0) != 0.0);
 }
 
 int veq_non_zero_float_safe(uint8x16_t v) {
@@ -115,7 +115,7 @@ int veq_non_zero_float_safe(uint8x16_t v) {
 bool is_float_safe() {
   uint8x16_t v = {0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   uint8x8_t narrowed = vshrn_n_u16(vreinterpretq_u16_u8(v), 4);
-  return vdupd_lane_f64(vreinterpret_f64_u16(narrowed), 0) != 0;
+  return vdupd_lane_f64(vreinterpret_f64_u8(narrowed), 0) != 0;
 }
 
 template <typename F> int scan(uint8_t *input, size_t length, F f) {
