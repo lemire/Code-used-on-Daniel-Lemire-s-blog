@@ -12,6 +12,21 @@
 #include <string>
 #include <vector>
 
+
+
+
+#ifndef __ARM_FEATURE_SVE
+#warning "SVE is missing"
+#else
+#define HAVE_SVE 1
+#include <arm_sve.h>
+#ifdef __has_include
+#if __has_include(<arm_neon_sve_bridge.h>)
+#define HAVE_SVE_NEON_BRIDGE
+#include <arm_neon_sve_bridge.h>
+#endif
+#endif
+#endif
 enum number_types {
   MFP_NORMAL_NON_ZERO = 0,
   MFP_SUBNORMAL = 1,
