@@ -106,6 +106,9 @@ void stats() {
   for (int i = 0; i < 6; i++) {
     printf("%s: %zu\n", number_type_names[i], counts[i]);
   }
+#if HAVE_SVE_NEON_BRIDGE
+  printf("SVE registers %ld bytes\n", svcntb());
+#endif
 }
 
 int veq_non_zero_max(uint8x16_t v) {
