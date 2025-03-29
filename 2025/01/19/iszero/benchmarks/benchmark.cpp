@@ -22,11 +22,18 @@
 #include <arm_sve.h>
 #ifdef __has_include
 #if __has_include(<arm_neon_sve_bridge.h>)
-#define HAVE_SVE_NEON_BRIDGE
+#define HAVE_SVE_NEON_BRIDGE 1
 #include <arm_neon_sve_bridge.h>
+// GCC 14+ 
+#warning "ARM NEON SVE Bridge"
+#else
+#warning "No ARM NEON SVE Bridge"
 #endif
 #endif
 #endif
+#ifndef HAVE_SVE_NEON_BRIDGE
+#define HAVE_SVE_NEON_BRIDGE 0
+#endif // HAVE_SVE_NEON_BRIDGE
 enum number_types {
   MFP_NORMAL_NON_ZERO = 0,
   MFP_SUBNORMAL = 1,
@@ -118,6 +125,16 @@ int veq_non_zero_float(uint8x16_t v) {
   return (vdupd_lane_f64(vreinterpret_f64_u8(narrowed), 0) != 0.0);
 }
 
+#if HAVE_SVE_NEON_BRIDGE
+int sve_check_all_zeros(uint8x16_t nvec) {
+  svuint8_t vec;
+  vec = svset_neonq_u8(vec, nvec);
+  svbool_t mask = svwhilelt_b8(0, 16);
+  svbool_t cmp = svcmpne_n_u8(mask, vec, 0);
+  return svptest_any(mask, cmp);
+}
+#endif // HAVE_SVE_NEON_BRIDGE
+
 int veq_non_zero_float_safe(uint8x16_t v) {
   uint8x8_t result = vdup_n_u8(0x10);
   uint8x8_t narrowed = vshrn_n_u16(vreinterpretq_u16_u8(v), 4);
@@ -165,7 +182,7 @@ template <typename F> int branchyscan(uint8_t *input, size_t length, F f) {
   for (size_t i = 0; i + 16 + 1 <= length; i += 16) {
     sum = vaddq_u8(sum, v);
     if (f(v)) {
-      v = vld1q_u8(input + i + 1);
+      v = vld1q_u8(input + i + 11);
     } else {
       v = vld1q_u8(input + i);
     }
@@ -195,7 +212,7 @@ int main(int argc, char **argv) {
   printf("is_float_safe: %d\n", is_float_safe());
   printf("veq_non_zero_float_safe: %d\n",
          veq_non_zero_float_safe(uint8x16_t()));
-  std::vector<uint8_t> data(1000000);
+  std::vector<uint8_t> data(100000);
   std::random_device rd;
   std::mt19937_64 gen(rd());
   std::uniform_int_distribution<uint64_t> dis(
@@ -210,6 +227,20 @@ int main(int argc, char **argv) {
          scan(data.data(), data.size(), veq_non_zero_narrow),
          scan(data.data(), data.size(), veq_non_zero_float),
          scan(data.data(), data.size(), veq_non_zero_float_safe));
+#if HAVE_SVE_NEON_BRIDGE
+  printf("# check: %d\n",
+         scan(data.data(), data.size(), sve_check_all_zeros));
+#endif 
+  printf("# check: %d %d %d %d %d\n",
+         branchyscan(data.data(), data.size(), veq_non_zero_max),
+         branchyscan(data.data(), data.size(), veq_non_zero_mov),
+         branchyscan(data.data(), data.size(), veq_non_zero_narrow),
+         branchyscan(data.data(), data.size(), veq_non_zero_float),
+         branchyscan(data.data(), data.size(), veq_non_zero_float_safe));
+#if HAVE_SVE_NEON_BRIDGE
+  printf("# check: %d\n",
+         branchyscan(data.data(), data.size(), sve_check_all_zeros));
+#endif 
   for (size_t trial = 0; trial < 3; trial++) {
     printf("Trial %zu\n", trial + 1);
 
@@ -225,6 +256,12 @@ int main(int argc, char **argv) {
         count, volume, "veq_non_zero_narrow", bench([&data, &counter]() {
           counter = counter + scan(data.data(), data.size(), veq_non_zero_mov);
         }));
+#if HAVE_SVE_NEON_BRIDGE
+    pretty_print(
+        count, volume, "sve_check_all_zeros", bench([&data, &counter]() {
+          counter = counter + scan(data.data(), data.size(), sve_check_all_zeros);
+        }));
+#endif 
     pretty_print(count, volume, "veq_non_zero_float",
                  bench([&data, &counter]() {
                    counter = counter +
@@ -234,66 +271,6 @@ int main(int argc, char **argv) {
                  bench([&data, &counter]() {
                    counter = counter + scan(data.data(), data.size(),
                                             veq_non_zero_float_safe);
-                 }));
-  }
-  printf("branchy\n");
-
-  for (size_t trial = 0; trial < 3; trial++) {
-    printf("Trial %zu\n", trial + 1);
-
-    pretty_print(count, volume, "veq_non_zero_max", bench([&data, &counter]() {
-                   counter = counter + branchyscan(data.data(), data.size(),
-                                                   veq_non_zero_max);
-                 }));
-    pretty_print(count, volume, "veq_non_zero_mov", bench([&data, &counter]() {
-                   counter = counter + branchyscan(data.data(), data.size(),
-                                                   veq_non_zero_mov);
-                 }));
-    pretty_print(
-        count, volume, "veq_non_zero_narrow", bench([&data, &counter]() {
-          counter =
-              counter + branchyscan(data.data(), data.size(), veq_non_zero_mov);
-        }));
-    pretty_print(count, volume, "veq_non_zero_float",
-                 bench([&data, &counter]() {
-                   counter = counter + branchyscan(data.data(), data.size(),
-                                                   veq_non_zero_float);
-                 }));
-    pretty_print(count, volume, "veq_non_zero_float_safe",
-                 bench([&data, &counter]() {
-                   counter = counter + branchyscan(data.data(), data.size(),
-                                                   veq_non_zero_float_safe);
-                 }));
-  }
-  std::fill(data.begin(), data.end(), 0);
-
-  printf("branchy zeros\n");
-
-  for (size_t trial = 0; trial < 3; trial++) {
-    printf("Trial %zu\n", trial + 1);
-
-    pretty_print(count, volume, "veq_non_zero_max", bench([&data, &counter]() {
-                   counter = counter + branchyscan(data.data(), data.size(),
-                                                   veq_non_zero_max);
-                 }));
-    pretty_print(count, volume, "veq_non_zero_mov", bench([&data, &counter]() {
-                   counter = counter + branchyscan(data.data(), data.size(),
-                                                   veq_non_zero_mov);
-                 }));
-    pretty_print(
-        count, volume, "veq_non_zero_narrow", bench([&data, &counter]() {
-          counter =
-              counter + branchyscan(data.data(), data.size(), veq_non_zero_mov);
-        }));
-    pretty_print(count, volume, "veq_non_zero_float",
-                 bench([&data, &counter]() {
-                   counter = counter + branchyscan(data.data(), data.size(),
-                                                   veq_non_zero_float);
-                 }));
-    pretty_print(count, volume, "veq_non_zero_float_safe",
-                 bench([&data, &counter]() {
-                   counter = counter + branchyscan(data.data(), data.size(),
-                                                   veq_non_zero_float_safe);
                  }));
   }
 }
