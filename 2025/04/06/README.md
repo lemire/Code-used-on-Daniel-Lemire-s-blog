@@ -1,0 +1,3 @@
+```
+go test -bench=.
+```

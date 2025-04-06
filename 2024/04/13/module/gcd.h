@@ -1,5 +1,7 @@
 #include <bit>
+#include <cstddef>
 #include <utility>
+#include <iostream>
 
 // computes the greatest common divisor between u and v
 template <std::unsigned_integral int_type>
@@ -9,13 +11,22 @@ int_type naive_gcd(int_type u, int_type v) {
 
 template <std::unsigned_integral int_type>
 int_type gcd_noswap(int_type u, int_type v) {
+  static size_t count =0;
+  size_t tcount = 0;
+
   if (v == 0) {
     return u;
   }
   do {
+    tcount++;
     int_type r = u % v;
-    if (r == 0)
+    if (r == 0) {
+      if(count < tcount) {
+        count = tcount;
+        std::cout << "gcd_noswap count: " << count << std::endl;
+      }
       return v;
+    }
     u = v;
     v = r;
   } while (true);
@@ -137,6 +148,8 @@ template <class T> T hybrid2_binary_gcd(T u, T v) {
 }
 
 template <class T> T hybrid_binary_gcd(T u, T v) {
+  static size_t count =0;
+  size_t tcount = 0;
   if (u < v) {
     std::swap(u, v);
   }
@@ -153,6 +166,7 @@ template <class T> T hybrid_binary_gcd(T u, T v) {
   u >>= zu;
   v >>= zv;
   do {
+    tcount++;
     T u_minus_v = u - v;
     if (u > v)
       u = v, v = u_minus_v;
@@ -160,6 +174,10 @@ template <class T> T hybrid_binary_gcd(T u, T v) {
       v = v - u;
     v >>= std::countr_zero(u_minus_v);
   } while (v != 0);
+  if(count < tcount) {
+    count = tcount;
+    std::cout << "hybrid_binary_gcd count: " << count << std::endl;
+  }
   return u << shift;
 }
 
