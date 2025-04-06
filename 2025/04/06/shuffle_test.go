@@ -4,7 +4,7 @@ package main
 // Daniel Lemire, Fast Random Integer Generation in an Interval, ACM Transactions on Modeling and Computer Simulation, 29 (1), 2019.
 import (
 	"math/bits"
-	"math/rand"
+	"math/rand/v2"
 	"testing"
 )
 
