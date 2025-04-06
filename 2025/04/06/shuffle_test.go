@@ -1,5 +1,7 @@
 package main
 
+// Nevin Brackett-Rozinsky, Daniel Lemire, Batched Ranged Random Integer Generation, Software: Practice and Experience 55 (1), 2024.
+// Daniel Lemire, Fast Random Integer Generation in an Interval, ACM Transactions on Modeling and Computer Simulation, 29 (1), 2019.
 import (
 	"math/bits"
 	"math/rand"
