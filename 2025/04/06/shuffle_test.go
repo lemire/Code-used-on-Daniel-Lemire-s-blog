@@ -8,31 +8,6 @@ import (
 	"testing"
 )
 
-func randomBounded(rangeVal uint64) uint64 {
-	random64bit := rand.Uint64()
-	hi, lo := bits.Mul64(random64bit, rangeVal)
-	leftover := lo
-
-	if leftover < rangeVal {
-		threshold := -rangeVal % rangeVal
-		for leftover < threshold {
-			random64bit = rand.Uint64()
-			hi, lo = bits.Mul64(random64bit, rangeVal)
-			leftover = lo
-		}
-	}
-	return hi // [0, range)
-}
-
-func shuffle(storage []uint64) {
-	for i := uint64(len(storage)); i > 1; i-- {
-		nextpos := randomBounded(i)
-		tmp := storage[i-1]
-		storage[i-1] = storage[nextpos]
-		storage[nextpos] = tmp
-	}
-}
-
 func shuffleBatch2(storage []uint64) {
 	i := uint64(len(storage))
 	for ; i > 1<<30; i-- {
@@ -115,20 +90,6 @@ func BenchmarkShuffleStandard10K(b *testing.B) {
 		rand.Shuffle(len(data), func(i, j int) {
 			data[i], data[j] = data[j], data[i]
 		})
-	}
-}
-
-// Benchmark functions
-func BenchmarkShuffle10K(b *testing.B) {
-	size := 10000
-	data := make([]uint64, size)
-	for i := 0; i < size; i++ {
-		data[i] = uint64(i)
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		shuffle(data)
 	}
 }
 
