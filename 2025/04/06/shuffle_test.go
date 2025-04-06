@@ -103,6 +103,21 @@ func partialShuffle64b(result []uint64, n, k, bound uint64) uint64 {
 	return bound
 }
 
+func BenchmarkShuffleStandard10K(b *testing.B) {
+	size := 10000
+	data := make([]uint64, size)
+	for i := 0; i < size; i++ {
+		data[i] = uint64(i)
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		rand.Shuffle(len(data), func(i, j int) {
+			data[i], data[j] = data[j], data[i]
+		})
+	}
+}
+
 // Benchmark functions
 func BenchmarkShuffle10K(b *testing.B) {
 	size := 10000
@@ -132,45 +147,6 @@ func BenchmarkShuffleBatch2_10K(b *testing.B) {
 
 func BenchmarkShuffleBatch23456_10K(b *testing.B) {
 	size := 10000
-	data := make([]uint64, size)
-	for i := 0; i < size; i++ {
-		data[i] = uint64(i)
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		shuffleBatch23456(data)
-	}
-}
-
-func BenchmarkShuffle1M(b *testing.B) {
-	size := 1000000
-	data := make([]uint64, size)
-	for i := 0; i < size; i++ {
-		data[i] = uint64(i)
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		shuffle(data)
-	}
-}
-
-func BenchmarkShuffleBatch2_1M(b *testing.B) {
-	size := 1000000
-	data := make([]uint64, size)
-	for i := 0; i < size; i++ {
-		data[i] = uint64(i)
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		shuffleBatch2(data)
-	}
-}
-
-func BenchmarkShuffleBatch23456_1M(b *testing.B) {
-	size := 1000000
 	data := make([]uint64, size)
 	for i := 0; i < size; i++ {
 		data[i] = uint64(i)
