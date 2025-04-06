@@ -1,3 +1,3 @@
 ```
-go test -bench=.
+GO111MODULE=off go test -bench=.
 ```
