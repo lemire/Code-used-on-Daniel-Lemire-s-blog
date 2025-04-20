@@ -6,12 +6,13 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 #include <numeric>
 #include <random>
 #include <ranges>
 #include <string>
+using std::literals::string_literals::operator""s;
 #include <vector>
-
 #include "sumvalues.h"
 
 void pretty_print(size_t volume, size_t bytes, std::string name,
@@ -42,7 +43,7 @@ std::map<std::string, uint64_t> generate_large_map(size_t count = 1'000'000) {
   // Generate 1,000,000 unique keys
   for (size_t i = 0; i < count; ++i) {
     // Create unique key: "key_0000000" to "key_9999999"
-    std::string key = std::format("key_{:07d}", i);
+    std::string key = "key"s + std::to_string(i);
     // Insert key-value pair with random uint64_t value
     result.emplace(key, dist(gen));
   }
@@ -52,6 +53,9 @@ std::map<std::string, uint64_t> generate_large_map(size_t count = 1'000'000) {
 int main(int argc, char **argv) {
   auto data = generate_large_map();
   std::unordered_map<std::string, uint64_t> udata(data.begin(), data.end());
+  if(data.size() != udata.size()) {
+	  throw std::runtime_error("unexpected mismatch.");
+  }
   size_t volume = data.size();
   volatile uint64_t counter = 0;
   for (size_t i = 0; i < 4; i++) {
