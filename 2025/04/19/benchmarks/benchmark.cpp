@@ -113,10 +113,11 @@ int main(int argc, char **argv) {
         bench([&udata, &counter]() {
           counter = counter + count_keys_with_prefix_daniel(udata, "key_");
         }));
-    pretty_print(data.size(), volume, "count_keys_with_prefix (unordered)",
-                 bench([&udata, &counter]() {
-                   counter = counter + count_keys_with_prefix(udata, "key_");
-                 }));
+    pretty_print(
+        data.size(), volume, "count_keys_with_prefix_cpp11 (unordered)",
+        bench([&udata, &counter]() {
+          counter = counter + count_keys_with_prefix_cpp11(udata, "key_");
+        }));
     pretty_print(data.size(), volume,
                  "count_keys_with_prefix_cpp11_starts_with (unordered)",
                  bench([&udata, &counter]() {
