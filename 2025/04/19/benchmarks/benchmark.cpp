@@ -32,7 +32,7 @@ void pretty_print(size_t volume, size_t bytes, std::string name,
   printf("\n");
 }
 
-std::map<std::string, uint64_t> generate_large_map(size_t count = 1'000'000) {
+std::map<std::string, uint64_t> generate_large_map(size_t count = 1'000) {
   std::map<std::string, uint64_t> result;
 
   // Random number generator for values
