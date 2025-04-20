@@ -19,7 +19,25 @@ size_t count_keys_with_prefix(const map_type& map, std::string_view prefix) {
     });
 }
 
+template<typename map_type>
+auto sum_values_daniel(const map_type& map) {
+    typename map_type::mapped_type sum{};
+    for (const auto& value : map | std::ranges::views::values) {
+        sum += value;
+    }
+    return sum;
+}
 
+template<typename map_type>
+size_t count_keys_with_prefix_daniel(const map_type& map, std::string_view prefix) {
+    size_t count = 0;
+    for (const auto& key :  map | std::ranges::views::keys) {
+        if (key.starts_with(prefix)) {
+            ++count;
+        }
+    }
+    return count;
+}
 
 template<typename map_type>
 typename map_type::mapped_type sum_values_cpp11(const map_type& map) {
