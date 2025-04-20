@@ -17,7 +17,7 @@ using std::literals::string_literals::operator""s;
 
 void pretty_print(size_t volume, size_t bytes, std::string name,
                   event_aggregate agg) {
-  printf("%-45s : ", name.c_str());
+  printf("%-50s : ", name.c_str());
   // printf(" %5.2f GB/s ", bytes / agg.fastest_elapsed_ns());
   // printf(" %5.1f Ma/s ", volume * 1000.0 / agg.fastest_elapsed_ns());
   printf(" %5.2f ns/d ", agg.fastest_elapsed_ns() / volume);
@@ -43,7 +43,7 @@ std::map<std::string, uint64_t> generate_large_map(size_t count = 1'000'000) {
   // Generate 1,000,000 unique keys
   for (size_t i = 0; i < count; ++i) {
     // Create unique key: "key_0000000" to "key_9999999"
-    std::string key = "key"s + std::to_string(i);
+    std::string key = "key_"s + std::to_string(i);
     // Insert key-value pair with random uint64_t value
     result.emplace(key, dist(gen));
   }
@@ -97,6 +97,13 @@ int main(int argc, char **argv) {
                    counter =
                        counter + count_keys_with_prefix_cpp11(data, "key_");
                  }));
+    pretty_print(
+        data.size(), volume, "count_keys_with_prefix_cpp11_starts_with",
+        bench([&data, &counter]() {
+          counter =
+              counter + count_keys_with_prefix_cpp11_starts_with(data, "key_");
+        }));
+
     pretty_print(data.size(), volume, "count_keys_with_prefix (unordered)",
                  bench([&udata, &counter]() {
                    counter = counter + count_keys_with_prefix(udata, "key_");
@@ -109,6 +116,12 @@ int main(int argc, char **argv) {
     pretty_print(data.size(), volume, "count_keys_with_prefix (unordered)",
                  bench([&udata, &counter]() {
                    counter = counter + count_keys_with_prefix(udata, "key_");
+                 }));
+    pretty_print(data.size(), volume,
+                 "count_keys_with_prefix_cpp11_starts_with (unordered)",
+                 bench([&udata, &counter]() {
+                   counter = counter + count_keys_with_prefix_cpp11_starts_with(
+                                           udata, "key_");
                  }));
   }
 }
