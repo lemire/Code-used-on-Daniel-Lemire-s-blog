@@ -11,11 +11,8 @@ std::pair<size_t, size_t> get_chunk_range_simple(size_t N, size_t M, size_t i) {
     // Calculate the quotient and remainder
     size_t quotient = N / M;
     size_t remainder = N % M;
-
-    // Calculate the start and end of the chunk
     size_t start = quotient * i + (i < remainder ? i : remainder);
     size_t length = quotient + (i < remainder ? 1 : 0);
-
     return {start, length};
 }
 
