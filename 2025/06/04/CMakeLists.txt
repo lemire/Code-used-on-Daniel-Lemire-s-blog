@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include_directories(benchmarks src)
 
 add_executable(benchmark benchmarks/benchmark.cpp)
+add_executable(tester src/tester.cpp)
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
