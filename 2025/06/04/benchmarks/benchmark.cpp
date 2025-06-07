@@ -17,6 +17,68 @@ using std::literals::string_literals::operator""s;
 
 #include <vector>
 
+
+constexpr uint8_t FloatMantissaBits = 23;
+constexpr uint8_t FloatExponentBits = 8;
+
+constexpr uint8_t DoubleMantissaBits = 52;
+constexpr uint8_t DoubleExponentBits = 11;
+
+struct IEEE754f {
+  uint32_t mantissa;
+  uint32_t exponent;
+  bool sign;
+};
+
+// mantissa * 10^exponent
+struct decimal_float {
+  uint64_t mantissa;
+  int32_t exponent;
+  bool sign;
+};
+
+decimal_float double_to_decimal_float(double value) {
+    decimal_float result = {0, 0, false};
+
+    // Handle zero
+    if (value == 0.0) {
+        return result;
+    }
+
+    // Extract sign
+    result.sign = value < 0;
+    value = std::abs(value);
+
+    // Handle special cases: infinity and NaN
+    if (std::isinf(value) || std::isnan(value)) {
+        result.mantissa = 0;
+        result.exponent = std::numeric_limits<uint32_t>::max();
+        return result;
+    }
+
+    // Get exponent in base 10
+    int exp10 = std::floor(std::log10(value));
+    // Normalize value to [1, 10)
+    double normalized = value / std::pow(10.0, exp10);
+    // Adjust if normalized is 10 due to floating-point rounding
+    if (normalized >= 10.0) {
+        normalized /= 10.0;
+        exp10++;
+    }
+    // Convert to mantissa with up to 17 digits (max for uint64_t)
+    uint64_t mantissa = static_cast<uint64_t>(normalized * 100'000'000'000'000'000.0 + 0.5);
+    exp10 -= 17; // Adjust exponent to account for the scaling factor
+    // Remove trailing zeros
+    while (mantissa % 10 == 0 && mantissa != 0) {
+        mantissa /= 10;
+        exp10++;
+    }
+
+    result.mantissa = mantissa;
+    result.exponent = static_cast<int32_t>(exp10);
+    return result;
+}
+
 void pretty_print(size_t volume, size_t bytes, std::string name,
                   event_aggregate agg) {
   printf("%-50s : ", name.c_str());
@@ -53,24 +115,60 @@ template <typename T> struct uniform_generator : float_number_generator<T> {
   T new_float() override { return dis(gen); }
 };
 
-std::vector<IEEE754d> generate_large_set(size_t count = 10'000) {
-  std::vector<IEEE754d> result;
+std::vector<decimal_float> generate_large_set(size_t count = 10'000) {
+  std::vector<decimal_float> result;
   uniform_generator<double> gen(-1e10, 1e10);
   result.reserve(count);
   for (size_t i = 0; i < count; ++i) {
-    result.push_back(decode_ieee754(gen.new_float()));
+    result.push_back(double_to_decimal_float(gen.new_float()));
   }
 
   return result;
 }
 
+
+void test() {
+    uniform_generator<double> gen(-1e10, 1e10);
+for (size_t i = 0; i < 2; ++i) {
+  double fl = gen.new_float();
+  auto data = double_to_decimal_float(fl);
+  char buffer[64];
+  printf("f=%.*g\n", 17, fl);
+ // size_t f = 0;
+   // printf(" mantissa=%llu, exponent=%d, sign=%d\n",
+     //    data.mantissa, data.exponent, data.sign);
+  //f = fast_to_chars(data.mantissa, data.exponent, data.sign, buffer);
+
+  //printf("==%.*s\n", (int)f, buffer);
+//  f = to_chars(data.mantissa, data.exponent, data.sign, buffer);
+ //printf("__%.*s\n", (int)f, buffer);
+  printf("dragonbox: ");
+  char *start = buffer;
+  if (data.sign) {
+    buffer[0] = '-';
+    start++;
+  }
+  char*end = jkj::dragonbox::detail::to_chars(data.mantissa, data.exponent, start);// -
+    //  buffer;
+  printf("%.*s\n", end-start, start);
+}
+}
 int main(int argc, char **argv) {
+ // test(); return 0;
   auto data = generate_large_set();
   size_t volume = data.size();
   volatile uint64_t counter = 0;
   char buffer[64];
   for (size_t i = 0; i < 4; i++) {
     printf("Run %zu\n", i + 1);
+    pretty_print(data.size(), volume, "fast+champagne_lemire",
+                 bench([&data, &counter, &buffer]() {
+                   for (size_t i = 0; i < data.size(); ++i) {
+                     counter =
+                         counter + fast_to_chars(data[i].mantissa, data[i].exponent,
+                                            data[i].sign, buffer);
+                   }
+                 }));
     pretty_print(data.size(), volume, "champagne_lemire",
                  bench([&data, &counter, &buffer]() {
                    for (size_t i = 0; i < data.size(); ++i) {
@@ -96,15 +194,3 @@ int main(int argc, char **argv) {
                  }));
   }
 }
-
-/**
-
-int to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
-
-       template <>
-            char*
-            to_chars(stdr::uint_least64_t const significand,
-                                                             int exponent, char*
-buffer) noexcept {
-
-*/

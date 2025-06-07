@@ -18,7 +18,6 @@
 // is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.
 
-
 #ifndef JKJ_STATIC_DATA_SECTION
 #define JKJ_STATIC_DATA_SECTION
 #endif
@@ -266,8 +265,7 @@ JKJ_FORCEINLINE static void print_9_digits(uint32_t s32, int &exponent,
     buffer[2] = radix_100_table[head_digits * 2 + 1];
 
     // Remaining 2 digits are all zero?
-    if ((prod & UINT32_C(0xffffffff)) <=
-        uint32_t((uint64_t(1) << 32) / 100)) {
+    if ((prod & UINT32_C(0xffffffff)) <= uint32_t((uint64_t(1) << 32) / 100)) {
       // The number of characters actually written is 1 or 3, similarly to the
       // case of 7 or 8 digits.
       buffer += (1 + (int(head_digits >= 10) & int(buffer[2] > '0')) * 2);
@@ -330,11 +328,9 @@ char *to_chars(uint64_t const significand, int exponent,
   // block.
   uint32_t first_block, second_block;
   bool no_second_block;
-
   if (significand >= UINT64_C(100000000)) {
     first_block = uint32_t(significand / UINT64_C(100000000));
-    second_block =
-        uint32_t(significand) - first_block * UINT32_C(100000000);
+    second_block = uint32_t(significand) - first_block * UINT32_C(100000000);
     exponent += 8;
     no_second_block = (second_block == 0);
   } else {

@@ -15,65 +15,72 @@
 #endif
 #endif
 
-
-constexpr uint8_t FloatMantissaBits = 23;
-constexpr uint8_t FloatExponentBits = 8;
-
-constexpr uint8_t DoubleMantissaBits = 52;
-constexpr uint8_t DoubleExponentBits = 11;
-
-
-
-struct IEEE754f {
-    uint32_t mantissa;
-    uint32_t exponent;
-    bool sign;
+constexpr auto int_pow = [](uint64_t base, uint64_t exponent) -> uint64_t {
+  uint64_t result = 1;
+  while (exponent > 0) {
+    if (exponent & 1)
+      result *= base;
+    base *= base;
+    exponent >>= 1;
+  }
+  return result;
 };
 
-std::array<char,2> get_two_digits(uint32_t value) {
-    constexpr std::array<std::array<char,2>, 100> hundreds_digit_table = []() {
-      std::array<std::array<char,2>, 100> table;
-      for (int i = 0; i < 100; ++i) {
-          // Calculate the tens digit
-          table[i][0] = (i / 10) + '0';
-          // Calculate the units digit
-          table[i][1] = (i % 10) + '0';
-      }
-      return table;
-  }(); 
+// Templated to_centi_digits function, temp should be in [0, 100**number_digits)
+// (We do not check this, so it is the caller's responsibility)
+template <int number_centi_digits>
+std::array<int, number_centi_digits> to_centi_digits(uint64_t temp) {
+  static_assert(number_centi_digits > 0 && number_centi_digits <= 5,
+                "number_digits must be between 1 and 5 inclusive");
+  std::array<int, number_centi_digits> result;
+  constexpr auto int_pow = [](uint64_t base, uint64_t exponent) -> uint64_t {
+    uint64_t result = 1;
+    while (exponent > 0) {
+      if (exponent & 1)
+        result *= base;
+      base *= base;
+      exponent >>= 1;
+    }
+    return result;
+  };
+  constexpr int number_of_most_significant_bits =      number_centi_digits < 4 ? 32 : 8;
+  constexpr int number_of_least_significant_bits =
+      64 - number_of_most_significant_bits;
+  constexpr uint64_t mask =
+      UINT64_C(0xFFFFFFFFFFFFFFFF) >> number_of_most_significant_bits;
+  constexpr uint64_t constant = ((1ULL << number_of_least_significant_bits) /
+                                 int_pow(100, number_centi_digits - 1)) +
+                                1;
+  uint64_t full = temp * constant; // Scale to get the first digit
+  result[0] = full >> number_of_least_significant_bits;
+
+  for (int i : std::ranges::views::iota(1, number_centi_digits)) {
+    full = (full & mask) * 100;
+    result[i] = full >> number_of_least_significant_bits;
+  }
+
+  return result;
+}
+
+
+inline  std::array<char, 2> get_two_digits(uint32_t value) {
+  constexpr std::array<std::array<char, 2>, 100> hundreds_digit_table = []() {
+    std::array<std::array<char, 2>, 100> table;
+    for (int i = 0; i < 100; ++i) {
+      // Calculate the tens digit
+      table[i][0] = (i / 10) + '0';
+      // Calculate the units digit
+      table[i][1] = (i % 10) + '0';
+    }
+    return table;
+  }();
   return hundreds_digit_table[value];
 }
 
-void write_two_digits(char *buffer, uint32_t value) {
-    std::memcpy(buffer, get_two_digits(value).data(), 2);
+inline void write_two_digits(char *buffer, uint32_t value) {
+  std::memcpy(buffer, get_two_digits(value).data(), 2);
 }
 
-struct IEEE754d {
-  uint64_t mantissa;
-  uint32_t exponent;
-  bool sign;
-};
-IEEE754f decode_ieee754(float f) {
-  const uint32_t bits = std::bit_cast<uint32_t>(f);
-
-  IEEE754f decomposed;
-  decomposed.exponent =
-      (bits >> FloatMantissaBits) & ((1 << FloatExponentBits) - 1);
-  decomposed.mantissa = bits & ((1 << FloatMantissaBits) - 1);
-  decomposed.sign = bits >> 31;
-  return decomposed;
-}
-
-IEEE754d decode_ieee754(double f) {
-  const uint64_t bits = std::bit_cast<uint64_t>(f);
-
-  IEEE754d decomposed;
-  decomposed.exponent =
-      (bits >> DoubleMantissaBits) & ((1ull << DoubleExponentBits) - 1);
-  decomposed.mantissa = bits & ((1ull << DoubleMantissaBits) - 1);
-  decomposed.sign = bits >> 63;
-  return decomposed;
-}
 
 ////////////////////////
 // We should use https://en.cppreference.com/w/cpp/numeric/countl_zero
@@ -155,7 +162,6 @@ template <typename T>
 int to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
   constexpr bool is_double = sizeof(T) == 8;
   static_assert(is_double || sizeof(T) == 4, "Unsupported type size");
-
   int index = 0;
   if (sign)
     result[index++] = '-';
@@ -164,39 +170,70 @@ int to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
       is_double ? fast_digit_count64(mantissa) : fast_digit_count32(mantissa);
   uint32_t i = 0;
   // We take care of the least significant eight digits first.
+  /*if (mantissa >= 1'000'0000'000'000'000) {
+
+    auto low_centi_digits = to_centi_digits<4>(mantissa % int_pow(10, 8));
+    mantissa /= int_pow(10, 8);
+    write_two_digits(result + index + olength - i - 1, low_centi_digits[3]);
+    write_two_digits(result + index + olength - i - 3, low_centi_digits[2]);
+    write_two_digits(result + index + olength - i - 5, low_centi_digits[1]);
+    write_two_digits(result + index + olength - i - 7, low_centi_digits[0]);
+    low_centi_digits = to_centi_digits<4>(mantissa % int_pow(10, 8));
+    mantissa /= int_pow(10, 8);
+    write_two_digits(result + index + olength - i - 9, low_centi_digits[3]);
+    write_two_digits(result + index + olength - i - 11, low_centi_digits[2]);
+    write_two_digits(result + index + olength - i - 13, low_centi_digits[1]);
+    write_two_digits(result + index + olength - i - 15, low_centi_digits[0]);
+  } else*/
+  
+  if (mantissa >= 10'000'000'000'000'000) {
+    const uint64_t q = mantissa / 100'000'000;
+    uint64_t temp = mantissa % 100'000'000;
+    mantissa = q;
+    const uint64_t c = temp % 10000;
+    temp /= 10000;
+    const uint64_t d = temp % 10000;
+    const uint64_t c0 = (c % 100);
+    const uint64_t c1 = (c / 100);
+    const uint64_t d0 = (d % 100);
+    const uint64_t d1 = (d / 100);
+    write_two_digits(result + index + olength - i - 1, c0);
+    write_two_digits(result + index + olength - i - 3, c1);
+    write_two_digits(result + index + olength - i - 5, d0);
+    write_two_digits(result + index + olength - i - 7, d1); //162.25 60 !!!
+    i += 8;
+  }else 
   if (mantissa >= 100'000'000) {
     const uint64_t q = mantissa / 100'000'000;
     uint64_t temp = mantissa % 100'000'000;
     mantissa = q;
-
     const uint64_t c = temp % 10000;
     temp /= 10000;
     const uint64_t d = temp % 10000;
-    const uint64_t c0 = (c % 100) << 1;
-    const uint64_t c1 = (c / 100) << 1;
-    const uint64_t d0 = (d % 100) << 1;
-    const uint64_t d1 = (d / 100) << 1;
+    const uint64_t c0 = (c % 100);
+    const uint64_t c1 = (c / 100);
+    const uint64_t d0 = (d % 100);
+    const uint64_t d1 = (d / 100);
     write_two_digits(result + index + olength - i - 1, c0);
     write_two_digits(result + index + olength - i - 3, c1);
     write_two_digits(result + index + olength - i - 5, d0);
     write_two_digits(result + index + olength - i - 7, d1);
     i += 8;
   }
-
   uint64_t output = mantissa;
   // Next, we proceed in block of 4 digits.
-  while (output >= 10000) {
+  while (output >= 10'000) {
     const uint64_t c = output % 10000;
     output /= 10000;
-    const uint64_t c0 = (c % 100) << 1;
-    const uint64_t c1 = (c / 100) << 1;
+    const uint64_t c0 = (c % 100);
+    const uint64_t c1 = (c / 100);
     write_two_digits(result + index + olength - i - 1, c0);
     write_two_digits(result + index + olength - i - 3, c1);
     i += 4;
   }
   // We can take care of two digits out of the 2 or 3 remaining.
   if (output >= 100) {
-    const uint64_t c = (output % 100) << 1;
+    const uint64_t c = (output % 100);
     output /= 100;
     write_two_digits(result + index + olength - i - 1, c);
     i += 2;
@@ -204,7 +241,7 @@ int to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
   // Last digit.
   if (output >= 10) {
     auto digits = get_two_digits(output);
-    result[index + olength - i] =  digits[1];
+    result[index + olength - i] = digits[1];
     result[index] = digits[0];
   } else {
     result[index] = (char)('0' + output);
@@ -219,173 +256,167 @@ int to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
   }
 
   // Print the exponent.
+
   int32_t exp = exponent + (int32_t)olength - 1;
   if (mantissa && exp) { // We do not print the exponent if mantissa is zero.
-    result[index++] = 'E';
     if (exp < 0) {
+      result[index++] = 'E';
       result[index++] = '-';
       exp = -exp;
+    } else {
+      result[index++] = 'E';
     }
+    
 
-    const auto handle_common_cases = [&]() {
-      if (exp >= 10) {
-        write_two_digits(result + index, exp);
-        index += 2;
-      } else
-        result[index++] = (char)('0' + exp);
-    };
     if constexpr (is_double) {
-      if (exp >= 100) {
-        const int32_t c = exp % 10;
-        write_two_digits(result + index, exp / 10);
-        result[index + 2] = (char)('0' + c);
-        index += 3;
-      } else
-        handle_common_cases();
-    } else
-      handle_common_cases();
+      if (exp >= 100) { // 3 digits
+        result[index++] = (char)('0' + exp / 100);
+        exp %= 100;
+        write_two_digits(result + index, exp);
+      } else if (exp >= 10) { // 2 digits
+        write_two_digits(result + index, exp);
+      } else { // 1 digit  
+        result[index++] = (char)('0' + exp);
+      }
+    } else {
+      if (exp >= 10) { // 2 digits
+        write_two_digits(result + index, exp);
+      } else { // 1 digit
+        result[index++] = (char)('0' + exp);
+      }
+    }
   }
 
   return index;
 }
 
-
-
-// Templated to_digits function, temp should be in [0, 10**number_digits)
-// (We do not check this, so it is the caller's responsibility)
-template <int number_digits>
-std::array<int, number_digits> to_digits(uint64_t temp) {
-    static_assert(number_digits > 0 && number_digits <= 9,
-                "number_digits must be between 1 and 9 inclusive");
-  std::array<int, number_digits> result;
-  constexpr auto int_pow = [](uint64_t base, uint64_t exponent) -> uint64_t {
-    uint64_t result = 1;
-    while (exponent > 0) {
-      if (exponent & 1)
-        result *= base;
-      base *= base;
-      exponent >>= 1;
-    }
-    return result;
-  };
-  if constexpr (number_digits < 6) {
-    constexpr uint64_t constant =
-        ((1ULL << 32) / int_pow(10, number_digits - 1)) + 1;
-    uint64_t full = temp * constant; // Scale to get the first digit
-    result[0] = full >> 32;
-
-    for (int i : std::ranges::views::iota(1, number_digits)) {
-      full = (full & 0xffffffff) * 10;
-      result[i] = full >> 32;
-    }
-  } else {
-    constexpr int number_of_most_significant_bits = 8;
-    constexpr int number_of_least_significant_bits =
-        64 - number_of_most_significant_bits;
-    constexpr uint64_t mask =
-        UINT64_C(0xFFFFFFFFFFFFFFFF) >> number_of_most_significant_bits;
-    constexpr uint64_t constant = ((1ULL << number_of_least_significant_bits) /
-                                   int_pow(10, number_digits - 1)) +
-                                  1;
-    uint64_t full = temp * constant; // Scale to get the first digit
-    result[0] = full >> number_of_least_significant_bits;
-
-    for (int i : std::ranges::views::iota(1, number_digits)) {
-      full = (full & mask) * 10;
-      result[i] = full >> number_of_least_significant_bits;
-    }
-  }
-
-  return result;
-}
-/**
 template <typename T>
 int fast_to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
   constexpr bool is_double = sizeof(T) == 8;
   static_assert(is_double || sizeof(T) == 4, "Unsupported type size");
-
+    for(size_t i = 0; i < 64; ++i) {
+      result[i] = '_';
+    }
   int index = 0;
   if (sign)
     result[index++] = '-';
   // We use fast arithmetic to compute the number of digits.
-  const uint32_t number_of_digits =
+  const uint32_t number_of_digits = 
       is_double ? fast_digit_count64(mantissa) : fast_digit_count32(mantissa);
   bool need_decimal_point = number_of_digits > 1;
-  const uint32_t digits_after_decimal = number_of_digits - 1;
+  uint32_t digits_after_decimal = number_of_digits - 1;
+
   // All digits after the decimal point are written from index + 2 onwards.
   // + 2 because we have the leading digit and the decimal point.
-  
-  switch (digits_after_decimal) {
-    case 0:
-      break; // No decimal point needed.
-    case 1:
-      result[index + 2] = (char)('0' + mantissa);
-      break;
-    case 2:
-      write_two_digits(result + index + 2, mantissa);
-      break;
-    case 3: {
-      auto digits = to_digits<3>(mantissa);
-      result[index++] = digits[0];
-      result[index++] = digits[1];
-      return index;
-    }
-    default:
-      break; // Continue to handle larger lengths.
-  }
-  if (mantissa >= 100'000'000) {
-    const uint64_t q = mantissa / 100'000'000;
-    uint64_t temp = mantissa % 100'000'000;
-    mantissa = q;
-
-    const uint64_t c = temp % 10000;
-    temp /= 10000;
-    const uint64_t d = temp % 10000;
-    const uint64_t c0 = (c % 100) << 1;
-    const uint64_t c1 = (c / 100) << 1;
-    const uint64_t d0 = (d % 100) << 1;
-    const uint64_t d1 = (d / 100) << 1;
-    write_two_digits(result + index + number_of_digits - i - 1, c0);
-    write_two_digits(result + index + number_of_digits - i - 3, c1);
-    write_two_digits(result + index + number_of_digits - i - 5, d0);
-    write_two_digits(result + index + number_of_digits - i - 7, d1);
-    i += 8;
-  }
-
-  uint64_t output = mantissa;
-  // Next, we proceed in block of 4 digits.
-  while (output >= 10000) {
-    const uint64_t c = output % 10000;
-    output /= 10000;
-    const uint64_t c0 = (c % 100) << 1;
-    const uint64_t c1 = (c / 100) << 1;
-    write_two_digits(result + index + number_of_digits - i - 1, c0);
-    write_two_digits(result + index + number_of_digits - i - 3, c1);
-    i += 4;
-  }
-  // We can take care of two digits out of the 2 or 3 remaining.
-  if (output >= 100) {
-    const uint64_t c = (output % 100) << 1;
-    output /= 100;
-    write_two_digits(result + index + number_of_digits - i - 1, c);
-    i += 2;
-  }
-  // Last digit.
-  if (output >= 10) {
-    auto digits = get_two_digits(output);
-    result[index + number_of_digits - i] =  digits[1];
-    result[index] = digits[0];
-  } else {
-    result[index] = (char)('0' + output);
-  }
-
-  // Print decimal point if needed.
-  if (number_of_digits > 1) {
+  if (need_decimal_point) {
     result[index + 1] = '.';
-    index += number_of_digits + 1;
-  } else {
-    ++index;
   }
+  if (digits_after_decimal >= 15) {
+    // We have at least 16 digits 
+    auto low_centi_digits = to_centi_digits<4>(mantissa % int_pow(10, 8));
+    mantissa /= int_pow(10, 8);
+    auto high_centi_digits = to_centi_digits<4>(mantissa % int_pow(10, 8));
+    if(digits_after_decimal == 16) {
+      // We have 16 digits including 15 after the decimal point.
+      mantissa /= int_pow(10, 8);
+      write_two_digits(result + index + digits_after_decimal - 14, high_centi_digits[0]);
+      result[index] = (char)('0' + mantissa);
+    } else {
+      // We have 16 digits including 15 after the decimal point.
+      result[index] = (char)('0' + high_centi_digits[0]/10);
+      result[index + 1] = (char)('0' + high_centi_digits[0]%10);
+      digits_after_decimal -= 1;
+    }
+    write_two_digits(result + index + digits_after_decimal - 12, high_centi_digits[1]);
+    write_two_digits(result + index + digits_after_decimal - 10, high_centi_digits[2]);
+    write_two_digits(result + index + digits_after_decimal - 8, high_centi_digits[3]);
+    write_two_digits(result + index + digits_after_decimal - 6, low_centi_digits[0]);
+    write_two_digits(result + index + digits_after_decimal - 4, low_centi_digits[1]);
+    write_two_digits(result + index + digits_after_decimal - 2, low_centi_digits[2]);
+    write_two_digits(result + index + digits_after_decimal, low_centi_digits[3]);
+    digits_after_decimal -= 16;
+  } else  {
+  if (digits_after_decimal >= 8) {
+    auto low_centi_digits = to_centi_digits<4>(mantissa % int_pow(10, 8));
+    mantissa /= int_pow(10, 8);
+    write_two_digits(result + index + digits_after_decimal - 6, low_centi_digits[0]);
+    write_two_digits(result + index + digits_after_decimal - 4, low_centi_digits[1]);
+    write_two_digits(result + index + digits_after_decimal - 2, low_centi_digits[2]);
+    write_two_digits(result + index + digits_after_decimal, low_centi_digits[3]);
+    digits_after_decimal -= 8;
+  }
+  }
+//  printf("digits_after_decimal: %d\n", digits_after_decimal);
+  /*switch (digits_after_decimal) {
+  case 0:
+    result[index] = char('0' + mantissa);
+    break; // No decimal point needed.
+  case 1: {
+    auto digits = get_two_digits(mantissa);
+    result[index + 2] = digits[1];
+    result[index] = digits[0];
+    break;
+  }
+  case 2: {
+    write_two_digits(result + index + 2, mantissa % int_pow(10, 2));
+    mantissa /= int_pow(10, 2);
+    result[index] = char('0' + mantissa);
+    break;
+  }
+  case 3: {
+    auto centi_digits = to_centi_digits<2>(mantissa);
+    write_two_digits(result + index + 3, centi_digits[1]);
+    auto digits = get_two_digits(centi_digits[0]);
+    result[index + 2] = digits[1];
+    result[index] = digits[0];
+    break;
+  }
+  case 4: {
+    auto centi_digits = to_centi_digits<2>(mantissa % int_pow(10, 4));
+    mantissa /= int_pow(10, 4);
+    write_two_digits(result + index + 2, centi_digits[0]);
+    write_two_digits(result + index + 4, centi_digits[1]);
+
+    result[index] = char('0' + mantissa);
+
+    break;
+  }
+  case 5: {
+    auto centi_digits = to_centi_digits<3>(mantissa);
+    write_two_digits(result + index + 3, centi_digits[1]);
+    write_two_digits(result + index + 5, centi_digits[2]);
+    auto digits = get_two_digits(centi_digits[0]);
+    result[index + 2] = digits[1];
+    result[index] = digits[0];
+    break;
+  }
+  case 6: {
+    // Between 100000 and 999999, inclusive, although trailing zeroes are not
+    // expected.
+    auto centi_digits = to_centi_digits<3>(mantissa % int_pow(10, 6));
+    mantissa /= int_pow(10, 6);
+    write_two_digits(result + index + 2, centi_digits[0]);
+    write_two_digits(result + index + 4, centi_digits[1]);
+    write_two_digits(result + index + 6, centi_digits[2]);
+    result[index] = char('0' + mantissa);
+
+    break;
+  }
+  case 7: {
+    auto centi_digits = to_centi_digits<4>(mantissa);
+    write_two_digits(result + index + 3, centi_digits[1]);
+    write_two_digits(result + index + 5, centi_digits[2]);
+    write_two_digits(result + index + 7, centi_digits[3]);
+    auto digits = get_two_digits(centi_digits[0]);
+    result[index + 2] = digits[1];
+    result[index] = digits[0];
+    break;
+  }
+  default:
+    break; // should never happen, as we only support up to 16 digits after the
+           // decimal point.
+  }*/
+  index += number_of_digits + (need_decimal_point ? 1 : 0);
 
   // Print the exponent.
   int32_t exp = exponent + (int32_t)number_of_digits - 1;
@@ -400,8 +431,9 @@ int fast_to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
       if (exp >= 10) {
         write_two_digits(result + index, exp);
         index += 2;
-      } else
+      } else {
         result[index++] = (char)('0' + exp);
+      }
     };
     if constexpr (is_double) {
       if (exp >= 100) {
@@ -409,15 +441,16 @@ int fast_to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
         write_two_digits(result + index, exp / 10);
         result[index + 2] = (char)('0' + c);
         index += 3;
-      } else
+      } else {
         handle_common_cases();
-    } else
+      }
+    } else {
       handle_common_cases();
+    }
   }
 
   return index;
-}*/
-
+}
 
 template int to_chars<uint32_t>(uint32_t, int32_t, bool, char *const);
 template int to_chars<uint64_t>(uint64_t, int32_t, bool, char *const);
