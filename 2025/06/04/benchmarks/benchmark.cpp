@@ -73,6 +73,11 @@ decimal_float double_to_decimal_float(double value) {
         mantissa /= 10;
         exp10++;
     }
+    // We keep at most 17 digits in the mantissa
+    while(mantissa > 100000000000000000) {
+        mantissa = (mantissa / 10) + (mantissa % 10 >= 5 ? 1 : 0); // naive rounding
+        exp10++;
+    }
 
     result.mantissa = mantissa;
     result.exponent = static_cast<int32_t>(exp10);

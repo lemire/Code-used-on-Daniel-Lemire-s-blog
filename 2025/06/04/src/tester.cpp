@@ -6,6 +6,11 @@
 #include <tuple>
 #include <vector>
 
+#if ((defined(_WIN32) || defined(_WIN64)) && !defined(__clang__)) ||           \
+    (defined(_M_ARM64) && !defined(__MINGW32__))
+#include <intrin.h>
+#endif
+
 template <typename T, std::size_t N>
 void print_array(const std::array<T, N> &arr) {
   std::cout << "["; // Start with an opening bracket
@@ -190,16 +195,30 @@ constexpr uint64_t div_2pow64_by_n(uint64_t n) {
     return quotient;
 }
 
+
 std::pair<uint64_t, uint64_t> mul64x64_to_128(uint64_t a, uint64_t b) {
-#ifdef _MSC_VER
+#if defined(_M_ARM64) && !defined(__MINGW32__)
+  // ARM64 has native support for 64-bit multiplications, no need to emulate
+  // But MinGW on ARM64 doesn't have native support for 64-bit multiplications
+  return {__umulh(a, b), a * b};
+#elif defined(_WIN64) && !defined(__clang__)
     // MSVC: Use _umul128 intrinsic
     uint64_t high;
     uint64_t low = _umul128(a, b, &high);
     return {high, low};
-#else
+#elif defined(__SIZEOF_INT128__)
     // GCC/Clang: Use __uint128_t
     __uint128_t result = static_cast<__uint128_t>(a) * static_cast<__uint128_t>(b);
     return {static_cast<uint64_t>(result >> 64), static_cast<uint64_t>(result)};
+#else
+    auto emulu = [](uint32_t x, uint32_t y) -> uint64_t { return x * (uint64_t)y; };
+    uint64_t ad = emulu((uint32_t)(ab >> 32), (uint32_t)cd);
+    uint64_t bd = emulu((uint32_t)ab, (uint32_t)cd);
+    uint64_t adbc = ad + emulu((uint32_t)ab, (uint32_t)(cd >> 32));
+    uint64_t adbc_carry = (uint64_t)(adbc < ad);
+    uint64_t lo = bd + (adbc << 32);
+    return {emulu((uint32_t)(ab >> 32), (uint32_t)(cd >> 32)) + (adbc >> 32) +
+        (adbc_carry << 32) + (uint64_t)(lo < bd), lo};
 #endif
 }
 
