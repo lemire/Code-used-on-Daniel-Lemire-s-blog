@@ -337,9 +337,69 @@ int fast_to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
     result[index++] = '-';
   }
 
+  if (mantissa >= 100'00'00'00'00'00'00'00) { 
+      size_t final_index = (sign ? 1 : 0) + index + 17 + 1;
+
+    uint64_t r;
+    // we have 17 digits.
+    std::tie(mantissa, r) = div10(mantissa);
+    write_two_digits(result + final_index - 2, r);
+    std::tie(mantissa, r) = div10(mantissa);
+    write_two_digits(result + final_index - 4, r);
+    std::tie(mantissa, r) = div10(mantissa);
+    write_two_digits(result + final_index - 6, r);
+    std::tie(mantissa, r) = div10(mantissa);
+    write_two_digits(result + final_index - 8, r);
+    std::tie(mantissa, r) = div10(mantissa);
+    write_two_digits(result + final_index - 10, r);
+    std::tie(mantissa, r) = div10(mantissa);
+    write_two_digits(result + final_index - 12, r);
+    std::tie(mantissa, r) = div10(mantissa);
+    write_two_digits(result + final_index - 14, r);
+    std::tie(mantissa, r) = div10(mantissa);
+    write_two_digits(result + final_index - 16, r);
+      result[index] = (char)('0' + mantissa);
+  result[index + 1] = '.';
+  int32_t exp = exponent + (int32_t)17 - 1;
+  size_t exp_index = 17 + 1;
+
+  if (mantissa && exp) { // We do not print the exponent if mantissa is zero.
+    // About 20 instructions for the exponent?
+    if (exp < 0) {
+      result[exp_index++] = 'E';
+      result[exp_index++] = '-';
+      exp = -exp;
+    } else {
+      result[exp_index++] = 'E';
+    }
+
+    if constexpr (is_double) {
+      if (exp >= 100) { // 3 digits
+        uint64_t prod = exp * 42949673;
+        uint32_t head_digits = int(prod >> 32);
+        result[exp_index++] = (char)('0' + head_digits);
+        exp = exp - head_digits * 100;
+        write_two_digits(result + exp_index, exp);
+      } else if (exp >= 10) { // 2 digits
+        write_two_digits(result + exp_index, exp);
+      } else { // 1 digit
+        result[exp_index] = (char)('0' + exp);
+      }
+    } else {
+      if (exp >= 10) { // 2 digits
+        write_two_digits(result + exp_index, exp);
+      } else { // 1 digit
+        result[exp_index] = (char)('0' + exp);
+      }
+    }
+  }
+    return exp_index;
+
+    //final_index -= 16;
+    //number_of_digits_left -= 16;
+  }
   // We use fast arithmetic to compute the number of digits.
-  const uint32_t number_of_digits =
-      is_double ? fast_digit_count64(mantissa) : fast_digit_count32(mantissa);
+  const uint32_t number_of_digits =   is_double ? fast_digit_count64(mantissa) : fast_digit_count32(mantissa);
   bool need_decimal_point = number_of_digits > 1;
 
   int32_t exp = exponent + (int32_t)number_of_digits - 1;
@@ -393,35 +453,6 @@ int fast_to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
   // Call the appropriate function from the array
   //  converters[digits_after_decimal](result + (sign ? 1 : 0), mantissa);
   size_t number_of_digits_left = number_of_digits;
-  if (mantissa >= 10'00'00'00'00'00'00'00) { 
-    // we have 16 or 17 digits.
-    //printf("number_of_digits_left: %d\n", number_of_digits_left);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 2, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 4, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 6, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 8, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 10, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 12, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 14, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 16, r);
-    if(number_of_digits == 17) {
-      result[index] = (char)('0' + mantissa);
-    } else {
-      result[index] = result[index+1];
-      result[index+1] = '.';
-    }
-    return exp_index;
-    //final_index -= 16;
-    //number_of_digits_left -= 16;
-  }
 //  printf("oonumber_of_digits_left: %d\n", number_of_digits_left);
   if (mantissa >= 100'00'00'00) {
     std::tie(mantissa, r) = div10(mantissa);

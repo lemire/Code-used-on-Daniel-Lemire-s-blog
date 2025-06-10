@@ -376,6 +376,7 @@ char *to_chars(uint64_t const significand, int exponent,
       buffer += 18;
     } else {
       if (first_block >= UINT32_C(1000000)) {
+
         // 7 or 8 digits.
         // 281474978 = ceil(2^48 / 100'0000) + 1
         auto prod = first_block * UINT64_C(281474978);
@@ -467,7 +468,6 @@ char *to_chars(uint64_t const significand, int exponent,
           // Obtain the next two digits.
           prod = (prod & UINT32_C(0xffffffff)) * 100;
           print_2_digits(int(prod >> 32), buffer + 4);
-
           // Remaining 2 digits are all zero?
           if ((prod & UINT32_C(0xffffffff)) <=
               uint32_t((uint64_t(1) << 32) / 100)) {
