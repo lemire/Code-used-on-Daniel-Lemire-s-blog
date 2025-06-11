@@ -1,4 +1,3 @@
-
 #include "performancecounters/benchmarker.h"
 #include <algorithm>
 #include <cstddef>
@@ -11,6 +10,7 @@
 #include <ranges>
 #include <string>
 #include <unordered_map>
+#include <sstream>
 using std::literals::string_literals::operator""s;
 #include "champagne_lemire.h"
 #include "dragonbox.h"
@@ -131,6 +131,19 @@ std::vector<decimal_float> generate_large_set(size_t count = 10'000) {
   return result;
 }
 
+std::vector<double> read_floats_from_file(const std::string& filename) {
+    std::vector<double> values;
+    std::ifstream infile(filename);
+    std::string line;
+    while (std::getline(infile, line)) {
+        std::istringstream iss(line);
+        double val;
+        if (iss >> val) {
+            values.push_back(val);
+        }
+    }
+    return values;
+}
 
 void test() {
     uniform_generator<double> gen(-1e10, 1e10);
@@ -159,8 +172,18 @@ for (size_t i = 0; i < 2; ++i) {
 }
 }
 int main(int argc, char **argv) {
- // test(); return 0;
-  auto data = generate_large_set();
+  std::vector<decimal_float> data;
+  if (argc > 1) {
+    // Lecture du fichier passé en argument
+    auto floats = read_floats_from_file(argv[1]);
+    data.reserve(floats.size());
+    for (double f : floats) {
+      data.push_back(double_to_decimal_float(f));
+    }
+  } else {
+    // Génération aléatoire par défaut
+    data = generate_large_set();
+  }
   size_t volume = data.size();
   volatile uint64_t counter = 0;
   char buffer[64];
