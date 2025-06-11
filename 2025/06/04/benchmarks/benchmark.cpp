@@ -189,20 +189,25 @@ int main(int argc, char **argv) {
   char buffer[64];
   for (size_t i = 0; i < 4; i++) {
     printf("Run %zu\n", i + 1);
-    pretty_print(data.size(), volume, "fast+champagne_lemire",
-                 bench([&data, &counter, &buffer]() {
-                   for (size_t i = 0; i < data.size(); ++i) {
-                     counter =
-                         counter + fast_to_chars(data[i].mantissa, data[i].exponent,
-                                            data[i].sign, buffer);
-                   }
-                 }));
     pretty_print(data.size(), volume, "champagne_lemire",
                  bench([&data, &counter, &buffer]() {
                    for (size_t i = 0; i < data.size(); ++i) {
                      counter =
                          counter + to_chars(data[i].mantissa, data[i].exponent,
                                             data[i].sign, buffer);
+                   }
+                 }));
+    pretty_print(data.size(), volume, "fast+champagne_lemire",
+                 bench([&data, &counter, &buffer]() {
+                   for (size_t i = 0; i < data.size(); ++i) {
+                    char * start = buffer;
+                     if (data[i].sign) {
+                       buffer[0] = '-';
+                       start++;
+                     }
+                     counter =
+                         counter + fast_to_chars(data[i].mantissa, data[i].exponent,
+                                             start) + (data[i].sign ? 1 : 0);
                    }
                  }));
     pretty_print(data.size(), volume, "dragonbox",

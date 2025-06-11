@@ -56,22 +56,42 @@ to_centi_digits(uint64_t temp) {
 
 inline __attribute__((always_inline)) std::array<char, 2>
 get_two_digits(uint32_t value) {
-  constexpr static std::array<std::array<char, 2>, 100> hundreds_digit_table = []() {
-    std::array<std::array<char, 2>, 100> table;
-    for (int i = 0; i < 100; ++i) {
-      // Calculate the tens digit
-      table[i][0] = (i / 10) + '0';
-      // Calculate the units digit
-      table[i][1] = (i % 10) + '0';
-    }
-    return table;
-  }();
+  constexpr static std::array<std::array<char, 2>, 100> hundreds_digit_table =
+      []() {
+        std::array<std::array<char, 2>, 100> table;
+        for (int i = 0; i < 100; ++i) {
+          // Calculate the tens digit
+          table[i][0] = (i / 10) + '0';
+          // Calculate the units digit
+          table[i][1] = (i % 10) + '0';
+        }
+        return table;
+      }();
   return hundreds_digit_table[value];
 }
 
 inline __attribute__((always_inline)) void write_two_digits(char *buffer,
                                                             uint32_t value) {
   std::memcpy(buffer, get_two_digits(value).data(), 2);
+}
+
+inline __attribute__((always_inline)) std::array<char, 2>
+get_one_digits(uint32_t value) {
+  constexpr static std::array<std::array<char, 2>, 10> digit_table = []() {
+    std::array<std::array<char, 2>, 10> table;
+    for (int i = 0; i < 10; ++i) {
+      // Calculate the tens digit
+      table[i][0] = i + '0';
+      table[i][1] = '.';
+    }
+    return table;
+  }();
+  return digit_table[value];
+}
+
+inline __attribute__((always_inline)) void write_one_digits(char *buffer,
+                                                            uint32_t value) {
+  std::memcpy(buffer, get_one_digits(value).data(), 2);
 }
 
 ////////////////////////
@@ -314,61 +334,134 @@ std::pair<uint64_t, uint64_t> mul64x64_to_128(uint64_t a, uint64_t b) {
 }
 
 #ifdef __aarch64__
-std::pair<uint64_t, uint64_t> div10(uint64_t x) {
+std::pair<uint64_t, uint64_t> div100(uint64_t x) {
   auto [high, low] = mul64x64_to_128(x, 0x28f5c28f5c28f5d);
   return {high, mul64x64_to_128(low, 100).first};
 } // 120 - 174
 #else
-std::pair<uint64_t, uint64_t> div10(uint64_t x) {
+std::pair<uint64_t, uint64_t> div100(uint64_t x) {
   auto [high, low] = mul64x64_to_128(x, 0x28f5c28f5c28f5d);
   return {high, x - 100 * high};
 } // 128 - 190
 #endif
 
+#ifdef __aarch64__
+// requires x <= 999999999999999 < 10**15
+// return low bits
+std::pair<uint64_t, uint64_t> div10000(uint64_t x) {
+  auto [high, low] = mul64x64_to_128(x, 0x68db8bac710cc);
+  return {high, low};
+} // 120 - 174
+#else
+// requires x <= 999999999999999 < 10**15
+// return low bits
+std::pair<uint64_t, uint64_t> div10000(uint64_t x) {
+  auto [high, low] = mul64x64_to_128(x, 0x68db8bac710cc);
+  return {high, low};
+} // 128 - 190
+#endif
+
 template <typename T>
-int fast_to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
+int fast_to_chars(T mantissa, int32_t exponent, char *const result) {
   constexpr bool is_double = sizeof(T) == 8;
   static_assert(is_double || sizeof(T) == 4, "Unsupported type size");
-  int index = 0;
-  if (sign) {
-    result[index++] = '-';
+  int32_t exp = exponent;
+  size_t exp_index;
+
+  if (mantissa >= 100'00'00'00'00'00'00'00) {
+    size_t final_index = 17 + 1;
+    uint64_t r1, r2, r3, r4;
+    std::tie(mantissa, r1) = div10000(mantissa);
+    std::tie(mantissa, r2) = div10000(mantissa);
+    std::tie(mantissa, r3) = div10000(mantissa);
+    std::tie(mantissa, r4) = div10000(mantissa);
+    uint64_t high, low;
+    std::tie(high, low) = mul64x64_to_128(r1, 100);
+    write_two_digits(result + final_index - 2, high);
+    std::tie(high, low) = mul64x64_to_128(low, 100);
+    write_two_digits(result + final_index - 4, high);
+    std::tie(high, low) = mul64x64_to_128(r2, 100);
+    write_two_digits(result + final_index - 6, high);
+    std::tie(high, low) = mul64x64_to_128(low, 100);
+    write_two_digits(result + final_index - 8, high);
+    std::tie(high, low) = mul64x64_to_128(r3, 100);
+    write_two_digits(result + final_index - 10, high);
+    std::tie(high, low) = mul64x64_to_128(low, 100);
+    write_two_digits(result + final_index - 12, high);
+    std::tie(high, low) = mul64x64_to_128(r4, 100);
+    write_two_digits(result + final_index - 14, high);
+    std::tie(high, low) = mul64x64_to_128(low, 100);
+    write_two_digits(result + final_index - 16, high);
+    write_one_digits(result, mantissa);
+    exp += 16;
+    exp_index = 17 + 1;
+  }  else  {
+    // 1 to 16
+    const uint32_t number_of_digits =
+        is_double ? fast_digit_count64(mantissa) : fast_digit_count32(mantissa);
+    exp += number_of_digits - 1;
+    size_t final_index = number_of_digits + 1;
+    exp_index = final_index;
+    if (mantissa >= 100'00'00'00) {
+      // here we have at least 9 digits, up to 16 digits.
+      // We are going to write the last 8 digits first.
+      // So we shall have between 1 and 8 digits left to write.
+      uint64_t r1, r2;
+      std::tie(mantissa, r1) = div10000(mantissa);
+      std::tie(mantissa, r2) = div10000(mantissa);
+      uint64_t high, low;
+      std::tie(high, low) = mul64x64_to_128(r1, 100);
+      write_two_digits(result + final_index - 2, high);
+      std::tie(high, low) = mul64x64_to_128(low, 100);
+      write_two_digits(result + final_index - 4, high);
+      std::tie(high, low) = mul64x64_to_128(r2, 100);
+      write_two_digits(result + final_index - 6, high);
+      std::tie(high, low) = mul64x64_to_128(low, 100);
+      write_two_digits(result + final_index - 8, high);
+      final_index -= 8;
+    }
+    // between 1 and 8 digits left to write.
+    if (mantissa >= 100'00) {
+      // We have 5 to 8 digits left to write.
+      // We are going to write the last 4 digits first.
+      // So we shall have between 1 and 4 digits left to write.
+      uint64_t r1;
+      std::tie(mantissa, r1) = div10000(mantissa);
+      uint64_t high, low;
+      std::tie(high, low) = mul64x64_to_128(r1, 100);
+      write_two_digits(result + final_index - 2, high);
+      std::tie(high, low) = mul64x64_to_128(low, 100);
+      write_two_digits(result + final_index - 4, high);
+      final_index -= 4;
+    }
+    if (mantissa >= 100) {
+      // We have 3 to 4 digits left to write.
+      // We are going to write the last 2 digits first.
+      // So 1 to 2 digits left to write.
+      uint64_t r;
+      std::tie(mantissa, r) = div100(mantissa);
+      write_two_digits(result + final_index - 2, r);
+      final_index -= 2;
+    }
+    // We have one or two digits left to write.
+    if (mantissa < 10) {
+      if(number_of_digits == 1) {
+        result[0] = (char)('0' + mantissa);
+        exp_index = 1;
+      } else {
+        write_one_digits(result, mantissa);
+      }
+    } else {
+      auto tens = (mantissa * 103) >> 10;
+      write_one_digits(result, tens);
+      result[2] = (mantissa - 10 * tens) + '0';
+    }
   }
-
-  if (mantissa >= 100'00'00'00'00'00'00'00) { 
-      size_t final_index = (sign ? 1 : 0) + index + 17 + 1;
-
-    uint64_t r;
-    // we have 17 digits.
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 2, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 4, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 6, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 8, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 10, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 12, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 14, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 16, r);
-      result[index] = (char)('0' + mantissa);
-  result[index + 1] = '.';
-  int32_t exp = exponent + (int32_t)17 - 1;
-  size_t exp_index = 17 + 1;
 
   if (mantissa && exp) { // We do not print the exponent if mantissa is zero.
     // About 20 instructions for the exponent?
-    if (exp < 0) {
-      result[exp_index++] = 'E';
-      result[exp_index++] = '-';
-      exp = -exp;
-    } else {
-      result[exp_index++] = 'E';
-    }
+    memcpy(result + exp_index, "E-", 2);
+    exp_index += 1 + (exp < 0);
 
     if constexpr (is_double) {
       if (exp >= 100) { // 3 digits
@@ -377,114 +470,23 @@ int fast_to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
         result[exp_index++] = (char)('0' + head_digits);
         exp = exp - head_digits * 100;
         write_two_digits(result + exp_index, exp);
+        exp_index += 3;
       } else if (exp >= 10) { // 2 digits
         write_two_digits(result + exp_index, exp);
+        exp_index += 2;
       } else { // 1 digit
         result[exp_index] = (char)('0' + exp);
+        exp_index += 1;
       }
     } else {
       if (exp >= 10) { // 2 digits
         write_two_digits(result + exp_index, exp);
+        exp_index += 2;
       } else { // 1 digit
         result[exp_index] = (char)('0' + exp);
+        exp_index += 1;
       }
     }
-  }
-    return exp_index;
-
-    //final_index -= 16;
-    //number_of_digits_left -= 16;
-  }
-  const uint32_t number_of_digits =   is_double ? fast_digit_count64(mantissa) : fast_digit_count32(mantissa);
-
-  // We use fast arithmetic to compute the number of digits.
-  bool need_decimal_point = number_of_digits > 1;
-
-  int32_t exp = exponent + (int32_t)number_of_digits - 1;
-  // All digits after the decimal point are written from index + 2 onwards.
-  // + 2 because we have the leading digit and the decimal point.
-  if (need_decimal_point) {
-    result[index + 1] = '.';
-  }
-  size_t exp_index = number_of_digits + (need_decimal_point ? 1 : 0);
-
-  if (mantissa && exp) { // We do not print the exponent if mantissa is zero.
-    // About 20 instructions for the exponent?
-    if (exp < 0) {
-      result[exp_index++] = 'E';
-      result[exp_index++] = '-';
-      exp = -exp;
-    } else {
-      result[exp_index++] = 'E';
-    }
-
-    if constexpr (is_double) {
-      if (exp >= 100) { // 3 digits
-        uint64_t prod = exp * 42949673;
-        uint32_t head_digits = int(prod >> 32);
-        result[exp_index++] = (char)('0' + head_digits);
-        exp = exp - head_digits * 100;
-        write_two_digits(result + exp_index, exp);
-      } else if (exp >= 10) { // 2 digits
-        write_two_digits(result + exp_index, exp);
-      } else { // 1 digit
-        result[exp_index] = (char)('0' + exp);
-      }
-    } else {
-      if (exp >= 10) { // 2 digits
-        write_two_digits(result + exp_index, exp);
-      } else { // 1 digit
-        result[exp_index] = (char)('0' + exp);
-      }
-    }
-  }
-  if (!need_decimal_point) {
-    result[index] = char('0' + mantissa);
-    return exp_index;
-  }
-  result[index + 1] = '.';
-
-  uint32_t digits_after_decimal = number_of_digits - 1;
-  size_t final_index = (sign ? 1 : 0) + index + number_of_digits + 1;
-
-  uint64_t r;
-  // Call the appropriate function from the array
-  //  converters[digits_after_decimal](result + (sign ? 1 : 0), mantissa);
-  size_t number_of_digits_left = number_of_digits;
-//  printf("oonumber_of_digits_left: %d\n", number_of_digits_left);
-  if (mantissa >= 100'00'00'00) {
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 2, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 4, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 6, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 8, r);
-    final_index -= 8;
-    number_of_digits_left -= 8;
-  }
-  if (mantissa >= 100'00) {
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 2, r);
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 4, r);
-    final_index -= 4;
-    number_of_digits_left -= 4;
-  }
-  if (mantissa >= 100) {
-    std::tie(mantissa, r) = div10(mantissa);
-    write_two_digits(result + final_index - 2, r);
-    final_index -= 2;
-    number_of_digits_left -= 2;
-  }
-  // here mantissa is less than 100.
-  if (mantissa < 10) {
-    result[index] = char('0' + mantissa);
-  } else {
-    auto digits = get_two_digits(mantissa);
-    result[index] = digits[0];
-    result[index + 2] = digits[1];
   }
   return exp_index;
 }
@@ -492,21 +494,19 @@ int fast_to_chars(T mantissa, int32_t exponent, bool sign, char *const result) {
 template int to_chars<uint32_t>(uint32_t, int32_t, bool, char *const);
 template int to_chars<uint64_t>(uint64_t, int32_t, bool, char *const);
 
-
-
 /*
-int fast_to_chars2(uint64_t mantissa, int32_t exponent, bool sign, char *const result) {
+int fast_to_chars2(uint64_t mantissa, int32_t exponent, bool sign, char *const
+result) {
 
   int index = 0;
   if (sign) {
     result[index++] = '-';
   }
-  // computing the number of digits is relatively expensive, so we do something cheap.
-  auto lz = leading_zeroes_64(mantissa);
-  auto lz8 = lz / 8;
+  // computing the number of digits is relatively expensive, so we do something
+cheap. auto lz = leading_zeroes_64(mantissa); auto lz8 = lz / 8;
   // lz8 is in [0,7)
-  // the matching number of digits is 
-  // {7: {1, 2, 3}, 6: {3, 4, 5}, 5: {8, 5, 6, 7}, 4: {8, 9, 10}, 
+  // the matching number of digits is
+  // {7: {1, 2, 3}, 6: {3, 4, 5}, 5: {8, 5, 6, 7}, 4: {8, 9, 10},
   // 3: {10, 11, 12, 13}, 2: {13, 14, 15}, 1: {16, 17, 15}, 0: {17, 18}}
   switch(lz8) {
     case 0: // 17 or 18 digits
@@ -521,26 +521,26 @@ int fast_to_chars2(uint64_t mantissa, int32_t exponent, bool sign, char *const r
 
 
 
-  if (mantissa >= 100'00'00'00'00'00'00'00) { 
+  if (mantissa >= 100'00'00'00'00'00'00'00) {
       size_t final_index = (sign ? 1 : 0) + index + 17 + 1;
 
     uint64_t r;
     // we have 17 digits.
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 2, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 4, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 6, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 8, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 10, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 12, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 14, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 16, r);
       result[index] = (char)('0' + mantissa);
   result[index + 1] = '.';
@@ -583,8 +583,8 @@ int fast_to_chars2(uint64_t mantissa, int32_t exponent, bool sign, char *const r
     //number_of_digits_left -= 16;
   }
   // We use fast arithmetic to compute the number of digits.
-  const uint32_t number_of_digits =   is_double ? fast_digit_count64(mantissa) : fast_digit_count32(mantissa);
-  bool need_decimal_point = number_of_digits > 1;
+  const uint32_t number_of_digits =   is_double ? fast_digit_count64(mantissa) :
+fast_digit_count32(mantissa); bool need_decimal_point = number_of_digits > 1;
 
   int32_t exp = exponent + (int32_t)number_of_digits - 1;
   // All digits after the decimal point are written from index + 2 onwards.
@@ -639,27 +639,27 @@ int fast_to_chars2(uint64_t mantissa, int32_t exponent, bool sign, char *const r
   size_t number_of_digits_left = number_of_digits;
 //  printf("oonumber_of_digits_left: %d\n", number_of_digits_left);
   if (mantissa >= 100'00'00'00) {
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 2, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 4, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 6, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 8, r);
     final_index -= 8;
     number_of_digits_left -= 8;
   }
   if (mantissa >= 100'00) {
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 2, r);
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 4, r);
     final_index -= 4;
     number_of_digits_left -= 4;
   }
   if (mantissa >= 100) {
-    std::tie(mantissa, r) = div10(mantissa);
+    std::tie(mantissa, r) = div100(mantissa);
     write_two_digits(result + final_index - 2, r);
     final_index -= 2;
     number_of_digits_left -= 2;
