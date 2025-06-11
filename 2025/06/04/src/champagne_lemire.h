@@ -56,7 +56,7 @@ to_centi_digits(uint64_t temp) {
 
 inline __attribute__((always_inline)) std::array<char, 2>
 get_two_digits(uint32_t value) {
-  constexpr std::array<std::array<char, 2>, 100> hundreds_digit_table = []() {
+  constexpr static std::array<std::array<char, 2>, 100> hundreds_digit_table = []() {
     std::array<std::array<char, 2>, 100> table;
     for (int i = 0; i < 100; ++i) {
       // Calculate the tens digit
