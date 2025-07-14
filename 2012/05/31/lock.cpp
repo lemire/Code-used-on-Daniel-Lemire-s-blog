@@ -74,11 +74,6 @@ template <class T> void runtest() {
 
 int main() {
   runtest<int>();
-  /*cout << sizeof(int) << endl;
-  runtest<long>();
-  cout << sizeof(long) << endl;
-  runtest<long long>();
-  cout << sizeof(long long) << endl;*/
   return 0;
 }
 
