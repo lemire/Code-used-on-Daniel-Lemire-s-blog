@@ -70,6 +70,7 @@ int main(int argc, char **argv) {
     return total;
   };
 #endif
+#if defined(__ARM_NEON)
 
   // NEON dot product
   auto neon_dot = [](const float *a, const float *b, size_t n) -> float {
@@ -86,6 +87,7 @@ int main(int argc, char **argv) {
     }
     return sum;
   };
+#endif
 
   // Test offsets in bytes (from 0 to alignment-1)
   for (size_t byte_offset = 0; byte_offset < alignment; ++byte_offset) {
@@ -97,7 +99,7 @@ int main(int argc, char **argv) {
                    volatile float result = avx2_dot(a_offset, b_offset, num_values);
                    (void)result;
                  }));
-#else
+#elif defined(__ARM_NEON__)
     pretty_print(fmt::format("neon_dot byte offset {}", byte_offset), num_values,
                  bench([&]() {
                    volatile float result = neon_dot(a_offset, b_offset, num_values);
