@@ -36,9 +36,47 @@ void pretty_print(const std::string &name, size_t num_values,
   fmt::print("\n");
 }
 
+
+  // AVX2 dot product
+#if defined(__AVX2__)
+float __attribute__ ((noinline)) avx2_dot(const float *a, const float *b, size_t n) {
+  __m256 vsum = _mm256_setzero_ps();
+  size_t i = 0;
+  for (; i + 8 <= n; i += 8) {
+    __m256 va = _mm256_loadu_ps(a + i);
+    __m256 vb = _mm256_loadu_ps(b + i);
+    vsum = _mm256_fmadd_ps(va, vb, vsum);
+  }
+  float sum[8];
+  _mm256_storeu_ps(sum, vsum);
+  float total = sum[0] + sum[1] + sum[2] + sum[3] + sum[4] + sum[5] + sum[6] + sum[7];
+  for (; i < n; i++) {
+    total += a[i] * b[i];
+  }
+  return total;
+};
+#endif
+#if defined(__ARM_NEON)
+// NEON dot product
+float __attribute__ ((noinline)) neon_dot(const float *a, const float *b, size_t n) {
+  float32x4_t vsum = vdupq_n_f32(0.0f);
+  size_t i = 0;
+  for (; i + 4 <= n; i += 4) {
+    float32x4_t va = vld1q_f32(a + i);
+    float32x4_t vb = vld1q_f32(b + i);
+    vsum = vmlaq_f32(vsum, va, vb);
+  }
+  float sum = vgetq_lane_f32(vsum, 0) + vgetq_lane_f32(vsum, 1) + vgetq_lane_f32(vsum, 2) + vgetq_lane_f32(vsum, 3);
+  for (; i < n; i++) {
+    sum += a[i] * b[i];
+  }
+  return sum;
+};
+#endif
+
 int main(int argc, char **argv) {
-  constexpr size_t num_values = 100'000;
-  constexpr size_t alignment = 64;
+  constexpr size_t num_values = 10'000'000;
+  constexpr size_t alignment = 8;
   std::mt19937_64 rng(42);
   std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
@@ -51,61 +89,42 @@ int main(int argc, char **argv) {
   }
 
 
-  // AVX2 dot product
-#if defined(__AVX2__)
-  auto avx2_dot = [](const float *a, const float *b, size_t n) -> float {
-    __m256 vsum = _mm256_setzero_ps();
-    size_t i = 0;
-    for (; i + 8 <= n; i += 8) {
-      __m256 va = _mm256_loadu_ps(a + i);
-      __m256 vb = _mm256_loadu_ps(b + i);
-      vsum = _mm256_fmadd_ps(va, vb, vsum);
-    }
-    float sum[8];
-    _mm256_storeu_ps(sum, vsum);
-    float total = sum[0] + sum[1] + sum[2] + sum[3] + sum[4] + sum[5] + sum[6] + sum[7];
-    for (; i < n; i++) {
-      total += a[i] * b[i];
-    }
-    return total;
-  };
-#endif
-#if defined(__ARM_NEON)
 
-  // NEON dot product
-  auto neon_dot = [](const float *a, const float *b, size_t n) -> float {
-    float32x4_t vsum = vdupq_n_f32(0.0f);
-    size_t i = 0;
-    for (; i + 4 <= n; i += 4) {
-      float32x4_t va = vld1q_f32(a + i);
-      float32x4_t vb = vld1q_f32(b + i);
-      vsum = vmlaq_f32(vsum, va, vb);
-    }
-    float sum = vgetq_lane_f32(vsum, 0) + vgetq_lane_f32(vsum, 1) + vgetq_lane_f32(vsum, 2) + vgetq_lane_f32(vsum, 3);
-    for (; i < n; i++) {
-      sum += a[i] * b[i];
-    }
-    return sum;
+  struct Row {
+    size_t byte_offset;
+    double ns_per_float;
+    double ins_per_float;
+    double ins_per_cycle;
   };
-#endif
+  std::vector<Row> results;
 
-  // Test offsets in bytes (from 0 to alignment-1)
   for (size_t byte_offset = 0; byte_offset < alignment; ++byte_offset) {
     const float* a_offset = reinterpret_cast<const float*>(reinterpret_cast<const uint8_t*>(a) + byte_offset);
     const float* b_offset = reinterpret_cast<const float*>(reinterpret_cast<const uint8_t*>(b) + byte_offset);
 #if defined(__AVX2__)
-    pretty_print(fmt::format("avx2_dot byte offset {}", byte_offset), num_values,
-                 bench([&]() {
-                   volatile float result = avx2_dot(a_offset, b_offset, num_values);
-                   (void)result;
-                 }));
+    event_aggregate agg = bench([&]() {
+      volatile float result = avx2_dot(a_offset, b_offset, num_values);
+      (void)result;
+    });
 #elif defined(__ARM_NEON__)
-    pretty_print(fmt::format("neon_dot byte offset {}", byte_offset), num_values,
-                 bench([&]() {
-                   volatile float result = neon_dot(a_offset, b_offset, num_values);
-                   (void)result;
-                 }));
+    event_aggregate agg = bench([&]() {
+      volatile float result = neon_dot(a_offset, b_offset, num_values);
+      (void)result;
+    });
+#else
+    event_aggregate agg{};
 #endif
+    double ns_per_float = agg.fastest_elapsed_ns() / static_cast<double>(num_values);
+    double ins_per_float = agg.fastest_instructions() / static_cast<double>(num_values);
+    double ins_per_cycle = agg.fastest_cycles() > 0 ? agg.fastest_instructions() / agg.fastest_cycles() : 0.0;
+    results.push_back(Row{byte_offset, ns_per_float, ins_per_float, ins_per_cycle});
+  }
+
+  // Print markdown table
+  fmt::print("| Byte Offset | ns/float | ins/float | instruction/cycle |\n");
+  fmt::print("|------------:|---------:|----------:|------------------:|\n");
+  for (const auto& row : results) {
+    fmt::print("| {:12} | {:9.2f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
   }
 
   free(a);
