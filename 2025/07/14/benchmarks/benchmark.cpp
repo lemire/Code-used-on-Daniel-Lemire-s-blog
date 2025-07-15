@@ -73,6 +73,30 @@ float __attribute__ ((noinline)) neon_dot(const float *a, const float *b, size_t
   return sum;
 };
 #endif
+#if defined(__AVX512F__)
+// AVX-512 dot product
+float __attribute__ ((noinline)) avx512_dot(const float *a, const float *b, size_t n) {
+  __m512 vsum = _mm512_setzero_ps();
+  size_t i = 0;
+  for (; i + 16 <= n; i += 16) {
+    __m512 va = _mm512_loadu_ps(a + i);
+    __m512 vb = _mm512_loadu_ps(b + i);
+    vsum = _mm512_fmadd_ps(va, vb, vsum);
+  };
+  // Handle tail (remaining elements < 16) with masked load
+  if (i < n) {
+      // Create mask for remaining elements
+      __mmask16 mask = (1U << (n - i)) - 1;
+      // Load remaining elements with zero-masking for unused lanes
+      __m512 va = _mm512_maskz_loadu_ps(mask, a + i);
+      __m512 vb = _mm512_maskz_loadu_ps(mask, b + i);
+      // Accumulate into vsum
+      vsum = _mm512_fmadd_ps(va, vb, vsum);
+  }
+  float total = _mm512_reduce_add_ps(vsum);
+  return total;
+};
+#endif
 
 int main(int argc, char **argv) {
   constexpr size_t num_values = 100'000;
@@ -97,36 +121,77 @@ int main(int argc, char **argv) {
     double ins_per_float;
     double ins_per_cycle;
   };
-  std::vector<Row> results;
+  std::vector<Row> results_avx512;
+  std::vector<Row> results_avx2;
+  std::vector<Row> results_neon;
 
   for (size_t byte_offset = 0; byte_offset < alignment; ++byte_offset) {
     const float* a_offset = reinterpret_cast<const float*>(reinterpret_cast<const uint8_t*>(a) + byte_offset);
     const float* b_offset = reinterpret_cast<const float*>(reinterpret_cast<const uint8_t*>(b) + byte_offset);
+
+#if defined(__AVX512F__)
+    event_aggregate agg_avx512 = bench([&]() {
+      volatile float result = avx512_dot(a_offset, b_offset, num_values);
+      (void)result;
+    });
+    double ns_per_float_avx512 = agg_avx512.fastest_elapsed_ns() / static_cast<double>(num_values);
+    double ins_per_float_avx512 = agg_avx512.fastest_instructions() / static_cast<double>(num_values);
+    double ins_per_cycle_avx512 = agg_avx512.fastest_cycles() > 0 ? agg_avx512.fastest_instructions() / agg_avx512.fastest_cycles() : 0.0;
+    results_avx512.push_back(Row{byte_offset, ns_per_float_avx512, ins_per_float_avx512, ins_per_cycle_avx512});
+#endif
+
 #if defined(__AVX2__)
-    event_aggregate agg = bench([&]() {
+    event_aggregate agg_avx2 = bench([&]() {
       volatile float result = avx2_dot(a_offset, b_offset, num_values);
       (void)result;
     });
-#elif defined(__ARM_NEON__)
-    event_aggregate agg = bench([&]() {
+    double ns_per_float_avx2 = agg_avx2.fastest_elapsed_ns() / static_cast<double>(num_values);
+    double ins_per_float_avx2 = agg_avx2.fastest_instructions() / static_cast<double>(num_values);
+    double ins_per_cycle_avx2 = agg_avx2.fastest_cycles() > 0 ? agg_avx2.fastest_instructions() / agg_avx2.fastest_cycles() : 0.0;
+    results_avx2.push_back(Row{byte_offset, ns_per_float_avx2, ins_per_float_avx2, ins_per_cycle_avx2});
+#endif
+
+#if defined(__ARM_NEON)
+    event_aggregate agg_neon = bench([&]() {
       volatile float result = neon_dot(a_offset, b_offset, num_values);
       (void)result;
     });
-#else
-    event_aggregate agg{};
+    double ns_per_float_neon = agg_neon.fastest_elapsed_ns() / static_cast<double>(num_values);
+    double ins_per_float_neon = agg_neon.fastest_instructions() / static_cast<double>(num_values);
+    double ins_per_cycle_neon = agg_neon.fastest_cycles() > 0 ? agg_neon.fastest_instructions() / agg_neon.fastest_cycles() : 0.0;
+    results_neon.push_back(Row{byte_offset, ns_per_float_neon, ins_per_float_neon, ins_per_cycle_neon});
 #endif
-    double ns_per_float = agg.fastest_elapsed_ns() / static_cast<double>(num_values);
-    double ins_per_float = agg.fastest_instructions() / static_cast<double>(num_values);
-    double ins_per_cycle = agg.fastest_cycles() > 0 ? agg.fastest_instructions() / agg.fastest_cycles() : 0.0;
-    results.push_back(Row{byte_offset, ns_per_float, ins_per_float, ins_per_cycle});
-  }
+}
 
-  // Print markdown table
-  fmt::print("| Byte Offset | ns/float | ins/float | instruction/cycle |\n");
-  fmt::print("|------------:|---------:|----------:|------------------:|\n");
-  for (const auto& row : results) {
-    fmt::print("| {:12} | {:9.2f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
-  }
+#if defined(__ARM_NEON)
+fmt::print("NEON Results:\n");
+fmt::print("| Byte Offset | ns/float | ins/float | instruction/cycle |\n");
+fmt::print("|------------:|---------:|----------:|------------------:|\n");
+for (const auto& row : results_neon) {
+  fmt::print("| {:12} | {:9.2f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
+}
+#elif defined(__AVX512F__) && defined(__AVX2__)
+fmt::print("AVX-512 Results:\n");
+fmt::print("| Byte Offset | ns/float | ins/float | instruction/cycle |\n");
+fmt::print("|------------:|---------:|----------:|------------------:|\n");
+for (const auto& row : results_avx512) {
+  fmt::print("| {:12} | {:9.2f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
+}
+
+fmt::print("AVX2 Results:\n");
+fmt::print("| Byte Offset | ns/float | ins/float | instruction/cycle |\n");
+fmt::print("|------------:|---------:|----------:|------------------:|\n");
+for (const auto& row : results_avx2) {
+  fmt::print("| {:12} | {:9.2f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
+}
+#elif defined(__AVX2__)
+fmt::print("AVX2 Results:\n");
+fmt::print("| Byte Offset | ns/float | ins/float | instruction/cycle |\n");
+fmt::print("|------------:|---------:|----------:|------------------:|\n");
+for (const auto& row : results_avx2) {
+  fmt::print("| {:12} | {:9.2f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
+}
+#endif
 
   free(a);
   free(b);
