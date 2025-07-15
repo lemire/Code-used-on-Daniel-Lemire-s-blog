@@ -88,13 +88,34 @@ float __attribute__ ((noinline)) avx2_dot(const float *a, const float *b, size_t
 #if defined(__ARM_NEON)
 // NEON dot product
 float __attribute__ ((noinline)) neon_dot(const float *a, const float *b, size_t n) {
-  float32x4_t vsum = vdupq_n_f32(0.0f);
+  float32x4_t vsum1 = vdupq_n_f32(0.0f);
+  float32x4_t vsum2 = vdupq_n_f32(0.0f);
+  float32x4_t vsum3 = vdupq_n_f32(0.0f);
+  float32x4_t vsum4 = vdupq_n_f32(0.0f);
+
   size_t i = 0;
-  for (; i + 4 <= n; i += 4) {
+  for (; i + 16 <= n; i += 16) {
     float32x4_t va = vld1q_f32(a + i);
     float32x4_t vb = vld1q_f32(b + i);
-    vsum = vmlaq_f32(vsum, va, vb);
+    vsum1 = vmlaq_f32(vsum1, va, vb);
+
+    va = vld1q_f32(a + i + 4);
+    vb = vld1q_f32(b + i + 4);
+    vsum2 = vmlaq_f32(vsum2, va, vb);
+
+    va = vld1q_f32(a + i + 8);
+    vb = vld1q_f32(b + i + 8);
+    vsum3 = vmlaq_f32(vsum3, va, vb);
+
+    va = vld1q_f32(a + i + 12);
+    vb = vld1q_f32(b + i + 12);
+    vsum4 = vmlaq_f32(vsum4, va, vb);
   }
+
+  vsum1 = vaddq_f32(vsum1, vsum2);
+  vsum3 = vaddq_f32(vsum3, vsum4);
+  float32x4_t vsum = vaddq_f32(vsum1, vsum3);
+
   float sum = vgetq_lane_f32(vsum, 0) + vgetq_lane_f32(vsum, 1) + vgetq_lane_f32(vsum, 2) + vgetq_lane_f32(vsum, 3);
   for (; i < n; i++) {
     sum += a[i] * b[i];
