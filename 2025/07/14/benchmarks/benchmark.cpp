@@ -237,28 +237,28 @@ fmt::print("NEON Results:\n");
 fmt::print("| Byte Offset | ns/float | ins/float | instruction/cycle |\n");
 fmt::print("|------------:|---------:|----------:|------------------:|\n");
 for (const auto& row : results_neon) {
-  fmt::print("| {:12} | {:9.2f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
+  fmt::print("| {:12} | {:9.3f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
 }
 #elif defined(__AVX512F__) && defined(__AVX2__)
 fmt::print("AVX-512 Results:\n");
 fmt::print("| Byte Offset | ns/float | ins/float | instruction/cycle |\n");
 fmt::print("|------------:|---------:|----------:|------------------:|\n");
 for (const auto& row : results_avx512) {
-  fmt::print("| {:12} | {:9.2f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
+  fmt::print("| {:12} | {:9.3f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
 }
 
 fmt::print("AVX2 Results:\n");
 fmt::print("| Byte Offset | ns/float | ins/float | instruction/cycle |\n");
 fmt::print("|------------:|---------:|----------:|------------------:|\n");
 for (const auto& row : results_avx2) {
-  fmt::print("| {:12} | {:9.2f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
+  fmt::print("| {:12} | {:9.3f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
 }
 #elif defined(__AVX2__)
 fmt::print("AVX2 Results:\n");
 fmt::print("| Byte Offset | ns/float | ins/float | instruction/cycle |\n");
 fmt::print("|------------:|---------:|----------:|------------------:|\n");
 for (const auto& row : results_avx2) {
-  fmt::print("| {:12} | {:9.2f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
+  fmt::print("| {:12} | {:9.3f} | {:10.2f} | {:17.2f} |\n", row.byte_offset, row.ns_per_float, row.ins_per_float, row.ins_per_cycle);
 }
 #endif
 
