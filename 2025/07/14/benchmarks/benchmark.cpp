@@ -40,13 +40,42 @@ void pretty_print(const std::string &name, size_t num_values,
   // AVX2 dot product
 #if defined(__AVX2__)
 float __attribute__ ((noinline)) avx2_dot(const float *a, const float *b, size_t n) {
-  __m256 vsum = _mm256_setzero_ps();
+  __m256 vsum1 = _mm256_setzero_ps();
+  __m256 vsum2 = _mm256_setzero_ps();
+  __m256 vsum3 = _mm256_setzero_ps();
+  __m256 vsum4 = _mm256_setzero_ps();
+
   size_t i = 0;
-  for (; i + 8 <= n; i += 8) {
+  for (; i + 32 <= n; i += 32) {
     __m256 va = _mm256_loadu_ps(a + i);
     __m256 vb = _mm256_loadu_ps(b + i);
-    vsum = _mm256_fmadd_ps(va, vb, vsum);
+    vsum1 = _mm256_fmadd_ps(va, vb, vsum1);
+
+    va = _mm256_loadu_ps(a + i + 8);
+    vb = _mm256_loadu_ps(b + i + 8);
+    vsum2 = _mm256_fmadd_ps(va, vb, vsum2);
+
+    va = _mm256_loadu_ps(a + i + 16);
+    vb = _mm256_loadu_ps(b + i + 16);
+    vsum3 = _mm256_fmadd_ps(va, vb, vsum3);
+
+    va = _mm256_loadu_ps(a + i + 24);
+    vb = _mm256_loadu_ps(b + i + 24);
+    vsum4 = _mm256_fmadd_ps(va, vb, vsum4);
   }
+  vsum1 = _mm256_add_ps(vsum1, vsum2);
+  vsum2 = _mm256_add_ps(vsum3, vsum4);
+
+  for (; i + 16 <= n; i += 16) {
+    __m256 va = _mm256_loadu_ps(a + i);
+    __m256 vb = _mm256_loadu_ps(b + i);
+    vsum1 = _mm256_fmadd_ps(va, vb, vsum1);
+
+    va = _mm256_loadu_ps(a + i + 8);
+    vb = _mm256_loadu_ps(b + i + 8);
+    vsum2 = _mm256_fmadd_ps(va, vb, vsum2);
+  }
+  __m256 vsum = _mm256_add_ps(vsum1, vsum2);
   float sum[8];
   _mm256_storeu_ps(sum, vsum);
   float total = sum[0] + sum[1] + sum[2] + sum[3] + sum[4] + sum[5] + sum[6] + sum[7];
@@ -76,13 +105,34 @@ float __attribute__ ((noinline)) neon_dot(const float *a, const float *b, size_t
 #if defined(__AVX512F__)
 // AVX-512 dot product
 float __attribute__ ((noinline)) avx512_dot(const float *a, const float *b, size_t n) {
-  __m512 vsum = _mm512_setzero_ps();
+  __m512 vsum1 = _mm512_setzero_ps();
+  __m512 vsum2 = _mm512_setzero_ps();
+  __m512 vsum3 = _mm512_setzero_ps();
+  __m512 vsum4 = _mm512_setzero_ps();
+
   size_t i = 0;
+  for (; i + 16*4 <= n; i += 16*4) {
+    __m512 va = _mm512_loadu_ps(a + i);
+    __m512 vb = _mm512_loadu_ps(b + i);
+    vsum1 = _mm512_fmadd_ps(va, vb, vsum1);
+    va = _mm512_loadu_ps(a + i + 16);
+    vb = _mm512_loadu_ps(b + i + 16);
+    vsum2 = _mm512_fmadd_ps(va, vb, vsum2);
+    va = _mm512_loadu_ps(a + i + 32);
+    vb = _mm512_loadu_ps(b + i + 32);
+    vsum3 = _mm512_fmadd_ps(va, vb, vsum3);
+    va = _mm512_loadu_ps(a + i + 48);
+    vb = _mm512_loadu_ps(b + i + 48);
+    vsum4 = _mm512_fmadd_ps(va, vb, vsum4);
+  };
   for (; i + 16 <= n; i += 16) {
     __m512 va = _mm512_loadu_ps(a + i);
     __m512 vb = _mm512_loadu_ps(b + i);
-    vsum = _mm512_fmadd_ps(va, vb, vsum);
+    vsum1 = _mm512_fmadd_ps(va, vb, vsum1);
   };
+  __m512 vsum = _mm512_add_ps(vsum1, vsum2);
+  vsum = _mm512_add_ps(vsum, vsum3);
+  vsum = _mm512_add_ps(vsum, vsum4);
   // Handle tail (remaining elements < 16) with masked load
   if (i < n) {
       // Create mask for remaining elements
@@ -101,15 +151,13 @@ float __attribute__ ((noinline)) avx512_dot(const float *a, const float *b, size
 int main(int argc, char **argv) {
   constexpr size_t num_values = 100'000;
   constexpr size_t alignment = 8;
-  std::mt19937_64 rng(42);
-  std::uniform_real_distribution<float> dist(0.0f, 1.0f);
 
   // Aligned allocation
   float *a = (float *)aligned_alloc(alignment, (num_values + alignment) * sizeof(float));
   float *b = (float *)aligned_alloc(alignment, (num_values + alignment) * sizeof(float));
   for (size_t i = 0; i < num_values + alignment; i++) {
-    a[i] = dist(rng);
-    b[i] = dist(rng);
+    a[i] = 0.0f; // Initialize to zero
+    b[i] = 0.0f; // Initialize to zero
   }
   std::printf("Benchmarking dot product with %zu values, total memory usage is %.1f MB\n", num_values, 2 * num_values * sizeof(float) / 1024.0 / 1024.0);
 
