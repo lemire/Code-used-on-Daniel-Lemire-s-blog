@@ -75,7 +75,7 @@ float __attribute__ ((noinline)) neon_dot(const float *a, const float *b, size_t
 #endif
 
 int main(int argc, char **argv) {
-  constexpr size_t num_values = 10'000'000;
+  constexpr size_t num_values = 100'000;
   constexpr size_t alignment = 8;
   std::mt19937_64 rng(42);
   std::uniform_real_distribution<float> dist(0.0f, 1.0f);
@@ -87,6 +87,7 @@ int main(int argc, char **argv) {
     a[i] = dist(rng);
     b[i] = dist(rng);
   }
+  std::printf("Benchmarking dot product with %zu values, total memory usage is %.1f MB\n", num_values, 2 * num_values * sizeof(float) / 1024.0 / 1024.0);
 
 
 
