@@ -10,7 +10,7 @@ include_directories(benchmarks src)
 
 add_executable(benchmark benchmarks/benchmark.cpp)
 
-CPMAddPackage("gh:simdutf/simdutf@7.3.4")
+CPMAddPackage("gh:simdutf/simdutf@7.3.5")
 CPMAddPackage("gh:fmtlib/fmt#10.2.1")
 CPMAddPackage("gh:lemire/counters#v1.0.1")
 target_link_libraries(benchmark PRIVATE fmt::fmt)
