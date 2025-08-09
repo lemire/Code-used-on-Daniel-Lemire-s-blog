@@ -12,7 +12,7 @@
 #include "fmt/format.h"
 
 
-void pretty_print(const std::string &name, size_t num_values,
+double pretty_print(const std::string &name, size_t num_values,
                   std::pair<event_aggregate,size_t> result) {
   const auto& agg = result.first;
   size_t N = result.second;
@@ -29,6 +29,7 @@ void pretty_print(const std::string &name, size_t num_values,
                agg.fastest_instructions() / agg.fastest_cycles());
   }
   fmt::print("\n");
+  return num_values / agg.fastest_elapsed_ns();
 }
 
 
@@ -62,28 +63,52 @@ const char* naive_find(const char* start, const char* end, char character) {
 }
 
 
-int main(int argc, char **argv) {
-   std::string input = generate_random_ascii_string(100000);
-  size_t volume = input.size();
-  volatile uint64_t counter = 0;
-  for (size_t i = 0; i < 4; i++) {
-    printf("Run %zu\n", i + 1);
-    pretty_print("std::find",input.size(), 
-                 bench([&input, &counter]() {
-                  auto it = std::find(input.data(), input.data() + input.size(), '=');
-                  counter = counter +  size_t(it - input.data()); 
-                 }));
+std::vector<std::tuple<size_t, double, double, double>> benchmark_results;
 
-    pretty_print("simdutf::find",input.size(), 
-                 bench([&input, &counter]() {
-                  auto it = simdutf::find(input.data(), input.data() + input.size(), '=');
-                  counter = counter + size_t(it - input.data()); 
-                 }));
+void collect_benchmark_results(size_t input_size) {
+    std::string input = generate_random_ascii_string(input_size);
+    volatile uint64_t counter = 0;
 
-    pretty_print("naive_find",input.size(), 
-                 bench([&input, &counter]() {
-                  auto it = naive_find(input.data(), input.data() + input.size(), '=');
-                  counter = counter + size_t(it - input.data()); 
-                 }));
+    // Benchmark std::find
+    auto std_result = pretty_print("std::find", input.size(), 
+                                   bench([&input, &counter]() {
+                                       auto it = std::find(input.data(), input.data() + input.size(), '=');
+                                       counter = counter + size_t(it - input.data());
+                                   }));
+
+    // Benchmark simdutf::find
+    auto simdutf_result = pretty_print("simdutf::find", input.size(), 
+                                       bench([&input, &counter]() {
+                                           auto it = simdutf::find(input.data(), input.data() + input.size(), '=');
+                                           counter = counter + size_t(it - input.data());
+                                       }));
+
+    // Benchmark naive_find
+    auto naive_result = pretty_print("naive_find", input.size(), 
+                                      bench([&input, &counter]() {
+                                          auto it = naive_find(input.data(), input.data() + input.size(), '=');
+                                          counter = counter + size_t(it - input.data());
+                                      }));
+
+    benchmark_results.emplace_back(input_size, std_result, simdutf_result, naive_result);
 }
+
+void print_markdown_table() {
+    fmt::print("| Input Size (bytes) | std::find (GB/s) | simdutf::find (GB/s) | naive_find (GB/s) |\n");
+    fmt::print("|--------------------|------------------|-----------------------|-------------------|\n");
+
+    for (const auto& [size, std_gbps, simdutf_gbps, naive_gbps] : benchmark_results) {
+        fmt::print("| {:<18} | {:<16.2f} | {:<21.2f} | {:<17.2f} |\n", size, std_gbps, simdutf_gbps, naive_gbps);
+    }
+}
+
+int main(int argc, char **argv) {
+    std::vector<size_t> input_sizes = {1024, 8192, 65536, 524288}; // Sizes from cache-friendly to RAM-intensive
+
+    for (size_t size : input_sizes) {
+        collect_benchmark_results(size);
+    }
+
+    // Print markdown table
+    print_markdown_table();
 }
