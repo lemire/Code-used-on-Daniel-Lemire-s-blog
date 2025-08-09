@@ -103,7 +103,7 @@ void print_markdown_table() {
 }
 
 int main(int argc, char **argv) {
-    std::vector<size_t> input_sizes = {1024, 8192, 65536, 524288}; // Sizes from cache-friendly to RAM-intensive
+    std::vector<size_t> input_sizes = {1024, 8192, 65536, 524288, 2097152}; // Sizes from cache-friendly to RAM-intensive
 
     for (size_t size : input_sizes) {
         collect_benchmark_results(size);
