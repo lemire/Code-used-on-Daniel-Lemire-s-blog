@@ -13,13 +13,16 @@
 
 
 void pretty_print(const std::string &name, size_t num_values,
-                  event_aggregate agg) {
+                  std::pair<event_aggregate,size_t> result) {
+  const auto& agg = result.first;
+  size_t N = result.second;
+  num_values *= N; // Adjust num_values to account for repetitions
   fmt::print("{:<50} : ", name);
-  fmt::print(" {:5.2f} ns ", agg.fastest_elapsed_ns());
+  fmt::print(" {:5.2f} ns ", agg.fastest_elapsed_ns()/num_values);
   fmt::print(" {:5.2f} GB/s ", num_values / agg.fastest_elapsed_ns());
   if (collector.has_events()) {
     fmt::print(" {:5.2f} GHz ",
-               agg.fastest_cycles() / agg.fastest_elapsed_ns());
+               agg.cycles() / agg.elapsed_ns());
     fmt::print(" {:5.2f} c ", agg.fastest_cycles() / num_values);
     fmt::print(" {:5.2f} i ", agg.fastest_instructions() / num_values);
     fmt::print(" {:5.2f} i/c ",
@@ -47,8 +50,20 @@ std::string generate_random_ascii_string(size_t length) {
 }
 
 
+// Naive implementation of find
+const char* naive_find(const char* start, const char* end, char character) {
+    while (start != end) {
+        if (*start == character) {
+            return start;
+        }
+        ++start;
+    }
+    return end;
+}
+
+
 int main(int argc, char **argv) {
-   std::string input = generate_random_ascii_string(10000);
+   std::string input = generate_random_ascii_string(100000);
   size_t volume = input.size();
   volatile uint64_t counter = 0;
   for (size_t i = 0; i < 4; i++) {
@@ -62,6 +77,12 @@ int main(int argc, char **argv) {
     pretty_print("simdutf::find",input.size(), 
                  bench([&input, &counter]() {
                   auto it = simdutf::find(input.data(), input.data() + input.size(), '=');
+                  counter = counter + size_t(it - input.data()); 
+                 }));
+
+    pretty_print("naive_find",input.size(), 
+                 bench([&input, &counter]() {
+                  auto it = naive_find(input.data(), input.data() + input.size(), '=');
                   counter = counter + size_t(it - input.data()); 
                  }));
 }
