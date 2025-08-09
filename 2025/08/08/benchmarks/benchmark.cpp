@@ -16,6 +16,7 @@ void pretty_print(const std::string &name, size_t num_values,
                   event_aggregate agg) {
   fmt::print("{:<50} : ", name);
   fmt::print(" {:5.2f} ns ", agg.fastest_elapsed_ns());
+  fmt::print(" {:5.2f} GB/s ", num_values / agg.fastest_elapsed_ns());
   if (collector.has_events()) {
     fmt::print(" {:5.2f} GHz ",
                agg.fastest_cycles() / agg.fastest_elapsed_ns());
