@@ -6,9 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(cmake/CPM.cmake)
 
-include_directories(benchmarks src)
-
 add_executable(benchmark benchmarks/benchmark.cpp)
+target_include_directories(benchmark PRIVATE benchmarks)
 
 set(SIMDUTF_TESTS off)
 set(SIMDUTF_TOOLS off)
