@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
-project(BenchmarkProject VERSION 1.0)
+project(BenchmarkProject VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -26,5 +26,5 @@ include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
 if(COMPILER_SUPPORTS_MARCH_NATIVE)
     message(STATUS "Compiler supports -march=native, enabling it.")
-    add_compile_options(-march=native)
+    target_compile_options(benchmark PRIVATE -march=native)
 endif()
