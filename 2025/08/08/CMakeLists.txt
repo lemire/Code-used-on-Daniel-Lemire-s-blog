@@ -19,12 +19,3 @@ target_link_libraries(benchmark PRIVATE counters)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
-
-
-
-include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
-if(COMPILER_SUPPORTS_MARCH_NATIVE)
-    message(STATUS "Compiler supports -march=native, enabling it.")
-    add_compile_options(-march=native)
-endif()
