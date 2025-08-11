@@ -8,8 +8,21 @@
 #include "benchmarker.h"
 
 #include "simdutf.h"
+
+#if __has_include("fmt/core.h")
 #include "fmt/core.h"
 #include "fmt/format.h"
+#else
+#include <format>
+#include <iostream>
+
+namespace fmt {
+    template<typename... Args>
+    void print(const char* fmt_str, Args&&... args) {
+        std::cout << std::vformat(fmt_str, std::make_format_args(args...));
+    }
+}
+#endif
 
 
 double pretty_print(const std::string &name, size_t num_values,
@@ -70,21 +83,21 @@ void collect_benchmark_results(size_t input_size) {
     volatile uint64_t counter = 0;
 
     // Benchmark std::find
-    auto std_result = pretty_print("std::find", input.size(), 
+    auto std_result = pretty_print("std::find", input.size(),
                                    bench([&input, &counter]() {
                                        auto it = std::find(input.data(), input.data() + input.size(), '=');
                                        counter = counter + size_t(it - input.data());
                                    }));
 
     // Benchmark simdutf::find
-    auto simdutf_result = pretty_print("simdutf::find", input.size(), 
+    auto simdutf_result = pretty_print("simdutf::find", input.size(),
                                        bench([&input, &counter]() {
                                            auto it = simdutf::find(input.data(), input.data() + input.size(), '=');
                                            counter = counter + size_t(it - input.data());
                                        }));
 
     // Benchmark naive_find
-    auto naive_result = pretty_print("naive_find", input.size(), 
+    auto naive_result = pretty_print("naive_find", input.size(),
                                       bench([&input, &counter]() {
                                           auto it = naive_find(input.data(), input.data() + input.size(), '=');
                                           counter = counter + size_t(it - input.data());
