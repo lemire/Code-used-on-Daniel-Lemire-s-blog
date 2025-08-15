@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	arraySize = 1 << 26
-	runs      = 20
+	arraySize = 1 << 24
+	runs      = 25
 )
 
 func access(arr []int32, indices []int) int64 {
@@ -164,7 +164,7 @@ func main() {
 
 	// Print results
 	fmt.Printf("Seq (ms) : min=%.2f, max=%.2f, mean=%.2f\n", seqMin, seqMax, seqAvg)
-	fmt.Printf("Alea (ms) : min=%.2f, max=%.2f, mean=%.2f\n", randMin, randMax, randAvg)
+	fmt.Printf("Random (ms) : min=%.2f, max=%.2f, mean=%.2f\n", randMin, randMax, randAvg)
 	fmt.Printf("Backward (ms) : min=%.2f, max=%.2f, mean=%.2f\n", backMin, backMax, backAvg)
 	fmt.Printf("Interleaved (ms) : min=%.2f, max=%.2f, mean=%.2f\n", interMin, interMax, interAvg)
 	fmt.Printf("Bouncing (ms) : min=%.2f, max=%.2f, mean=%.2f\n", bounceMin, bounceMax, bounceAvg)
