@@ -63,11 +63,18 @@ const char* naive_find(const char* start, const char* end, char character) {
 }
 
 
-std::vector<std::tuple<size_t, double, double, double>> benchmark_results;
+std::vector<std::tuple<size_t, double, double, double, double>> benchmark_results;
 
 void collect_benchmark_results(size_t input_size) {
     std::string input = generate_random_ascii_string(input_size);
     volatile uint64_t counter = 0;
+
+    // Benchmark strchr
+    auto memchr_result = pretty_print("memchr", input.size(), 
+                                   bench([&input, &counter]() {
+                                       char* ptr = (char*)memchr(input.data(),'=',input.size());
+                                       counter = counter + size_t(ptr - input.data());
+                                   }));
 
     // Benchmark std::find
     auto std_result = pretty_print("std::find", input.size(), 
@@ -90,15 +97,15 @@ void collect_benchmark_results(size_t input_size) {
                                           counter = counter + size_t(it - input.data());
                                       }));
 
-    benchmark_results.emplace_back(input_size, std_result, simdutf_result, naive_result);
+    benchmark_results.emplace_back(input_size, memchr_result, std_result, simdutf_result, naive_result);
 }
 
 void print_markdown_table() {
-    fmt::print("| Input Size (bytes) | std::find (GB/s) | simdutf::find (GB/s) | naive_find (GB/s) |\n");
-    fmt::print("|--------------------|------------------|-----------------------|-------------------|\n");
+    fmt::print("| Input Size (bytes) | memchr (GB/s)    | std::find (GB/s) |  simdutf::find (GB/s) | naive_find (GB/s) |\n");
+    fmt::print("|--------------------|------------------|------------------|-----------------------|-------------------|\n");
 
-    for (const auto& [size, std_gbps, simdutf_gbps, naive_gbps] : benchmark_results) {
-        fmt::print("| {:<18} | {:<16.2f} | {:<21.2f} | {:<17.2f} |\n", size, std_gbps, simdutf_gbps, naive_gbps);
+    for (const auto& [size, memchr_gbps, std_gbps, simdutf_gbps, naive_gbps] : benchmark_results) {
+        fmt::print("| {:<18} | {:<16.2f} | {:<16.2f} | {:<21.2f} | {:<17.2f} |\n", size, memchr_gbps, std_gbps, simdutf_gbps, naive_gbps);
     }
 }
 
