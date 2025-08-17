@@ -2,170 +2,244 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
+	"math/rand" // Use modern rand package (Go 1.22+)
+	"testing"
 )
 
-const (
-	arraySize = 1 << 24
-	runs      = 25
-)
+// DataStruct represents a 64-byte structure with 8 uint32 values
+type DataStruct struct {
+	a, b, c, d, e, f, g, h uint32
+}
 
-func access(arr []int32, indices []int) int64 {
-	var sum int64
-	for _, i := range indices {
-		sum += int64(arr[indices[i]])
+const arraySize = 1000000
+
+// initArray initializes an array of DataStruct with sequential values
+func initArray(size int) []DataStruct {
+	arr := make([]DataStruct, size)
+	for i := 0; i < size; i++ {
+		arr[i] = DataStruct{
+			a: uint32(i),
+			b: uint32(i + 1),
+			c: uint32(i + 2),
+			d: uint32(i + 3),
+			e: uint32(i + 4),
+			f: uint32(i + 5),
+			g: uint32(i + 6),
+			h: uint32(i + 7),
+		}
 	}
-	return sum
+	return arr
+}
+
+func initArrayConsecutive(size int) []int {
+	arr := make([]int, size)
+	for i := 0; i < size; i++ {
+		arr[i] = i
+	}
+	return arr
+}
+func BenchmarkSequentialAccess(b *testing.B) {
+	arr := initArray(arraySize)
+
+	b.ResetTimer()
+	var sum uint32 // Ensure sum is used to prevent optimization
+	for i := 0; i < b.N; i++ {
+		sum = 0
+		for j := 0; j < arraySize; j++ {
+			sum += arr[j].a // Accessing only the first field
+		}
+	}
+	// Use sum to prevent compiler optimization
+	b.StopTimer()
+	if sum == 0 {
+		b.Fatal("sum is zero, which is unexpected")
+	}
+}
+
+func BenchmarkSequentialAccessWithBuffer(b *testing.B) {
+	arr := initArray(arraySize)
+	indices := initArrayConsecutive(arraySize)
+
+	b.ResetTimer()
+	var sum uint32 // Ensure sum is used to prevent optimization
+	for i := 0; i < b.N; i++ {
+		sum = 0
+		for j := 0; j < arraySize; j++ {
+			sum += arr[indices[j]].a // Accessing only the first field
+		}
+	}
+	// Use sum to prevent compiler optimization
+	b.StopTimer()
+	if sum == 0 {
+		b.Fatal("sum is zero, which is unexpected")
+	}
+}
+
+func BenchmarkBackwardAccess(b *testing.B) {
+	arr := initArray(arraySize)
+
+	b.ResetTimer()
+	var sum uint32 // Ensure sum is used to prevent optimization
+	for i := 0; i < b.N; i++ {
+		sum = 0
+		for j := arraySize; j > 0; j-- {
+			sum += arr[j-1].a // Accessing only the first field
+		}
+	}
+	// Use sum to prevent compiler optimization
+	b.StopTimer()
+	if sum == 0 {
+		b.Fatal("sum is zero, which is unexpected")
+	}
+}
+
+func BenchmarkRandomAccess(b *testing.B) {
+	arr := initArray(arraySize)
+
+	// Initialize random number generator with a fixed seed for reproducibility
+	indices := make([]int, arraySize)
+	for i := range indices {
+		indices[i] = i
+	}
+	// Use rand.Shuffle from math/rand/v2 with the custom RNG source
+	rand.Shuffle(len(indices), func(i, j int) {
+		indices[i], indices[j] = indices[j], indices[i]
+	})
+
+	b.ResetTimer()
+	var sum uint32 // Ensure sum is used to prevent optimization
+	for i := 0; i < b.N; i++ {
+		sum = 0
+		for _, idx := range indices {
+			sum += arr[idx].a // Accessing only the first field
+		}
+	}
+	// Use sum to prevent compiler optimization
+	b.StopTimer()
+	if sum == 0 {
+		b.Fatal("sum is zero, which is unexpected")
+	}
+}
+
+func BenchmarkBouncingAccess(b *testing.B) {
+	arr := initArray(arraySize)
+
+	b.ResetTimer()
+	var sum uint32 // Ensure sum is used to prevent optimization
+	for i := 0; i < b.N; i++ {
+		sum = 0
+		for j := 0; j < arraySize/2; j++ {
+			sum += arr[j].a
+			sum += arr[arraySize-j-1].a
+		}
+	}
+	// Use sum to prevent compiler optimization
+	b.StopTimer()
+	if sum == 0 {
+		b.Fatal("sum is zero, which is unexpected")
+	}
+}
+
+func BenchmarkInterleavedAccess(b *testing.B) {
+	arr := initArray(arraySize)
+
+	b.ResetTimer()
+	var sum uint32 // Ensure sum is used to prevent optimization
+	for i := 0; i < b.N; i++ {
+		sum = 0
+		for j := 0; j < arraySize/2; j++ {
+			sum += arr[j].a
+			sum += arr[arraySize/2+j].a
+		}
+	}
+	// Use sum to prevent compiler optimization
+	b.StopTimer()
+	if sum == 0 {
+		b.Fatal("sum is zero, which is unexpected")
+	}
+}
+
+func BenchmarkBackwardAccessWithBuffer(b *testing.B) {
+	arr := initArray(arraySize)
+	indices := initArrayConsecutive(arraySize)
+
+	b.ResetTimer()
+	var sum uint32
+	for i := 0; i < b.N; i++ {
+		sum = 0
+		for j := arraySize; j > 0; j-- {
+			sum += arr[indices[j-1]].a
+		}
+	}
+	b.StopTimer()
+	if sum == 0 {
+		b.Fatal("sum is zero, which is unexpected")
+	}
+}
+
+// Version bufferisée des accès bouncing
+func BenchmarkBouncingAccessWithBuffer(b *testing.B) {
+	arr := initArray(arraySize)
+	indices := initArrayConsecutive(arraySize)
+
+	b.ResetTimer()
+	var sum uint32
+	for i := 0; i < b.N; i++ {
+		sum = 0
+		for j := 0; j < arraySize/2; j++ {
+			sum += arr[indices[j]].a
+			sum += arr[indices[arraySize-j-1]].a
+		}
+	}
+	b.StopTimer()
+	if sum == 0 {
+		b.Fatal("sum is zero, which is unexpected")
+	}
+}
+
+// Version bufferisée des accès interleaved
+func BenchmarkInterleavedAccessWithBuffer(b *testing.B) {
+	arr := initArray(arraySize)
+	indices := initArrayConsecutive(arraySize)
+
+	b.ResetTimer()
+	var sum uint32
+	for i := 0; i < b.N; i++ {
+		sum = 0
+		for j := 0; j < arraySize/2; j++ {
+			sum += arr[indices[j]].a
+			sum += arr[indices[arraySize/2+j]].a
+		}
+	}
+	b.StopTimer()
+	if sum == 0 {
+		b.Fatal("sum is zero, which is unexpected")
+	}
 }
 
 func main() {
-	arr := make([]int32, arraySize)
-	for i := range arr {
-		arr[i] = int32(i)
-	}
+	resconsecutive := testing.Benchmark(BenchmarkSequentialAccessWithBuffer)
+	fmt.Println("BenchmarkSequentialAccessWithBuffer", resconsecutive)
+	resrandom := testing.Benchmark(BenchmarkRandomAccess)
+	fmt.Println("BenchmarkRandomAccess", resrandom)
+	resbackwardbuf := testing.Benchmark(BenchmarkBackwardAccessWithBuffer)
+	fmt.Println("BenchmarkBackwardAccessWithBuffer", resbackwardbuf)
 
-	// Sequential indices
-	sequentialIndices := make([]int, arraySize)
-	for i := range sequentialIndices {
-		sequentialIndices[i] = i
-	}
+	resbouncingbuf := testing.Benchmark(BenchmarkBouncingAccessWithBuffer)
+	fmt.Println("BenchmarkBouncingAccessWithBuffer", resbouncingbuf)
+	resinterleavedbuf := testing.Benchmark(BenchmarkInterleavedAccessWithBuffer)
+	fmt.Println("BenchmarkInterleavedAccessWithBuffer", resinterleavedbuf)
 
-	// Random indices
-	randomIndices := make([]int, arraySize)
-	for i := range randomIndices {
-		randomIndices[i] = i
-	}
-	rand.Shuffle(len(randomIndices), func(i, j int) {
-		randomIndices[i], randomIndices[j] = randomIndices[j], randomIndices[i]
-	})
+	ratiobuf := float64(resrandom.NsPerOp()) / float64(resconsecutive.NsPerOp())
+	fmt.Printf("Ratio (Random/SequentialBuffer): %.2f\n", ratiobuf)
+	fmt.Printf("\n\n")
 
-	// Backward indices
-	backwardIndices := make([]int, arraySize)
-	for i := range backwardIndices {
-		backwardIndices[i] = arraySize - 1 - i
-	}
-
-	// Interleaved indices (1st, 3rd, 2nd, 4th, ...)
-	interleavedIndices := make([]int, arraySize)
-	for i := 0; i < arraySize/2; i++ {
-		interleavedIndices[i*2] = i
-		if i*2+1 < arraySize {
-			interleavedIndices[i*2+1] = i + arraySize/2
-		}
-	}
-
-	// Bouncing indices (first, last, second, second-to-last, ...)
-	bouncingIndices := make([]int, arraySize)
-	for i := 0; i < arraySize/2; i++ {
-		bouncingIndices[i*2] = i
-		if i*2+1 < arraySize {
-			bouncingIndices[i*2+1] = arraySize - 1 - i
-		}
-	}
-
-	// Measure sequential access
-	sequentialTimes := make([]float64, runs)
-	for i := 0; i < runs; i++ {
-		start := time.Now()
-		_ = access(arr, sequentialIndices)
-		sequentialTimes[i] = time.Since(start).Seconds() * 1000
-	}
-
-	// Measure random access
-	randomTimes := make([]float64, runs)
-	for i := 0; i < runs; i++ {
-		start := time.Now()
-		_ = access(arr, randomIndices)
-		randomTimes[i] = time.Since(start).Seconds() * 1000
-	}
-
-	// Measure backward access
-	backwardTimes := make([]float64, runs)
-	for i := 0; i < runs; i++ {
-		start := time.Now()
-		_ = access(arr, backwardIndices)
-		backwardTimes[i] = time.Since(start).Seconds() * 1000
-	}
-
-	// Measure interleaved access
-	interleavedTimes := make([]float64, runs)
-	for i := 0; i < runs; i++ {
-		start := time.Now()
-		_ = access(arr, interleavedIndices)
-		interleavedTimes[i] = time.Since(start).Seconds() * 1000
-	}
-
-	// Measure bouncing access
-	bouncingTimes := make([]float64, runs)
-	for i := 0; i < runs; i++ {
-		start := time.Now()
-		_ = access(arr, bouncingIndices)
-		bouncingTimes[i] = time.Since(start).Seconds() * 1000
-	}
-
-	// Calculate statistics
-	var seqMin, seqMax, seqAvg, randMin, randMax, randAvg float64
-	var backMin, backMax, backAvg, interMin, interMax, interAvg float64
-	var bounceMin, bounceMax, bounceAvg float64
-
-	for i := 0; i < runs; i++ {
-		// Sequential stats
-		if i == 0 || sequentialTimes[i] < seqMin {
-			seqMin = sequentialTimes[i]
-		}
-		if i == 0 || sequentialTimes[i] > seqMax {
-			seqMax = sequentialTimes[i]
-		}
-		seqAvg += sequentialTimes[i]
-
-		// Random stats
-		if i == 0 || randomTimes[i] < randMin {
-			randMin = randomTimes[i]
-		}
-		if i == 0 || randomTimes[i] > randMax {
-			randMax = randomTimes[i]
-		}
-		randAvg += randomTimes[i]
-
-		// Backward stats
-		if i == 0 || backwardTimes[i] < backMin {
-			backMin = backwardTimes[i]
-		}
-		if i == 0 || backwardTimes[i] > backMax {
-			backMax = backwardTimes[i]
-		}
-		backAvg += backwardTimes[i]
-
-		// Interleaved stats
-		if i == 0 || interleavedTimes[i] < interMin {
-			interMin = interleavedTimes[i]
-		}
-		if i == 0 || interleavedTimes[i] > interMax {
-			interMax = interleavedTimes[i]
-		}
-		interAvg += interleavedTimes[i]
-
-		// Bouncing stats
-		if i == 0 || bouncingTimes[i] < bounceMin {
-			bounceMin = bouncingTimes[i]
-		}
-		if i == 0 || bouncingTimes[i] > bounceMax {
-			bounceMax = bouncingTimes[i]
-		}
-		bounceAvg += bouncingTimes[i]
-	}
-
-	seqAvg /= runs
-	randAvg /= runs
-	backAvg /= runs
-	interAvg /= runs
-	bounceAvg /= runs
-
-	// Print results
-	fmt.Printf("Seq (ms) : min=%.2f, max=%.2f, mean=%.2f\n", seqMin, seqMax, seqAvg)
-	fmt.Printf("Random (ms) : min=%.2f, max=%.2f, mean=%.2f\n", randMin, randMax, randAvg)
-	fmt.Printf("Backward (ms) : min=%.2f, max=%.2f, mean=%.2f\n", backMin, backMax, backAvg)
-	fmt.Printf("Interleaved (ms) : min=%.2f, max=%.2f, mean=%.2f\n", interMin, interMax, interAvg)
-	fmt.Printf("Bouncing (ms) : min=%.2f, max=%.2f, mean=%.2f\n", bounceMin, bounceMax, bounceAvg)
+	res := testing.Benchmark(BenchmarkSequentialAccess)
+	fmt.Println("BenchmarkSequentialAccess", res)
+	resbackward := testing.Benchmark(BenchmarkBackwardAccess)
+	fmt.Println("BenchmarkBackwardAccess", resbackward)
+	resbouncing := testing.Benchmark(BenchmarkBouncingAccess)
+	fmt.Println("BenchmarkBouncingAccess", resbouncing)
+	resinterleaved := testing.Benchmark(BenchmarkInterleavedAccess)
+	fmt.Println("BenchmarkInterleavedAccess", resinterleaved)
 }
