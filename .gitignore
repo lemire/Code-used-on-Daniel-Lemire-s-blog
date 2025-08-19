@@ -35,3 +35,7 @@ target
 bin/
 obj/
 BenchmarkDotNet.Artifacts/
+build/
+
+# clangd
+.cache
