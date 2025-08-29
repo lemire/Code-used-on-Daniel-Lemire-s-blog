@@ -3,7 +3,8 @@ import uuid
 import os
 import time
 
-from pyxorfilter import Xor8, Xor16, Fuse8, Fuse16
+
+from pyfusefilter import Xor8, Xor16, Fuse8, Fuse16
 
 print("generating data")
 data = [uuid.uuid4() for i in range(1000000)]
