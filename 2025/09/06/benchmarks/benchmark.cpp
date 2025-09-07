@@ -65,6 +65,10 @@ void run(size_t input_size) {
                    insert_line_feed_memcpy(input.data(), input.size(), K,
                                            output.data());
                  }));
+    pretty_print("scalar-memcpy-offline", input.size(), bench([&input, &output, K]() {
+                   insert_line_feed_memcpy_offline(input.data(), input.size(), K,
+                                           output.data());
+                 }));
 #ifdef HAVE16
     pretty_print("ssse3", input.size(), bench([&input, &output, K]() {
                    insert_line_feed16(input.data(), input.size(), K,

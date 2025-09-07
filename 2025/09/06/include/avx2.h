@@ -14,7 +14,7 @@
 /**
  * Insert a line feed character in the 64-byte input at index K in [0,32).
  */
-__m256i insert_line_feed32(__m256i input, int K) {
+inline __m256i insert_line_feed32(__m256i input, int K) {
   __m256i line_feed_vector = _mm256_set1_epi8('\n');
   __m128i identity =
       _mm_setr_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
@@ -38,7 +38,7 @@ __m256i insert_line_feed32(__m256i input, int K) {
   return result;
 }
 
-void insert_line_feed32(const char *buffer, size_t length, int K,
+inline void insert_line_feed32(const char *buffer, size_t length, int K,
                         char *output) {
   if (K == 0) {
     memcpy(output, buffer, length);

@@ -13,6 +13,8 @@ include(cmake/CPM.cmake)
 
 include_directories(benchmarks include)
 
+add_library(scalar src/scalar.cpp)
+
 add_executable(benchmark benchmarks/benchmark.cpp)
 
 CPMAddPackage("gh:simdutf/simdutf@7.3.5")
@@ -21,6 +23,8 @@ CPMAddPackage("gh:lemire/counters#v1.0.1")
 target_link_libraries(benchmark PRIVATE fmt::fmt)
 target_link_libraries(benchmark PRIVATE simdutf::simdutf)
 target_link_libraries(benchmark PRIVATE counters)
+target_link_libraries(benchmark PRIVATE scalar)
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()

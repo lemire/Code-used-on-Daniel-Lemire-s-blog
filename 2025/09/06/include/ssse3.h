@@ -33,7 +33,7 @@ static const uint8_t shuffle_masks[16][16] = {
 /**
  * Insert a line feed character in the 64-byte input at index K in [0,16).
  */
-__m128i insert_line_feed16(__m128i input, int K) {
+inline __m128i insert_line_feed16(__m128i input, int K) {
   // Prepare a vector with '\n' (0x0A)
   __m128i line_feed_vector = _mm_set1_epi8('\n');
 
@@ -54,7 +54,7 @@ __m128i insert_line_feed16(__m128i input, int K) {
  * Insert line feeds every K bytes the input data (buffer, length).
  * The output is written to the output buffer (which must be large enough).
  */
-void insert_line_feed16(const char *buffer, size_t length, int K,
+inline void insert_line_feed16(const char *buffer, size_t length, int K,
                         char *output) {
   if (K == 0) {
     memcpy(output, buffer, length);

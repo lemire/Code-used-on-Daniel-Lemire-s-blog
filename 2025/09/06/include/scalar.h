@@ -8,7 +8,7 @@
  * Insert line feeds every K bytes the input data (buffer, length).
  * The output is written to the output buffer (which must be large enough).
  */
-void insert_line_feed(const char *buffer, size_t length, int K, char *output) {
+inline void insert_line_feed(const char *buffer, size_t length, int K, char *output) {
   if (K == 0) {
     memcpy(output, buffer, length);
     return;
@@ -28,7 +28,7 @@ void insert_line_feed(const char *buffer, size_t length, int K, char *output) {
   }
 }
 
-void insert_line_feed_memcpy(const char *buffer, size_t length, int K,
+inline void insert_line_feed_memcpy(const char *buffer, size_t length, int K,
                              char *output) {
   if (K == 0) {
     memcpy(output, buffer, length);
@@ -44,5 +44,8 @@ void insert_line_feed_memcpy(const char *buffer, size_t length, int K,
   }
   std::memcpy(output, buffer + input_pos, length - input_pos);
 }
+
+void insert_line_feed_memcpy_offline(const char *buffer, size_t length, int K,
+                             char *output);
 
 #endif // SCALAR_H
