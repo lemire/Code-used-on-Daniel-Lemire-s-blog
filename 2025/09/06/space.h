@@ -82,8 +82,34 @@ __m256i insert_line_feed32(__m256i input, int K) {
   return result;
 }
 
-
 void insert_line_feed(const char *buffer, size_t length, int K, char *output) {
+  if(K == 0) {
+    memcpy(output, buffer, length);
+    return;
+  }
+  size_t input_pos = 0;
+  size_t next_line_feed = K;
+  if(K >= 31){
+    while(input_pos + 15 <= length) {
+      __m128i chunk = _mm_loadu_si128((__m128i *)(buffer + input_pos));
+      if(next_line_feed >= 32) {
+        _mm_storeu_si128((__m128i *)(output), chunk);
+        output += 16;
+        next_line_feed -= 16;
+        input_pos += 16;
+      } else {
+        // we write next_line_feed bytes, then a line feed, then the rest (31 - next_line_feed bytes)
+        chunk = insert_line_feed(chunk, next_line_feed);
+        _mm_storeu_si128((__m128i *)(output), chunk);
+        output += 16;
+        next_line_feed =  K - (15 - next_line_feed);
+        input_pos += 15;
+      }
+    }
+  }
+}
+
+void insert_line_feed32(const char *buffer, size_t length, int K, char *output) {
   if(K == 0) {
     memcpy(output, buffer, length);
     return;
