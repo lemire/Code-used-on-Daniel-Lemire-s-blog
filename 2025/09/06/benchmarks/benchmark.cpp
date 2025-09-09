@@ -14,6 +14,7 @@
 #include "fmt/format.h"
 #include "scalar.h"
 #include "ssse3.h"
+#include "neon.h"
 
 double pretty_print(const std::string &name, size_t num_values,
                     std::pair<event_aggregate, size_t> result) {
@@ -70,7 +71,7 @@ void run(size_t input_size) {
                                            output.data());
                  }));
 #ifdef HAVE16
-    pretty_print("ssse3", input.size(), bench([&input, &output, K]() {
+    pretty_print("16-byte", input.size(), bench([&input, &output, K]() {
                    insert_line_feed16(input.data(), input.size(), K,
                                       output.data());
                  }));
