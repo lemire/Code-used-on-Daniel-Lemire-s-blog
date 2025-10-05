@@ -59,26 +59,32 @@ void collect_benchmark_results(size_t input_size, size_t number_strings) {
   volatile uint64_t counter = 0;
 
   auto run_trim_classic = [&strings, &counter]() {
+    size_t c = 0;
     for (const auto &str : strings) {
       auto v = trim_classic(std::string_view(str));
-      counter += v.size();
+      c += v.size();
     }
+    counter += c;
   };
   auto classic_result = pretty_print("trim_classic", number_strings, bench(run_trim_classic));
 
   auto run_trim_ranges = [&strings, &counter]() {
+    size_t c = 0;
     for (const auto &str : strings) {
       auto v = trim_ranges(std::string_view(str));
-      counter += v.size();
+      c += v.size();
     }
+    counter += c;
   };
   auto ranges_result = pretty_print("trim_ranges", number_strings, bench(run_trim_ranges));
 
   auto run_trim_simple_ranges = [&strings, &counter]() {
+    size_t c = 0;
     for (const auto &str : strings) {
       auto v = trim_simple_ranges(std::string_view(str));
-      counter += v.size();
+      c += v.size();
     }
+    counter += c;
   };
 
   auto simple_ranges_result = pretty_print("trim_simple_ranges", number_strings, bench(run_trim_simple_ranges));
