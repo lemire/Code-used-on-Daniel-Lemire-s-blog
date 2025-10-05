@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <format>
+#include <print>
 #include <cstdint>
 
 #include "benchmarker.h"
