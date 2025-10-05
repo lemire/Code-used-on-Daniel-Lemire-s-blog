@@ -43,17 +43,11 @@ void collect_benchmark_results(size_t input_size, size_t number_strings) {
     size_t len = (i % input_size) + 1;
     std::string s;
     s.reserve(len + 10);
-    // Add some leading spaces sometimes
-    if (i % 3 == 0) s.append(i % 5, ' ');
     // Fill with random printable characters and occasional spaces
     for (size_t k = 0; k < len; ++k) {
-      char c;
-      if ((k + i) % 17 == 0) c = ' ';
-      else c = char('!' + (k + i) % 94);
+      char c = char('!' + (k + i) % 94);
       s.push_back(c);
     }
-    // Add some trailing spaces sometimes
-    if (i % 5 == 0) s.append((i + 2) % 7, ' ');
     strings.push_back(std::move(s));
   }
 
