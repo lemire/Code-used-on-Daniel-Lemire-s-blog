@@ -1,6 +1,8 @@
 package main
 
 import (
+	crand "crypto/rand"
+	"encoding/binary"
 	"math/rand/v2"
 	"testing"
 )
@@ -20,5 +22,15 @@ func BenchmarkPCG(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = r.Uint64()
+	}
+}
+
+// BenchmarkCryptoRand measures the performance of generating uint64 values using crypto/rand.
+func BenchmarkCryptoRand(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		var buf [8]byte
+		_, _ = crand.Read(buf[:])
+		_ = binary.BigEndian.Uint64(buf[:])
 	}
 }
