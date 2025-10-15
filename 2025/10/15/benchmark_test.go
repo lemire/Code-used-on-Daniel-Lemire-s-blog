@@ -3,6 +3,7 @@ package main
 import (
 	crand "crypto/rand"
 	"encoding/binary"
+	randv1 "math/rand"
 	"math/rand/v2"
 	"testing"
 )
@@ -32,5 +33,14 @@ func BenchmarkCryptoRand(b *testing.B) {
 		var buf [8]byte
 		_, _ = crand.Read(buf[:])
 		_ = binary.BigEndian.Uint64(buf[:])
+	}
+}
+
+// BenchmarkRandV1 measures the performance of generating uint64 values using math/rand (v1).
+func BenchmarkRandV1(b *testing.B) {
+	r := randv1.New(randv1.NewSource(0))
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = r.Uint64()
 	}
 }
