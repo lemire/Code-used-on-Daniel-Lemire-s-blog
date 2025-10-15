@@ -1,0 +1,4 @@
+
+```bash
+go test -bench=.
+```
