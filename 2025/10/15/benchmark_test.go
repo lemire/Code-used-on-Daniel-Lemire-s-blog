@@ -10,7 +10,9 @@ import (
 
 // BenchmarkChaCha measures the performance of generating uint64 values using ChaCha8.
 func BenchmarkChaCha(b *testing.B) {
-	r := rand.NewChaCha8([32]byte{})
+	r := rand.Ne
+
+	ChaCha8([32]byte{})
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = r.Uint64()
