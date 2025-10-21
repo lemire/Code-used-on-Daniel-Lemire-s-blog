@@ -36,15 +36,17 @@ But what if you are stuck? Then you can use a a static or thread_localcache. The
 
 ```cpp
 auto 
-at_index_thread_local_cache(map_like auto& index_map, 
+at_index_thread_local_cache(map_like auto& index_map,
     size_t idx) {
   using iterator = decltype(index_map.begin());
   struct Cache {
     iterator last_iterator;
     size_t last_index = -1;
+    decltype(&index_map) map_ptr = nullptr;
   };
   thread_local Cache cache;
-  if (idx == cache.last_index + 1 
+  if (cache.map_ptr == &index_map
+      && idx == cache.last_index + 1
       && cache.last_iterator != index_map.end()) {
     cache.last_iterator++;
     cache.last_index = idx;
@@ -56,8 +58,9 @@ at_index_thread_local_cache(map_like auto& index_map,
   } else {
     cache.last_iterator = index_map.begin();
     cache.last_index = -1;
+    cache.map_ptr = &index_map;
     size_t count = 0;
-    for (auto it = index_map.begin(); 
+    for (auto it = index_map.begin();
         it != index_map.end(); ++it) {
       if (count == idx) {
         cache.last_iterator = it;
