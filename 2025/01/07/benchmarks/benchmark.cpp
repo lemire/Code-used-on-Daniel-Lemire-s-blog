@@ -69,34 +69,44 @@ int main(int argc, char **argv) {
   for (size_t i = 0; i < 4; i++) {
     printf("Run %zu\n", i + 1);
     pretty_print(data.size(), volume, "digit_count", bench([&data, &counter]() {
+                   size_t local_counter = 0;
                    for (auto v : data) {
-                     counter = counter + digit_count(v);
+                     local_counter = local_counter + digit_count(v);
                    }
+                   counter = counter + local_counter;
                  }));
     pretty_print(data.size(), volume * sizeof(uint64_t),
                  "alternative_digit_count", bench([&data, &counter]() {
+                   size_t local_counter = 0;
                    for (auto v : data) {
-                     counter = counter + alternative_digit_count(v);
+                     local_counter = local_counter + alternative_digit_count(v);
                    }
+                   counter = counter + local_counter;
                  }));
     pretty_print(data.size(), volume * sizeof(uint64_t),
                  "alternative_digit_count_two_tables",
                  bench([&data, &counter]() {
+                   size_t local_counter = 0;
                    for (auto v : data) {
-                     counter = counter + alternative_digit_count_two_tables(v);
+                     local_counter = local_counter + alternative_digit_count_two_tables(v);
                    }
+                   counter = counter + local_counter;
                  }));
     pretty_print(data.size(), volume * sizeof(uint32_t), "digit_count 32",
                  bench([&data32, &counter]() {
+                   size_t local_counter = 0;
                    for (auto v : data32) {
-                     counter = counter + digit_count(v);
+                     local_counter = local_counter + digit_count(v);
                    }
+                   counter = counter + local_counter;
                  }));
     pretty_print(data.size(), volume * sizeof(uint32_t),
                  "alternative_digit_count 32", bench([&data32, &counter]() {
+                   size_t local_counter = 0;
                    for (auto v : data32) {
-                     counter = counter + alternative_digit_count(v);
+                     local_counter = local_counter + alternative_digit_count(v);
                    }
+                   counter = counter + local_counter;
                  }));
   }
 }
