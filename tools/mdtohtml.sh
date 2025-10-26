@@ -4,4 +4,5 @@ if [ $# -eq 0 ]; then
     echo "Usage: md2html <file.md>"
     exit 1
 fi
-uv run --with markdown --with pygments mdtohtml.py "$1"
+SCRIPT_DIR=$(dirname "$0")
+uv run --with markdown --with pygments "$SCRIPT_DIR/mdtohtml.py" "$1"

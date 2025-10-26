@@ -16,16 +16,16 @@
 void pretty_print(size_t volume, size_t bytes, std::string name,
                   event_aggregate agg) {
   printf("%-40s : ", name.c_str());
-  printf(" %5.2f GB/s ", bytes / agg.fastest_elapsed_ns());
-  printf(" %5.1f Ma/s ", volume * 1000.0 / agg.fastest_elapsed_ns());
-  printf(" %5.2f ns/d ", agg.fastest_elapsed_ns() / volume);
+  printf(" %5.2f GB/s ", bytes / agg.elapsed_ns());
+  printf(" %5.1f Ma/s ", volume * 1000.0 / agg.elapsed_ns());
+  printf(" %5.2f ns/d ", agg.elapsed_ns() / volume);
   if (collector.has_events()) {
-    printf(" %5.2f GHz ", agg.fastest_cycles() / agg.fastest_elapsed_ns());
-    printf(" %5.2f c/d ", agg.fastest_cycles() / volume);
+    printf(" %5.2f GHz ", agg.cycles() / agg.elapsed_ns());
+    printf(" %5.2f c/d ", agg.cycles() / volume);
     printf(" %5.2f i/d ", agg.fastest_instructions() / volume);
-    printf(" %5.2f c/b ", agg.fastest_cycles() / bytes);
+    printf(" %5.2f c/b ", agg.cycles() / bytes);
     printf(" %5.2f i/b ", agg.fastest_instructions() / bytes);
-    printf(" %5.2f i/c ", agg.fastest_instructions() / agg.fastest_cycles());
+    printf(" %5.2f i/c ", agg.fastest_instructions() / agg.cycles());
   }
   printf("\n");
 }
@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
   volatile uint64_t counter = 0;
   for (size_t i = 0; i < 4; i++) {
     printf("Run %zu\n", i + 1);
-    pretty_print(data.size(), volume, "digit_count", bench([&data, &counter]() {
+    pretty_print(data.size(), volume * sizeof(uint64_t), "digit_count", bench([&data, &counter]() {
                    size_t local_counter = 0;
                    for (auto v : data) {
                      local_counter = local_counter + digit_count(v);
