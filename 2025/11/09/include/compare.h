@@ -97,6 +97,12 @@ private:
         return true;
     }
 };
+
+template<typename T, typename U>
+bool compare(const T& a, const U& b) {
+    return deep_equal::deep_equal::compare(a, b);
+}
+
 } // namespace deep_equal
 
 

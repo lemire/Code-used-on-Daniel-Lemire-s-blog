@@ -44,22 +44,9 @@ int main() {
     person alice2("Alice", 25);
     bob.add_hobby(hobby("Flying"));
     bob.set_salary(75000);
-    hobby h1("Reading");
-    hobby h2("Readding");
-    std::vector<hobby> hobbies1 = { hobby("Reading"), hobby("Cycling") };
-    std::vector<hobby> hobbies2 = { hobby("Reading"), hobby("Cycling") };
-    std::print("Are hobbies equal? {}\n",
-               deep_equal::deep_equal::compare(hobbies1, hobbies2) ? "Yes" : "No");
 
     std::print("Are Alice and Bob equal? {}\n",
-               deep_equal::deep_equal::compare(alice, bob) ? "Yes" : "No");
+               deep_equal::compare(alice, bob) ? "Yes" : "No");
 
-
-    std::print("Are Alice and Bob equal? {}\n",
-               alice == bob ? "Yes" : "No");
-    
-    std::print("Are Alice and Alice (2) equal? {}\n",
-               alice == alice2 ? "Yes" : "No");
-    // Main entry point
     return EXIT_SUCCESS;
 }
