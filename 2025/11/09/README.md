@@ -1,3 +1,5 @@
+You must have docker.
+
 ```
 ./run_docker.sh bash
 CXX=clang++ cmake -B build
