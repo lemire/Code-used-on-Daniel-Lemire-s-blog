@@ -3,7 +3,7 @@
 In C++, comparing two objects for equality is straightforward when they are simple types like integers or strings. But what about complex, nested structures? You may have to implement the comparison (`operator==`) manually for each class, which is error-prone and tedious.
 
 
-Consider a simple `person` class.
+Consider a `person` class.
 
 ```cpp
 class person {
