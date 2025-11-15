@@ -71,7 +71,6 @@ void collect_benchmark_results(size_t input_size, size_t number_strings) {
       if(buffer.size() < utf8_length) {
         buffer.resize(utf8_length);
       }
-      buffer.resize(utf8_length);
       size_t converted_length = simdutf::convert_utf16_to_utf8(str.data(), str.size(), buffer.data());
       if(converted_length != utf8_length) {
         throw std::runtime_error("The lengths do not match which indicates that the string conversion failed. Invalid UTF-16 input?");
