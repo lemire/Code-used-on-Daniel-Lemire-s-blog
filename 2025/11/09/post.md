@@ -33,7 +33,7 @@ Instead, I wrote a small example that fully automates the process. You just add 
 
 ```cpp
 bool operator==(const person& a, const person& b) {
-    return deep_equal::deep_equal::compare(a, b);
+    return deep_equal::compare(a, b);
 }
 ```
 

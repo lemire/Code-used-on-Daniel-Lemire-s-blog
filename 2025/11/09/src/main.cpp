@@ -22,6 +22,7 @@ public:
     void set_salary(uint64_t v) {
         salary = v;
     }
+     bool operator==(const person&) const = default;
 private:
     std::string name;
     int age;
@@ -29,9 +30,9 @@ private:
     std::optional<uint64_t> salary;
 };
 
-bool operator==(const person& a, const person& b) {
-    return deep_equal::deep_equal::compare(a, b);
-}
+//bool operator==(const person& a, const person& b) {
+//    return deep_equal::deep_equal::compare(a, b);
+//}
 
 int main() {
     person alice("Alice", 30);
@@ -41,12 +42,14 @@ int main() {
     bob.add_hobby(hobby("Cycling"));
     bob.set_salary(60000);
 
-    person alice2("Alice", 25);
+    person alice2("Alice", 30);
     bob.add_hobby(hobby("Flying"));
     bob.set_salary(75000);
 
     std::print("Are Alice and Bob equal? {}\n",
                deep_equal::compare(alice, bob) ? "Yes" : "No");
 
+    std::print("Are Alice and Bob equal? {}\n",
+               deep_equal::compare(alice, alice2) ? "Yes" : "No");
     return EXIT_SUCCESS;
 }
