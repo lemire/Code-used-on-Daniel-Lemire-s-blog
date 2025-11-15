@@ -33,18 +33,16 @@ double pretty_print(const std::string &name, size_t num_values,
                     std::pair<event_aggregate, size_t> result) {
   const auto &agg = result.first;
   size_t N = result.second;
-  printf("elapsed ns: %f\n", agg.fastest_elapsed_ns());
   num_values *= N; // Adjust num_values to account for repetitions
   std::print("{:<50} : ", name);
-  std::print("{} B ", volume);
   std::print(" {:5.3f} ns ",
              agg.fastest_elapsed_ns() / double(num_values));
   std::print(" {:5.2f} GB/s ",
-             double(volume) / agg.fastest_elapsed_ns());
+             double(volume * N) / agg.fastest_elapsed_ns());
   if (collector.has_events()) {
     std::print(" {:5.2f} GHz ", agg.cycles() / double(agg.elapsed_ns()));
-    std::print(" {:5.2f} c/B ", agg.fastest_cycles() / double(volume));
-    std::print(" {:5.2f} ins/B ", agg.fastest_instructions() / double(volume));
+    std::print(" {:5.2f} c/B ", agg.fastest_cycles() / double(volume * N));
+    std::print(" {:5.2f} ins/B ", agg.fastest_instructions() / double(volume * N));
     std::print(" {:5.2f} i/c ", agg.fastest_instructions() / double(agg.fastest_cycles()));
   }
   std::print("\n");

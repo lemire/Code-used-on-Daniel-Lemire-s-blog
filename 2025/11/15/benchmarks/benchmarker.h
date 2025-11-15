@@ -36,7 +36,6 @@ std::pair<event_aggregate,size_t> bench(function_type &&function, size_t min_rep
     }
     std::atomic_thread_fence(std::memory_order_release);
     event_count allocate_count = collector.end();
-    printf("elapsed ns: %f\n", allocate_count.elapsed_ns());
     aggregate << allocate_count;
   }
   return {aggregate, N};
