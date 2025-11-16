@@ -16,6 +16,7 @@ def main():
     parser.add_argument("input", help="Input Markdown file")
     parser.add_argument("output", nargs="?", default=None, help="Output HTML file (default: input.html)")
     parser.add_argument("--css", action="store_true", help="Include inline CSS for basic styling")
+    parser.add_argument("--style", default="tango", help="Pygments style to use for highlighting (default: tango)")
     args = parser.parse_args()
 
     # Read input file
@@ -25,7 +26,27 @@ def main():
     # Configure Markdown
     extensions = ['tables', 'fenced_code']
     if pygments_available:
-        extensions.append(CodeHiliteExtension(linenums=None, css_class="highlight", noclasses=True))
+        # Determine available styles and pick a valid one (fall back if requested style is missing)
+        try:
+            from pygments.styles import get_all_styles
+            available_styles = set(get_all_styles())
+        except Exception:
+            available_styles = set()
+
+        requested_style = args.style or "tango"
+        final_style = requested_style
+        if available_styles and requested_style not in available_styles:
+            # try a few sensible fallbacks
+            fallbacks = [requested_style + '-light', requested_style + '-dark', 'github-dark', 'default', 'xcode', 'solarized-light', 'tango']
+            for s in fallbacks:
+                if s in available_styles:
+                    final_style = s
+                    break
+            else:
+                final_style = 'default'
+            print(f"Warning: requested Pygments style '{requested_style}' not found; using '{final_style}' instead.")
+
+        extensions.append(CodeHiliteExtension(linenums=None, pygments_style=final_style, css_class="highlight", noclasses=True))
     md = markdown.Markdown(extensions=extensions)
 
     # Convert

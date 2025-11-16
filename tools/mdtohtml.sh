@@ -5,4 +5,4 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 SCRIPT_DIR=$(dirname "$0")
-uv run --with markdown --with pygments "$SCRIPT_DIR/mdtohtml.py" "$1"
+uv run --with markdown --with pygments  "$SCRIPT_DIR/mdtohtml.py" "$1"
