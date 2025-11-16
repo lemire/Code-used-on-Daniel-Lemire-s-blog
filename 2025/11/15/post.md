@@ -62,11 +62,9 @@ I get the following results.
 | AMD | 11 | 4.5  | 1.7 | 4.0 |
 | Intel | 6 | 3.9 | 1.7 | 2.6 |
 
-The benchmark results show that the AMD processor delivers nearly double the throughput of the Intel processor in UTF-16 to UTF-8 transcoding (10.53 GB/s versus 5.96 GB/s), aided in part by its higher operating frequency. Both systems require the same 1.71 instructions per byte, but AMD achieves markedly higher instructions per cycle (3.98 i/c versus 2.64 i/c), demonstrating superior execution efficiency within the AVX-512 pipeline. One of the reasons has to do with the number of execution units. The AMD processor has four units capable of doing compute on 512-bit registers while
-the Intel is typically limited to only two such execution units.
+The benchmark results show that the AMD processor delivers nearly double the throughput of the Intel processor in UTF-16 to UTF-8 transcoding (10.53 GB/s versus 5.96 GB/s), aided in part by its higher operating frequency. Both systems require the same 1.71 instructions per byte, but AMD achieves markedly higher instructions per cycle (3.98 i/c versus 2.64 i/c), demonstrating superior execution efficiency within the AVX-512 pipeline. One of the reasons has to do with the number of execution units. The AMD processor has four units capable of doing compute on 512-bit registers while Intel is typically limited to only two such execution units.
 
-My benchmark is more narrow than Larabel's and they help show that AMD has a large advantage over Intel when using AVX-512 instructions. It is especially remarkable given that Intel invented AVX-512 and AMD was late in supporting it.
-One might say that AMD is beating Intel at its own game.
+My benchmark is more narrow than Larabel's and they help show that AMD has a large advantage over Intel when using AVX-512 instructions. It is especially remarkable given that Intel invented AVX-512 and AMD was late in supporting it. One might say that AMD is beating Intel at its own game.
 
 [My benchmarking code is available.](https://github.com/lemire/Code-used-on-Daniel-Lemire-s-blog/tree/master/2025/11/15)
 
