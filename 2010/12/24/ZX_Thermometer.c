@@ -99,10 +99,10 @@ private:
 };
 
 int length = 24;//32;
-char notes[]="cdeccdecefgefggagfecgagfeccGccGc";//cdec//"ccggaagffeeddc ";
+char notes[]="cdeccdecefgefggagfecgagfeccGccGc";
 int tempo = 150;// 300;//300;
 int beats[] = {1,1,1,1,1,1,1,1,1,1,2,1,1,2,1,1,1,1
-               ,2,2,1,1,1,1,2,2,1,1,2,1,1,2};//{1,1,1,1,1,1,2,1,1,1,1,1,1,2,4};
+               ,2,2,1,1,1,1,2,2,1,1,2,1,1,2};
 
 void playTone(int tone, int duration) {
  for(long i = 0; i<duration * 1000L; i+=tone*2) {
