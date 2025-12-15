@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>post</title>
+</head>
+<body>
+    <h1>Multiplying the Shuffle Speed in Go with Batched Shuffling</h1>
+<p>Programmers often want to randomly shuffle arrays. Evidently, we want to do so as efficiently as possible. Maybe surprisingly, I found that the performance of random shuffling was not limited by memory bandwidth or latency, but rather by computation. Specifically, it is the computation of the random indexes itself that is slow.</p>
+<p><a href="https://lemire.me/blog/2025/04/06/faster-shuffling-in-go-with-batching/">Earlier in 2025</a>, I reported how you could more than double the speed of a random shuffle in Go using a new algorithm (<a href="https://arxiv.org/pdf/2408.06213">Brackett-Rozinsky and Lemire, 2025</a>). However, I was using custom code that could not serve as a drop-in replacement for the standard Go Shuffle function. I decided to write a <a href="https://github.com/lemire/batchedrand">proper library called <code>batchedrand</code></a>. You can use it just like the <code>math/rand/v2</code> standard library.</p>
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code><span style="color: #000">rng</span><span style="color: #F8F8F8"> </span><span style="color: #CE5C00; font-weight: bold">:=</span><span style="color: #F8F8F8"> </span><span style="color: #000">batchedrand</span><span style="color: #000; font-weight: bold">.</span><span style="color: #000">Rand</span><span style="color: #000; font-weight: bold">{</span><span style="color: #000">rand</span><span style="color: #000; font-weight: bold">.</span><span style="color: #000">New</span><span style="color: #000; font-weight: bold">(</span><span style="color: #000">rand</span><span style="color: #000; font-weight: bold">.</span><span style="color: #000">NewPCG</span><span style="color: #000; font-weight: bold">(</span><span style="color: #0000CF; font-weight: bold">1</span><span style="color: #000; font-weight: bold">,</span><span style="color: #F8F8F8"> </span><span style="color: #0000CF; font-weight: bold">2</span><span style="color: #000; font-weight: bold">))}</span>
+
+<span style="color: #000">data</span><span style="color: #F8F8F8"> </span><span style="color: #CE5C00; font-weight: bold">:=</span><span style="color: #F8F8F8"> </span><span style="color: #000; font-weight: bold">[]</span><span style="color: #204A87; font-weight: bold">int</span><span style="color: #000; font-weight: bold">{</span><span style="color: #0000CF; font-weight: bold">1</span><span style="color: #000; font-weight: bold">,</span><span style="color: #F8F8F8"> </span><span style="color: #0000CF; font-weight: bold">2</span><span style="color: #000; font-weight: bold">,</span><span style="color: #F8F8F8"> </span><span style="color: #0000CF; font-weight: bold">3</span><span style="color: #000; font-weight: bold">,</span><span style="color: #F8F8F8"> </span><span style="color: #0000CF; font-weight: bold">4</span><span style="color: #000; font-weight: bold">,</span><span style="color: #F8F8F8"> </span><span style="color: #0000CF; font-weight: bold">5</span><span style="color: #000; font-weight: bold">}</span>
+<span style="color: #000">rng</span><span style="color: #000; font-weight: bold">.</span><span style="color: #000">Shuffle</span><span style="color: #000; font-weight: bold">(</span><span style="color: #204A87">len</span><span style="color: #000; font-weight: bold">(</span><span style="color: #000">data</span><span style="color: #000; font-weight: bold">),</span><span style="color: #F8F8F8"> </span><span style="color: #204A87; font-weight: bold">func</span><span style="color: #000; font-weight: bold">(</span><span style="color: #000">i</span><span style="color: #000; font-weight: bold">,</span><span style="color: #F8F8F8"> </span><span style="color: #000">j</span><span style="color: #F8F8F8"> </span><span style="color: #204A87; font-weight: bold">int</span><span style="color: #000; font-weight: bold">)</span><span style="color: #F8F8F8"> </span><span style="color: #000; font-weight: bold">{</span>
+<span style="color: #F8F8F8">    </span><span style="color: #000">data</span><span style="color: #000; font-weight: bold">[</span><span style="color: #000">i</span><span style="color: #000; font-weight: bold">],</span><span style="color: #F8F8F8"> </span><span style="color: #000">data</span><span style="color: #000; font-weight: bold">[</span><span style="color: #000">j</span><span style="color: #000; font-weight: bold">]</span><span style="color: #F8F8F8"> </span><span style="color: #000; font-weight: bold">=</span><span style="color: #F8F8F8"> </span><span style="color: #000">data</span><span style="color: #000; font-weight: bold">[</span><span style="color: #000">j</span><span style="color: #000; font-weight: bold">],</span><span style="color: #F8F8F8"> </span><span style="color: #000">data</span><span style="color: #000; font-weight: bold">[</span><span style="color: #000">i</span><span style="color: #000; font-weight: bold">]</span>
+<span style="color: #000; font-weight: bold">})</span>
+</code></pre></div>
+
+<p>How fast is it? The standard library provides two generators, PCG and ChaCha8. ChaCha8 should be slower than PCG, because it has better cryptographic guarantees. However, both have somewhat comparable speeds because ChaCha8 is heavily optimized with assembly code in the Go runtime while the PCG implementation is conservative and not focused on speed.
+On my Apple M4 processor with Go 1.25, I get the following results. I report the time per input element, not the total time.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Benchmark</th>
+<th style="text-align: right;">Size</th>
+<th style="text-align: right;">Batched (ns/item)</th>
+<th style="text-align: right;">Standard (ns/item)</th>
+<th style="text-align: right;">speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">ChaChaShuffle</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">1.8</td>
+<td style="text-align: right;">4.6</td>
+<td style="text-align: right;">2.6</td>
+</tr>
+<tr>
+<td style="text-align: left;">ChaChaShuffle</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">1.8</td>
+<td style="text-align: right;">4.7</td>
+<td style="text-align: right;">2.5</td>
+</tr>
+<tr>
+<td style="text-align: left;">ChaChaShuffle</td>
+<td style="text-align: right;">500000</td>
+<td style="text-align: right;">2.6</td>
+<td style="text-align: right;">5.1</td>
+<td style="text-align: right;">1.9</td>
+</tr>
+<tr>
+<td style="text-align: left;">PCGShuffle</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">1.5</td>
+<td style="text-align: right;">3.9</td>
+<td style="text-align: right;">2.6</td>
+</tr>
+<tr>
+<td style="text-align: left;">PCGShuffle</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">1.5</td>
+<td style="text-align: right;">4.2</td>
+<td style="text-align: right;">2.8</td>
+</tr>
+<tr>
+<td style="text-align: left;">PCGShuffle</td>
+<td style="text-align: right;">500000</td>
+<td style="text-align: right;">1.9</td>
+<td style="text-align: right;">3.8</td>
+<td style="text-align: right;">2.0</td>
+</tr>
+</tbody>
+</table>
+<p>Thus, from tiny to large arrays, the batched approach is two to three times faster. Not bad for a drop-in replacement!</p>
+<p>Further reading:</p>
+<ul>
+<li>Nevin Brackett-Rozinsky, Daniel Lemire, <a href="https://arxiv.org/pdf/2408.06213">Batched Ranged Random Integer Generation</a>,  Software: Practice and Experience 55 (1), 2025</li>
+<li>Daniel Lemire, Fast Random Integer Generation in an Interval, ACM Transactions on Modeling and Computer Simulation, Volume 29 Issue 1, February 2019</li>
+</ul>
+</body>
+</html>
