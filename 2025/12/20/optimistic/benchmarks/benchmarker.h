@@ -6,7 +6,7 @@
 event_collector collector;
 
 template <class function_type>
-std::pair<event_aggregate,size_t> bench(function_type &&function, size_t min_repeat = 10,
+std::pair<event_aggregate,size_t> bench(function_type &&function, size_t min_repeat = 2,
                       size_t min_time_ns = 40'000'000,
                       size_t max_repeat = 10000000) {
   size_t N = min_repeat;
@@ -25,6 +25,7 @@ std::pair<event_aggregate,size_t> bench(function_type &&function, size_t min_rep
     warm_aggregate << allocate_count;
     if ((i + 1 == N) && (warm_aggregate.total_elapsed_ns() < min_time_ns) &&
         (N < max_repeat)) {
+      printf("Increasing N to %zu\n", N * 10);
       N *= 10;
     }
   }

@@ -34,18 +34,30 @@ double pretty_print(const std::string &name, size_t num_values,
   return double(num_values) / agg.fastest_elapsed_ns();
 }
 
+__attribute__((noinline))
+bool is_ascii_optimistic(const char *data, size_t length) {
+  unsigned char result = 0;
+  for (size_t i = 0; i < length; i++) {
+    result |= static_cast<unsigned char>(data[i]);
+  }
+  return result <= 0x7F;
+}
+
+__attribute__((noinline))
+bool is_ascii_pessimistic(const char *data, size_t length) {
+  for (size_t i = 0; i < length; i++) {
+    if (static_cast<unsigned char>(data[i]) > 0x7F) {
+      return false;
+    }
+  }
+  return true;
+}
 
 // count the number of strings containing at least one non-ASCII character
 size_t optimistic(const std::vector<std::string> &strings) {
   size_t counter = 0;
   for (const auto &s : strings) {
-    unsigned char result = 0;
-    for (char c : s) {
-        result |= static_cast<unsigned char>(c);
-    }
-    if(result > 0x7F) {
-      counter += 1;
-    }
+    counter += is_ascii_optimistic(s.data(), s.size()) ? 0 : 1;
   }
   return counter;
 };
@@ -62,13 +74,7 @@ size_t simdutf_optimistic(const std::vector<std::string> &strings) {
 size_t pessimistic(const std::vector<std::string> &strings) {
   size_t counter = 0;
   for (const auto &s : strings) {
-    unsigned char result = 0;
-    for (char c : s) {
-      if(static_cast<unsigned char>(c) > 0x7F) {
-        counter += 1;
-        break;
-      }
-    }
+    counter += is_ascii_pessimistic(s.data(), s.size()) ? 0 : 1;
   }
   return counter;
 };
@@ -92,7 +98,7 @@ void collect_benchmark_results(size_t input_size, size_t number_strings) {
   size_t volume = 0;
   // Create strings with varying lengths up to input_size
   for (size_t i = 0; i < number_strings; ++i) {
-    size_t len = (i % input_size) + 1;
+    size_t len = input_size;
     std::string s;
     s.reserve(len + 10);
     // Fill with random printable characters and occasional spaces
@@ -115,5 +121,5 @@ void collect_benchmark_results(size_t input_size, size_t number_strings) {
 
 
 int main(int argc, char **argv) {
-  collect_benchmark_results(1024, 100000);
+  collect_benchmark_results(1024*20, 100000);
 }
