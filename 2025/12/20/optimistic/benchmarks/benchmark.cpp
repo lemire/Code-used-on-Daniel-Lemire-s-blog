@@ -8,6 +8,7 @@
 #include <print>
 #include <cstdint>
 
+#include "simdutf.h"
 #include "benchmarker.h"
 #include "counters/event_counter.h"
 
@@ -49,6 +50,14 @@ size_t optimistic(const std::vector<std::string> &strings) {
   return counter;
 };
 
+size_t simdutf_optimistic(const std::vector<std::string> &strings) {
+  size_t counter = 0;
+  for (const auto &s : strings) {
+    counter += simdutf::validate_ascii(s.data(), s.size());
+  }
+  return counter;
+};
+
 // count the number of strings containing at least one non-ASCII character
 size_t pessimistic(const std::vector<std::string> &strings) {
   size_t counter = 0;
@@ -63,6 +72,19 @@ size_t pessimistic(const std::vector<std::string> &strings) {
   }
   return counter;
 };
+
+
+// count the number of strings containing at least one non-ASCII character
+size_t simdutf_pessimistic(const std::vector<std::string> &strings) {
+  size_t counter = 0;
+  for (const auto &s : strings) {
+    if(simdutf::validate_ascii_with_errors(s.data(), s.size()).error != simdutf::error_code::SUCCESS) {
+      counter += 1;
+    }
+  }
+  return counter;
+};
+
 void collect_benchmark_results(size_t input_size, size_t number_strings) {
   // Generate many strings of varying content, including leading/trailing spaces
   std::vector<std::string> strings;
@@ -85,7 +107,10 @@ void collect_benchmark_results(size_t input_size, size_t number_strings) {
   volatile uint64_t counter = 0;
 
   pretty_print("optimistic", volume, bench([&strings, &counter]() {  counter = optimistic(strings); }));
+  pretty_print("simdutf_optimistic", volume, bench([&strings, &counter]() {  counter = simdutf_optimistic(strings); }));
+
   pretty_print("pessimistic", volume, bench([&strings, &counter]() {  counter = pessimistic(strings); }));
+  pretty_print("simdutf_pessimistic", volume, bench([&strings, &counter]() {  counter = simdutf_pessimistic(strings); }));
 }
 
 

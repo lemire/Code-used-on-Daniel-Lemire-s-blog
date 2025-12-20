@@ -1,7 +1,8 @@
 #pragma once
 
- #include "counters/event_counter.h"
+#include "counters/event_counter.h"
 #include  <atomic>
+
 event_collector collector;
 
 template <class function_type>
