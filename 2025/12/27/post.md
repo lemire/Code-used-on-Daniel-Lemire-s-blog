@@ -16,7 +16,6 @@ to roll your own. But since I am civilized programmer, I just asked my favorite 
 ```cpp
 // Parse an IPv4 address starting at 'p'.
 // p : start pointer, pend: end of the string
-// return {success, ip}
 std::expected<uint32_t, parse_error> parse_manual(const char *p, const char *pend) {
 uint32_t ip = 0;
     int octets = 0;
@@ -155,6 +154,8 @@ The optimization work on the fast_float library paid off. The difference is espe
 
 
 What is also interesting in my little experiment is that I was able to get the AI to produce faster code with relatively little effort on my part. I did have to 'guide' the AI. Does that mean that I can retire? Not yet. But I am happy that I can more quickly get good reference baselines, which allows me to better focus my work where it matters.
+
+
 
 
 *Reference*: [The fast_float C++ library](https://github.com/fastfloat/fast_float) is a fast number parsing library part of GCC and major web browsers.
