@@ -252,7 +252,7 @@ int main() {
                  }
                  sink += sum;
                }));
-
+// commented out, we don't report Boost.Asio results anyhow
 /*  pretty_print(volume, bytes, "parse_boost_asio", counters::bench([&]() {
                  const char *p = buf.data();
                  const char *pend = buf.data() + bytes;

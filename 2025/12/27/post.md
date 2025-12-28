@@ -145,8 +145,8 @@ And finally, let us try with a Chinese Longsoon 3A6000 processor (2.5 GHz) using
 
 | function  | instructions/ip | ns/ip |
 |-----------|-----------------|-------|
-| manual    |      219         |  30   |
-| manual (unrolled)    |     154         |  24  |
+| manual    |      187         |  29   |
+| manual (unrolled)    |     109         |  21  |
 | from_chars    |     191         |  39   |
 | fast_float    |     193         |  27   |
 
