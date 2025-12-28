@@ -88,7 +88,7 @@ uint32_t ip = 0;
             p++; // Skip dot
         }
     }
-    if (octets == 4 && p == pend) {
+    if (octets == 4) {
         return ip;
     } else {
         return std::unexpected(parse_error::invalid_format);
@@ -122,7 +122,7 @@ fastfloat_really_inline std::expected<uint32_t, parse_error> parse_manual_unroll
             p++; // Skip the dot
         }
     }
-    if (octets == 4 && p == pend) {
+    if (octets == 4) {
         return ip;
     } else {
         return std::unexpected(parse_error::invalid_format);
@@ -253,12 +253,12 @@ int main() {
                  sink += sum;
                }));
 
-  pretty_print(volume, bytes, "parse_boost_asio", counters::bench([&]() {
+/*  pretty_print(volume, bytes, "parse_boost_asio", counters::bench([&]() {
                  const char *p = buf.data();
                  const char *pend = buf.data() + bytes;
                  uint32_t sum = 0;
                  for (size_t i = 0; i < N; ++i) {
-                   auto res = parse_boost_asio(p, pend);
+                   auto res = parse_boost_asio(p, p + 16);
                    if (!res) {
                      std::abort();
                    }
@@ -266,14 +266,14 @@ int main() {
                    p += ip_size;
                  }
                  sink += sum;
-               }));
+               }));*/
 
   pretty_print(volume, bytes, "parse_manual", counters::bench([&]() {
                  const char *p = buf.data();
                  const char *pend = buf.data() + bytes;
                  uint32_t sum = 0;
                  for (size_t i = 0; i < N; ++i) {
-                   auto res = parse_manual(p, pend);
+                   auto res = parse_manual(p, p + 16);
                    if (!res) {
                      std::abort();
                    }
@@ -287,7 +287,7 @@ int main() {
                  const char *pend = buf.data() + bytes;
                  uint32_t sum = 0;
                  for (size_t i = 0; i < N; ++i) {
-                   auto res =  parse_manual_unrolled(p, pend);
+                   auto res =  parse_manual_unrolled(p, p + 16);
                    if (!res) {
                      std::abort();
                    }

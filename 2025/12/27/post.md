@@ -122,10 +122,11 @@ with LLVM 17.
 
 | function  | instructions/ip | ns/ip |
 |-----------|-----------------|-------|
-| manual    |     312         |  14   |
-| manual (unrolled)    |     244         |  8.9   |
+| manual    |     185         |  6.2   |
+| manual (unrolled)    |     114         |  3.3   |
 | from_chars    |     381         |  14   |
 | fast_float    |     181         |  7.2   |
+
 
 Let us try with GCC 12 and an Intel Ice Lake processor (3.2 GHz) using GCC 12.
 
