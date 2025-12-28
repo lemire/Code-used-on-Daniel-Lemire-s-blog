@@ -258,8 +258,7 @@ int main() {
                  const char *pend = buf.data() + bytes;
                  uint32_t sum = 0;
                  for (size_t i = 0; i < N; ++i) {
-                   const char *q = seek_ip_end(p, pend);
-                   auto res = parse_boost_asio(p, q);
+                   auto res = parse_boost_asio(p, pend);
                    if (!res) {
                      std::abort();
                    }
@@ -274,8 +273,7 @@ int main() {
                  const char *pend = buf.data() + bytes;
                  uint32_t sum = 0;
                  for (size_t i = 0; i < N; ++i) {
-                   const char *q = seek_ip_end(p, pend);
-                   auto res = parse_manual(p, q);
+                   auto res = parse_manual(p, pend);
                    if (!res) {
                      std::abort();
                    }
@@ -289,8 +287,7 @@ int main() {
                  const char *pend = buf.data() + bytes;
                  uint32_t sum = 0;
                  for (size_t i = 0; i < N; ++i) {
-                   const char *q = seek_ip_end(p, pend);
-                   auto res =  parse_manual_unrolled(p, q);
+                   auto res =  parse_manual_unrolled(p, pend);
                    if (!res) {
                      std::abort();
                    }
