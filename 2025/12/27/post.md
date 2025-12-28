@@ -42,7 +42,7 @@ uint32_t ip = 0;
             p++; // Skip dot
         }
     }
-    if (octets == 4 && p == pend) {
+    if (octets == 4) {
         return ip;
     } else {
         return std::unexpected(parse_error::invalid_format);
@@ -82,7 +82,7 @@ std::expected<uint32_t, parse_error> parse_manual_unrolled(const char *p, const 
             p++; // Skip the dot
         }
     }
-    if (octets == 4 && p == pend) {
+    if (octets == 4) {
         return ip;
     } else {
         return std::unexpected(parse_error::invalid_format);
@@ -133,10 +133,11 @@ Let us try with GCC 12 and an Intel Ice Lake processor (3.2 GHz) using GCC 12.
 
 | function  | instructions/ip | ns/ip |
 |-----------|-----------------|-------|
-| manual    |     310         |  35   |
-| manual (unrolled)    |     244         |  32  |
+| manual    |     219         |  30   |
+| manual (unrolled)    |     154         |  24  |
 | from_chars    |     220         |  29   |
 | fast_float    |     211         |  18   |
+
 
 
 And finally, let us try with a Chinese Longsoon 3A6000 processor (2.5 GHz) using LLVM 21.
@@ -144,10 +145,11 @@ And finally, let us try with a Chinese Longsoon 3A6000 processor (2.5 GHz) using
 
 | function  | instructions/ip | ns/ip |
 |-----------|-----------------|-------|
-| manual    |      287         |  39   |
-| manual (unrolled)    |     215         |  32  |
+| manual    |      219         |  30   |
+| manual (unrolled)    |     154         |  24  |
 | from_chars    |     191         |  39   |
 | fast_float    |     193         |  27   |
+
 
 
 
