@@ -6,7 +6,7 @@ How much virtual memory does the following C++ expression allocates on the heap?
 new char[4096]
 ```
 
-The answer is *at least 4 kibibyte* but surely more.
+The answer is *at least 4 kibibytes* but surely more.
 
 Firstly, each heap memory allocation requires some memory to keep track of what has been allocated. You are likely using 8 bytes or so of overhead that your program cannot access.
 
