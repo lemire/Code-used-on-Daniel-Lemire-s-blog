@@ -1,11 +1,14 @@
 #include <iostream>
 #include <cstddef>
-#include <cstdlib>  // for malloc_usable_size on Linux
+#include <memory>
+#include <cstdlib>
 #ifdef __APPLE__
 #include <malloc/malloc.h>  // for malloc_size on macOS
 #endif
-
-std::size_t get_usable_size(void* ptr) {
+#ifdef __linux__
+#include <malloc.h> // for malloc_usable_size on Linux
+#endif
+size_t get_usable_size(void* ptr) {
 #ifdef __linux__
     return malloc_usable_size(ptr);
 #elif defined(__APPLE__)
@@ -19,7 +22,7 @@ int main() {
     std::cout << "Demonstrating allocation overhead and rounding with operator new\n\n";
 
 #ifdef __linux__
-    std::cout << "Platform: Linux (using malloc_usable_size)\n";
+    std::cout << "Platform: Linux\n";
 #elif defined(__APPLE__)
     std::cout << "Platform: macOS (using malloc_size)\n";
 #else
@@ -30,7 +33,7 @@ int main() {
     std::cout << "---------------|-------------------\n";
     size_t total_requested = 0;
     size_t total_usable = 0;
-    for (size_t requested = 0; requested <= 65536; requested++) {
+    for (size_t requested = 1; requested <= 4096; requested++) {
         total_requested += requested;
         std::unique_ptr<char[]> ptr(new char[requested]);  // Allocate
         size_t usable = get_usable_size(ptr.get());  // Get usable size
@@ -45,5 +48,5 @@ int main() {
     std::cout << "Percentage overhead: "
               << ((total_usable - total_requested) * 100.0 / total_requested) << " %\n";
 
-    return 0;
+    return EXIT_SUCCESS;
 }
