@@ -39,16 +39,3 @@ The sum from C is: 150
 ```
 
 This is the sum of the array `{10, 20, 30, 40, 50}`.
-
-## Notes
-
-- On Linux, the shared library will be `libsum.so`.
-- On Windows, it would be `sum.dll` (adjust the compilation accordingly).
-- The example uses `--enable-native-access=ALL-UNNAMED` to allow native access (may be required in future JDK versions).
-
-## Code Explanation
-
-- **Java Side**: Uses `Linker.nativeLinker()` to create downcall handles for calling C functions.
-- **C Side**: Implements a simple sum function that sums the elements of an integer array.
-
-This example showcases bidirectional FFI capabilities in modern Java.
