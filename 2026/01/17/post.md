@@ -41,7 +41,7 @@ Once you have your `MemorySegment`, you can pass it to your `linker` to get a `M
      mem,
      functiondescr
  );
- ```
+```
 
 The `functiondescr` must describe the returned value and the function parameters that your function takes.
 If you pass a pointer and get back a `long` value, you might proceed as follows: 
@@ -54,7 +54,7 @@ If you pass a pointer and get back a `long` value, you might proceed as follows:
         ValueLayout.ADDRESS
     )
  );
- ```
+```
 
 That is, the first parameter is the returned value.
 
