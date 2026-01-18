@@ -8,14 +8,10 @@ import java.nio.file.Paths;
 public class IntArrayExample {
 
     public static void main(String[] args) throws Throwable {
-        // Load the native library
         System.loadLibrary("sum");
-
         Linker linker = Linker.nativeLinker();
-
-        // Look up the symbol from loaded libraries
         SymbolLookup lookup = SymbolLookup.loaderLookup();
-        MemorySegment sumAddress = lookup.find("sum_array").get();
+        MemorySegment sumAddress = lookup.find("sum_array").orElseThrow();
 
         // C Signature: int sum_array(int* data, int count)
         MethodHandle sumArray = linker.downcallHandle(
