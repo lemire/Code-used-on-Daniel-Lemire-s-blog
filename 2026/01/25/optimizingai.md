@@ -55,6 +55,12 @@ if generic_pattern.match(file):
     # ...
 ```
 
+where elsewhere in the code, we have...
+
+```python
+generic_pattern = re.compile(r'.*generic/.*\.h')
+```
+
 2. Instead of repeatedly calling `re.sub` to do a regular expression substitution, it filtered the strings by checking for the presence of a keyword in the string first.
 ```python
 if 'SIMDUTF_IMPLEMENTATION' in line: # This IF is the optimization
