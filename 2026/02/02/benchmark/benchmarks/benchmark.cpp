@@ -47,14 +47,14 @@ size_t HexEncode(const char *src, size_t slen, char *dst, size_t dlen) {
 
 inline char nibble(uint8_t x) { return x + '0' + ((x > 9) * 39); }
 
-/* Daniel: this could be simpler..
-char nibble(uint8_t x) { 
+
+inline char nibble_alt(uint8_t x) { 
     auto v =  x + '0';
     if(x>9) {
         v += 'a'-'0'- 10;
     }
     return v;
-}*/
+}
 
 size_t HexEncodeArithmetic(const char *src, size_t slen, char *dst,
                            size_t dlen) {
@@ -63,6 +63,17 @@ size_t HexEncodeArithmetic(const char *src, size_t slen, char *dst,
     uint8_t val = static_cast<uint8_t>(src[i]);
     dst[k + 0] = nibble(val >> 4);
     dst[k + 1] = nibble(val & 15);
+  }
+  return dlen;
+}
+
+size_t HexEncodeArithmeticalt(const char *src, size_t slen, char *dst,
+                           size_t dlen) {
+  dlen = slen * 2;
+  for (size_t i = 0, k = 0; k < dlen; i += 1, k += 2) {
+    uint8_t val = static_cast<uint8_t>(src[i]);
+    dst[k + 0] = nibble_alt(val >> 4);
+    dst[k + 1] = nibble_alt(val & 15);
   }
   return dlen;
 }
@@ -277,7 +288,10 @@ void collect_benchmark_results(size_t number) {
     HexEncodeArithmetic(strings.data(), strings.size(), output_classic.data(),
                         output_classic.size());
   };
-
+  auto to_hex_arth_alt = [&strings, &output_classic]() {
+    HexEncodeArithmeticalt(strings.data(), strings.size(), output_classic.data(),
+                        output_classic.size());
+  };
   auto to_hex_table = [&strings, &output_classic]() {
     HexEncodeTable(strings.data(), strings.size(), output_classic.data(),
                    output_classic.size());
@@ -299,6 +313,8 @@ void collect_benchmark_results(size_t number) {
   auto classic_result = pretty_print("to_hex", number, bench(to_hex));
   auto arth_result =
       pretty_print("to_hex_arithmetic", number, bench(to_hex_arth));
+  auto arth_alt_result =
+      pretty_print("to_hex_arithmetic_alt", number, bench(to_hex_arth_alt));
   auto table_result = pretty_print("to_hex_table", number, bench(to_hex_table));
 }
 
