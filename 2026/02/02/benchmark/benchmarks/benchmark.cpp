@@ -48,12 +48,9 @@ size_t HexEncode(const char *src, size_t slen, char *dst, size_t dlen) {
 inline char nibble(uint8_t x) { return x + '0' + ((x > 9) * 39); }
 
 
-inline char nibble_alt(uint8_t x) { 
-    auto v =  x + '0';
-    if(x>9) {
-        v += 'a'-'0'- 10;
-    }
-    return v;
+inline char nibble_alt(uint8_t x) {
+   uint8_t add = (x >= 10) ? ('a' - 10) : '0';
+   return x + add;
 }
 
 size_t HexEncodeArithmetic(const char *src, size_t slen, char *dst,
