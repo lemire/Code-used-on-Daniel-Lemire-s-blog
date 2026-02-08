@@ -106,26 +106,18 @@ size_t HexEncodeNEON2(const char *src, size_t slen, char *dst, size_t dlen) {
   for (; i < maxv; i += 32) {
     uint8x16_t val1 = vld1q_u8((uint8_t*)src + i);
     uint8x16_t val2 = vld1q_u8((uint8_t*)src + i + 16);
- 
     uint8x16_t high1 = vshrq_n_u8(val1, 4);
     uint8x16_t low1 = vandq_u8(val1, vdupq_n_u8(15));
     uint8x16_t high2 = vshrq_n_u8(val2, 4);
     uint8x16_t low2 = vandq_u8(val2, vdupq_n_u8(15));
-
     uint8x16_t high_chars1 = vqtbl1q_u8(table, high1);
     uint8x16_t low_chars1 = vqtbl1q_u8(table, low1);
-
     uint8x16_t high_chars2 = vqtbl1q_u8(table, high2);
     uint8x16_t low_chars2 = vqtbl1q_u8(table, low2);
-
-    uint8x16x2_t zipped1 = vzipq_u8(high_chars1, low_chars1);
-    uint8x16x2_t zipped2 = vzipq_u8(high_chars2, low_chars2);
-
-    vst1q_u8((uint8_t*)dst + i*2, zipped1.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 16, zipped1.val[1]);
-    vst1q_u8((uint8_t*)dst + i*2 + 32, zipped2.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 48, zipped2.val[1]);
-
+    uint8x16x2_t zipped1 = {high_chars1, low_chars1};
+    uint8x16x2_t zipped2 = {high_chars2, low_chars2};
+    vst2q_u8((uint8_t*)dst + i*2, zipped1);
+    vst2q_u8((uint8_t*)dst + i*2 + 32, zipped2);
   }
 
   if(i + 16 <= slen) {
@@ -134,9 +126,8 @@ size_t HexEncodeNEON2(const char *src, size_t slen, char *dst, size_t dlen) {
     uint8x16_t low = vandq_u8(val, vdupq_n_u8(15));
     uint8x16_t high_chars = vqtbl1q_u8(table, high);
     uint8x16_t low_chars = vqtbl1q_u8(table, low);
-    uint8x16x2_t zipped = vzipq_u8(high_chars, low_chars);
-    vst1q_u8((uint8_t*)dst + i*2, zipped.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 16, zipped.val[1]);
+    uint8x16x2_t zipped = {high_chars, low_chars};
+    vst2q_u8((uint8_t*)dst + i*2, zipped);
     i += 16;
   }
   // handle remaining
@@ -197,31 +188,23 @@ size_t HexEncodeNEON4(const char *src, size_t slen, char *dst, size_t dlen) {
     uint8x16_t high_chars8 = vqtbl1q_u8(table, high8);
     uint8x16_t low_chars8 = vqtbl1q_u8(table, low8);
 
-    uint8x16x2_t zipped1 = vzipq_u8(high_chars1, low_chars1);
-    uint8x16x2_t zipped2 = vzipq_u8(high_chars2, low_chars2);
-    uint8x16x2_t zipped3 = vzipq_u8(high_chars3, low_chars3);
-    uint8x16x2_t zipped4 = vzipq_u8(high_chars4, low_chars4);
-    uint8x16x2_t zipped5 = vzipq_u8(high_chars5, low_chars5);
-    uint8x16x2_t zipped6 = vzipq_u8(high_chars6, low_chars6);
-    uint8x16x2_t zipped7 = vzipq_u8(high_chars7, low_chars7);
-    uint8x16x2_t zipped8 = vzipq_u8(high_chars8, low_chars8);
+    uint8x16x2_t zipped1 = {high_chars1, low_chars1};
+    uint8x16x2_t zipped2 = {high_chars2, low_chars2};
+    uint8x16x2_t zipped3 = {high_chars3, low_chars3};
+    uint8x16x2_t zipped4 = {high_chars4, low_chars4};
+    uint8x16x2_t zipped5 = {high_chars5, low_chars5};
+    uint8x16x2_t zipped6 = {high_chars6, low_chars6};
+    uint8x16x2_t zipped7 = {high_chars7, low_chars7};
+    uint8x16x2_t zipped8 = {high_chars8, low_chars8};
 
-    vst1q_u8((uint8_t*)dst + i*2, zipped1.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 16, zipped1.val[1]);
-    vst1q_u8((uint8_t*)dst + i*2 + 32, zipped2.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 48, zipped2.val[1]);
-    vst1q_u8((uint8_t*)dst + i*2 + 64, zipped3.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 80, zipped3.val[1]);
-    vst1q_u8((uint8_t*)dst + i*2 + 96, zipped4.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 112, zipped4.val[1]);
-    vst1q_u8((uint8_t*)dst + i*2 + 128, zipped5.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 144, zipped5.val[1]);
-    vst1q_u8((uint8_t*)dst + i*2 + 160, zipped6.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 176, zipped6.val[1]);
-    vst1q_u8((uint8_t*)dst + i*2 + 192, zipped7.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 208, zipped7.val[1]);
-    vst1q_u8((uint8_t*)dst + i*2 + 224, zipped8.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 240, zipped8.val[1]);
+    vst2q_u8((uint8_t*)dst + i*2, zipped1);
+    vst2q_u8((uint8_t*)dst + i*2 + 32, zipped2);
+    vst2q_u8((uint8_t*)dst + i*2 + 64, zipped3);
+    vst2q_u8((uint8_t*)dst + i*2 + 96, zipped4);
+    vst2q_u8((uint8_t*)dst + i*2 + 128, zipped5);
+    vst2q_u8((uint8_t*)dst + i*2 + 160, zipped6);
+    vst2q_u8((uint8_t*)dst + i*2 + 192, zipped7);
+    vst2q_u8((uint8_t*)dst + i*2 + 224, zipped8);
   }
 
   // handle remaining with NEON2
@@ -240,13 +223,11 @@ size_t HexEncodeNEON4(const char *src, size_t slen, char *dst, size_t dlen) {
     uint8x16_t high_chars2 = vqtbl1q_u8(table, high2);
     uint8x16_t low_chars2 = vqtbl1q_u8(table, low2);
 
-    uint8x16x2_t zipped1 = vzipq_u8(high_chars1, low_chars1);
-    uint8x16x2_t zipped2 = vzipq_u8(high_chars2, low_chars2);
+    uint8x16x2_t zipped1 = {high_chars1, low_chars1};
+    uint8x16x2_t zipped2 = {high_chars2, low_chars2};
 
-    vst1q_u8((uint8_t*)dst + i*2, zipped1.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 16, zipped1.val[1]);
-    vst1q_u8((uint8_t*)dst + i*2 + 32, zipped2.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 48, zipped2.val[1]);
+    vst2q_u8((uint8_t*)dst + i*2, zipped1);
+    vst2q_u8((uint8_t*)dst + i*2 + 32, zipped2);
   }
 
   if (i + 16 <= slen) {
@@ -255,9 +236,8 @@ size_t HexEncodeNEON4(const char *src, size_t slen, char *dst, size_t dlen) {
     uint8x16_t low = vandq_u8(val, vdupq_n_u8(15));
     uint8x16_t high_chars = vqtbl1q_u8(table, high);
     uint8x16_t low_chars = vqtbl1q_u8(table, low);
-    uint8x16x2_t zipped = vzipq_u8(high_chars, low_chars);
-    vst1q_u8((uint8_t*)dst + i*2, zipped.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 16, zipped.val[1]);
+    uint8x16x2_t zipped = {high_chars, low_chars};
+    vst2q_u8((uint8_t*)dst + i*2, zipped);
     i += 16;
   }
   // handle remaining

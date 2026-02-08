@@ -34,31 +34,24 @@ The trick that Skovorora relies upon is that compilers are smart: they will 'aut
 Of course, instead of relying on the compiler, you can manually invoke SIMD instructions through SIMD instrinsic functions. Let us assume that you have an ARM processors (e.g., on Apple Silicon). Then you can process blocks of 32 bytes as follows.
 
 ```cpp
-  size_t maxv = (slen - (slen%32));
-  for (; i < maxv; i += 32) {
+size_t maxv = (slen - (slen%32));
+for (; i < maxv; i += 32) {
     uint8x16_t val1 = vld1q_u8((uint8_t*)src + i);
     uint8x16_t val2 = vld1q_u8((uint8_t*)src + i + 16);
- 
     uint8x16_t high1 = vshrq_n_u8(val1, 4);
     uint8x16_t low1 = vandq_u8(val1, vdupq_n_u8(15));
     uint8x16_t high2 = vshrq_n_u8(val2, 4);
     uint8x16_t low2 = vandq_u8(val2, vdupq_n_u8(15));
-
     uint8x16_t high_chars1 = vqtbl1q_u8(table, high1);
     uint8x16_t low_chars1 = vqtbl1q_u8(table, low1);
-
     uint8x16_t high_chars2 = vqtbl1q_u8(table, high2);
     uint8x16_t low_chars2 = vqtbl1q_u8(table, low2);
-
-    uint8x16x2_t zipped1 = vzipq_u8(high_chars1, low_chars1);
-    uint8x16x2_t zipped2 = vzipq_u8(high_chars2, low_chars2);
-
-    vst1q_u8((uint8_t*)dst + i*2, zipped1.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 16, zipped1.val[1]);
-    vst1q_u8((uint8_t*)dst + i*2 + 32, zipped2.val[0]);
-    vst1q_u8((uint8_t*)dst + i*2 + 48, zipped2.val[1]);
-  }
-  ```
+    uint8x16x2_t zipped1 = {high_chars1, low_chars1};
+    uint8x16x2_t zipped2 = {high_chars2, low_chars2};
+    vst2q_u8((uint8_t*)dst + i*2, zipped1);
+    vst2q_u8((uint8_t*)dst + i*2 + 32, zipped2);
+}
+```
 
 This SIMD code leverages ARM NEON intrinsics to accelerate hexadecimal encoding by processing 32 input bytes simultaneously. It begins by loading two 16-byte vectors (`val1` and `val2`) from the source array using `vld1q_u8`. For each vector, it extracts the high nibbles (via right shift by 4 with `vshrq_n_u8`) and low nibbles (via bitwise AND with 15 using `vandq_u8` and `vdupq_n_u8`). The nibbles are then used as indices into a pre-loaded hex table via `vqtbl1q_u8` to fetch the corresponding ASCII characters. The high and low character vectors are interleaved using `vzipq_u8`, producing two output vectors per input pair. Finally, the results are stored back to the destination array with `vst1q_u8`, ensuring efficient memory operations.
 
