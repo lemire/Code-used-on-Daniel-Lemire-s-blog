@@ -19,6 +19,7 @@ def create_linked_list(limit=50_000_000):
 
 
 if __name__ == "__main__":
+    print("Starting loading linked list...")
     x = create_linked_list(50_000_000)
     print("Initial batch completed, starting stress test...")
     start = time.time()
@@ -29,5 +30,5 @@ if __name__ == "__main__":
             print(f"Batch {i}: delay between batch start and overall start: {(batch_start - start) * 1000:.4f} milliseconds", flush=True)
             worse_case = batch_start - start
         start = batch_start
-        create_linked_list(100)
+        create_linked_list(1000)
     print(f"Max delay between batch start and overall start: {worse_case * 1000:.4f} milliseconds", flush=True)

@@ -38,7 +38,7 @@ func main() {
 			maxdiff = diff
 		}
 		start = batchStart
-		objects := createLinkedList(100)
+		objects := createLinkedList(1000)
 		_ = objects // use the variable to avoid unused error
 	}
 
