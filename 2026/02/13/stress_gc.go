@@ -10,23 +10,21 @@ type Node struct {
 	next  *Node
 }
 
-func createCyclicObjects(num int) []*Node {
-	objects := make([]*Node, 0, num)
-	for i := 0; i < num; i++ {
-		a := &Node{value: i}
-		b := &Node{value: i + 1}
-		a.next = b
-		b.next = a
-		objects = append(objects, a)
+func createLinkedList(num int) *Node {
+	head := &Node{value: 0}
+	current := head
+	for i := 1; i < num; i++ {
+		current.next = &Node{value: i}
+		current = current.next
 	}
-	return objects
+	return head
 }
 
 func main() {
 	fmt.Println("Starting GC stress test...")
 	maxdiff := time.Duration(0)
 
-	objects1 := createCyclicObjects(50_000_000)
+	objects1 := createLinkedList(50_000_000)
 	_ = objects1 // prevent optimization
 	start := time.Now()
 
@@ -40,7 +38,7 @@ func main() {
 			maxdiff = diff
 		}
 		start = batchStart
-		objects := createCyclicObjects(100)
+		objects := createLinkedList(100)
 		_ = objects // use the variable to avoid unused error
 	}
 
