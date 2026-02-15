@@ -32,7 +32,7 @@ If a function is sufficiently simple, such as my `add` function, it should alway
 
 ```cpp
 for (int x : numbers) {
-sum = add(sum, x);
+  sum = add(sum, x);
 }
 ```
 
@@ -48,6 +48,7 @@ Wow. The inline version is over 20 times faster.
 Let us try to see what is happening. The call site of the 'add' function is just a straight loop with a call to the function.
 
 ```asm
+
 ldr    w1, [x19], #0x4
 bl     0x100021740    ; add(int, int)
 cmp    x19, x20
@@ -57,6 +58,7 @@ b.ne   0x100001368    ; <+28>
 The function itself is as cheap as it can be: just two instructions.
 
 ```asm
+
 add    w0, w1, w0
 ret
 ```
@@ -66,6 +68,7 @@ So, we spend 6 instructions for each addition. It takes about 3 cycles per addit
 What about the inline function?
 
 ```asm
+
 ldp    q4, q5, [x12, #-0x20]
 ldp    q6, q7, [x12], #0x40
 add.4s v0, v4, v0
@@ -122,3 +125,6 @@ Takeaways:
 
 1. Short and simple functions should be inlined when possible if performance is a concern. The benefits can be impressive.
 2. For functions that can be fast or slow, the decision as to whether to inline or not depends on the input. For string processing functions, the size of the string may determine whether inlining is necessary for best performance.
+
+
+*Note*: [My source code is available](https://github.com/lemire/Code-used-on-Daniel-Lemire-s-blog/tree/master/2026/02/08/benchmark).
