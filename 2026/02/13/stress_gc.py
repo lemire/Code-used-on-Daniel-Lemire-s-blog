@@ -28,6 +28,6 @@ if __name__ == "__main__":
         if batch_start - start > worse_case:
             print(f"Batch {i}: delay between batch start and overall start: {(batch_start - start) * 1000:.4f} milliseconds", flush=True)
             worse_case = batch_start - start
-        start = time.time()
+        start = batch_start
         create_linked_list(100)
     print(f"Max delay between batch start and overall start: {worse_case * 1000:.4f} milliseconds", flush=True)
