@@ -47,7 +47,7 @@ Thankfully, even if you, say, need only six digits, you can do the full 8-digit 
 
 We have two variants. One is branch-heavy and does well on homogeneous data (numbers with similar digit lengths). The other is branch-light and better for mixed workloads. A quick profiling step can pick the right one for your dataset.
 
-Our implementation is consistently 1.4–2× faster than the best competitors and 2–4× faster than `std::to_chars` across a wide range of inputs.
+Our implementation is consistently 1.4–2× faster than the best competitors and 2–4× faster than `std::to_chars` across a wide range of inputs. What I find interesting is that even if the  `std::to_chars` implemenetation is not at all naive, you can do significantly better in many ways. James Anhalt's approach (`jeaiii`) is also quite fast on modern hardware.
 
 ![](graph.png)
 
