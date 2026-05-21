@@ -51,4 +51,31 @@ There are 3,215,709,724,700,470,902 64-bit (unsigned) integers that can be writt
 
 Is this information of any practical use? The exact number is probably just a curiosity. However, I feel that it is warranted to have some intuition about how full products work.
 
+
 ![](products_percentage.png)
+
+
+
+What about actually computing a pair of integers given their product? One approach consists in computing its full prime factorization, and  then us those factors to build all possible divisors that are strictly less than `2^32` by starting with a set of candidate containing only `1` and iteratively multiplying existing candidates by each prime factor (only keeping products that stay below `2^32`). We can avoid adding duplicates to our set by processing unique prime factors with their multiplicity.  Finally, we select the maximum such candidate `m` as the largest divisor under `2^32`, and we compute the corresponding leftover  `n // m`, and we report whether a valid split into two 32-bit factors exists. In general, the answer (if it exists) is not unique: this will return the pair where one value is maximized. In Python, the code might look as follows.
+
+```python
+for p in factor_multiplicities:
+    new_candidates = []
+    for c in candidates:
+        for i in range(factor_multiplicities[p] + 1):
+            if c * (p ** i) < 2**32:
+                new_candidates.append(c * (p ** i))
+    for new_c in new_candidates:
+        candidates.append(new_c)
+
+m = max(candidates)
+print(f"Maximum candidate: {m}")
+
+leftover = n // m
+print(f"Leftover: {leftover}")
+
+if leftover >= 2**32:
+    print("Leftover is too large, cannot find a suitable candidate.")
+```
+
+You might be able to come up with a more efficient algorithm.
