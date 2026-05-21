@@ -29,7 +29,6 @@ You can just brute-force the problem easily up to the multiplication of 16-bit i
 
 It is trivial to compute the percentage up to about 16 bits, using brute force. However, the running time grows exponentially, and brute force won't scale all the way to 64 bits.
 
-![](products_percentage.png)
 
 So what do we do about the 32-bit case?
 
@@ -51,3 +50,5 @@ Yes!!!
 There are 3,215,709,724,700,470,902 64-bit (unsigned) integers that can be written as a product of two 32-bit integers.  That's about 17% of all possible values.
 
 Is this information of any practical use? The exact number is probably just a curiosity. However, I feel that it is warranted to have some intuition about how full products work.
+
+![](products_percentage.png)
