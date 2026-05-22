@@ -6,11 +6,11 @@ Thus we have the notion of the full product. The full product of two 32-bit inte
 
 You might wonder why you would care?
 
-We often design hash functions: they are special functions which take an input and generate a random-looking output. 
-Several years ago I designed a very fast hash function called [clhash](https://github.com/simdhash/clhash). It is a super fast hash functions for strings having a few hundred bytes or more. If you don't know about clhash, [check it out](https://github.com/simdhash/clhash). It is interesting in its own right.
+We often design hash functions: they are special functions that take an input and generate a random-looking output.
+Several years ago I designed a very fast hash function called [clhash](https://github.com/simdhash/clhash). It is a super-fast hash function for strings having a few hundred bytes or more. If you don't know about clhash, [check it out](https://github.com/simdhash/clhash). It is interesting in its own right.
 
 
-This clhash hash function uses a type of multiplications typical of cryptographic applications. I was trying to argue that our approach had benefits when compared with techniques based on standard multiplications. Let me illustrate. A simple hash function for 32-bit integers could take the least significant bits and multiply them with the most significant bits.
+This clhash hash function uses a type of multiplication typical of cryptographic applications. I was trying to argue that our approach had benefits compared with techniques based on standard multiplications. Let me illustrate. A simple hash function for 32-bit integers could take the least significant bits and multiply them with the most significant bits.
 
 
 ```cpp
@@ -30,7 +30,7 @@ The great mathematician Erdös showed that the proportion of all `2n`-bit values
 You can just brute-force the problem easily up to the multiplication of 16-bit integers into 32-bit products. At that point, slightly one out of five 32-bit numbers is a product between two 16-bit integers. About 80% of all 32-bit integers are never produced by this hash. However, the running time grows exponentially, and brute force won't scale all the way to 32 bits.
 
 
-So what do we do about the 32-bit case? That is, what do  you do when you multiply two 32-bit integers to produce a 64-bit product. What fraction of 64-bit values can the following fucntion produce:
+So what do we do about the 32-bit case? That is, what do you do when you multiply two 32-bit integers to produce a 64-bit product? What fraction of 64-bit values can the following function produce?
 
 
 ```cpp
@@ -47,13 +47,13 @@ Yes!!!
 
 [Webster](https://blue.butler.edu/~jewebste/) and his colleagues [built the math](https://arxiv.org/pdf/1908.04251) to allow us to scale up the exact computation. [He was kind enough to publish his code](https://github.com/jewebste/multiplication-table-problem).
 
-There are 3,215,709,724,700,470,902 64-bit (unsigned) integers that can be written as a product of two 32-bit integers.  That's about 17% of all possible values.
+There are 3,215,709,724,700,470,902 64-bit (unsigned) integers that can be written as a product of two 32-bit integers. That's about 17% of all possible values.
 
 ![](products_percentage.png)
 
 
 
-What about actually computing a pair of integers given their product? One approach consists in computing its full prime factorization, and  then us those factors to build all possible divisors that are strictly less than `2^32` by starting with a set of candidate containing only `1` and iteratively multiplying existing candidates by each prime factor (only keeping products that stay below `2^32`). We can avoid adding duplicates to our set by processing unique prime factors with their multiplicity.  Finally, we select the maximum such candidate `m` as the largest divisor under `2^32`, and we compute the corresponding leftover  `n // m`, and we report whether a valid split into two 32-bit factors exists. In general, the answer (if it exists) is not unique: this will return the pair where one value is maximized. In Python, the code might look as follows.
+What about actually computing a pair of integers given their product? One approach consists of computing its full prime factorization, and then using those factors to build all possible divisors that are strictly less than `2^32`, starting with a set of candidates containing only `1` and iteratively multiplying existing candidates by each prime factor (only keeping products that stay below `2^32`). We can avoid adding duplicates to our set by processing unique prime factors with their multiplicity. Finally, we select the maximum such candidate `m` as the largest divisor under `2^32`, compute the corresponding leftover `n // m`, and report whether a valid split into two 32-bit factors exists. In general, the answer (if it exists) is not unique: this returns the pair where one value is maximized. In Python, the code might look as follows.
 
 ```python
 for p in factor_multiplicities:
