@@ -1,16 +1,16 @@
-# Parsing IPv6 addresses faster with AVX-512
+# Parsing IPv6 Addresses Crazily Fast with AVX-512
 
 
 Every machine connected to the Internet has an address called an IP address. Originally, these addresses were 32-bit
 integers (IPv4), giving a theoretical maximum of about four billion distinct addresses. We are all familiar with these addresses (e.g., `192.168.0.0`). There was a big fuss about how we would run out of addresses. It never happened because we don't actually need every device to have its own unique address. Your home router needs an address, but every device in your home does not need a worldwide unique address.
 
-Nevertheless, the range was extended to cover 128 bits (IPv6). An IPv6 address is conventionally written as eight groups of four hexadecimal digits separated bycolons. For example:
+Nevertheless, the range was extended to cover 128 bits (IPv6). An IPv6 address is conventionally written as eight groups of four hexadecimal digits separated by colons. For example:
 
 ```
 2001:0db8:85a3:0000:0000:8a2e:0370:7334
 ```
 
-Because addresses often contain runs of zeroes, the format allows two shortcuts:
+Because addresses often contain runs of zeros, the format allows two shortcuts:
 
 - Leading zeroes within a group may be omitted: `2001:db8:85a3:0:0:8a2e:370:7334`.
 - A single run of all-zero groups may be replaced by `::`: `2001:db8:85a3::8a2e:370:7334`.
@@ -55,7 +55,7 @@ addresses are written in their canonical, compressed form) and parses each one w
 | AVX-512     |        14.0 |            71.3 |            49 |          120 |  2.45 |
 
 The AVX-512 routine is about **12 times faster** than `inet_pton`, parsing more than 70 million
-addresses per second on a single core. It uses eight times fewer  instructions, and runs them at
+addresses per second on a single core. It uses eight times fewer instructions, and runs them at
 a higher throughput (2.45 instructions per cycle versus 1.56).
 
 The source code used for this benchmark is available
