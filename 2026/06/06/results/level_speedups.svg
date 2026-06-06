@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="650" height="510" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<rect width="650" height="510" fill="white"/>
+<text x="325.0" y="24" text-anchor="middle" font-size="16" font-weight="bold" fill="#333333">Speed vs. GOAMD64=v1 baseline</text>
+<text x="325.0" y="42" text-anchor="middle" font-size="12" fill="#333333">left of zero = faster, right = slower</text>
+<line x1="200.0" y1="60" x2="200.0" y2="474" stroke="#d0d0d0" stroke-width="1"/>
+<text x="200.0" y="490" text-anchor="middle" font-size="11" fill="#333333">-50%</text>
+<line x1="256.0" y1="60" x2="256.0" y2="474" stroke="#d0d0d0" stroke-width="1"/>
+<text x="256.0" y="490" text-anchor="middle" font-size="11" fill="#333333">-40%</text>
+<line x1="312.0" y1="60" x2="312.0" y2="474" stroke="#d0d0d0" stroke-width="1"/>
+<text x="312.0" y="490" text-anchor="middle" font-size="11" fill="#333333">-30%</text>
+<line x1="368.0" y1="60" x2="368.0" y2="474" stroke="#d0d0d0" stroke-width="1"/>
+<text x="368.0" y="490" text-anchor="middle" font-size="11" fill="#333333">-20%</text>
+<line x1="424.0" y1="60" x2="424.0" y2="474" stroke="#d0d0d0" stroke-width="1"/>
+<text x="424.0" y="490" text-anchor="middle" font-size="11" fill="#333333">-10%</text>
+<line x1="480.0" y1="60" x2="480.0" y2="474" stroke="#d0d0d0" stroke-width="1"/>
+<text x="480.0" y="490" text-anchor="middle" font-size="11" fill="#333333">+0%</text>
+<line x1="536.0" y1="60" x2="536.0" y2="474" stroke="#d0d0d0" stroke-width="1"/>
+<text x="536.0" y="490" text-anchor="middle" font-size="11" fill="#333333">+10%</text>
+<line x1="592.0" y1="60" x2="592.0" y2="474" stroke="#d0d0d0" stroke-width="1"/>
+<text x="592.0" y="490" text-anchor="middle" font-size="11" fill="#333333">+20%</text>
+<line x1="480.0" y1="60" x2="480.0" y2="474" stroke="#333333" stroke-width="1.5"/>
+<text x="190" y="87.0" text-anchor="end" font-size="12.5" fill="#333333">Popcount</text>
+<rect x="238.1" y="66.0" width="241.9" height="11.0" fill="#9ecae1"/>
+<text x="234.1" y="75.5" text-anchor="end" font-size="10" fill="#333333">-43%</text>
+<rect x="235.8" y="78.5" width="244.2" height="11.0" fill="#4292c6"/>
+<text x="231.8" y="87.9" text-anchor="end" font-size="10" fill="#333333">-44%</text>
+<rect x="238.1" y="90.9" width="241.9" height="11.0" fill="#084594"/>
+<text x="234.1" y="100.4" text-anchor="end" font-size="10" fill="#333333">-43%</text>
+<text x="190" y="133.0" text-anchor="end" font-size="12.5" fill="#333333">CountTrailingZeros</text>
+<rect x="361.3" y="112.0" width="118.7" height="11.0" fill="#9ecae1"/>
+<text x="357.3" y="121.5" text-anchor="end" font-size="10" fill="#333333">-21%</text>
+<rect x="354.6" y="124.5" width="125.4" height="11.0" fill="#4292c6"/>
+<text x="350.6" y="133.9" text-anchor="end" font-size="10" fill="#333333">-22%</text>
+<rect x="355.7" y="136.9" width="124.3" height="11.0" fill="#084594"/>
+<text x="351.7" y="146.4" text-anchor="end" font-size="10" fill="#333333">-22%</text>
+<text x="190" y="179.0" text-anchor="end" font-size="12.5" fill="#333333">FromDense array</text>
+<rect x="364.1" y="158.0" width="115.9" height="11.0" fill="#9ecae1"/>
+<text x="360.1" y="167.5" text-anchor="end" font-size="10" fill="#333333">-21%</text>
+<rect x="267.8" y="170.5" width="212.2" height="11.0" fill="#4292c6"/>
+<text x="263.8" y="179.9" text-anchor="end" font-size="10" fill="#333333">-38%</text>
+<rect x="271.1" y="182.9" width="208.9" height="11.0" fill="#084594"/>
+<text x="267.1" y="192.4" text-anchor="end" font-size="10" fill="#333333">-37%</text>
+<text x="190" y="225.0" text-anchor="end" font-size="12.5" fill="#333333">FromDense bitmaps+runs</text>
+<rect x="480.0" y="204.0" width="0.6" height="11.0" fill="#9ecae1"/>
+<text x="484.0" y="213.5" text-anchor="start" font-size="10" fill="#333333">~</text>
+<rect x="312.0" y="216.5" width="168.0" height="11.0" fill="#4292c6"/>
+<text x="308.0" y="225.9" text-anchor="end" font-size="10" fill="#333333">-30%</text>
+<rect x="317.0" y="228.9" width="163.0" height="11.0" fill="#084594"/>
+<text x="313.0" y="238.4" text-anchor="end" font-size="10" fill="#333333">-29%</text>
+<text x="190" y="271.0" text-anchor="end" font-size="12.5" fill="#333333">AndNot array∩run</text>
+<rect x="480.0" y="250.0" width="0.6" height="11.0" fill="#9ecae1"/>
+<text x="484.0" y="259.5" text-anchor="start" font-size="10" fill="#333333">~</text>
+<rect x="336.1" y="262.5" width="143.9" height="11.0" fill="#4292c6"/>
+<text x="332.1" y="271.9" text-anchor="end" font-size="10" fill="#333333">-26%</text>
+<rect x="357.9" y="274.9" width="122.1" height="11.0" fill="#084594"/>
+<text x="353.9" y="284.4" text-anchor="end" font-size="10" fill="#333333">-22%</text>
+<text x="190" y="317.0" text-anchor="end" font-size="12.5" fill="#333333">IntersectionCardinality</text>
+<rect x="480.0" y="296.0" width="5.6" height="11.0" fill="#9ecae1"/>
+<text x="489.6" y="305.5" text-anchor="start" font-size="10" fill="#333333">+1%</text>
+<rect x="354.6" y="308.5" width="125.4" height="11.0" fill="#4292c6"/>
+<text x="350.6" y="317.9" text-anchor="end" font-size="10" fill="#333333">-22%</text>
+<rect x="354.0" y="320.9" width="126.0" height="11.0" fill="#084594"/>
+<text x="350.0" y="330.4" text-anchor="end" font-size="10" fill="#333333">-22%</text>
+<text x="190" y="363.0" text-anchor="end" font-size="12.5" fill="#333333">XorDense</text>
+<rect x="401.0" y="342.0" width="79.0" height="11.0" fill="#9ecae1"/>
+<text x="397.0" y="351.5" text-anchor="end" font-size="10" fill="#333333">-14%</text>
+<rect x="410.6" y="354.5" width="69.4" height="11.0" fill="#4292c6"/>
+<text x="406.6" y="363.9" text-anchor="end" font-size="10" fill="#333333">-12%</text>
+<rect x="406.1" y="366.9" width="73.9" height="11.0" fill="#084594"/>
+<text x="402.1" y="376.4" text-anchor="end" font-size="10" fill="#333333">-13%</text>
+<text x="190" y="409.0" text-anchor="end" font-size="12.5" fill="#333333">Xor</text>
+<rect x="480.0" y="388.0" width="0.6" height="11.0" fill="#9ecae1"/>
+<text x="484.0" y="397.5" text-anchor="start" font-size="10" fill="#333333">~</text>
+<rect x="480.0" y="400.5" width="45.9" height="11.0" fill="#4292c6"/>
+<text x="529.9" y="409.9" text-anchor="start" font-size="10" fill="#333333">+8%</text>
+<rect x="480.0" y="412.9" width="40.3" height="11.0" fill="#084594"/>
+<text x="524.3" y="422.4" text-anchor="start" font-size="10" fill="#333333">+7%</text>
+<text x="190" y="455.0" text-anchor="end" font-size="12.5" fill="#333333">FastOrRunContainers</text>
+<rect x="441.9" y="434.0" width="38.1" height="11.0" fill="#9ecae1"/>
+<text x="437.9" y="443.5" text-anchor="end" font-size="10" fill="#333333">-7%</text>
+<rect x="480.0" y="446.5" width="100.8" height="11.0" fill="#4292c6"/>
+<text x="584.8" y="455.9" text-anchor="start" font-size="10" fill="#333333">+18%</text>
+<rect x="480.0" y="458.9" width="101.4" height="11.0" fill="#084594"/>
+<text x="585.4" y="468.4" text-anchor="start" font-size="10" fill="#333333">+18%</text>
+<rect x="470" y="66" width="12" height="12" fill="#9ecae1"/>
+<text x="486" y="77" font-size="12" fill="#333333">v2</text>
+<rect x="520" y="66" width="12" height="12" fill="#4292c6"/>
+<text x="536" y="77" font-size="12" fill="#333333">v3</text>
+<rect x="570" y="66" width="12" height="12" fill="#084594"/>
+<text x="586" y="77" font-size="12" fill="#333333">v4</text>
+</svg>
