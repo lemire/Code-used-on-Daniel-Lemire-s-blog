@@ -121,6 +121,7 @@ the compiler, and all that survives is the number 2073600.
 
 Because static reflection is so new, when building with GCC 16, you need to pass the flags `-std=c++26 -freflection`: the `-freflection` flag is necessary to activate compile-time reflection You must also set the simdjson macro `SIMDJSON_STATIC_REFLECTION=1` before importing the `simdjson.h`. It is a temporary safeguard.
 
+The [source code to reproduce these examples is available](https://github.com/lemire/Code-used-on-Daniel-Lemire-s-blog/tree/master/2026/06/16).
 
 *Reference*: [P2996 — Reflection for C++26](https://wg21.link/p2996) and
 [the simdjson library](https://simdjson.org).
