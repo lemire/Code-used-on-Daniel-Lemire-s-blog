@@ -26,6 +26,14 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 # ---------------------------------------------------------------------------
 POPCOUNT_NS = [("v1", 40.19), ("v2", 22.81), ("v3", 22.66), ("v4", 22.83)]
 
+# Absolute time to build an array container from a dense bitmap, per level.
+# (FromDense/array-4096,doCopy=false row of benchstat.txt, in microseconds.)
+FROMDENSE_US = [("v1", 29.76), ("v2", 23.60), ("v3", 18.48), ("v4", 18.65)]
+
+# Absolute time for an intersection-cardinality, per level.
+# (IntersectionCardinalityRoaring row of benchstat.txt, in nanoseconds.)
+INTERSECTCARD_NS = [("v1", 130.7), ("v2", 132.0), ("v3", 101.3), ("v4", 101.3)]
+
 # ---------------------------------------------------------------------------
 # Figure 2: percentage change versus v1 for a curated set of operations, at
 # each of v2/v3/v4. Negative is faster. (vs base columns of benchstat.txt.)
@@ -61,29 +69,37 @@ def write(path, body):
 
 
 # ---------------------------------------------------------------------------
-def fig_popcount():
+def fig_bars(data, title, unit, ymax, ystep, outname):
+    """Absolute-time bar chart, one bar per microarchitecture level.
+
+    data    list of (level, value) pairs
+    unit    y-axis caption, e.g. "nanoseconds (lower is better)"
+    ymax    top of the y-axis, in the same unit as the values
+    ystep   spacing between gridlines
+    """
     W, H = 560, 320
     ml, mr, mt, mb = 60, 20, 50, 50
     pw, ph = W - ml - mr, H - mt - mb
-    ymax = 45.0
-    n = len(POPCOUNT_NS)
+    n = len(data)
     bw = pw / n * 0.55
     gap = pw / n
     s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" '
          f'font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">']
     s.append(f'<rect width="{W}" height="{H}" fill="white"/>')
     s.append(f'<text x="{W/2}" y="26" text-anchor="middle" font-size="16" '
-             f'font-weight="bold" fill="{AXIS}">Time to popcount a bitmap container</text>')
+             f'font-weight="bold" fill="{AXIS}">{esc(title)}</text>')
     # y gridlines + labels
-    for t in range(0, int(ymax) + 1, 10):
+    t = 0
+    while t <= ymax + 1e-9:
         y = mt + ph - (t / ymax) * ph
         s.append(f'<line x1="{ml}" y1="{y:.1f}" x2="{ml+pw}" y2="{y:.1f}" '
                  f'stroke="{GRID}" stroke-width="1"/>')
         s.append(f'<text x="{ml-8}" y="{y+4:.1f}" text-anchor="end" '
-                 f'font-size="12" fill="{AXIS}">{t}</text>')
+                 f'font-size="12" fill="{AXIS}">{t:g}</text>')
+        t += ystep
     s.append(f'<text x="16" y="{mt+ph/2}" text-anchor="middle" font-size="12" '
-             f'fill="{AXIS}" transform="rotate(-90 16 {mt+ph/2})">nanoseconds (lower is better)</text>')
-    for i, (lvl, v) in enumerate(POPCOUNT_NS):
+             f'fill="{AXIS}" transform="rotate(-90 16 {mt+ph/2})">{esc(unit)}</text>')
+    for i, (lvl, v) in enumerate(data):
         cx = ml + gap * (i + 0.5)
         x = cx - bw / 2
         h = (v / ymax) * ph
@@ -95,7 +111,22 @@ def fig_popcount():
         s.append(f'<text x="{cx:.1f}" y="{mt+ph+20:.1f}" text-anchor="middle" '
                  f'font-size="13" fill="{AXIS}">GOAMD64={lvl}</text>')
     s.append('</svg>')
-    write(os.path.join(OUT, "popcount_levels.svg"), "\n".join(s))
+    write(os.path.join(OUT, outname), "\n".join(s))
+
+
+def fig_popcount():
+    fig_bars(POPCOUNT_NS, "Time to popcount a bitmap container",
+             "nanoseconds (lower is better)", 45.0, 10, "popcount_levels.svg")
+
+
+def fig_fromdense():
+    fig_bars(FROMDENSE_US, "Time to build an array container from a dense bitmap",
+             "microseconds (lower is better)", 30.0, 5, "fromdense_levels.svg")
+
+
+def fig_intersectcard():
+    fig_bars(INTERSECTCARD_NS, "Time for an intersection cardinality",
+             "nanoseconds (lower is better)", 150.0, 25, "intersectcard_levels.svg")
 
 
 # ---------------------------------------------------------------------------
@@ -161,4 +192,6 @@ def fig_speedups():
 
 if __name__ == "__main__":
     fig_popcount()
+    fig_fromdense()
+    fig_intersectcard()
     fig_speedups()

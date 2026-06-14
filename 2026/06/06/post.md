@@ -1,13 +1,13 @@
-# How much do amd64 microarchitecture levels help Roaring Bitmaps in Go?
+# How much do amd64 microarchitecture levels help in Go?
+
+64-bit Intel and AMD processors have evolved over decades.
 
 When you compile a Go program for a 64-bit Intel or AMD processor, the
 compiler targets, by default, a nearly 20-year-old instruction set. The
 binary that comes out runs on essentially any x64 chip, but it also leaves
-on the table every instruction that was added since 2003: the dedicated
-population-count instruction (`popcnt`), the trailing-zero count (`tzcnt`),
-the AVX/AVX2 vector instructions, AVX-512, and so on.
+on the table every instruction that was added since 2003.
 
-To make this tractable, the industry agreed on a small ladder of
+We often refer to
 [*microarchitecture levels*](https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels).
 Each level bundles a set of instruction-set extensions that you can assume
 are present:
@@ -19,7 +19,15 @@ are present:
 | **v3** | AVX, AVX2, BMI1/BMI2, FMA, `movbe` |
 | **v4** | AVX-512 (F/BW/DQ/VL) |
 
-The Go toolchain exposes this ladder through the
+In my view, this ladder is already slightly obsolete. It was frozen around
+2020, and the hardware has moved on. We would need to add the latest AVX-512
+sub-extensions (VBMI, VBMI2, VNNI, BF16, FP16, VPOPCNTDQ, and so on), which
+recent server and consumer chips support but which `v4` does not require. While `v1` through `v4` are a useful common language, a
+realistic "use everything this CPU offers" target today would need at least a
+`v5`, and arguably the whole scheme should be replaced by finer-grained
+feature detection.
+
+In any case, the Go toolchain exposes this `v1` through `v4` ladder via the
 [`GOAMD64`](https://go.dev/wiki/MinimumRequirements#amd64) environment
 variable. Setting `GOAMD64=v3` tells the compiler it may use everything up
 to and including AVX2. The default is `v1`, the lowest common denominator.
@@ -27,40 +35,35 @@ to and including AVX2. The default is `v1`, the lowest common denominator.
 This raises an obvious question. If I take a real, performance-sensitive
 library and recompile it at each level, how much do I actually gain? I
 picked [Roaring Bitmaps](https://github.com/RoaringBitmap/roaring), a
-compressed bitset data structure used in databases and search engines
-([Lucene](https://lucene.apache.org/), [ClickHouse](https://clickhouse.com/),
-and others). Its hot loops are full of population counts, intersections, and
-unions over machine words — exactly the kind of code that ought to benefit
-from newer instructions.
+compressed bitset data structure used in databases and search engines. 
 
-## The benchmark
+A Roaring Bitmap stores a set of 32-bit integers. It splits the 32-bit space
+into chunks of 65,536 values, keyed by the high 16 bits, and stores each chunk
+in a *container* that holds only the low 16 bits. A container comes in one of
+three shapes, and the library always keeps whichever is smallest:
 
-The methodology is deliberately boring. I fetch the latest release of the
-library, then run its own benchmark suite four times — once per level —
-collecting eight samples each, and feed the lot to
-[`benchstat`](https://pkg.go.dev/golang.org/x/perf/cmd/benchstat) with `v1`
-as the baseline:
+- an array container: a sorted list of 16-bit values, used when the chunk
+  is sparse (a few thousand elements at most);
+- a bitmap container: a flat 8 KB bit vector (65,536 bits, one per possible
+  value), used when the chunk is dense;
+- a run container: a list of `[start, length]` intervals, used when the set
+  bits cluster into consecutive runs.
 
-```bash
-for lvl in v1 v2 v3 v4; do
-    GOAMD64="$lvl" go test -run='^$' -bench=. -benchmem \
-        -benchtime=500ms -count=8 \
-        github.com/RoaringBitmap/roaring/v2 | tee "results/bench-$lvl.txt"
-done
+I fetched the latest release of the library, then ran its own benchmark suite
+four times, once per level, collecting eight samples each. I did this on a
+single Intel Xeon Gold 6548N (Emerald Rapids, which supports all four levels,
+including AVX-512) under Go 1.26.2 and Roaring v2.18.2.
 
-benchstat v1=results/bench-v1.txt v2=results/bench-v2.txt \
-          v3=results/bench-v3.txt v4=results/bench-v4.txt
-```
 
-The full driver script, the raw output, and the figures are in
-[this directory](.); see [`run_benchmarks.sh`](run_benchmarks.sh).
+A *population count* (or *popcount*, also called the Hamming weight) is simply
+the number of bits set to 1 in a machine word. Roaring leans on it constantly:
+the cardinality of a bitmap container, how many values it holds, is the sum
+of the population counts of its 1024 64-bit words. Modern x86 chips have a
+dedicated `popcnt` instruction that does this in a single operation, but it
+only became available at the `v2` level (SSE4.2, 2008). Without it, the
+compiler has to fall back to a multi-instruction bit-twiddling sequence.
 
-I ran this on a single Intel Xeon Gold 6548N (Emerald Rapids, which supports
-all four levels including AVX-512) under Go 1.26.2 and Roaring v2.18.2.
-
-## The headline: population counts
-
-The single clearest result is the population count — counting the number of
+The clearest single result is population count: counting the number of
 set bits in a bitmap container. The `v1` baseline cannot use the `popcnt`
 instruction, so Go emits a software fallback. The moment we move to `v2`,
 `popcnt` becomes available and the time is cut almost in half:
@@ -69,83 +72,40 @@ instruction, so Go emits a software fallback. The moment we move to `v2`,
 
 That is a 43% reduction, and it is free: no source change, just a compiler
 flag. Notice, though, that `v3` and `v4` do nothing more. A single `popcnt`
-instruction is already optimal; AVX2 and AVX-512 have nothing to add here.
-The same story holds for trailing-zero counts (`tzcnt`, –21% at `v2`).
-
-## The fuller picture
+instruction is already optimal; as far as the Go compiler is concerned, AVX2
+and AVX-512 have nothing to add.
 
 Population count is the easy win. What about the rest of the library?
-Here is the percentage change versus the `v1` baseline for a representative
-slice of the suite, at each level (negative means faster):
 
-![Speed versus the v1 baseline](results/level_speedups.svg)
 
-A few patterns jump out.
+Another clear win is building a container from a dense bitmap. The
+`FromDense array` benchmark takes a raw 8 KB bit vector and constructs the
+most compact container for it: it popcounts every word to learn the
+cardinality, then scans out the positions of the set bits. That word-at-a-time
+popcount-and-scan loop is exactly what the compiler can auto-vectorize once
+256-bit registers are available, so the gains keep coming past `v2`:
 
-**`v2` is close to a free lunch.** Turning on the post-2003 scalar
-instructions almost never hurts, and it sometimes helps a lot: `popcnt` and
-`tzcnt` as above, but also `XorDense` (–14%) and `FromDense array` (–21%).
-There is very little reason to ship `v1` binaries to modern hardware.
+![Time to build an array container from a dense bitmap](results/fromdense_levels.svg)
 
-**`v3` (AVX2) is where vectorization pays off — usually.** Building dense
-containers gets dramatically cheaper (`FromDense array` –38%,
-`FromDense bitmaps+runs` –30%), and several set operations improve
-(`IntersectionCardinality` –22%, `AndNot array∩run` –26%). These are the
-loops the compiler can auto-vectorize once 256-bit registers are on the
-table.
+`v2` already cuts 21% by using scalar `popcnt`/`tzcnt` instructions, and `v3`
+(AVX2) nearly doubles that to a 38% reduction. As with popcount, `v4` adds
+nothing.
 
-**But `v3` is not a free lunch.** A handful of benchmarks *regress*.
-`FastOrRunContainers` is the striking one: `v2` makes it 7% faster, then
-`v3` makes it 18% *slower* than the original `v1`. `Xor` over large bitmaps
-also slips about 8%. Wider instructions change the compiler's inlining and
-register-allocation decisions, and not always for the better. If you care
-about a specific workload, you have to measure it rather than assume v3 ≥ v2
-≥ v1.
 
-**`v4` (AVX-512) buys nothing.** This is the most interesting non-result.
-Across the entire suite, `v4` is statistically indistinguishable from `v3`.
-The Go compiler does not auto-vectorize this code to 512-bit registers, and
-the library has no AVX-512 assembly, so enabling the level simply gives the
-compiler permission it never uses. On this hardware there is also a real
-risk to AVX-512: heavy use can lower clock frequencies, so "no benefit" is
-arguably the good outcome.
+Set operations show the same pattern. The `IntersectionCardinality` benchmark
+counts how many values two bitmaps have in common: for bitmap containers, it
+ANDs the words pairwise and population-counts the result, without ever
+materializing the intersection. Here `v2` does essentially nothing (the scalar
+`popcnt` is already in the inner loop), but `v3` lets the compiler widen the
+AND-and-count loop to 256-bit registers, cutting the time by 22%:
 
-## Selected numbers
+![Time for an intersection cardinality](results/intersectcard_levels.svg)
 
-For the record, here are the absolute timings for some of the operations
-above, baseline versus the best level:
 
-| Operation | v1 | best | change |
-|-----------|-----|------|--------|
-| Popcount | 40.2 ns | 22.7 ns (v3) | **–43%** |
-| CountTrailingZeros | 56.0 ns | 43.5 ns (v3) | **–22%** |
-| FromDense array (4096) | 29.8 µs | 18.5 µs (v3) | **–38%** |
-| FromDense bitmaps+runs | 24.8 µs | 17.3 µs (v3) | **–30%** |
-| AndNot array∩run | 2.53 µs | 1.88 µs (v3) | **–26%** |
-| IntersectionCardinality | 131 ns | 101 ns (v3) | **–22%** |
-| XorDense | 72.5 µs | 62.3 µs (v2) | **–14%** |
-| FastOrRunContainers | 1.27 ms | 1.50 ms (v3) | **+18%** ⚠ |
+Takeaways:
 
-## Takeaways
+1. On modern hardware, everyone should be using `v2` or better. The resulting binary will run in any data center and on any non-ancient laptop.
+2. The `v3` level might be worth investigating.
+3. The `v4` level should have helped in some of my benchmarks, but it did not. I suspect that the Go compiler is just not great at it.
 
-1. **Do not ship `GOAMD64=v1` to modern servers.** Moving to `v2` is almost
-   pure upside — population counts alone nearly halve in cost — and v2
-   hardware (Nehalem, 2008, and later) is universal in any data center.
-2. **`v3` is usually worth it, but verify your own hot paths.** Most
-   operations get faster, a few get slower. The default assumption "newer is
-   better" does not survive contact with `FastOrRunContainers`.
-3. **`v4` / AVX-512 is, here, a no-op.** Until the Go compiler learns to
-   target wider vectors automatically — or the library ships AVX-512
-   kernels — there is nothing to gain from it for this workload, and a
-   frequency-throttling risk if it were used.
-
-The broader lesson is one I keep relearning: the gap between "what the
-hardware can do" and "what the compiler emits by default" is large, and it
-is mostly invisible until you go looking for it. A one-line environment
-variable recovered 20–40% on the operations that matter most, and cost
-nothing but the time to measure.
-
-The scripts and raw data to reproduce all of this are in
-[this directory](.). Your numbers will differ — silicon, Go version, and
-library version all move — so run it yourself before trusting any single
-figure.
+(Obviously: run your own benchmarks.)

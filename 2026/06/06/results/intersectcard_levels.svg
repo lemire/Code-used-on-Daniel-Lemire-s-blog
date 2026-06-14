@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="320" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<rect width="560" height="320" fill="white"/>
+<text x="280.0" y="26" text-anchor="middle" font-size="16" font-weight="bold" fill="#333333">Time for an intersection cardinality</text>
+<line x1="60" y1="270.0" x2="540" y2="270.0" stroke="#d0d0d0" stroke-width="1"/>
+<text x="52" y="274.0" text-anchor="end" font-size="12" fill="#333333">0</text>
+<line x1="60" y1="233.3" x2="540" y2="233.3" stroke="#d0d0d0" stroke-width="1"/>
+<text x="52" y="237.3" text-anchor="end" font-size="12" fill="#333333">25</text>
+<line x1="60" y1="196.7" x2="540" y2="196.7" stroke="#d0d0d0" stroke-width="1"/>
+<text x="52" y="200.7" text-anchor="end" font-size="12" fill="#333333">50</text>
+<line x1="60" y1="160.0" x2="540" y2="160.0" stroke="#d0d0d0" stroke-width="1"/>
+<text x="52" y="164.0" text-anchor="end" font-size="12" fill="#333333">75</text>
+<line x1="60" y1="123.3" x2="540" y2="123.3" stroke="#d0d0d0" stroke-width="1"/>
+<text x="52" y="127.3" text-anchor="end" font-size="12" fill="#333333">100</text>
+<line x1="60" y1="86.7" x2="540" y2="86.7" stroke="#d0d0d0" stroke-width="1"/>
+<text x="52" y="90.7" text-anchor="end" font-size="12" fill="#333333">125</text>
+<line x1="60" y1="50.0" x2="540" y2="50.0" stroke="#d0d0d0" stroke-width="1"/>
+<text x="52" y="54.0" text-anchor="end" font-size="12" fill="#333333">150</text>
+<text x="16" y="160.0" text-anchor="middle" font-size="12" fill="#333333" transform="rotate(-90 16 160.0)">nanoseconds (lower is better)</text>
+<rect x="87.0" y="78.3" width="66.0" height="191.7" fill="#c0392b"/>
+<text x="120.0" y="72.3" text-anchor="middle" font-size="12" font-weight="bold" fill="#333333">130.7</text>
+<text x="120.0" y="290.0" text-anchor="middle" font-size="13" fill="#333333">GOAMD64=v1</text>
+<rect x="207.0" y="76.4" width="66.0" height="193.6" fill="#2e8b57"/>
+<text x="240.0" y="70.4" text-anchor="middle" font-size="12" font-weight="bold" fill="#333333">132.0</text>
+<text x="240.0" y="290.0" text-anchor="middle" font-size="13" fill="#333333">GOAMD64=v2</text>
+<rect x="327.0" y="121.4" width="66.0" height="148.6" fill="#2e8b57"/>
+<text x="360.0" y="115.4" text-anchor="middle" font-size="12" font-weight="bold" fill="#333333">101.3</text>
+<text x="360.0" y="290.0" text-anchor="middle" font-size="13" fill="#333333">GOAMD64=v3</text>
+<rect x="447.0" y="121.4" width="66.0" height="148.6" fill="#2e8b57"/>
+<text x="480.0" y="115.4" text-anchor="middle" font-size="12" font-weight="bold" fill="#333333">101.3</text>
+<text x="480.0" y="290.0" text-anchor="middle" font-size="13" fill="#333333">GOAMD64=v4</text>
+</svg>
