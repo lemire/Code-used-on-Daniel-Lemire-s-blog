@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
 SP  = os.path.dirname(os.path.abspath(__file__))
-OUT = "/Users/dlemire/CVS/github/Code-used-on-Daniel-Lemire-s-blog/2026/07/25"
+OUT = os.path.dirname(SP)
+RES = os.path.join(OUT, "results", "pass2-1GiB")
 
 # ---- validated palette (dataviz reference instance, light surface) ----
 SURFACE   = "#fcfcfb"
@@ -59,7 +60,7 @@ GROUPS = {
 
 def load_csv(t):
     """pass 2: MLP_CSV=1 -> header row of lane counts, one data row of MiB/s"""
-    p = os.path.join(SP, "results2", t + ".csv")
+    p = os.path.join(RES, t + ".csv")
     if not os.path.exists(p): return None
     rows = [r for r in csv.reader(open(p)) if r]
     if len(rows) < 2: return None
@@ -99,7 +100,9 @@ def declutter(ys, gap):
     return out
 
 def fig_curves():
-    fig, axes = plt.subplots(1, 3, figsize=(12.6, 4.4), sharey=True)
+    # one panel per vendor, stacked vertically, shared y so the three
+    # families are directly comparable; fonts sized for a blog-width image.
+    fig, axes = plt.subplots(3, 1, figsize=(9.0, 12.6), sharey=True)
     for ax, (vendor, members) in zip(axes, GROUPS.items()):
         present = [t for t in members if t in DATA]
         ramp = RAMP5 if len(present) >= 5 else RAMP4
@@ -107,32 +110,32 @@ def fig_curves():
         for i, t in enumerate(present):
             d = DATA[t]
             y = [b/1024.0 for b in d["bw"]]
-            ax.plot(d["lanes"], y, lw=2, color=ramp[i], zorder=3,
+            ax.plot(d["lanes"], y, lw=2.6, color=ramp[i], zorder=3,
                     solid_capstyle="round")
             ends.append((y[-1], SYS[t][1], ramp[i]))
-        lab_y = declutter([e[0] for e in ends], gap=1.35)
+        lab_y = declutter([e[0] for e in ends], gap=2.1)
         for (yv, name, col), ly in zip(ends, lab_y):
-            ax.annotate(name, xy=(101, ly), xytext=(0, 0),
+            ax.annotate(name, xy=(102, ly), xytext=(0, 0),
                         textcoords="offset points", va="center", ha="left",
-                        fontsize=8.5, color=INK2, annotation_clip=False)
-            if abs(ly - yv) > 0.15:   # leader line when the label was moved
-                ax.plot([99.5, 100.5], [yv, ly], lw=0.8, color=AXIS,
+                        fontsize=15, color=INK2, annotation_clip=False)
+            if abs(ly - yv) > 0.2:    # leader line when the label was moved
+                ax.plot([99.5, 101.5], [yv, ly], lw=1.0, color=AXIS,
                         zorder=2, clip_on=False)
-        ax.set_title(vendor, color=INK, fontweight="bold", loc="left", pad=8)
-        ax.set_xlabel("independent memory lanes")
-        ax.set_xlim(0, 99)
+        ax.set_title(vendor, color=INK, fontweight="bold", loc="left",
+                     pad=10, fontsize=21)
+        ax.set_ylabel("bandwidth (GiB/s)", fontsize=17)
+        ax.set_xlim(0, 129)           # right margin holds the chip labels
         ax.set_xticks([1, 25, 50, 75, 99])
+        ax.set_ylim(0, 26)
+        ax.tick_params(labelsize=15)
         ax.grid(axis="both", alpha=0.9)
         ax.set_axisbelow(True)
-    axes[0].set_ylabel("single-core bandwidth (GiB/s)")
-    fig.suptitle("One core, many outstanding loads: bandwidth vs. number of "
-                 "independent pointer-chasing lanes",
-                 x=0.008, ha="left", fontsize=12.5, fontweight="bold", color=INK)
-    fig.text(0.008, 0.005,
+    axes[-1].set_xlabel("independent memory lanes", fontsize=17)
+    fig.text(0.005, 0.004,
              "1 GiB random pointer chase, transparent huge pages, AWS EC2 *.large, us-east-1.",
-             ha="left", fontsize=8.5, color=MUTED)
-    fig.tight_layout(rect=[0, 0.03, 1, 0.93])
-    fig.subplots_adjust(wspace=0.30)
+             ha="left", fontsize=12, color=MUTED)
+    fig.tight_layout(rect=[0, 0.022, 1, 1])
+    fig.subplots_adjust(hspace=0.28)
     fig.savefig(os.path.join(OUT, "mlp-curves.png"), bbox_inches="tight")
     print("wrote mlp-curves.png")
 
