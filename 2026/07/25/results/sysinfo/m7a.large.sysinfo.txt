@@ -1,0 +1,288 @@
++ echo '===== instance-type ====='
+===== instance-type =====
+++ curl -sX PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 300'
++ TOKEN=AQAEALQj-tRkwEQOyhlgZgzE43o9mhFT6023V-ZdVCTnunz3lKfv3Q==
++ curl -s -H 'X-aws-ec2-metadata-token: AQAEALQj-tRkwEQOyhlgZgzE43o9mhFT6023V-ZdVCTnunz3lKfv3Q==' http://169.254.169.254/latest/meta-data/instance-type
+m7a.large+ echo
+
++ echo '===== uname ====='
+===== uname =====
++ uname -a
+Linux ip-172-31-89-207 6.17.0-1019-aws #19~24.04.1-Ubuntu SMP Tue Jun 23 18:53:06 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
++ echo '===== lscpu ====='
+===== lscpu =====
++ lscpu
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           48 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  2
+On-line CPU(s) list:                     0,1
+Vendor ID:                               AuthenticAMD
+BIOS Vendor ID:                          Advanced Micro Devices, Inc.
+Model name:                              AMD EPYC 9R14
+BIOS Model name:                         AMD EPYC 9R14  CPU @ 2.6GHz
+BIOS CPU family:                         107
+CPU family:                              25
+Model:                                   17
+Thread(s) per core:                      1
+Core(s) per socket:                      2
+Socket(s):                               1
+Stepping:                                1
+BogoMIPS:                                5199.99
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf tsc_known_freq pni pclmulqdq monitor ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch topoext perfctr_core ssbd perfmon_v2 ibrs ibpb stibp ibrs_enhanced vmmcall fsgsbase bmi1 avx2 smep bmi2 invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx512_bf16 clzero xsaveerptr rdpru wbnoinvd arat avx512vbmi pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid flush_l1d
+Hypervisor vendor:                       KVM
+Virtualization type:                     full
+L1d cache:                               64 KiB (2 instances)
+L1i cache:                               64 KiB (2 instances)
+L2 cache:                                2 MiB (2 instances)
+L3 cache:                                8 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0,1
+Vulnerability Gather data sampling:      Not affected
+Vulnerability Ghostwrite:                Not affected
+Vulnerability Indirect target selection: Not affected
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Not affected
+Vulnerability Old microcode:             Not affected
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Mitigation; Safe RET
+Vulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; STIBP disabled; PBRSB-eIBRS Not affected; BHI Not affected
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Mitigation; Clear CPU buffers
+Vulnerability Tsx async abort:           Not affected
+Vulnerability Vmscape:                   Not affected
++ echo '===== lscpu-cache ====='
+===== lscpu-cache =====
++ lscpu -C
+NAME ONE-SIZE ALL-SIZE WAYS TYPE        LEVEL  SETS PHY-LINE COHERENCY-SIZE
+L1d       32K      64K    8 Data            1    64        1             64
+L1i       32K      64K    8 Instruction     1    64        1             64
+L2         1M       2M    8 Unified         2  2048        1             64
+L3         8M       8M    4 Unified         3 32768        1             64
++ echo '===== cpuinfo ====='
+===== cpuinfo =====
++ head -40 /proc/cpuinfo
+processor	: 0
+vendor_id	: AuthenticAMD
+cpu family	: 25
+model		: 17
+model name	: AMD EPYC 9R14
+stepping	: 1
+microcode	: 0xa101158
+cpu MHz		: 3700.147
+cache size	: 1024 KB
+physical id	: 0
+siblings	: 2
+core id		: 0
+cpu cores	: 2
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 16
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf tsc_known_freq pni pclmulqdq monitor ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch topoext perfctr_core ssbd perfmon_v2 ibrs ibpb stibp ibrs_enhanced vmmcall fsgsbase bmi1 avx2 smep bmi2 invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx512_bf16 clzero xsaveerptr rdpru wbnoinvd arat avx512vbmi pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid flush_l1d
+bugs		: sysret_ss_attrs spectre_v1 spectre_v2 spec_store_bypass srso ibpb_no_ret spectre_v2_user tsa
+bogomips	: 5199.99
+TLB size	: 3584 4K pages
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 48 bits physical, 48 bits virtual
+power management:
+
+processor	: 1
+vendor_id	: AuthenticAMD
+cpu family	: 25
+model		: 17
+model name	: AMD EPYC 9R14
+stepping	: 1
+microcode	: 0xa101158
+cpu MHz		: 3698.240
+cache size	: 1024 KB
+physical id	: 0
+siblings	: 2
+core id		: 1
++ echo '===== THP ====='
+===== THP =====
++ cat /sys/kernel/mm/transparent_hugepage/enabled
+always [madvise] never
++ echo '===== meminfo ====='
+===== meminfo =====
++ head -5 /proc/meminfo
+MemTotal:        7919604 kB
+MemFree:         6305512 kB
+MemAvailable:    7170428 kB
+Buffers:           40740 kB
+Cached:          1039276 kB
++ echo '===== dmidecode-memory ====='
+===== dmidecode-memory =====
++ dmidecode -t memory
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 2.7 present.
+
+Handle 0x0008, DMI type 16, 23 bytes
+Physical Memory Array
+	Location: System Board Or Motherboard
+	Use: System Memory
+	Error Correction Type: Unknown
+	Maximum Capacity: 8 GB
+	Error Information Handle: Not Provided
+	Number Of Devices: 1
+
+Handle 0x0009, DMI type 17, 34 bytes
+Memory Device
+	Array Handle: 0x0008
+	Error Information Handle: Not Provided
+	Total Width: 80 bits
+	Data Width: 64 bits
+	Size: 8 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: Not Specified
+	Bank Locator: Not Specified
+	Type: DDR5
+	Type Detail: Unknown Fast-paged RAMBus Window DRAM
+	Speed: 4800 MT/s
+	Manufacturer: Not Specified
+	Serial Number: Not Specified
+	Asset Tag: Not Specified
+	Part Number: Not Specified
+	Rank: Unknown
+	Configured Memory Speed: Unknown
+
++ echo '===== dmidecode-processor ====='
+===== dmidecode-processor =====
++ dmidecode -t processor
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 2.7 present.
+
+Handle 0x0004, DMI type 4, 42 bytes
+Processor Information
+	Socket Designation: CPU 0
+	Type: Central Processor
+	Family: Zen
+	Manufacturer: Advanced Micro Devices, Inc.
+	ID: 11 0F A1 00 FF FB 8B 17
+	Signature: Family 25, Model 17, Stepping 1
+	Flags:
+		FPU (Floating-point unit on-chip)
+		VME (Virtual mode extension)
+		DE (Debugging extension)
+		PSE (Page size extension)
+		TSC (Time stamp counter)
+		MSR (Model specific registers)
+		PAE (Physical address extension)
+		MCE (Machine check exception)
+		CX8 (CMPXCHG8 instruction supported)
+		APIC (On-chip APIC hardware supported)
+		SEP (Fast system call)
+		MTRR (Memory type range registers)
+		PGE (Page global enable)
+		MCA (Machine check architecture)
+		CMOV (Conditional move instruction supported)
+		PAT (Page attribute table)
+		PSE-36 (36-bit page size extension)
+		CLFSH (CLFLUSH instruction supported)
+		MMX (MMX technology supported)
+		FXSR (FXSAVE and FXSTOR instructions supported)
+		SSE (Streaming SIMD extensions)
+		SSE2 (Streaming SIMD extensions 2)
+		HTT (Multi-threading)
+	Version: AMD EPYC 9R14
+	Voltage: 0.9 V
+	External Clock: 100 MHz
+	Max Speed: 3700 MHz
+	Current Speed: 2600 MHz
+	Status: Populated, Enabled
+	Upgrade: <OUT OF SPEC>
+	L1 Cache Handle: 0x0005
+	L2 Cache Handle: 0x0006
+	L3 Cache Handle: 0x0007
+	Serial Number: Not Specified
+	Asset Tag: Not Specified
+	Part Number: Not Specified
+	Core Count: 2
+	Core Enabled: 2
+	Thread Count: 2
+	Characteristics:
+		64-bit capable
+		Multi-Core
+		Execute Protection
+
++ echo '===== dmidecode-system ====='
+===== dmidecode-system =====
++ dmidecode -t system
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 2.7 present.
+
+Handle 0x0001, DMI type 1, 27 bytes
+System Information
+	Manufacturer: Amazon EC2
+	Product Name: m7a.large
+	Version: Not Specified
+	Serial Number: ec2ad8f1-7d2e-42ec-e6c3-ea75d1213d18
+	UUID: ec2ad8f1-7d2e-42ec-e6c3-ea75d1213d18
+	Wake-up Type: Power Switch
+	SKU Number: Not Specified
+	Family: Not Specified
+
++ echo '===== dmidecode-bios ====='
+===== dmidecode-bios =====
++ dmidecode -t bios
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 2.7 present.
+
+Handle 0x0000, DMI type 0, 24 bytes
+BIOS Information
+	Vendor: Amazon EC2
+	Version: 1.0
+	Release Date: 10/16/2017
+	Address: 0xF0000
+	Runtime Size: 64 kB
+	ROM Size: 64 kB
+	Characteristics:
+		PCI is supported
+		EDD is supported
+		ACPI is supported
+		Targeted content distribution is supported
+		System is a virtual machine
+	BIOS Revision: 1.0
+
++ echo '===== lshw-memory ====='
+===== lshw-memory =====
++ lshw -short -c memory
+H/W path       Device           Class          Description
+==========================================================
+/0/1                            memory         64KiB BIOS
+/0/4/5                          memory         6MiB L1 cache
+/0/4/6                          memory         96MiB L2 cache
+/0/4/7                          memory         384MiB L3 cache
+/0/8                            memory         8GiB System Memory
+/0/8/0                          memory         8GiB DIMM Fast-paged RAMBUS Window DRAM 4800 MHz (0.2 ns)
++ echo '===== numactl ====='
+===== numactl =====
++ numactl -H
+available: 1 nodes (0)
+node 0 cpus: 0 1
+node 0 size: 7733 MB
+node 0 free: 6180 MB
+node distances:
+node   0 
+  0:  10 
++ echo '===== cpu-freq ====='
+===== cpu-freq =====
++ cat /proc/cpuinfo
++ grep -i mhz
+cpu MHz		: 3698.915
+cpu MHz		: 3697.257

@@ -1,0 +1,294 @@
++ echo '===== instance-type ====='
+===== instance-type =====
+++ curl -sX PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 300'
++ TOKEN=AQAEAGQhBQ70zUDSwJOZWaj5l-QnlmJTs8jenbT4MNMFi8a_Pp8ZeQ==
++ curl -s -H 'X-aws-ec2-metadata-token: AQAEAGQhBQ70zUDSwJOZWaj5l-QnlmJTs8jenbT4MNMFi8a_Pp8ZeQ==' http://169.254.169.254/latest/meta-data/instance-type
+m5.large+ echo
+
++ echo '===== uname ====='
+===== uname =====
++ uname -a
+Linux ip-172-31-92-84 6.17.0-1019-aws #19~24.04.1-Ubuntu SMP Tue Jun 23 18:53:06 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
++ echo '===== lscpu ====='
+===== lscpu =====
++ lscpu
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           46 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  2
+On-line CPU(s) list:                     0,1
+Vendor ID:                               GenuineIntel
+BIOS Vendor ID:                          Intel(R) Corporation
+Model name:                              Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz
+BIOS Model name:                         Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz  CPU @ 2.5GHz
+BIOS CPU family:                         179
+CPU family:                              6
+Model:                                   85
+Thread(s) per core:                      2
+Core(s) per socket:                      1
+Socket(s):                               1
+Stepping:                                7
+BogoMIPS:                                4999.98
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault pti fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid mpx avx512f avx512dq rdseed adx smap clflushopt clwb avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves ida arat pku ospke
+Hypervisor vendor:                       KVM
+Virtualization type:                     full
+L1d cache:                               32 KiB (1 instance)
+L1i cache:                               32 KiB (1 instance)
+L2 cache:                                1 MiB (1 instance)
+L3 cache:                                35.8 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0,1
+Vulnerability Gather data sampling:      Unknown: Dependent on hypervisor status
+Vulnerability Ghostwrite:                Not affected
+Vulnerability Indirect target selection: Mitigation; Aligned branch/return thunks
+Vulnerability Itlb multihit:             KVM: Mitigation: VMX unsupported
+Vulnerability L1tf:                      Mitigation; PTE Inversion
+Vulnerability Mds:                       Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+Vulnerability Meltdown:                  Mitigation; PTI
+Vulnerability Mmio stale data:           Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+Vulnerability Old microcode:             Not affected
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Vulnerable
+Vulnerability Spec rstack overflow:      Not affected
+Vulnerability Spec store bypass:         Vulnerable
+Vulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; Retpolines; STIBP disabled; RSB filling; PBRSB-eIBRS Not affected; BHI Retpoline
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Not affected
+Vulnerability Tsx async abort:           Not affected
+Vulnerability Vmscape:                   Not affected
++ echo '===== lscpu-cache ====='
+===== lscpu-cache =====
++ lscpu -C
+NAME ONE-SIZE ALL-SIZE WAYS TYPE        LEVEL  SETS PHY-LINE COHERENCY-SIZE
+L1d       32K      32K    8 Data            1    64        1             64
+L1i       32K      32K    8 Instruction     1    64        1             64
+L2         1M       1M   16 Unified         2  1024        1             64
+L3      35.8M    35.8M   11 Unified         3 53248        1             64
++ echo '===== cpuinfo ====='
+===== cpuinfo =====
++ head -40 /proc/cpuinfo
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 85
+model name	: Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz
+stepping	: 7
+microcode	: 0x5003901
+cpu MHz		: 3103.678
+cache size	: 36608 KB
+physical id	: 0
+siblings	: 2
+core id		: 0
+cpu cores	: 1
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault pti fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid mpx avx512f avx512dq rdseed adx smap clflushopt clwb avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves ida arat pku ospke
+bugs		: cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs itlb_multihit mmio_stale_data retbleed gds bhi spectre_v2_user its
+bogomips	: 4999.98
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 46 bits physical, 48 bits virtual
+power management:
+
+processor	: 1
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 85
+model name	: Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz
+stepping	: 7
+microcode	: 0x5003901
+cpu MHz		: 3100.812
+cache size	: 36608 KB
+physical id	: 0
+siblings	: 2
+core id		: 0
+cpu cores	: 1
++ echo '===== THP ====='
+===== THP =====
++ cat /sys/kernel/mm/transparent_hugepage/enabled
+always [madvise] never
++ echo '===== meminfo ====='
+===== meminfo =====
++ head -5 /proc/meminfo
+MemTotal:        8005636 kB
+MemFree:         6475484 kB
+MemAvailable:    7339076 kB
+Buffers:           40704 kB
+Cached:          1039080 kB
++ echo '===== dmidecode-memory ====='
+===== dmidecode-memory =====
++ dmidecode -t memory
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 2.7 present.
+
+Handle 0x0008, DMI type 16, 23 bytes
+Physical Memory Array
+	Location: System Board Or Motherboard
+	Use: System Memory
+	Error Correction Type: Unknown
+	Maximum Capacity: 8 GB
+	Error Information Handle: Not Provided
+	Number Of Devices: 1
+
+Handle 0x0009, DMI type 17, 34 bytes
+Memory Device
+	Array Handle: 0x0008
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 8 GB
+	Form Factor: DIMM
+	Set: None
+	Locator: Not Specified
+	Bank Locator: Not Specified
+	Type: DDR4
+	Type Detail: Static Column Pseudo-static Synchronous Window DRAM
+	Speed: 3200 MT/s
+	Manufacturer: Not Specified
+	Serial Number: Not Specified
+	Asset Tag: Not Specified
+	Part Number: Not Specified
+	Rank: Unknown
+	Configured Memory Speed: Unknown
+
++ echo '===== dmidecode-processor ====='
+===== dmidecode-processor =====
++ dmidecode -t processor
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 2.7 present.
+
+Handle 0x0004, DMI type 4, 42 bytes
+Processor Information
+	Socket Designation: CPU 0
+	Type: Central Processor
+	Family: Xeon
+	Manufacturer: Intel(R) Corporation
+	ID: 57 06 05 00 FF FB EB BF
+	Signature: Type 0, Family 6, Model 85, Stepping 7
+	Flags:
+		FPU (Floating-point unit on-chip)
+		VME (Virtual mode extension)
+		DE (Debugging extension)
+		PSE (Page size extension)
+		TSC (Time stamp counter)
+		MSR (Model specific registers)
+		PAE (Physical address extension)
+		MCE (Machine check exception)
+		CX8 (CMPXCHG8 instruction supported)
+		APIC (On-chip APIC hardware supported)
+		SEP (Fast system call)
+		MTRR (Memory type range registers)
+		PGE (Page global enable)
+		MCA (Machine check architecture)
+		CMOV (Conditional move instruction supported)
+		PAT (Page attribute table)
+		PSE-36 (36-bit page size extension)
+		CLFSH (CLFLUSH instruction supported)
+		DS (Debug store)
+		ACPI (ACPI supported)
+		MMX (MMX technology supported)
+		FXSR (FXSAVE and FXSTOR instructions supported)
+		SSE (Streaming SIMD extensions)
+		SSE2 (Streaming SIMD extensions 2)
+		SS (Self-snoop)
+		HTT (Multi-threading)
+		TM (Thermal monitor supported)
+		PBE (Pending break enabled)
+	Version: Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz
+	Voltage: 1.6 V
+	External Clock: 100 MHz
+	Max Speed: 3500 MHz
+	Current Speed: 2500 MHz
+	Status: Populated, Enabled
+	Upgrade: Socket LGA3647-1
+	L1 Cache Handle: 0x0005
+	L2 Cache Handle: 0x0006
+	L3 Cache Handle: 0x0007
+	Serial Number: Not Specified
+	Asset Tag: Not Specified
+	Part Number: Not Specified
+	Core Count: 1
+	Core Enabled: 1
+	Thread Count: 2
+	Characteristics:
+		64-bit capable
+		Multi-Core
+		Hardware Thread
+		Execute Protection
+
++ echo '===== dmidecode-system ====='
+===== dmidecode-system =====
++ dmidecode -t system
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 2.7 present.
+
+Handle 0x0001, DMI type 1, 27 bytes
+System Information
+	Manufacturer: Amazon EC2
+	Product Name: m5.large
+	Version: Not Specified
+	Serial Number: ec2b2d11-9fe1-6eda-cd73-f12bed47e3e5
+	UUID: ec2b2d11-9fe1-6eda-cd73-f12bed47e3e5
+	Wake-up Type: Power Switch
+	SKU Number: Not Specified
+	Family: Not Specified
+
++ echo '===== dmidecode-bios ====='
+===== dmidecode-bios =====
++ dmidecode -t bios
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 2.7 present.
+
+Handle 0x0000, DMI type 0, 24 bytes
+BIOS Information
+	Vendor: Amazon EC2
+	Version: 1.0
+	Release Date: 10/16/2017
+	Address: 0xF0000
+	Runtime Size: 64 kB
+	ROM Size: 64 kB
+	Characteristics:
+		PCI is supported
+		EDD is supported
+		ACPI is supported
+		Targeted content distribution is supported
+		System is a virtual machine
+	BIOS Revision: 1.0
+
++ echo '===== lshw-memory ====='
+===== lshw-memory =====
++ lshw -short -c memory
+H/W path       Device           Class          Description
+==========================================================
+/0/0                            memory         64KiB BIOS
+/0/4/5                          memory         1536KiB L1 cache
+/0/4/6                          memory         24MiB L2 cache
+/0/4/7                          memory         35MiB L3 cache
+/0/8                            memory         8GiB System Memory
+/0/8/0                          memory         8GiB DIMM DDR4 Static column Pseudo-static Synchronous Window DRAM 3200 MHz (0.3 ns)
++ echo '===== numactl ====='
+===== numactl =====
++ numactl -H
+available: 1 nodes (0)
+node 0 cpus: 0 1
+node 0 size: 7818 MB
+node 0 free: 6338 MB
+node distances:
+node   0 
+  0:  10 
++ echo '===== cpu-freq ====='
+===== cpu-freq =====
++ cat /proc/cpuinfo
++ grep -i mhz
+cpu MHz		: 3097.618
+cpu MHz		: 3098.702
