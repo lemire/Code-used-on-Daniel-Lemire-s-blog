@@ -1,0 +1,198 @@
++ echo '===== instance-type ====='
+===== instance-type =====
+++ curl -sX PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 300'
++ TOKEN=AQAEAAOvZX9YSuZ6Gzpy-YzdxqmbCXKrUprP6B4Ug9oJ8a4ppuL-4Q==
++ curl -s -H 'X-aws-ec2-metadata-token: AQAEAAOvZX9YSuZ6Gzpy-YzdxqmbCXKrUprP6B4Ug9oJ8a4ppuL-4Q==' http://169.254.169.254/latest/meta-data/instance-type
+m6g.large+ echo
+
++ echo '===== uname ====='
+===== uname =====
++ uname -a
+Linux ip-172-31-92-220 6.17.0-1019-aws #19~24.04.1-Ubuntu SMP Tue Jun 23 18:34:05 UTC 2026 aarch64 aarch64 aarch64 GNU/Linux
++ echo '===== lscpu ====='
+===== lscpu =====
++ lscpu
+Architecture:                            aarch64
+CPU op-mode(s):                          32-bit, 64-bit
+Byte Order:                              Little Endian
+CPU(s):                                  2
+On-line CPU(s) list:                     0,1
+Vendor ID:                               ARM
+BIOS Vendor ID:                          AWS
+Model name:                              Neoverse-N1
+BIOS Model name:                         AWS Graviton2 AWS Graviton2 CPU @ 2.5GHz
+BIOS CPU family:                         257
+Model:                                   1
+Thread(s) per core:                      1
+Core(s) per socket:                      2
+Socket(s):                               1
+Stepping:                                r3p1
+BogoMIPS:                                243.75
+Flags:                                   fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+L1d cache:                               128 KiB (2 instances)
+L1i cache:                               128 KiB (2 instances)
+L2 cache:                                2 MiB (2 instances)
+L3 cache:                                32 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0,1
+Vulnerability Gather data sampling:      Not affected
+Vulnerability Ghostwrite:                Not affected
+Vulnerability Indirect target selection: Not affected
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Not affected
+Vulnerability Old microcode:             Not affected
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Not affected
+Vulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:                Mitigation; __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; CSV2, BHB
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Not affected
+Vulnerability Tsx async abort:           Not affected
+Vulnerability Vmscape:                   Not affected
++ echo '===== lscpu-cache ====='
+===== lscpu-cache =====
++ lscpu -C
+NAME ONE-SIZE ALL-SIZE WAYS TYPE        LEVEL  SETS PHY-LINE COHERENCY-SIZE
+L1d       64K     128K    4 Data            1   256                      64
+L1i       64K     128K    4 Instruction     1   256                      64
+L2         1M       2M    8 Unified         2  2048                      64
+L3        32M      32M   16 Unified         3 32768                      64
++ echo '===== cpuinfo ====='
+===== cpuinfo =====
++ head -40 /proc/cpuinfo
+processor	: 0
+BogoMIPS	: 243.75
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x3
+CPU part	: 0xd0c
+CPU revision	: 1
+
+processor	: 1
+BogoMIPS	: 243.75
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm lrcpc dcpop asimddp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x3
+CPU part	: 0xd0c
+CPU revision	: 1
+
++ echo '===== THP ====='
+===== THP =====
++ cat /sys/kernel/mm/transparent_hugepage/enabled
+always [madvise] never
++ echo '===== meminfo ====='
+===== meminfo =====
++ head -5 /proc/meminfo
+MemTotal:        7911588 kB
+MemFree:         6361804 kB
+MemAvailable:    7321824 kB
+Buffers:           40592 kB
+Cached:          1044776 kB
++ echo '===== dmidecode-memory ====='
+===== dmidecode-memory =====
++ dmidecode -t memory
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 3.0.0 present.
+
++ echo '===== dmidecode-processor ====='
+===== dmidecode-processor =====
++ dmidecode -t processor
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 3.0.0 present.
+
+Handle 0x0004, DMI type 4, 42 bytes
+Processor Information
+	Socket Designation: CPU0
+	Type: Central Processor
+	Family: ARMv8
+	Manufacturer: AWS
+	ID: C1 D0 3F 41 00 00 00 00
+	Signature: Implementor 0x41, Variant 0x3, Architecture 15, Part 0xd0c, Revision 1
+	Version: AWS Graviton2
+	Voltage: Unknown
+	External Clock: Unknown
+	Max Speed: 2500 MHz
+	Current Speed: 2500 MHz
+	Status: Populated, Enabled
+	Upgrade: None
+	L1 Cache Handle: Not Provided
+	L2 Cache Handle: Not Provided
+	L3 Cache Handle: Not Provided
+	Serial Number: AWS Graviton2
+	Asset Tag: AWS Graviton2
+	Part Number: AWS Graviton2
+	Core Count: 2
+	Core Enabled: 2
+	Thread Count: 2
+	Characteristics: None
+
++ echo '===== dmidecode-system ====='
+===== dmidecode-system =====
++ dmidecode -t system
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 3.0.0 present.
+
+Handle 0x0001, DMI type 1, 27 bytes
+System Information
+	Manufacturer: Amazon EC2
+	Product Name: m6g.large
+	Version: Not Specified
+	Serial Number: ec2c1eee-fe38-e8f1-42a3-c2990d85e71a
+	UUID: ec2c1eee-fe38-e8f1-42a3-c2990d85e71a
+	Wake-up Type: Power Switch
+	SKU Number: Not Specified
+	Family: Not Specified
+
++ echo '===== dmidecode-bios ====='
+===== dmidecode-bios =====
++ dmidecode -t bios
+# dmidecode 3.5
+Getting SMBIOS data from sysfs.
+SMBIOS 3.0.0 present.
+
+Handle 0x0000, DMI type 0, 24 bytes
+BIOS Information
+	Vendor: Amazon EC2
+	Version: 1.0
+	Release Date: 11/1/2018
+	Address: 0xF0000
+	Runtime Size: 64 kB
+	ROM Size: 64 kB
+	Characteristics:
+		PCI is supported
+		EDD is supported
+		ACPI is supported
+		System is a virtual machine
+	BIOS Revision: 1.0
+
++ echo '===== lshw-memory ====='
+===== lshw-memory =====
++ lshw -short -c memory
+H/W path       Device           Class          Description
+==========================================================
+/0/0                            memory         64KiB BIOS
+/0/1                            memory         8064MiB System memory
++ echo '===== numactl ====='
+===== numactl =====
++ numactl -H
+available: 1 nodes (0)
+node 0 cpus: 0 1
+node 0 size: 7726 MB
+node 0 free: 6246 MB
+node distances:
+node   0 
+  0:  10 
++ echo '===== cpu-freq ====='
+===== cpu-freq =====
++ cat /proc/cpuinfo
++ grep -i mhz
