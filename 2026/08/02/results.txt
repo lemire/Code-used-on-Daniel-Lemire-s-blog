@@ -1,0 +1,195 @@
+element type: 8 bytes
+hive block capacity: 38 .. 255 elements
+performance counters: yes
+
+===== 100000 elements (800000 bytes of payload) =====
+
+-- appending 100000 elements to an empty container --
+std::vector push_back                        :     4.706 ns/elem   0.212 Gelem/s   1.36 GHz      6.49 c      8.09 i   1.25 i/c 
+std::vector push_back (reserve)              :     0.288 ns/elem   3.473 Gelem/s   3.47 GHz      1.01 c      8.01 i   7.94 i/c 
+std::hive insert                             :     1.262 ns/elem   0.792 Gelem/s   3.49 GHz      4.41 c     13.95 i   3.16 i/c 
+std::hive insert (reserve)                   :     1.331 ns/elem   0.751 Gelem/s   3.44 GHz      4.65 c     14.69 i   3.16 i/c 
+std::list push_back                          :    13.656 ns/elem   0.073 Gelem/s   3.43 GHz     47.63 c    219.62 i   4.61 i/c 
+
+-- summing all the values --
+std::vector sum                              :     0.080 ns/elem  12.573 Gelem/s   3.22 GHz      0.26 c      1.00 i   3.82 i/c 
+std::hive sum                                :     1.758 ns/elem   0.569 Gelem/s   3.49 GHz      6.14 c      9.04 i   1.47 i/c 
+std::list sum                                :     1.479 ns/elem   0.676 Gelem/s   3.44 GHz      5.17 c      4.00 i   0.77 i/c 
+
+-- same sum, but two interleaved traversals --
+std::vector sum x2                           :     0.066 ns/elem  15.144 Gelem/s   3.21 GHz      0.22 c      0.75 i   3.45 i/c 
+std::hive sum x2                             :     0.881 ns/elem   1.135 Gelem/s   3.45 GHz      3.08 c      8.54 i   2.77 i/c 
+std::list sum x2                             :     0.822 ns/elem   1.216 Gelem/s   3.49 GHz      2.88 c      3.50 i   1.22 i/c 
+
+-- erasing half the elements (scattered) --
+std::vector build+erase                      :     5.562 ns/elem  (build    4.706 + erase    0.856)
+std::hive build+erase                        :     3.468 ns/elem  (build    1.262 + erase    2.206)
+std::list build+erase                        :    51.075 ns/elem  (build   13.656 + erase   37.418)
+
+-- summing the values after half were erased --
+std::vector sum (aged)                       :     0.106 ns/elem   9.429 Gelem/s   3.26 GHz      0.35 c      1.00 i   2.86 i/c 
+std::hive sum (aged)                         :     1.683 ns/elem   0.594 Gelem/s   3.49 GHz      5.88 c      9.08 i   1.54 i/c 
+std::list sum (aged)                         :     3.545 ns/elem   0.282 Gelem/s   3.45 GHz     12.39 c      4.00 i   0.32 i/c 
+
+-- heap held, bytes per live element --
+std::vector                                  :     10.49
+std::hive                                    :      9.35
+std::list                                    :     32.06
+std::vector (aged)                           :     20.97
+std::hive (aged)                             :     18.67
+std::list (aged)                             :     32.06
+
+===== 1000000 elements (8000000 bytes of payload) =====
+
+-- appending 1000000 elements to an empty container --
+std::vector push_back                        :     0.811 ns/elem   1.233 Gelem/s   3.39 GHz      2.83 c      8.01 i   2.83 i/c 
+std::vector push_back (reserve)              :     0.292 ns/elem   3.427 Gelem/s   3.44 GHz      1.02 c      8.00 i   7.85 i/c 
+std::hive insert                             :     1.568 ns/elem   0.638 Gelem/s   3.48 GHz      5.46 c     16.24 i   2.97 i/c 
+std::hive insert (reserve)                   :     1.755 ns/elem   0.570 Gelem/s   3.44 GHz      6.11 c     16.95 i   2.77 i/c 
+std::list push_back                          :    14.224 ns/elem   0.070 Gelem/s   3.48 GHz     49.13 c    219.62 i   4.47 i/c 
+
+-- summing all the values --
+std::vector sum                              :     0.224 ns/elem   4.461 Gelem/s   3.45 GHz      0.78 c      1.00 i   1.28 i/c 
+std::hive sum                                :     1.772 ns/elem   0.564 Gelem/s   3.46 GHz      6.18 c      9.04 i   1.46 i/c 
+std::list sum                                :     1.512 ns/elem   0.661 Gelem/s   3.43 GHz      5.27 c      4.00 i   0.76 i/c 
+
+-- same sum, but two interleaved traversals --
+std::vector sum x2                           :     0.225 ns/elem   4.444 Gelem/s   3.45 GHz      0.79 c      0.75 i   0.95 i/c 
+std::hive sum x2                             :     0.888 ns/elem   1.126 Gelem/s   3.40 GHz      3.10 c      8.54 i   2.75 i/c 
+std::list sum x2                             :     0.864 ns/elem   1.158 Gelem/s   3.41 GHz      3.02 c      3.50 i   1.16 i/c 
+
+-- erasing half the elements (scattered) --
+std::vector build+erase                      :     3.850 ns/elem  (build    0.811 + erase    3.038)
+std::hive build+erase                        :     3.698 ns/elem  (build    1.568 + erase    2.130)
+std::list build+erase                        :    91.582 ns/elem  (build   14.224 + erase   77.358)
+
+-- summing the values after half were erased --
+std::vector sum (aged)                       :     0.221 ns/elem   4.521 Gelem/s   3.43 GHz      0.77 c      1.00 i   1.29 i/c 
+std::hive sum (aged)                         :     1.706 ns/elem   0.586 Gelem/s   3.48 GHz      5.96 c      9.07 i   1.52 i/c 
+std::list sum (aged)                         :     3.225 ns/elem   0.310 Gelem/s   3.44 GHz     11.25 c      4.00 i   0.36 i/c 
+
+-- heap held, bytes per live element --
+std::vector                                  :      8.39
+std::hive                                    :      9.35
+std::list                                    :     32.00
+std::vector (aged)                           :     16.78
+std::hive (aged)                             :     18.70
+std::list (aged)                             :     32.00
+
+===== 10000000 elements (80000000 bytes of payload) =====
+
+-- appending 10000000 elements to an empty container --
+std::vector push_back                        :     3.139 ns/elem   0.319 Gelem/s   1.93 GHz      6.08 c      8.98 i   1.48 i/c 
+std::vector push_back (reserve)              :     0.793 ns/elem   1.261 Gelem/s   1.39 GHz      1.13 c      8.00 i   7.10 i/c 
+std::hive insert                             :     2.533 ns/elem   0.395 Gelem/s   3.46 GHz      8.83 c     16.30 i   1.85 i/c 
+std::hive insert (reserve)                   :     2.434 ns/elem   0.411 Gelem/s   3.42 GHz      8.47 c     17.02 i   2.01 i/c 
+std::list push_back                          :    14.385 ns/elem   0.070 Gelem/s   3.48 GHz     50.05 c    219.63 i   4.39 i/c 
+
+-- summing all the values --
+std::vector sum                              :     0.315 ns/elem   3.179 Gelem/s   3.43 GHz      1.10 c      1.00 i   0.91 i/c 
+std::hive sum                                :     1.960 ns/elem   0.510 Gelem/s   3.48 GHz      6.84 c      9.04 i   1.32 i/c 
+std::list sum                                :     3.510 ns/elem   0.285 Gelem/s   3.44 GHz     12.23 c      4.00 i   0.33 i/c 
+
+-- same sum, but two interleaved traversals --
+std::vector sum x2                           :     0.288 ns/elem   3.467 Gelem/s   3.46 GHz      1.01 c      0.75 i   0.75 i/c 
+std::hive sum x2                             :     1.202 ns/elem   0.832 Gelem/s   3.42 GHz      4.19 c      8.54 i   2.04 i/c 
+std::list sum x2                             :     2.138 ns/elem   0.468 Gelem/s   3.45 GHz      7.45 c      3.50 i   0.47 i/c 
+
+-- erasing half the elements (scattered) --
+std::vector build+erase                      :     4.409 ns/elem  (build    3.139 + erase    1.270)
+std::hive build+erase                        :     5.021 ns/elem  (build    2.533 + erase    2.488)
+std::list build+erase                        :   278.220 ns/elem  (build   14.385 + erase  263.835)
+
+-- summing the values after half were erased --
+std::vector sum (aged)                       :     0.239 ns/elem   4.192 Gelem/s   3.42 GHz      0.83 c      1.00 i   1.20 i/c 
+std::hive sum (aged)                         :     2.276 ns/elem   0.439 Gelem/s   3.42 GHz      7.93 c      9.07 i   1.14 i/c 
+std::list sum (aged)                         :     8.492 ns/elem   0.118 Gelem/s   3.46 GHz     29.60 c      4.00 i   0.14 i/c 
+
+-- heap held, bytes per live element --
+std::vector                                  :     13.42
+std::hive                                    :      9.35
+std::list                                    :     32.06
+std::vector (aged)                           :     26.84
+std::hive (aged)                             :     18.70
+std::list (aged)                             :     32.06
+
+===== APPENDIX A: effect of the hive block-capacity limit (1,000,000 elements, sum) =====
+
+hive sum, max block   16 :    0.806 ns/elem    2.81 c    9.56 i
+hive sum, max block   32 :    1.010 ns/elem    3.52 c    9.28 i
+hive sum, max block   64 :    1.270 ns/elem    4.43 c    9.14 i
+hive sum, max block  128 :    1.498 ns/elem    5.23 c    9.07 i
+hive sum, max block  255 :    1.767 ns/elem    6.16 c    9.04 i
+
+===== APPENDIX B: std::vector push_back with glibc mmap trimming disabled (100,000 elements) =====
+
+
+-- appending 100000 elements to an empty container --
+std::vector push_back                        :     0.568 ns/elem   1.761 Gelem/s   3.47 GHz      1.99 c      8.08 i   4.06 i/c 
+std::vector push_back (reserve)              :     0.288 ns/elem   3.471 Gelem/s   3.45 GHz      1.01 c      8.01 i   7.94 i/c 
+std::hive insert                             :     1.242 ns/elem   0.805 Gelem/s   3.49 GHz      4.34 c     13.95 i   3.22 i/c 
+std::hive insert (reserve)                   :     1.334 ns/elem   0.750 Gelem/s   3.49 GHz      4.66 c     14.69 i   3.15 i/c 
+std::list push_back                          :    13.743 ns/elem   0.073 Gelem/s   3.43 GHz     47.94 c    219.62 i   4.58 i/c 
+
+===== APPENDIX C: same benchmark built without -march=native (1,000,000 elements) =====
+
+element type: 8 bytes
+hive block capacity: 38 .. 255 elements
+performance counters: yes
+
+===== 1000000 elements (8000000 bytes of payload) =====
+
+-- appending 1000000 elements to an empty container --
+std::vector push_back                        :     3.044 ns/elem   0.328 Gelem/s   1.47 GHz      4.48 c      8.01 i   1.79 i/c 
+std::vector push_back (reserve)              :     0.291 ns/elem   3.438 Gelem/s   3.46 GHz      1.02 c      8.00 i   7.87 i/c 
+std::hive insert                             :     1.230 ns/elem   0.813 Gelem/s   3.43 GHz      4.29 c     13.24 i   3.09 i/c 
+std::hive insert (reserve)                   :     1.285 ns/elem   0.778 Gelem/s   3.43 GHz      4.48 c     13.48 i   3.01 i/c 
+std::list push_back                          :    13.860 ns/elem   0.072 Gelem/s   3.48 GHz     48.30 c    219.62 i   4.55 i/c 
+
+-- summing all the values --
+std::vector sum                              :     0.214 ns/elem   4.671 Gelem/s   3.45 GHz      0.75 c      2.50 i   3.34 i/c 
+std::hive sum                                :     1.764 ns/elem   0.567 Gelem/s   3.44 GHz      6.16 c      9.04 i   1.47 i/c 
+std::list sum                                :     1.504 ns/elem   0.665 Gelem/s   3.48 GHz      5.25 c      4.00 i   0.76 i/c 
+
+-- same sum, but two interleaved traversals --
+std::vector sum x2                           :     0.221 ns/elem   4.524 Gelem/s   3.45 GHz      0.77 c      2.00 i   2.59 i/c 
+std::hive sum x2                             :     0.888 ns/elem   1.127 Gelem/s   3.48 GHz      3.09 c      8.54 i   2.76 i/c 
+std::list sum x2                             :     0.858 ns/elem   1.165 Gelem/s   3.48 GHz      3.00 c      3.50 i   1.17 i/c 
+
+-- erasing half the elements (scattered) --
+std::vector build+erase                      :     3.878 ns/elem  (build    3.044 + erase    0.833)
+std::hive build+erase                        :     3.829 ns/elem  (build    1.230 + erase    2.600)
+std::list build+erase                        :    91.384 ns/elem  (build   13.860 + erase   77.524)
+
+-- summing the values after half were erased --
+std::vector sum (aged)                       :     0.211 ns/elem   4.731 Gelem/s   3.49 GHz      0.74 c      2.50 i   3.38 i/c 
+std::hive sum (aged)                         :     1.706 ns/elem   0.586 Gelem/s   3.48 GHz      5.96 c      9.07 i   1.52 i/c 
+std::list sum (aged)                         :     3.491 ns/elem   0.286 Gelem/s   3.44 GHz     12.18 c      4.00 i   0.33 i/c 
+
+-- heap held, bytes per live element --
+std::vector                                  :      8.39
+std::hive                                    :      9.35
+std::list                                    :     32.00
+std::vector (aged)                           :     16.78
+std::hive (aged)                             :     18.70
+std::list (aged)                             :     32.00
+
+===== APPENDIX D: std::vector capacity growth and shrink_to_fit =====
+
+libstdc++ doubles capacity from 1, so capacity == 2^ceil(log2(N)) and
+capacity/N wanders in [1,2). Heap bytes per live element:
+
+         N     capacity    cap/N     B/elem B/elem fit
+    100000       131072    1.311      10.55       8.05
+   1000000      1048576    1.049       8.39       8.00
+   1048576      1048576    1.000       8.00       8.00
+   1048577      2097152    2.000      16.00       8.00
+  10000000     16777216    1.678      13.42       8.00
+  16777216     16777216    1.000       8.00       8.00
+  16777217     33554432    2.000      16.00       8.00
+
+At 1,000,000 elements, all three containers:
+
+vector : built 8.39  shrunk 8.01  (capacity 1048576 -> 1000000)
+hive   : built 9.35  shrunk 9.35  (capacity 1000159 -> 1000000)
+list   : built 32.00  shrunk n/a (no shrink_to_fit)
