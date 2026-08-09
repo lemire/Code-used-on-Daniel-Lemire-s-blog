@@ -1,0 +1,4 @@
+# build artifacts
+*.class
+obj/
+bin/
