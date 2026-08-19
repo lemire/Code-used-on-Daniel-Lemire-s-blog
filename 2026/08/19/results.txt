@@ -1,0 +1,12 @@
+Machine: INTEL(R) XEON(R) GOLD 6548N, Rocky Linux 10.2
+.NET 10.0.11 X64
+Avx512BW.VL: True  AvxVnni: True  Bmi2: True
+Ipv4Parser.IsSupported: True
+
+Random dotted-quads: 10000, AVX-512 fast-path hits: 10000
+All correctness tests passed.
+
+Benchmark: 10000 random IPv4 strings, 2000 rounds (20,000,000 parses)
+  IPAddress.TryParse :    45.34 ns/op      22.1 M/s
+  Ipv4Parser.TryParse:    14.06 ns/op      71.1 M/s
+  speedup            :     3.23x
