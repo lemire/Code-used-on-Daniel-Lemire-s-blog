@@ -2,33 +2,56 @@ Machine: INTEL(R) XEON(R) GOLD 6548N, Rocky Linux 10.2, pinned to one core
 .NET 10.0.11 X64 Rocky Linux 10.2 (Red Quartz)
 Avx512BW.VL: True  AvxVnni: True  Bmi2: True
 Avx512Vbmi.VL: True  Avx512Vbmi2.VL: True
-Ipv4Parser.IsSupported: True  IsSupportedNoTable: True  IsSupportedNoTable2: True
+Ipv4Parser.IsSupported: True  IsSupportedNoTable: True  IsSupportedNoTable2: True  IsSupportedNoTable3: True
 
+Differential fuzz: 3,000,000 random strings, 0 failure(s)
 Random dotted-quads: 10000, AVX-512 fast-path hits: 10000
 All correctness tests passed.
 
 Benchmark: 10000 random IPv4 strings, 2000 rounds (20,000,000 parses)
-  IPAddress.TryParse        :    44.03 ns/op      22.7 M/s
-  Ipv4Parser.TryParse       :    11.79 ns/op      84.8 M/s    3.73x vs BCL
-  Ipv4Parser.TryParseNoTable:    13.12 ns/op      76.2 M/s    3.36x vs BCL
-  Ipv4Parser.TryParseNoTbl2 :    12.97 ns/op      77.1 M/s    3.39x vs BCL
+  IPAddress.TryParse        :    46.23 ns/op      21.6 M/s
+  Ipv4Parser.TryParse       :    16.52 ns/op      60.5 M/s    2.80x vs BCL
+  Ipv4Parser.TryParseNoTable:    16.34 ns/op      61.2 M/s    2.83x vs BCL
+  Ipv4Parser.TryParseNoTbl2 :    16.34 ns/op      61.2 M/s    2.83x vs BCL
+  Ipv4Parser.TryParseNoTbl3 :    16.62 ns/op      60.2 M/s    2.78x vs BCL
+  Ipv4Parser.TryParseNoTbl4 :    16.42 ns/op      60.9 M/s    2.82x vs BCL
 
 Kernel only (uint out, no allocation), 10000 strings, 2000 rounds, 7 passes
   TryParseAvx512       : min   6.24  med   6.25 ns/op     160.2 M/s
-  TryParseAvx512NoTable: min   8.29  med   8.30 ns/op     120.6 M/s
-  ...NoTable2 (vpshufb): min   8.19  med   8.20 ns/op     122.1 M/s
-  no-table  vs table   :     0.75x (min)
-  no-table2 vs table   :     0.76x (min)
+  ...Avx512Sat (table)  : min   6.00  med   6.00 ns/op     166.8 M/s
+  TryParseAvx512NoTable: min   8.22  med   8.23 ns/op     121.6 M/s
+  ...NoTable2 (vpshufb): min   8.13  med   8.14 ns/op     123.0 M/s
+  ...NoTable3 (mask dom): min   7.30  med   7.30 ns/op     137.0 M/s
+  ...NoTable4 (+saturate): min   7.01  med   7.02 ns/op     142.7 M/s
+  no-table  vs table   :     0.76x (min)
+  no-table2 vs table   :     0.77x (min)
+  no-table3 vs table   :     0.86x (min)
+  no-table4 vs table   :     0.89x (min)
+  no-table4 vs table-sat:    0.86x (min)  <- like for like
+
+The wrapper benchmark (TryParse -> IPAddress) is dominated by the allocation and
+does not separate the kernels; the "kernel only" numbers are the meaningful
+comparison and are stable to ~0.02 ns across runs.
+
+Variants, all producing identical results (checked against the table path and
+IPAddress.TryParse over the 81 layouts, the malformed set, 10k random quads and
+3,000,000 random strings from a dot/digit/junk alphabet):
+
+  TryParseAvx512        6.24  perfect hash of the delimiter pattern -> 5 KB shuffle table
+  TryParseAvx512Sat     6.00  same, saturating narrow instead of a separate ASCII check
+  ...NoTable            8.22  table-free: vpcompressb of [0..15] by the marker mask, vpermb
+  ...NoTable2           8.13  + '.'-filled tail (marker mask stays in k), vpshufb for vpermb
+  ...NoTable3           7.30  + all validation in the mask domain, one ptest at the end
+  ...NoTable4           7.01  + saturating narrow (a non-ASCII char becomes junk, so the
+                              hole check catches it and the ASCII compare disappears)
+
+The mask-domain rewrite is the big win on the table-free path: no popcnt, no
+k->GPR crossing per check, and the JIT fuses the mask combining into vpternlogd.
+It closes about half the gap, but vpcompressb plus the index chain still costs
+more than imul/shr and an L1 hit, so the table stays ~15% ahead.
 
 The same comparison in C++ (github.com/lemire/simdip, ./build/benchmark, one core):
 
   AVX-512, table         :  3.33 ns   11.63 cycles   50 instructions
   AVX-512, table-free    :  5.15 ns   18.00 cycles   72 instructions
   AVX-512, table-free v2 :  4.84 ns   16.93 cycles   71 instructions
-
-The table-free path computes digit placement from the delimiter positions
-(vpcompressb of [0..15] by the marker mask) instead of loading a precomputed
-shuffle. It is correct -- both fast paths accept exactly the same strings with
-the same value -- but on Golden Cove it loses ~6 cycles: vpcompressb is a
-multi-uop, ~6-cycle instruction at the head of a five-op index chain, whereas
-the table lookup is a fully pipelined L1 hit behind imul/shr.

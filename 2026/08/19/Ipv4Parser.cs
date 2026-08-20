@@ -31,6 +31,12 @@ public static class Ipv4Parser
     private static readonly Vector128<byte> RepeatOctet = Vector128.Create((byte)0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3);
     // Per-octet byte offsets from the marker that terminates the octet.
     private static readonly Vector128<sbyte> OctetOffsets = Vector128.Create((sbyte)-4, -3, -2, -1, -4, -3, -2, -1, -4, -3, -2, -1, -4, -3, -2, -1);
+    // Mask-domain constants: a mask is one all-ones byte per lane.
+    private static readonly Vector128<byte> Lane0 = Vector128.Create((byte)0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    private static readonly Vector128<byte> Lane3 = Vector128.Create((byte)0, 0, 0, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    private static readonly Vector128<byte> Lanes0To3 = Vector128.Create((byte)0xFF, 0xFF, 0xFF, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    // Minimum marker gap per octet: the first is digits only, the rest include the preceding dot.
+    private static readonly Vector128<byte> GapMin = Vector128.Create((byte)1, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     static Ipv4Parser()
     {
@@ -175,6 +181,46 @@ public static class Ipv4Parser
         Vector128<byte> packed = Ssse3.Shuffle(res.AsByte(), PackShuffle);
         ip = packed.AsUInt32().ToScalar();
         return true;
+    }
+
+    /// <summary>
+    /// The table-based kernel with the saturating front end, so that the
+    /// table-free variants are compared against the table's best form too. A
+    /// non-ASCII char saturates to 0xFF, which is neither a digit nor a dot, so
+    /// the existing hole check rejects it and the separate 256-bit ASCII
+    /// compare goes away.
+    /// </summary>
+    public static unsafe bool TryParseAvx512Sat(ReadOnlySpan<char> s, out uint ip)
+    {
+        ip = 0;
+        int len = s.Length;
+        if ((uint)len > 15u || len == 0)
+        {
+            return false;
+        }
+
+        fixed (char* cp = s)
+        {
+            Vector256<ushort> charMask = Vector256.LessThan(CharLaneIndex, Vector256.Create((ushort)len));
+            Vector256<ushort> chars = Avx512BW.VL.MaskLoad((ushort*)cp, charMask, Vector256.Create((ushort)'0'));
+            Vector128<byte> str = Avx512BW.VL.ConvertToVector128ByteWithSaturation(chars);
+            return TryParseAvx512Loaded(str, (uint)len, out ip);
+        }
+    }
+
+    public static bool TryParseSat(string? s, [NotNullWhen(true)] out IPAddress? address)
+    {
+        if (s is null)
+        {
+            address = null;
+            return false;
+        }
+        if (IsSupported && TryParseAvx512Sat(s.AsSpan(), out uint ip))
+        {
+            address = new IPAddress(ip);
+            return true;
+        }
+        return IPAddress.TryParse(s, out address);
     }
 
     /// <summary>
@@ -400,6 +446,161 @@ public static class Ipv4Parser
         error |= over;
 
         if (error != 0)
+        {
+            return false;
+        }
+
+        Vector128<byte> packed = Ssse3.Shuffle(res.AsByte(), PackShuffle);
+        ip = packed.AsUInt32().ToScalar();
+        return true;
+    }
+
+    /// <summary>
+    /// Table-free, third cut: every check stays in the mask domain and the
+    /// result crosses to a general register exactly once, as a ptest. Needs
+    /// VBMI2 for vpcompressb.
+    /// </summary>
+    public static bool IsSupportedNoTable3 =>
+        Avx512Vbmi2.VL.IsSupported && Avx512BW.VL.IsSupported && Sse41.IsSupported;
+
+    public static bool TryParseNoTable3(string? s, [NotNullWhen(true)] out IPAddress? address)
+    {
+        if (s is null)
+        {
+            address = null;
+            return false;
+        }
+        return TryParseNoTable3(s.AsSpan(), out address);
+    }
+
+    public static bool TryParseNoTable3(ReadOnlySpan<char> s, [NotNullWhen(true)] out IPAddress? address)
+    {
+        if (IsSupportedNoTable3 && TryParseAvx512NoTable3(s, out uint ip))
+        {
+            address = new IPAddress(ip);
+            return true;
+        }
+        return IPAddress.TryParse(s, out address);
+    }
+
+    public static bool TryParseNoTable4(string? s, [NotNullWhen(true)] out IPAddress? address)
+    {
+        if (s is null)
+        {
+            address = null;
+            return false;
+        }
+        return TryParseNoTable4(s.AsSpan(), out address);
+    }
+
+    public static bool TryParseNoTable4(ReadOnlySpan<char> s, [NotNullWhen(true)] out IPAddress? address)
+    {
+        if (IsSupportedNoTable3 && TryParseAvx512NoTable4(s, out uint ip))
+        {
+            address = new IPAddress(ip);
+            return true;
+        }
+        return IPAddress.TryParse(s, out address);
+    }
+
+    /// <summary>
+    /// Mask-domain validation, with the same UTF-16 front end as the earlier
+    /// variants (truncating narrow plus an explicit non-ASCII check).
+    /// </summary>
+    public static unsafe bool TryParseAvx512NoTable3(ReadOnlySpan<char> s, out uint ip)
+    {
+        ip = 0;
+        int len = s.Length;
+        if ((uint)len > 15u || len == 0)
+        {
+            return false;
+        }
+
+        fixed (char* cp = s)
+        {
+            Vector256<ushort> charMask = Vector256.LessThan(CharLaneIndex, Vector256.Create((ushort)len));
+            Vector256<ushort> chars = Avx512BW.VL.MaskLoad((ushort*)cp, charMask, Vector256.Create((ushort)'.'));
+            if (Avx512BW.VL.CompareGreaterThan(chars, Vector256.Create((ushort)0x7F)).ExtractMostSignificantBits() != 0)
+            {
+                return false;
+            }
+
+            Vector128<byte> v = Avx512BW.VL.ConvertToVector128Byte(chars);
+            return TryParseAvx512NoTable3Loaded(v, (uint)len, out ip);
+        }
+    }
+
+    /// <summary>
+    /// Same kernel, but the narrow saturates instead of truncating, so a
+    /// non-ASCII char lands as a byte that is neither a digit nor a dot and the
+    /// junk check catches it. That drops the separate 256-bit compare, its
+    /// movemask and its branch from the front end.
+    /// </summary>
+    public static unsafe bool TryParseAvx512NoTable4(ReadOnlySpan<char> s, out uint ip)
+    {
+        ip = 0;
+        int len = s.Length;
+        if ((uint)len > 15u || len == 0)
+        {
+            return false;
+        }
+
+        fixed (char* cp = s)
+        {
+            Vector256<ushort> charMask = Vector256.LessThan(CharLaneIndex, Vector256.Create((ushort)len));
+            Vector256<ushort> chars = Avx512BW.VL.MaskLoad((ushort*)cp, charMask, Vector256.Create((ushort)'.'));
+            Vector128<byte> v = Avx512BW.VL.ConvertToVector128ByteWithSaturation(chars);
+            return TryParseAvx512NoTable3Loaded(v, (uint)len, out ip);
+        }
+    }
+
+    private static bool TryParseAvx512NoTable3Loaded(Vector128<byte> v, uint len, out uint ip)
+    {
+        ip = 0;
+        Vector128<byte> dotV = Vector128.Create((byte)'.');
+        Vector128<byte> zeroDigit = Vector128.Create((byte)'0');
+
+        // Markers: real dots plus the '.'-filled tail.
+        Vector128<byte> delim = Avx512BW.VL.CompareEqual(v, dotV);
+        Vector128<byte> c = Avx512Vbmi2.VL.Compress(Vector128<byte>.Zero, delim, Iota);
+
+        Vector128<byte> digits = v - zeroDigit;
+        Vector128<byte> isDigit = Avx512BW.VL.CompareLessThanOrEqual(digits, Vector128.Create((byte)9));
+        Vector128<byte> v0 = digits & isDigit;
+
+        Vector128<sbyte> qi = Ssse3.Shuffle(c, RepeatOctet).AsSByte();
+        Vector128<sbyte> prev = Ssse3.Shuffle(
+            Ssse3.AlignRight(c, Vector128.Create((byte)0xFF), 15), RepeatOctet).AsSByte();
+        Vector128<sbyte> idx = Sse41.Max(Sse2.Add(qi, OctetOffsets), prev);
+        Vector128<byte> padded = Ssse3.Shuffle(v0, idx.AsByte());
+        Vector128<int> res = Dpbusd(padded);
+
+        // Exactly three dots: the rank-3 marker must be the terminator at `len`.
+        // With fewer real dots lane 3 holds a tail dot past len (or compress's
+        // zero fill); with more, a real dot before len. The broadcast of `len`
+        // issues at entry, well before `c` is ready.
+        Vector128<byte> err = Avx512BW.VL.CompareNotEqual(c, Vector128.Create((byte)len)) & Lane3;
+
+        // Octet lengths from marker gaps: [q0, q1-q0, q2-q1, q3-q2] must be
+        // [1..3, 2..4, 2..4, 2..4]; unsigned (gap - min) > 2 catches both ends.
+        Vector128<byte> gap = Sse2.Subtract(c, Sse2.ShiftLeftLogical128BitLane(c, 1));
+        err |= Avx512BW.VL.CompareGreaterThan(Sse2.Subtract(gap, GapMin), Vector128.Create((byte)2)) & Lanes0To3;
+
+        // Junk in a digit slot: inside [0,len) yet neither digit nor dot.
+        Vector128<byte> inRange = Avx512BW.VL.CompareLessThan(Iota, Vector128.Create((byte)len));
+        err |= Sse2.AndNot(delim | isDigit, inRange);
+
+        // Leading zero: '0' at an octet start whose successor is a digit lane.
+        // A mask shift is a byte-lane shift here; delim's shifted tail bits land
+        // where v is '.', so they need no range masking.
+        Vector128<byte> zeroK = Avx512BW.VL.CompareEqual(v, zeroDigit);
+        Vector128<byte> starts = Sse2.ShiftLeftLogical128BitLane(delim, 1) | Lane0;
+        err |= zeroK & starts & Sse2.ShiftRightLogical128BitLane(isDigit, 1);
+
+        // Octet > 255 joins last: it waits on the VNNI result anyway.
+        err |= Avx512F.VL.CompareGreaterThan(res.AsUInt32(), Vector128.Create(0xFFu)).AsByte();
+
+        if (!Sse41.TestZ(err, err))
         {
             return false;
         }
