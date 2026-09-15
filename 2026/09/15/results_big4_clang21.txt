@@ -1,0 +1,44 @@
+0
+3568
+-- Build files have been written to: /home/dlemire/subnormal_bench/build_clang
+[100%] Built target benchmark
+0
+flush-to-zero at startup: disabled
+=== double (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.189 ns    5.30 Gv/s   3.47 GHz      0.66 c     0.69 i   1.04 i/c 
+add two arrays [normal]          :    0.224 ns    4.46 Gv/s   3.47 GHz      0.79 c     0.94 i   1.20 i/c 
+divide by 3 [normal]             :    0.573 ns    1.74 Gv/s   3.49 GHz      2.00 c     0.94 i   0.47 i/c 
+normal in, tiny product [normal] :    0.189 ns    5.29 Gv/s   3.48 GHz      0.66 c     0.69 i   1.04 i/c 
+decay chain x *= 0.9999 [normal] :    1.139 ns    0.88 Gv/s   3.49 GHz      3.98 c     1.25 i   0.31 i/c 
+multiply by 0.75 [1% subnormal]  :    0.472 ns    2.12 Gv/s   3.49 GHz      1.65 c     0.69 i   0.42 i/c 
+add two arrays [1% subnormal]    :    0.207 ns    4.84 Gv/s   3.46 GHz      0.72 c     0.94 i   1.30 i/c 
+divide by 3 [1% subnormal]       :    0.967 ns    1.03 Gv/s   3.46 GHz      3.38 c     0.94 i   0.28 i/c 
+multiply by 0.75 [subnormal]     :    9.445 ns    0.11 Gv/s   3.49 GHz     33.00 c     0.70 i   0.02 i/c 
+add two arrays [subnormal]       :    0.194 ns    5.16 Gv/s   3.45 GHz      0.68 c     0.94 i   1.39 i/c 
+divide by 3 [subnormal]          :   10.209 ns    0.10 Gv/s   3.44 GHz     35.67 c     0.95 i   0.03 i/c 
+normal in, tiny product [subnormal] :    9.474 ns    0.11 Gv/s   3.47 GHz     33.11 c     0.70 i   0.02 i/c 
+decay chain x *= 0.9999 [subnormal] :   34.683 ns    0.03 Gv/s   3.49 GHz    121.15 c     1.26 i   0.01 i/c 
+multiply by 0.75 [subnormal+FTZ] :    0.181 ns    5.54 Gv/s   3.17 GHz      0.58 c     0.69 i   1.19 i/c 
+add two arrays [subnormal+FTZ]   :    0.194 ns    5.16 Gv/s   3.46 GHz      0.68 c     0.94 i   1.39 i/c 
+divide by 3 [subnormal+FTZ]      :    0.573 ns    1.75 Gv/s   3.45 GHz      2.00 c     0.94 i   0.47 i/c 
+normal in, tiny product [subnormal+FTZ] :    0.180 ns    5.55 Gv/s   3.17 GHz      0.58 c     0.69 i   1.19 i/c 
+decay chain x *= 0.9999 [subnormal+FTZ] :    1.139 ns    0.88 Gv/s   3.48 GHz      3.98 c     1.25 i   0.31 i/c 
+=== float (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.091 ns   11.02 Gv/s   3.15 GHz      0.29 c     0.34 i   1.19 i/c 
+add two arrays [normal]          :    0.097 ns   10.30 Gv/s   3.44 GHz      0.34 c     0.47 i   1.38 i/c 
+divide by 3 [normal]             :    0.179 ns    5.58 Gv/s   3.46 GHz      0.63 c     0.47 i   0.75 i/c 
+normal in, tiny product [normal] :    0.091 ns   11.01 Gv/s   3.17 GHz      0.29 c     0.34 i   1.19 i/c 
+decay chain x *= 0.9999 [normal] :    1.139 ns    0.88 Gv/s   3.45 GHz      3.98 c     1.25 i   0.31 i/c 
+multiply by 0.75 [1% subnormal]  :    0.405 ns    2.47 Gv/s   3.49 GHz      1.41 c     0.35 i   0.24 i/c 
+add two arrays [1% subnormal]    :    0.118 ns    8.49 Gv/s   3.45 GHz      0.41 c     0.47 i   1.14 i/c 
+divide by 3 [1% subnormal]       :    0.540 ns    1.85 Gv/s   3.45 GHz      1.89 c     0.47 i   0.25 i/c 
+multiply by 0.75 [subnormal]     :    4.601 ns    0.22 Gv/s   3.44 GHz     16.09 c     0.36 i   0.02 i/c 
+add two arrays [subnormal]       :    0.118 ns    8.50 Gv/s   3.45 GHz      0.41 c     0.47 i   1.14 i/c 
+divide by 3 [subnormal]          :    4.805 ns    0.21 Gv/s   3.46 GHz     16.80 c     0.48 i   0.03 i/c 
+normal in, tiny product [subnormal] :    4.609 ns    0.22 Gv/s   3.43 GHz     16.12 c     0.36 i   0.02 i/c 
+decay chain x *= 0.9999 [subnormal] :   34.684 ns    0.03 Gv/s   3.41 GHz    121.15 c     1.26 i   0.01 i/c 
+multiply by 0.75 [subnormal+FTZ] :    0.093 ns   10.71 Gv/s   3.44 GHz      0.33 c     0.34 i   1.06 i/c 
+add two arrays [subnormal+FTZ]   :    0.118 ns    8.49 Gv/s   3.49 GHz      0.41 c     0.47 i   1.14 i/c 
+divide by 3 [subnormal+FTZ]      :    0.179 ns    5.59 Gv/s   3.46 GHz      0.63 c     0.47 i   0.75 i/c 
+normal in, tiny product [subnormal+FTZ] :    0.093 ns   10.70 Gv/s   3.46 GHz      0.33 c     0.34 i   1.06 i/c 
+decay chain x *= 0.9999 [subnormal+FTZ] :    1.139 ns    0.88 Gv/s   3.47 GHz      3.98 c     1.25 i   0.31 i/c 

@@ -1,0 +1,87 @@
+Model name:                              Intel(R) Xeon(R) 6975P-C
+##### GCC
+g++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+[100%] Built target benchmark
+zmm count: 0 ymm count: 3524
+flush-to-zero at startup: disabled
+=== double (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.169 ns    5.91 Gv/s 
+add two arrays [normal]          :    0.203 ns    4.93 Gv/s 
+divide by 3 [normal]             :    0.513 ns    1.95 Gv/s 
+normal in, tiny product [normal] :    0.169 ns    5.91 Gv/s 
+decay chain x *= 0.9999 [normal] :    0.765 ns    1.31 Gv/s 
+multiply by 0.75 [1% subnormal]  :    0.437 ns    2.29 Gv/s 
+add two arrays [1% subnormal]    :    0.180 ns    5.55 Gv/s 
+divide by 3 [1% subnormal]       :    0.848 ns    1.18 Gv/s 
+multiply by 0.75 [subnormal]     :    8.353 ns    0.12 Gv/s 
+add two arrays [subnormal]       :    0.179 ns    5.59 Gv/s 
+divide by 3 [subnormal]          :    9.379 ns    0.11 Gv/s 
+normal in, tiny product [subnormal] :    8.575 ns    0.12 Gv/s 
+decay chain x *= 0.9999 [subnormal] :   32.687 ns    0.03 Gv/s 
+multiply by 0.75 [subnormal+FTZ] :    0.165 ns    6.06 Gv/s 
+add two arrays [subnormal+FTZ]   :    0.179 ns    5.59 Gv/s 
+divide by 3 [subnormal+FTZ]      :    0.515 ns    1.94 Gv/s 
+normal in, tiny product [subnormal+FTZ] :    0.167 ns    6.00 Gv/s 
+decay chain x *= 0.9999 [subnormal+FTZ] :    0.765 ns    1.31 Gv/s 
+=== float (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.082 ns   12.27 Gv/s 
+add two arrays [normal]          :    0.090 ns   11.13 Gv/s 
+divide by 3 [normal]             :    0.161 ns    6.20 Gv/s 
+normal in, tiny product [normal] :    0.082 ns   12.19 Gv/s 
+decay chain x *= 0.9999 [normal] :    0.765 ns    1.31 Gv/s 
+multiply by 0.75 [1% subnormal]  :    0.369 ns    2.71 Gv/s 
+add two arrays [1% subnormal]    :    0.111 ns    8.97 Gv/s 
+divide by 3 [1% subnormal]       :    0.475 ns    2.11 Gv/s 
+multiply by 0.75 [subnormal]     :    4.173 ns    0.24 Gv/s 
+add two arrays [subnormal]       :    0.118 ns    8.46 Gv/s 
+divide by 3 [subnormal]          :    4.493 ns    0.22 Gv/s 
+normal in, tiny product [subnormal] :    4.173 ns    0.24 Gv/s 
+decay chain x *= 0.9999 [subnormal] :   32.688 ns    0.03 Gv/s 
+multiply by 0.75 [subnormal+FTZ] :    0.084 ns   11.84 Gv/s 
+add two arrays [subnormal+FTZ]   :    0.109 ns    9.16 Gv/s 
+divide by 3 [subnormal+FTZ]      :    0.160 ns    6.24 Gv/s 
+normal in, tiny product [subnormal+FTZ] :    0.090 ns   11.17 Gv/s 
+decay chain x *= 0.9999 [subnormal+FTZ] :    0.765 ns    1.31 Gv/s 
+##### CLANG
+Ubuntu clang version 21.1.8 (6ubuntu1)
+[100%] Built target benchmark
+zmm count: 0 ymm count: 14445
+flush-to-zero at startup: disabled
+=== double (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.168 ns    5.96 Gv/s 
+add two arrays [normal]          :    0.202 ns    4.95 Gv/s 
+divide by 3 [normal]             :    0.513 ns    1.95 Gv/s 
+normal in, tiny product [normal] :    0.168 ns    5.96 Gv/s 
+decay chain x *= 0.9999 [normal] :    0.765 ns    1.31 Gv/s 
+multiply by 0.75 [1% subnormal]  :    0.433 ns    2.31 Gv/s 
+add two arrays [1% subnormal]    :    0.222 ns    4.51 Gv/s 
+divide by 3 [1% subnormal]       :    0.866 ns    1.15 Gv/s 
+multiply by 0.75 [subnormal]     :    8.283 ns    0.12 Gv/s 
+add two arrays [subnormal]       :    0.230 ns    4.35 Gv/s 
+divide by 3 [subnormal]          :    9.218 ns    0.11 Gv/s 
+normal in, tiny product [subnormal] :    8.284 ns    0.12 Gv/s 
+decay chain x *= 0.9999 [subnormal] :   31.818 ns    0.03 Gv/s 
+multiply by 0.75 [subnormal+FTZ] :    0.183 ns    5.45 Gv/s 
+add two arrays [subnormal+FTZ]   :    0.231 ns    4.34 Gv/s 
+divide by 3 [subnormal+FTZ]      :    0.513 ns    1.95 Gv/s 
+normal in, tiny product [subnormal+FTZ] :    0.184 ns    5.42 Gv/s 
+decay chain x *= 0.9999 [subnormal+FTZ] :    0.765 ns    1.31 Gv/s 
+=== float (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.093 ns   10.75 Gv/s 
+add two arrays [normal]          :    0.112 ns    8.95 Gv/s 
+divide by 3 [normal]             :    0.160 ns    6.24 Gv/s 
+normal in, tiny product [normal] :    0.093 ns   10.78 Gv/s 
+decay chain x *= 0.9999 [normal] :    0.765 ns    1.31 Gv/s 
+multiply by 0.75 [1% subnormal]  :    0.362 ns    2.76 Gv/s 
+add two arrays [1% subnormal]    :    0.087 ns   11.45 Gv/s 
+divide by 3 [1% subnormal]       :    0.486 ns    2.06 Gv/s 
+multiply by 0.75 [subnormal]     :    4.242 ns    0.24 Gv/s 
+add two arrays [subnormal]       :    0.087 ns   11.45 Gv/s 
+divide by 3 [subnormal]          :    4.293 ns    0.23 Gv/s 
+normal in, tiny product [subnormal] :    4.241 ns    0.24 Gv/s 
+decay chain x *= 0.9999 [subnormal] :   31.818 ns    0.03 Gv/s 
+multiply by 0.75 [subnormal+FTZ] :    0.079 ns   12.64 Gv/s 
+add two arrays [subnormal+FTZ]   :    0.087 ns   11.45 Gv/s 
+divide by 3 [subnormal+FTZ]      :    0.160 ns    6.24 Gv/s 
+normal in, tiny product [subnormal+FTZ] :    0.079 ns   12.70 Gv/s 
+decay chain x *= 0.9999 [subnormal+FTZ] :    0.765 ns    1.31 Gv/s 

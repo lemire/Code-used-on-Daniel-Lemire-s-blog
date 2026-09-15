@@ -1,0 +1,39 @@
+flush-to-zero at startup: disabled
+=== double (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.207 ns    4.82 Gv/s   3.45 GHz      0.73 c     1.25 i   1.73 i/c 
+add two arrays [normal]          :    0.225 ns    4.44 Gv/s   3.46 GHz      0.79 c     1.50 i   1.90 i/c 
+divide by 3 [normal]             :    0.573 ns    1.74 Gv/s   3.45 GHz      2.00 c     1.50 i   0.75 i/c 
+normal in, tiny product [normal] :    0.206 ns    4.85 Gv/s   3.46 GHz      0.72 c     1.25 i   1.73 i/c 
+decay chain x *= 0.9999 [normal] :    1.139 ns    0.88 Gv/s   3.45 GHz      3.98 c     2.50 i   0.63 i/c 
+multiply by 0.75 [1% subnormal]  :    0.494 ns    2.02 Gv/s   3.44 GHz      1.73 c     1.25 i   0.73 i/c 
+add two arrays [1% subnormal]    :    0.250 ns    4.00 Gv/s   3.49 GHz      0.87 c     1.50 i   1.72 i/c 
+divide by 3 [1% subnormal]       :    0.944 ns    1.06 Gv/s   3.46 GHz      3.30 c     1.50 i   0.46 i/c 
+multiply by 0.75 [subnormal]     :    9.251 ns    0.11 Gv/s   3.46 GHz     32.37 c     1.52 i   0.05 i/c 
+add two arrays [subnormal]       :    0.248 ns    4.03 Gv/s   3.47 GHz      0.87 c     1.50 i   1.73 i/c 
+divide by 3 [subnormal]          :   10.399 ns    0.10 Gv/s   3.47 GHz     36.34 c     1.52 i   0.04 i/c 
+normal in, tiny product [subnormal] :    9.272 ns    0.11 Gv/s   3.46 GHz     32.40 c     1.27 i   0.04 i/c 
+decay chain x *= 0.9999 [subnormal] :   36.509 ns    0.03 Gv/s   3.49 GHz    127.52 c     2.51 i   0.02 i/c 
+multiply by 0.75 [subnormal+FTZ] :    0.218 ns    4.58 Gv/s   3.46 GHz      0.76 c     1.25 i   1.64 i/c 
+add two arrays [subnormal+FTZ]   :    0.248 ns    4.03 Gv/s   3.49 GHz      0.87 c     1.50 i   1.73 i/c 
+divide by 3 [subnormal+FTZ]      :    0.573 ns    1.75 Gv/s   3.45 GHz      2.00 c     1.50 i   0.75 i/c 
+normal in, tiny product [subnormal+FTZ] :    0.219 ns    4.57 Gv/s   3.46 GHz      0.76 c     1.25 i   1.64 i/c 
+decay chain x *= 0.9999 [subnormal+FTZ] :    1.139 ns    0.88 Gv/s   3.47 GHz      3.98 c     2.50 i   0.63 i/c 
+=== float (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.110 ns    9.06 Gv/s   3.45 GHz      0.39 c     0.63 i   1.62 i/c 
+add two arrays [normal]          :    0.124 ns    8.03 Gv/s   3.45 GHz      0.43 c     0.75 i   1.73 i/c 
+divide by 3 [normal]             :    0.179 ns    5.59 Gv/s   3.45 GHz      0.63 c     0.75 i   1.20 i/c 
+normal in, tiny product [normal] :    0.111 ns    9.03 Gv/s   3.47 GHz      0.39 c     0.63 i   1.62 i/c 
+decay chain x *= 0.9999 [normal] :    1.139 ns    0.88 Gv/s   3.49 GHz      3.98 c     2.50 i   0.63 i/c 
+multiply by 0.75 [1% subnormal]  :    0.417 ns    2.40 Gv/s   3.44 GHz      1.46 c     0.63 i   0.43 i/c 
+add two arrays [1% subnormal]    :    0.099 ns   10.07 Gv/s   3.44 GHz      0.35 c     0.75 i   2.17 i/c 
+divide by 3 [1% subnormal]       :    0.533 ns    1.88 Gv/s   3.49 GHz      1.86 c     0.75 i   0.40 i/c 
+multiply by 0.75 [subnormal]     :    4.625 ns    0.22 Gv/s   3.44 GHz     16.16 c     0.77 i   0.05 i/c 
+add two arrays [subnormal]       :    0.099 ns   10.07 Gv/s   3.46 GHz      0.35 c     0.75 i   2.17 i/c 
+divide by 3 [subnormal]          :    4.983 ns    0.20 Gv/s   3.49 GHz     17.42 c     0.77 i   0.04 i/c 
+normal in, tiny product [subnormal] :    4.750 ns    0.21 Gv/s   3.49 GHz     16.64 c     0.64 i   0.04 i/c 
+decay chain x *= 0.9999 [subnormal] :   36.509 ns    0.03 Gv/s   3.49 GHz    127.52 c     2.51 i   0.02 i/c 
+multiply by 0.75 [subnormal+FTZ] :    0.093 ns   10.78 Gv/s   3.17 GHz      0.30 c     0.63 i   2.11 i/c 
+add two arrays [subnormal+FTZ]   :    0.099 ns   10.07 Gv/s   3.47 GHz      0.35 c     0.75 i   2.16 i/c 
+divide by 3 [subnormal+FTZ]      :    0.179 ns    5.58 Gv/s   3.44 GHz      0.63 c     0.75 i   1.20 i/c 
+normal in, tiny product [subnormal+FTZ] :    0.093 ns   10.78 Gv/s   3.17 GHz      0.30 c     0.63 i   2.11 i/c 
+decay chain x *= 0.9999 [subnormal+FTZ] :    1.139 ns    0.88 Gv/s   3.49 GHz      3.98 c     2.50 i   0.63 i/c 

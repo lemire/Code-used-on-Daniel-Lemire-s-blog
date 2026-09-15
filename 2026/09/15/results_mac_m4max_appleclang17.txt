@@ -1,0 +1,39 @@
+flush-to-zero at startup: disabled
+=== double (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.060 ns   16.67 Gv/s 
+add two arrays [normal]          :    0.121 ns    8.27 Gv/s 
+divide by 3 [normal]             :    0.111 ns    9.03 Gv/s 
+normal in, normal product [normal] :    0.058 ns   17.10 Gv/s 
+decay chain x *= 0.9999 [normal] :    0.720 ns    1.39 Gv/s 
+multiply by 0.75 [1% subnormal]  :    0.060 ns   16.68 Gv/s 
+add two arrays [1% subnormal]    :    0.120 ns    8.35 Gv/s 
+divide by 3 [1% subnormal]       :    0.111 ns    9.03 Gv/s 
+multiply by 0.75 [subnormal]     :    0.060 ns   16.72 Gv/s 
+add two arrays [subnormal]       :    0.120 ns    8.31 Gv/s 
+divide by 3 [subnormal]          :    0.111 ns    9.03 Gv/s 
+normal in, subnormal product [subnormal] :    0.063 ns   16.00 Gv/s 
+decay chain x *= 0.9999 [subnormal] :    0.748 ns    1.34 Gv/s 
+multiply by 0.75 [subnormal+FTZ] :    0.061 ns   16.32 Gv/s 
+add two arrays [subnormal+FTZ]   :    0.120 ns    8.33 Gv/s 
+divide by 3 [subnormal+FTZ]      :    0.111 ns    9.03 Gv/s 
+normal in, subnormal product [subnormal+FTZ] :    0.061 ns   16.45 Gv/s 
+decay chain x *= 0.9999 [subnormal+FTZ] :    0.661 ns    1.51 Gv/s 
+=== float (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.028 ns   35.84 Gv/s 
+add two arrays [normal]          :    0.041 ns   24.11 Gv/s 
+divide by 3 [normal]             :    0.055 ns   18.06 Gv/s 
+normal in, normal product [normal] :    0.028 ns   35.78 Gv/s 
+decay chain x *= 0.9999 [normal] :    0.744 ns    1.34 Gv/s 
+multiply by 0.75 [1% subnormal]  :    0.028 ns   35.84 Gv/s 
+add two arrays [1% subnormal]    :    0.041 ns   24.20 Gv/s 
+divide by 3 [1% subnormal]       :    0.055 ns   18.06 Gv/s 
+multiply by 0.75 [subnormal]     :    0.028 ns   35.84 Gv/s 
+add two arrays [subnormal]       :    0.041 ns   24.33 Gv/s 
+divide by 3 [subnormal]          :    0.055 ns   18.06 Gv/s 
+normal in, subnormal product [subnormal] :    0.028 ns   35.84 Gv/s 
+decay chain x *= 0.9999 [subnormal] :    0.744 ns    1.34 Gv/s 
+multiply by 0.75 [subnormal+FTZ] :    0.028 ns   35.84 Gv/s 
+add two arrays [subnormal+FTZ]   :    0.041 ns   24.24 Gv/s 
+divide by 3 [subnormal+FTZ]      :    0.055 ns   18.06 Gv/s 
+normal in, subnormal product [subnormal+FTZ] :    0.028 ns   35.71 Gv/s 
+decay chain x *= 0.9999 [subnormal+FTZ] :    0.661 ns    1.51 Gv/s 

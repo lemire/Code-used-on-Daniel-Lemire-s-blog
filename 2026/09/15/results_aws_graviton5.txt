@@ -1,0 +1,88 @@
+Model name:                              Neoverse-V3
+Flags:                                   fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha5
+##### GCC
+g++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+-march=native
+sve instructions (z regs): 3751  neon (v regs): 1682
+flush-to-zero at startup: disabled
+=== double (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.169 ns    5.91 Gv/s 
+add two arrays [normal]          :    0.193 ns    5.17 Gv/s 
+divide by 3 [normal]             :    0.303 ns    3.30 Gv/s 
+normal in, normal product [normal] :    0.170 ns    5.87 Gv/s 
+decay chain x *= 0.9999 [normal] :    0.906 ns    1.10 Gv/s 
+multiply by 0.75 [1% subnormal]  :    0.168 ns    5.96 Gv/s 
+add two arrays [1% subnormal]    :    0.200 ns    5.00 Gv/s 
+divide by 3 [1% subnormal]       :    0.303 ns    3.30 Gv/s 
+multiply by 0.75 [subnormal]     :    0.164 ns    6.11 Gv/s 
+add two arrays [subnormal]       :    0.200 ns    5.00 Gv/s 
+divide by 3 [subnormal]          :    0.303 ns    3.30 Gv/s 
+normal in, subnormal product [subnormal] :    0.171 ns    5.83 Gv/s 
+decay chain x *= 0.9999 [subnormal] :    0.906 ns    1.10 Gv/s 
+multiply by 0.75 [subnormal+FTZ] :    0.168 ns    5.94 Gv/s 
+add two arrays [subnormal+FTZ]   :    0.199 ns    5.04 Gv/s 
+divide by 3 [subnormal+FTZ]      :    0.303 ns    3.30 Gv/s 
+normal in, subnormal product [subnormal+FTZ] :    0.173 ns    5.79 Gv/s 
+decay chain x *= 0.9999 [subnormal+FTZ] :    0.906 ns    1.10 Gv/s 
+=== float (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.084 ns   11.96 Gv/s 
+add two arrays [normal]          :    0.099 ns   10.14 Gv/s 
+divide by 3 [normal]             :    0.303 ns    3.30 Gv/s 
+normal in, normal product [normal] :    0.084 ns   11.89 Gv/s 
+decay chain x *= 0.9999 [normal] :    0.906 ns    1.10 Gv/s 
+multiply by 0.75 [1% subnormal]  :    0.084 ns   11.84 Gv/s 
+add two arrays [1% subnormal]    :    0.097 ns   10.32 Gv/s 
+divide by 3 [1% subnormal]       :    0.303 ns    3.30 Gv/s 
+multiply by 0.75 [subnormal]     :    0.085 ns   11.83 Gv/s 
+add two arrays [subnormal]       :    0.097 ns   10.31 Gv/s 
+divide by 3 [subnormal]          :    0.303 ns    3.30 Gv/s 
+normal in, subnormal product [subnormal] :    0.085 ns   11.82 Gv/s 
+decay chain x *= 0.9999 [subnormal] :    0.906 ns    1.10 Gv/s 
+multiply by 0.75 [subnormal+FTZ] :    0.085 ns   11.83 Gv/s 
+add two arrays [subnormal+FTZ]   :    0.097 ns   10.31 Gv/s 
+divide by 3 [subnormal+FTZ]      :    0.303 ns    3.30 Gv/s 
+normal in, subnormal product [subnormal+FTZ] :    0.085 ns   11.83 Gv/s 
+decay chain x *= 0.9999 [subnormal+FTZ] :    0.906 ns    1.10 Gv/s 
+##### CLANG
+Ubuntu clang version 21.1.8 (6ubuntu1)
+[100%] Built target benchmark
+sve instructions (z regs): 3467  neon (v regs): 2855
+flush-to-zero at startup: disabled
+=== double (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.167 ns    6.00 Gv/s 
+add two arrays [normal]          :    0.200 ns    5.01 Gv/s 
+divide by 3 [normal]             :    0.303 ns    3.30 Gv/s 
+normal in, normal product [normal] :    0.162 ns    6.17 Gv/s 
+decay chain x *= 0.9999 [normal] :    0.906 ns    1.10 Gv/s 
+multiply by 0.75 [1% subnormal]  :    0.167 ns    6.00 Gv/s 
+add two arrays [1% subnormal]    :    0.196 ns    5.09 Gv/s 
+divide by 3 [1% subnormal]       :    0.303 ns    3.30 Gv/s 
+multiply by 0.75 [subnormal]     :    0.168 ns    5.94 Gv/s 
+add two arrays [subnormal]       :    0.196 ns    5.10 Gv/s 
+divide by 3 [subnormal]          :    0.303 ns    3.30 Gv/s 
+normal in, subnormal product [subnormal] :    0.169 ns    5.91 Gv/s 
+decay chain x *= 0.9999 [subnormal] :    0.907 ns    1.10 Gv/s 
+multiply by 0.75 [subnormal+FTZ] :    0.169 ns    5.93 Gv/s 
+add two arrays [subnormal+FTZ]   :    0.196 ns    5.10 Gv/s 
+divide by 3 [subnormal+FTZ]      :    0.303 ns    3.30 Gv/s 
+normal in, subnormal product [subnormal+FTZ] :    0.169 ns    5.91 Gv/s 
+decay chain x *= 0.9999 [subnormal+FTZ] :    0.906 ns    1.10 Gv/s 
+=== float (16384 values per array) ===
+multiply by 0.75 [normal]        :    0.083 ns   12.05 Gv/s 
+add two arrays [normal]          :    0.098 ns   10.17 Gv/s 
+divide by 3 [normal]             :    0.303 ns    3.30 Gv/s 
+normal in, normal product [normal] :    0.081 ns   12.29 Gv/s 
+decay chain x *= 0.9999 [normal] :    0.906 ns    1.10 Gv/s 
+multiply by 0.75 [1% subnormal]  :    0.083 ns   12.08 Gv/s 
+add two arrays [1% subnormal]    :    0.099 ns   10.09 Gv/s 
+divide by 3 [1% subnormal]       :    0.303 ns    3.30 Gv/s 
+multiply by 0.75 [subnormal]     :    0.083 ns   12.08 Gv/s 
+add two arrays [subnormal]       :    0.103 ns    9.71 Gv/s 
+divide by 3 [subnormal]          :    0.303 ns    3.30 Gv/s 
+normal in, subnormal product [subnormal] :    0.081 ns   12.39 Gv/s 
+decay chain x *= 0.9999 [subnormal] :    0.907 ns    1.10 Gv/s 
+multiply by 0.75 [subnormal+FTZ] :    0.083 ns   12.07 Gv/s 
+add two arrays [subnormal+FTZ]   :    0.103 ns    9.70 Gv/s 
+divide by 3 [subnormal+FTZ]      :    0.303 ns    3.30 Gv/s 
+normal in, subnormal product [subnormal+FTZ] :    0.081 ns   12.34 Gv/s 
+decay chain x *= 0.9999 [subnormal+FTZ] :    0.907 ns    1.10 Gv/s 
