@@ -1,0 +1,231 @@
+key type: 8 bytes, mapped type: 8 bytes
+standard library: libstdc++ 20260123
+performance counters: yes
+
+===== 1000 elements =====
+
+-- inserting 1000 elements one at a time, random key order --
+std::map insert                                  :     83.71 ns/op   3.49 GHz    291.92 c    469.37 i   1.61 i/c 
+std::unordered_map insert                        :     49.57 ns/op   3.48 GHz    172.65 c    487.76 i   2.83 i/c 
+std::flat_map insert                             :     80.27 ns/op   3.49 GHz    280.03 c    419.50 i   1.50 i/c 
+
+-- inserting 1000 elements one at a time, increasing key order --
+std::map insert (sorted)                         :     46.16 ns/op   3.49 GHz    160.93 c    524.23 i   3.26 i/c 
+std::unordered_map insert (sorted)               :     48.99 ns/op   3.48 GHz    170.90 c    487.66 i   2.85 i/c 
+std::flat_map insert (sorted)                    :      8.17 ns/op   3.49 GHz     28.50 c    171.74 i   6.03 i/c 
+
+-- constructing from a range of 1000 elements, random key order --
+std::map from range                              :     74.77 ns/op   3.34 GHz    260.85 c    379.50 i   1.45 i/c 
+std::unordered_map from range                    :     49.89 ns/op   3.45 GHz    174.00 c    482.12 i   2.77 i/c 
+std::flat_map from range                         :      9.68 ns/op   3.49 GHz     33.76 c    148.97 i   4.41 i/c 
+
+-- constructing from a sorted range of 1000 elements --
+std::map from sorted range                       :     50.70 ns/op   3.48 GHz    176.88 c    440.59 i   2.49 i/c 
+std::unordered_map from sorted range             :     49.16 ns/op   3.46 GHz    171.41 c    483.00 i   2.82 i/c 
+std::flat_map from sorted range                  :      7.11 ns/op   3.47 GHz     24.81 c    111.10 i   4.48 i/c 
+
+-- 1000 independent lookups, all keys present --
+std::map find (hit)                              :     26.15 ns/op   3.49 GHz     91.26 c     86.72 i   0.95 i/c 
+std::unordered_map find (hit)                    :      4.14 ns/op   3.49 GHz     14.45 c     31.86 i   2.20 i/c 
+std::flat_map find (hit)                         :     49.44 ns/op   3.46 GHz    172.48 c     98.59 i   0.57 i/c 
+
+-- 1000 independent lookups, no key present --
+std::map find (miss)                             :     20.19 ns/op   3.49 GHz     70.44 c     86.54 i   1.23 i/c 
+std::unordered_map find (miss)                   :      6.62 ns/op   3.49 GHz     23.13 c     37.78 i   1.63 i/c 
+std::flat_map find (miss)                        :     46.79 ns/op   3.46 GHz    163.28 c     97.49 i   0.60 i/c 
+
+-- 1000 dependent lookups (each key comes from the previous value) --
+std::map find (chain)                            :     45.06 ns/op   3.48 GHz    157.19 c     88.73 i   0.56 i/c 
+std::unordered_map find (chain)                  :     11.88 ns/op   3.42 GHz     41.45 c     23.32 i   0.56 i/c 
+std::flat_map find (chain)                       :     47.52 ns/op   3.48 GHz    165.81 c     97.61 i   0.59 i/c 
+
+-- iterating over all 1000 elements --
+std::map iterate                                 :      5.58 ns/op   3.48 GHz     19.48 c     20.71 i   1.06 i/c 
+std::unordered_map iterate                       :      1.44 ns/op   3.46 GHz      5.03 c      4.00 i   0.80 i/c 
+std::flat_map iterate                            :      0.04 ns/op   3.29 GHz      0.14 c      0.48 i   3.35 i/c 
+
+-- erasing half the elements, one erase(key) call at a time --
+std::map erase(key)                              :     22.19 ns/elem  (   44.56 ns per erased element)
+std::unordered_map erase(key)                    :      5.31 ns/elem  (   10.66 ns per erased element)
+std::flat_map erase(key)                         :     30.04 ns/elem  (   60.31 ns per erased element)
+
+-- erasing half the elements with std::erase_if --
+std::map erase_if                                :     10.35 ns/elem  (   20.78 ns per erased element)
+std::unordered_map erase_if                      :      4.02 ns/elem  (    8.07 ns per erased element)
+std::flat_map erase_if                           :      0.91 ns/elem  (    1.82 ns per erased element)
+
+-- heap held, bytes per element (payload: 16 bytes) --
+std::map                                         :     64.06
+std::unordered_map                               :     40.99
+std::flat_map                                    :     16.48
+
+===== 100000 elements =====
+
+-- inserting 100000 elements one at a time, random key order --
+std::map insert                                  :    180.17 ns/op   3.48 GHz    628.12 c    546.58 i   0.87 i/c 
+std::unordered_map insert                        :     90.91 ns/op   3.48 GHz    316.92 c    510.86 i   1.61 i/c 
+std::flat_map insert                             :   7220.96 ns/op   3.45 GHz  25016.91 c  19046.49 i   0.76 i/c 
+
+-- inserting 100000 elements one at a time, increasing key order --
+std::map insert (sorted)                         :     92.19 ns/op   3.35 GHz    321.42 c    672.07 i   2.09 i/c 
+std::unordered_map insert (sorted)               :     91.38 ns/op   3.48 GHz    318.40 c    510.89 i   1.60 i/c 
+std::flat_map insert (sorted)                    :     12.57 ns/op   3.46 GHz     43.85 c    231.08 i   5.27 i/c 
+
+-- constructing from a range of 100000 elements, random key order --
+std::map from range                              :    185.63 ns/op   3.42 GHz    647.05 c    435.02 i   0.67 i/c 
+std::unordered_map from range                    :     90.22 ns/op   3.37 GHz    314.41 c    504.86 i   1.61 i/c 
+std::flat_map from range                         :     60.92 ns/op   3.44 GHz    212.01 c    209.08 i   0.99 i/c 
+
+-- constructing from a sorted range of 100000 elements --
+std::map from sorted range                       :    107.80 ns/op   3.37 GHz    375.88 c    547.90 i   1.46 i/c 
+std::unordered_map from sorted range             :     90.10 ns/op   3.48 GHz    314.04 c    504.91 i   1.61 i/c 
+std::flat_map from sorted range                  :     11.46 ns/op   3.38 GHz     39.96 c    164.42 i   4.12 i/c 
+
+-- 100000 independent lookups, all keys present --
+std::map find (hit)                              :     87.68 ns/op   3.48 GHz    305.62 c    131.93 i   0.43 i/c 
+std::unordered_map find (hit)                    :     13.09 ns/op   3.48 GHz     45.65 c     24.58 i   0.54 i/c 
+std::flat_map find (hit)                         :     91.30 ns/op   3.36 GHz    318.53 c    150.74 i   0.47 i/c 
+
+-- 100000 independent lookups, no key present --
+std::map find (miss)                             :     86.16 ns/op   3.48 GHz    299.85 c    131.90 i   0.44 i/c 
+std::unordered_map find (miss)                   :     17.85 ns/op   3.48 GHz     62.30 c     27.50 i   0.44 i/c 
+std::flat_map find (miss)                        :     90.12 ns/op   3.35 GHz    314.32 c    149.78 i   0.48 i/c 
+
+-- 100000 dependent lookups (each key comes from the previous value) --
+std::map find (chain)                            :    205.72 ns/op   3.43 GHz    717.42 c    130.93 i   0.18 i/c 
+std::unordered_map find (chain)                  :     92.61 ns/op   3.48 GHz    323.02 c     17.37 i   0.05 i/c 
+std::flat_map find (chain)                       :    114.49 ns/op   3.48 GHz    399.25 c    150.74 i   0.38 i/c 
+
+-- iterating over all 100000 elements --
+std::map iterate                                 :     31.76 ns/op   3.44 GHz    110.75 c     20.75 i   0.19 i/c 
+std::unordered_map iterate                       :     12.89 ns/op   3.48 GHz     44.97 c      4.00 i   0.09 i/c 
+std::flat_map iterate                            :      0.10 ns/op   3.48 GHz      0.36 c      0.44 i   1.23 i/c 
+
+-- erasing half the elements, one erase(key) call at a time --
+std::map erase(key)                              :    127.04 ns/elem  (  254.38 ns per erased element)
+std::unordered_map erase(key)                    :     24.73 ns/elem  (   49.53 ns per erased element)
+std::flat_map erase(key)                         :   5338.94 ns/elem  (10690.70 ns per erased element)
+
+-- erasing half the elements with std::erase_if --
+std::map erase_if                                :     35.86 ns/elem  (   71.80 ns per erased element)
+std::unordered_map erase_if                      :     20.48 ns/elem  (   41.00 ns per erased element)
+std::flat_map erase_if                           :      4.60 ns/elem  (    9.22 ns per erased element)
+
+-- heap held, bytes per element (payload: 16 bytes) --
+std::map                                         :     64.00
+std::unordered_map                               :     45.84
+std::flat_map                                    :     20.97
+
+===== 1000000 elements =====
+
+-- inserting 1000000 elements one at a time, random key order --
+std::map insert                                  :    374.58 ns/op   3.42 GHz   1303.96 c    584.59 i   0.45 i/c 
+std::unordered_map insert                        :    146.83 ns/op   3.48 GHz    510.84 c    504.86 i   0.99 i/c 
+std::flat_map insert                             :   (skipped: quadratic)
+
+-- inserting 1000000 elements one at a time, increasing key order --
+std::map insert (sorted)                         :    145.07 ns/op   3.40 GHz    505.40 c    745.29 i   1.47 i/c 
+std::unordered_map insert (sorted)               :    147.03 ns/op   3.40 GHz    511.64 c    504.86 i   0.99 i/c 
+std::flat_map insert (sorted)                    :     15.45 ns/op   3.40 GHz     53.74 c    263.54 i   4.90 i/c 
+
+-- constructing from a range of 1000000 elements, random key order --
+std::map from range                              :    365.25 ns/op   3.44 GHz   1269.92 c    462.65 i   0.36 i/c 
+std::unordered_map from range                    :    146.22 ns/op   3.41 GHz    508.69 c    498.86 i   0.98 i/c 
+std::flat_map from range                         :     72.77 ns/op   3.48 GHz    253.20 c    243.27 i   0.96 i/c 
+
+-- constructing from a sorted range of 1000000 elements --
+std::map from sorted range                       :    182.57 ns/op   3.48 GHz    635.58 c    601.15 i   0.95 i/c 
+std::unordered_map from sorted range             :    149.01 ns/op   3.46 GHz    518.39 c    498.86 i   0.96 i/c 
+std::flat_map from sorted range                  :     13.00 ns/op   3.48 GHz     45.31 c    184.28 i   4.07 i/c 
+
+-- 1000000 independent lookups, all keys present --
+std::map find (hit)                              :    184.09 ns/op   3.48 GHz    641.29 c    155.96 i   0.24 i/c 
+std::unordered_map find (hit)                    :     17.88 ns/op   3.48 GHz     62.31 c     25.46 i   0.41 i/c 
+std::flat_map find (hit)                         :    145.79 ns/op   3.48 GHz    507.39 c    177.25 i   0.35 i/c 
+
+-- 1000000 independent lookups, no key present --
+std::map find (miss)                             :    177.18 ns/op   3.48 GHz    616.63 c    155.95 i   0.25 i/c 
+std::unordered_map find (miss)                   :     23.91 ns/op   3.42 GHz     83.32 c     29.37 i   0.35 i/c 
+std::flat_map find (miss)                        :    142.47 ns/op   3.48 GHz    495.99 c    176.25 i   0.36 i/c 
+
+-- 1000000 dependent lookups (each key comes from the previous value) --
+std::map find (chain)                            :    466.37 ns/op   3.46 GHz   1624.29 c    154.96 i   0.10 i/c 
+std::unordered_map find (chain)                  :    136.22 ns/op   3.48 GHz    474.85 c     17.54 i   0.04 i/c 
+std::flat_map find (chain)                       :    192.71 ns/op   3.48 GHz    671.02 c    177.25 i   0.26 i/c 
+
+-- iterating over all 1000000 elements --
+std::map iterate                                 :     54.70 ns/op   3.46 GHz    190.63 c     20.75 i   0.11 i/c 
+std::unordered_map iterate                       :     20.89 ns/op   3.47 GHz     72.83 c      4.00 i   0.05 i/c 
+std::flat_map iterate                            :      0.23 ns/op   3.42 GHz      0.79 c      0.44 i   0.56 i/c 
+
+-- erasing half the elements, one erase(key) call at a time --
+std::map erase(key)                              :    220.72 ns/elem  (  441.35 ns per erased element)
+std::unordered_map erase(key)                    :     36.36 ns/elem  (   72.70 ns per erased element)
+std::flat_map erase(key)                         :   (skipped: quadratic)
+
+-- erasing half the elements with std::erase_if --
+std::map erase_if                                :     55.48 ns/elem  (  110.94 ns per erased element)
+std::unordered_map erase_if                      :     29.96 ns/elem  (   59.91 ns per erased element)
+std::flat_map erase_if                           :      4.72 ns/elem  (    9.44 ns per erased element)
+
+-- heap held, bytes per element (payload: 16 bytes) --
+std::map                                         :     64.00
+std::unordered_map                               :     43.58
+std::flat_map                                    :     16.78
+
+===== 10000000 elements =====
+
+-- inserting 10000000 elements one at a time, random key order --
+std::map insert                                  :    821.62 ns/op   3.45 GHz   2833.12 c    621.12 i   0.22 i/c 
+std::unordered_map insert                        :    357.74 ns/op   3.45 GHz   1234.16 c    500.41 i   0.41 i/c 
+std::flat_map insert                             :   (skipped: quadratic)
+
+-- inserting 10000000 elements one at a time, increasing key order --
+std::map insert (sorted)                         :    214.42 ns/op   3.45 GHz    739.89 c    818.83 i   1.11 i/c 
+std::unordered_map insert (sorted)               :    356.59 ns/op   3.45 GHz   1229.78 c    500.41 i   0.41 i/c 
+std::flat_map insert (sorted)                    :     19.83 ns/op   3.42 GHz     69.02 c    299.18 i   4.33 i/c 
+
+-- constructing from a range of 10000000 elements, random key order --
+std::map from range                              :    808.15 ns/op   3.45 GHz   2788.39 c    489.21 i   0.18 i/c 
+std::unordered_map from range                    :    355.82 ns/op   3.46 GHz   1230.51 c    494.41 i   0.40 i/c 
+std::flat_map from range                         :     86.81 ns/op   3.40 GHz    297.37 c    277.77 i   0.93 i/c 
+
+-- constructing from a sorted range of 10000000 elements --
+std::map from sorted range                       :    249.30 ns/op   3.45 GHz    860.36 c    654.64 i   0.76 i/c 
+std::unordered_map from sorted range             :    355.77 ns/op   3.45 GHz   1227.39 c    494.40 i   0.40 i/c 
+std::flat_map from sorted range                  :     21.10 ns/op   3.43 GHz     73.47 c    221.87 i   3.02 i/c 
+
+-- 10000000 independent lookups, all keys present --
+std::map find (hit)                              :    420.09 ns/op   3.45 GHz   1450.74 c    179.29 i   0.12 i/c 
+std::unordered_map find (hit)                    :     38.59 ns/op   3.42 GHz    134.24 c     26.51 i   0.20 i/c 
+std::flat_map find (hit)                         :    231.06 ns/op   3.45 GHz    797.11 c    203.71 i   0.26 i/c 
+
+-- 10000000 independent lookups, no key present --
+std::map find (miss)                             :    414.51 ns/op   3.44 GHz   1428.42 c    179.29 i   0.13 i/c 
+std::unordered_map find (miss)                   :     48.64 ns/op   3.45 GHz    169.18 c     31.50 i   0.19 i/c 
+std::flat_map find (miss)                        :    219.86 ns/op   3.45 GHz    760.69 c    202.71 i   0.27 i/c 
+
+-- 10000000 dependent lookups (each key comes from the previous value) --
+std::map find (chain)                            :   1032.81 ns/op   3.45 GHz   3564.32 c    178.29 i   0.05 i/c 
+std::unordered_map find (chain)                  :    406.40 ns/op   3.45 GHz   1403.56 c     17.74 i   0.01 i/c 
+std::flat_map find (chain)                       :    429.98 ns/op   3.45 GHz   1484.68 c    203.71 i   0.14 i/c 
+
+-- iterating over all 10000000 elements --
+std::map iterate                                 :    119.57 ns/op   3.45 GHz    413.31 c     20.75 i   0.05 i/c 
+std::unordered_map iterate                       :     63.60 ns/op   3.45 GHz    221.52 c      4.00 i   0.02 i/c 
+std::flat_map iterate                            :      0.30 ns/op   3.48 GHz      1.05 c      0.44 i   0.42 i/c 
+
+-- erasing half the elements, one erase(key) call at a time --
+std::map erase(key)                              :    537.39 ns/elem  ( 1074.49 ns per erased element)
+std::unordered_map erase(key)                    :     93.81 ns/elem  (  187.57 ns per erased element)
+std::flat_map erase(key)                         :   (skipped: quadratic)
+
+-- erasing half the elements with std::erase_if --
+std::map erase_if                                :    116.20 ns/elem  (  232.34 ns per erased element)
+std::unordered_map erase_if                      :     77.00 ns/elem  (  153.96 ns per erased element)
+std::flat_map erase_if                           :      4.85 ns/elem  (    9.70 ns per erased element)
+
+-- heap held, bytes per element (payload: 16 bytes) --
+std::map                                         :     64.00
+std::unordered_map                               :     41.69
+std::flat_map                                    :     26.84
