@@ -5,8 +5,6 @@ These instructions are called NEON. But many newer processors have a different S
 
 In April, I wrote that the SVE2 `match` instruction might be [the fastest way to match characters on ARM processors](https://lemire.me/blog/2026/04/19/the-fastest-way-to-match-characters-on-arm-processors/). At the time, my benchmark was a toy. The question was whether the idea survives contact with a real parser. Madhurendra Purbay, an engineer at ARM, answered the question with a [pull request to the simdjson library](https://github.com/simdjson/simdjson/pull/2863). Let me go through what it does and what it buys us.
 
-## The problem
-
 The simdjson library includes a fast JSON parser. JSON is a ubiquitous data format online; everyone uses it. It is made of strings, numbers, arrays (`[1,2,3]`) and *objects*. An object is a key-value map where keys are strings, written as `{"key1": 1, "key2": 2}`. You can combine arrays and objects (e.g., an object can be in an array). 
 
 When the simdjson library indexes a JSON document, it first computes, for each block of 64 bytes, a few 64-bit masks. One of them marks the JSON *structural* characters (`,`, `:`, `[`, `]`, `{`, `}`). From these masks and a few others, we derive the positions of all the JSON tokens.
@@ -92,35 +90,15 @@ The `match` instruction is part of SVE2, not the original SVE. Among the AWS Gra
 
 Both have 128-bit SVE registers.
 
-Here is the gain in the indexing stage (stage 1), file by file, as the ratio of the throughput with `match` to the throughput with NEON. A value of 1.10 means 10% faster.
+Here is the gain in the indexing stage (stage 1), file by file, as the percentage increase in throughput with `match` over NEON. The dashed line in each panel is the geometric mean over the 22 files. First with GCC:
 
-| file | Graviton 4, GCC | Graviton 4, clang | Graviton 5, GCC | Graviton 5, clang |
-| --- | ---: | ---: | ---: | ---: |
-| apache_builds | 1.09 | 1.14 | 1.02 | 1.05 |
-| canada | 1.07 | 1.06 | 0.97 | 1.03 |
-| citm_catalog | 1.02 | 1.14 | 1.05 | 1.06 |
-| github_events | 1.08 | 1.14 | 1.05 | 1.08 |
-| google_maps_api_compact_response | 1.01 | 1.01 | 1.00 | 1.02 |
-| google_maps_api_response | 1.04 | 1.09 | 1.01 | 1.02 |
-| gsoc-2018 | 1.09 | 1.16 | 1.11 | 1.11 |
-| instruments | 1.05 | 1.08 | 1.00 | 1.01 |
-| marine_ik | 1.04 | 1.03 | 1.02 | 1.02 |
-| mesh | 1.02 | 1.03 | 0.98 | 1.01 |
-| mesh.pretty | 1.04 | 1.09 | 1.01 | 1.02 |
-| numbers | 1.06 | 1.08 | 1.01 | 1.02 |
-| random | 1.14 | 1.14 | 1.05 | 1.06 |
-| repeat | 1.07 | 1.12 | 1.09 | 1.08 |
-| semanticscholar-corpus | 1.06 | 1.08 | 1.06 | 1.06 |
-| tree-pretty | 1.05 | 1.09 | 1.01 | 1.02 |
-| twitter | 1.04 | 1.11 | 1.04 | 1.05 |
-| twitter_api_compact_response | 1.08 | 1.09 | 1.02 | 1.04 |
-| twitter_api_response | 1.06 | 1.10 | 1.03 | 1.04 |
-| twitter_timeline | 1.07 | 1.10 | 1.02 | 1.04 |
-| twitterescaped | 1.07 | 1.10 | 1.05 | 1.06 |
-| update-center | 1.04 | 1.11 | 1.02 | 1.05 |
-| **geometric mean** | **1.06** | **1.09** | **1.03** | **1.04** |
+![Indexing throughput gain of the SVE2 match classifier over NEON, per file, on Graviton 4 and Graviton 5 with GCC](speedup_gcc.png)
 
-The files that gain the least (`canada`, `mesh`, `marine_ik`) are mostly numbers, where the indexing stage is cheap to begin with. The files that gain the most (`gsoc-2018`, `random`, `github_events`) are the ones with a lot of structure. No file gets slower, except `canada` on the Graviton 5 with GCC (by 3%, at the edge of what I can measure).
+And with clang:
+
+![Indexing throughput gain of the SVE2 match classifier over NEON, per file, on Graviton 4 and Graviton 5 with clang](speedup_clang.png)
+
+The files that gain the least (`canada`, `mesh`, `marine_ik`) are mostly numbers, where the indexing stage is cheap to begin with. The files that gain the most (`gsoc-2018`, `random`, `github_events`) are the ones with a lot of structure. No file gets slower, except `canada` and `mesh` on the Graviton 5 with GCC (by 2% to 3%, at the edge of what I can measure).
 
 In absolute terms, the indexing stage goes from 4.8 GB/s to 5.3 GB/s on the Graviton 4 with clang (5.5 GB/s to 5.8 GB/s with GCC), and from 6.3 GB/s to 6.6 GB/s on the Graviton 5 with clang (7.1 GB/s to 7.3 GB/s with GCC). The Graviton 4 benefits more than the Graviton 5.
 
