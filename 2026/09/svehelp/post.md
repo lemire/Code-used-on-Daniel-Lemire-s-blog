@@ -1,4 +1,4 @@
-# SVE2 helps simdjson on AWS Graviton processors
+# Faster JSON parsing with SVE2 on ARM processors
 
 ARM processors, like those in your phone, have instructions capable of processing several elements at once (SIMD).
 These instructions are called NEON. But many newer processors have a different SIMD extension called SVE. The latest ARM processors have SVE2. Unfortunately, Apple has not yet adopted SVE, but SVE processors are available in the cloud.
@@ -92,11 +92,11 @@ Both have 128-bit SVE registers.
 
 Here is the gain in the indexing stage (stage 1), file by file, as the percentage increase in throughput with `match` over NEON. The dashed line in each panel is the geometric mean over the 22 files. First with GCC:
 
-![Indexing throughput gain of the SVE2 match classifier over NEON, per file, on Graviton 4 and Graviton 5 with GCC](speedup_gcc.png)
+![Indexing throughput gain of the SVE2 match classifier over NEON, per file, on Graviton 4 and Graviton 5 with GCC](speedup_gcc.webp)
 
 And with clang:
 
-![Indexing throughput gain of the SVE2 match classifier over NEON, per file, on Graviton 4 and Graviton 5 with clang](speedup_clang.png)
+![Indexing throughput gain of the SVE2 match classifier over NEON, per file, on Graviton 4 and Graviton 5 with clang](speedup_clang.webp)
 
 The files that gain the least (`canada`, `mesh`, `marine_ik`) are mostly numbers, where the indexing stage is cheap to begin with. The files that gain the most (`gsoc-2018`, `random`, `github_events`) are the ones with a lot of structure. No file gets slower, except `canada` and `mesh` on the Graviton 5 with GCC (by 2% to 3%, at the edge of what I can measure).
 
