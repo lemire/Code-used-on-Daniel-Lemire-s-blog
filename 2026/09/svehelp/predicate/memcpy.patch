@@ -1,0 +1,48 @@
+diff --git a/src/arm64.cpp b/src/arm64.cpp
+index 193c6772..6d656118 100644
+--- a/src/arm64.cpp
++++ b/src/arm64.cpp
+@@ -8,7 +8,6 @@
+ #include <simdjson/arm64.h>
+ #include <simdjson/arm64/implementation.h>
+ 
+-#define SIMDJSON_ARM64_MIXED4_WRITER
+ #ifdef SIMDJSON_ARM64_MIXED4_WRITER
+ #define SIMDJSON_GENERIC_JSON_STRUCTURAL_INDEXER_CUSTOM_BIT_INDEXER
+ #endif
+@@ -87,28 +86,19 @@ simdjson_inline svbool_t match_operators_sve2(uint8x16_t input) {
+   return svmatch_u8(pg, data, table);
+ }
+ 
+-#define SIMDJSON_ARM64_STORE_PREDICATE(PREDICATE, DESTINATION) \
+-  __asm__ volatile("str %0, [%1]" : : "Upl"(PREDICATE), "r"(DESTINATION) : "memory")
+-
+-// STR P stores VL/64 bytes, up to the architectural maximum of 32 bytes.
+-// This conversion consumes only the first 16 bits of each predicate.
++// A predicate is a sizeless object, but it has an address. Copying its first
++// two bytes reads lanes 0-15 (STR P layout: one bit per byte lane), whatever
++// the vector length. Compilers implement this as str p + ldrh.
+ simdjson_inline uint64_t operator_predicates_to_bitmask(
+     svbool_t p0, svbool_t p1, svbool_t p2, svbool_t p3) {
+-  alignas(16) uint8_t stored[4][32];
+-  SIMDJSON_ARM64_STORE_PREDICATE(p0, stored[0]);
+-  SIMDJSON_ARM64_STORE_PREDICATE(p1, stored[1]);
+-  SIMDJSON_ARM64_STORE_PREDICATE(p2, stored[2]);
+-  SIMDJSON_ARM64_STORE_PREDICATE(p3, stored[3]);
+   uint16_t m0, m1, m2, m3;
+-  __builtin_memcpy(&m0, stored[0], sizeof(m0));
+-  __builtin_memcpy(&m1, stored[1], sizeof(m1));
+-  __builtin_memcpy(&m2, stored[2], sizeof(m2));
+-  __builtin_memcpy(&m3, stored[3], sizeof(m3));
++  std::memcpy(&m0, &p0, sizeof(m0));
++  std::memcpy(&m1, &p1, sizeof(m1));
++  std::memcpy(&m2, &p2, sizeof(m2));
++  std::memcpy(&m3, &p3, sizeof(m3));
+   return uint64_t(m0) | (uint64_t(m1) << 16) |
+          (uint64_t(m2) << 32) | (uint64_t(m3) << 48);
+ }
+-
+-#undef SIMDJSON_ARM64_STORE_PREDICATE
+ #endif
+ 
+ simdjson_inline json_character_block json_character_block::classify(const simd::simd8x64<uint8_t>& in) {
