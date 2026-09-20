@@ -1,0 +1,28 @@
+Model name:                              Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz
+clang version 21.1.8 (RESF 21.1.8-2.el9)
+summing 2048 64-bit integers (16384 bytes)
+
+                             iterations      GHz  cycles/it   instr/it  branch/it branch/cyc      IPC
+sum, no unrolling                  2048     3.19      1.339      4.008      1.001      0.747     2.99
+sum, unrolled 2x                   1024     3.19      1.610      5.014      1.002      0.622     3.11
+sum, unrolled 4x                    512     3.19      2.098      7.034      1.004      0.479     3.35
+sum, unrolled 8x                    256     3.19      4.139     11.115      1.008      0.244     2.69
+sum, unrolled 16x                   128     3.19      8.231     19.222      1.017      0.124     2.34
+sum, compiler (-O3)                2048     3.19      0.143      0.452      0.065      0.459     3.17
+
+(the sum rows count one iteration per loop trip, except the compiler row which counts one per element)
+
+                             iterations      GHz  cycles/it   instr/it  branch/it branch/cyc      IPC
+empty loop                         2048     3.19      1.016      2.003      1.001      0.985     1.97
+loop + 1 dense jump                4096     3.19      1.006      1.502      1.001      0.995     1.49
+loop + 2 dense jumps               6144     3.19      1.294      1.335      1.000      0.773     1.03
+loop + 4 dense jumps              10240     3.19      2.002      1.201      1.000      0.500     0.60
+loop + 8 dense jumps              18432     3.19      1.784      1.112      1.000      0.561     0.62
+loop + 16 dense jumps             34816     3.19      2.351      1.060      1.000      0.425     0.45
+loop + 1 sparse jump               4096     3.19      1.005      1.501      1.001      0.995     1.49
+loop + 2 sparse jumps              6144     3.19      1.004      1.335      1.000      0.997     1.33
+loop + 4 sparse jumps             10240     3.19      1.002      1.201      1.000      0.998     1.20
+loop + 8 sparse jumps             18432     3.19      1.001      1.112      1.000      0.999     1.11
+loop + 16 sparse jumps            34816     3.19      1.001      1.059      1.000      0.999     1.06
+
+(for these rows, one iteration = one taken branch)

@@ -1,0 +1,28 @@
+Model name:                              AMD EPYC 9R14
+Ubuntu clang version 21.1.8 (6ubuntu1)
+summing 2048 64-bit integers (16384 bytes)
+
+                             iterations      GHz  cycles/it   instr/it  branch/it branch/cyc      IPC
+sum, no unrolling                  2048     3.66      1.044      4.007      1.001      0.959     3.84
+sum, unrolled 2x                   1024     3.66      1.026      5.014      1.002      0.977     4.89
+sum, unrolled 4x                    512     3.67      1.971      7.034      1.004      0.510     3.57
+sum, unrolled 8x                    256     3.66      2.753     11.114      1.008      0.366     4.04
+sum, unrolled 16x                   128     3.66      5.448     19.221      1.017      0.187     3.53
+sum, compiler (-O3)                2048     3.66      0.136      0.235      0.034      0.252     1.73
+
+(the sum rows count one iteration per loop trip, except the compiler row which counts one per element)
+
+                             iterations      GHz  cycles/it   instr/it  branch/it branch/cyc      IPC
+empty loop                         2048     3.66      1.012      2.003      1.001      0.989     1.98
+loop + 1 dense jump                4096     3.66      1.005      1.502      1.001      0.995     1.49
+loop + 2 dense jumps               6144     3.66      1.004      1.335      1.000      0.997     1.33
+loop + 4 dense jumps              10240     3.66      1.002      1.201      1.000      0.998     1.20
+loop + 8 dense jumps              18432     3.67      1.001      1.112      1.000      0.999     1.11
+loop + 16 dense jumps             34816     3.66      2.008      1.059      1.000      0.498     0.53
+loop + 1 sparse jump               4096     3.66      1.005      1.501      1.001      0.995     1.49
+loop + 2 sparse jumps              6144     3.66      1.004      1.335      1.000      0.997     1.33
+loop + 4 sparse jumps             10240     3.67      1.002      1.201      1.000      0.998     1.20
+loop + 8 sparse jumps             18432     3.66      1.001      1.112      1.000      0.999     1.11
+loop + 16 sparse jumps            34816     3.66      1.001      1.059      1.000      0.999     1.06
+
+(for these rows, one iteration = one taken branch)

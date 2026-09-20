@@ -1,0 +1,28 @@
+Model name:                              Intel(R) Xeon(R) 6975P-C
+g++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+summing 2048 64-bit integers (16384 bytes)
+
+                             iterations      GHz  cycles/it   instr/it  branch/it branch/cyc      IPC
+sum, no unrolling                  2048     3.87      1.017      4.008      1.001      0.984     3.94
+sum, unrolled 2x                   1024     3.87      1.103      5.016      1.002      0.908     4.55
+sum, unrolled 4x                    512     3.87      1.482      7.036      1.004      0.677     4.75
+sum, unrolled 8x                    256     3.87      2.849     11.122      1.008      0.354     3.90
+sum, unrolled 16x                   128     3.87      5.632     19.238      1.017      0.181     3.42
+sum, compiler (-O3)                2048     3.87      0.252      1.012      0.252      1.002     4.02
+
+(the sum rows count one iteration per loop trip, except the compiler row which counts one per element)
+
+                             iterations      GHz  cycles/it   instr/it  branch/it branch/cyc      IPC
+empty loop                         2048     3.87      1.016      2.003      1.001      0.986     1.97
+loop + 1 dense jump                4096     3.87      0.513      1.502      1.001      1.950     2.93
+loop + 2 dense jumps               6144     3.87      0.344      1.335      1.000      2.911     3.88
+loop + 4 dense jumps              10240     3.87      1.014      1.201      1.000      0.986     1.18
+loop + 8 dense jumps              18432     3.87      5.118      1.113      1.000      0.195     0.22
+loop + 16 dense jumps             34816     3.87      3.864      1.060      1.000      0.259     0.27
+loop + 1 sparse jump               4096     3.87      0.513      1.503      1.001      1.950     2.93
+loop + 2 sparse jumps              6144     3.87      0.342      1.335      1.000      2.927     3.91
+loop + 4 sparse jumps             10240     3.87      0.339      1.201      1.000      2.950     3.54
+loop + 8 sparse jumps             18432     3.87      0.336      1.112      1.000      2.975     3.31
+loop + 16 sparse jumps            34816     3.87      0.700      1.059      1.000      1.428     1.51
+
+(for these rows, one iteration = one taken branch)

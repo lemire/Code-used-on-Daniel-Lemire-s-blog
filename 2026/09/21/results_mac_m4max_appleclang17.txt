@@ -1,0 +1,26 @@
+summing 2048 64-bit integers (16384 bytes)
+
+                             iterations      GHz  cycles/it   instr/it  branch/it branch/cyc      IPC
+sum, no unrolling                  2048     4.40      1.016      4.019      1.001      0.985     3.95
+sum, unrolled 2x                   1024     4.43      1.032      5.032      1.002      0.971     4.87
+sum, unrolled 4x                    512     4.20      1.288      9.040      1.004      0.779     7.02
+sum, unrolled 8x                    256     4.14      1.888     15.135      1.008      0.534     8.02
+sum, unrolled 16x                   128     4.10      3.560     27.193      1.017      0.286     7.64
+sum, compiler (-O3)                2048     4.33      0.234      1.012      0.127      0.544     4.32
+
+(the sum rows count one iteration per loop trip, except the compiler row which counts one per element)
+
+                             iterations      GHz  cycles/it   instr/it  branch/it branch/cyc      IPC
+empty loop                         2048     4.42      1.016      2.015      1.001      0.985     1.98
+loop + 1 dense jump                4096     4.44      0.509      1.508      1.001      1.967     2.96
+loop + 2 dense jumps               6144     4.41      0.671      1.338      1.000      1.490     1.99
+loop + 4 dense jumps              10240     4.44      0.602      1.203      1.000      1.660     2.00
+loop + 8 dense jumps              18432     4.46      0.558      1.119      1.000      1.791     2.00
+loop + 16 dense jumps             34816     4.46      0.531      1.063      1.000      1.884     2.00
+loop + 1 sparse jump               4096     4.46      1.007      1.508      1.001      0.993     1.50
+loop + 2 sparse jumps              6144     4.42      1.003      1.338      1.000      0.997     1.33
+loop + 4 sparse jumps             10240     4.43      1.004      1.216      1.000      0.996     1.21
+loop + 8 sparse jumps             18432     4.42      1.002      1.120      1.000      0.998     1.12
+loop + 16 sparse jumps            34816     4.43      1.001      1.063      1.000      0.999     1.06
+
+(for these rows, one iteration = one taken branch)

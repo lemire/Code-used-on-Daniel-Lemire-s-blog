@@ -1,0 +1,28 @@
+Model name:                              Neoverse-V3
+Ubuntu clang version 21.1.8 (6ubuntu1)
+summing 2048 64-bit integers (16384 bytes)
+
+                             iterations      GHz  cycles/it   instr/it  branch/it branch/cyc      IPC
+sum, no unrolling                  2048     3.28      1.292      4.012      1.001      0.775     3.11
+sum, unrolled 2x                   1024     3.28      1.185      5.018      1.002      0.846     4.24
+sum, unrolled 4x                    512     3.28      1.597      9.038      1.004      0.629     5.66
+sum, unrolled 8x                    256     3.28      2.378     15.130      1.008      0.424     6.36
+sum, unrolled 16x                   128     3.28      4.331     27.182      1.017      0.235     6.28
+sum, compiler (-O3)                2048     3.28      0.475      1.761      0.253      0.531     3.70
+
+(the sum rows count one iteration per loop trip, except the compiler row which counts one per element)
+
+                             iterations      GHz  cycles/it   instr/it  branch/it branch/cyc      IPC
+empty loop                         2048     3.28      1.016      2.009      1.001      0.986     1.98
+loop + 1 dense jump                4096     3.28      0.508      1.504      1.001      1.971     2.96
+loop + 2 dense jumps               6144     3.28      0.671      1.336      1.000      1.490     1.99
+loop + 4 dense jumps              10240     3.28      0.603      1.201      1.000      1.659     1.99
+loop + 8 dense jumps              18432     3.28      0.557      1.112      1.000      1.796     2.00
+loop + 16 dense jumps             34816     3.28      0.530      1.059      1.000      1.886     2.00
+loop + 1 sparse jump               4096     3.28      0.508      1.504      1.001      1.969     2.96
+loop + 2 sparse jumps              6144     3.28      0.670      1.336      1.000      1.494     2.00
+loop + 4 sparse jumps             10240     3.28      0.603      1.202      1.000      1.659     1.99
+loop + 8 sparse jumps             18432     3.28      0.695      1.112      1.000      1.439     1.60
+loop + 16 sparse jumps            34816     3.28      0.530      1.059      1.000      1.886     2.00
+
+(for these rows, one iteration = one taken branch)

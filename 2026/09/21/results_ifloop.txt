@@ -1,0 +1,13 @@
+Go lastHit loop (if + back-edge). cycles/iter from perf except M4
+(wall time at 4.40 GHz). Always-miss: taken skip + taken back-edge.
+Always-hit: only the back-edge is taken. ~3 branches/iter including
+a not-taken bounds check. Branch-misses ~0.02%.
+
+                    miss cyc/it   hit cyc/it   GHz
+Apple M4 Max             1.37         1.36     4.40  (time)
+Graviton 5 (c9g)         2.25         1.26     3.09
+Zen 4 (c7a, 9R14)        3.06         2.05     3.57
+Zen 5 (c8a, 9R45)        2.05         1.36     4.40
+Ice Lake (Gold 6338)     2.04         1.54     1.97
+Emerald Rapids (6548N)   2.27         1.86     3.48
+Granite Rapids (6975P-C) 1.55         1.56     3.81
