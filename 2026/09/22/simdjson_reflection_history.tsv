@@ -1,0 +1,525 @@
+tc	idx	sha	date	bench	mbs	cb	ib	subject
+clangpaper	000	8c5cc8c4435a	2026-02-02T11:28:08-05:00	serialization_twitter	3494.32	0.99	4.04	updating the reflection benchmarks (#2598)
+clangpaper	000	8c5cc8c4435a	2026-02-02T11:28:08-05:00	serialization_citm	2779.61	1.25	6.17	updating the reflection benchmarks (#2598)
+clangpaper	000	8c5cc8c4435a	2026-02-02T11:28:08-05:00	parsing_twitter	4792.27	0.72	2.61	updating the reflection benchmarks (#2598)
+clangpaper	000	8c5cc8c4435a	2026-02-02T11:28:08-05:00	parsing_citm	2291.82	1.5	6.14	updating the reflection benchmarks (#2598)
+clangpaper	001	b7124f7c6421	2026-02-06T20:34:00-05:00	serialization_twitter	3488.28	0.99	4.04	inlining get_single_implementation (#2600)
+clangpaper	001	b7124f7c6421	2026-02-06T20:34:00-05:00	serialization_citm	2755.95	1.25	6.17	inlining get_single_implementation (#2600)
+clangpaper	001	b7124f7c6421	2026-02-06T20:34:00-05:00	parsing_twitter	4794.83	0.72	2.61	inlining get_single_implementation (#2600)
+clangpaper	001	b7124f7c6421	2026-02-06T20:34:00-05:00	parsing_citm	2292.55	1.5	6.14	inlining get_single_implementation (#2600)
+clangpaper	002	e2ca00c841c3	2026-02-08T22:36:34-05:00	serialization_twitter	3458.93	1.0	4.04	reenabling bench_nlohmann_parsing in twitter bench
+clangpaper	002	e2ca00c841c3	2026-02-08T22:36:34-05:00	serialization_citm	2794.53	1.24	6.17	reenabling bench_nlohmann_parsing in twitter bench
+clangpaper	002	e2ca00c841c3	2026-02-08T22:36:34-05:00	parsing_twitter	4777.2	0.72	2.6	reenabling bench_nlohmann_parsing in twitter bench
+clangpaper	002	e2ca00c841c3	2026-02-08T22:36:34-05:00	parsing_citm	2289.14	1.5	6.14	reenabling bench_nlohmann_parsing in twitter bench
+clangpaper	003	6e60ed833808	2026-02-08T23:42:43-05:00	serialization_twitter	3495.6	0.99	4.04	updating rust
+clangpaper	003	6e60ed833808	2026-02-08T23:42:43-05:00	serialization_citm	2751.99	1.25	6.17	updating rust
+clangpaper	003	6e60ed833808	2026-02-08T23:42:43-05:00	parsing_twitter	4752.39	0.72	2.6	updating rust
+clangpaper	003	6e60ed833808	2026-02-08T23:42:43-05:00	parsing_citm	2286.0	1.51	6.14	updating rust
+clangpaper	004	e362b18499ef	2026-02-09T00:31:31-05:00	serialization_twitter	3500.42	0.99	4.04	saving.
+clangpaper	004	e362b18499ef	2026-02-09T00:31:31-05:00	serialization_citm	2794.54	1.25	6.17	saving.
+clangpaper	004	e362b18499ef	2026-02-09T00:31:31-05:00	parsing_twitter	4767.0	0.72	2.6	saving.
+clangpaper	004	e362b18499ef	2026-02-09T00:31:31-05:00	parsing_citm	2288.91	1.51	6.14	saving.
+clangpaper	005	af2a43610e7c	2026-02-16T11:50:27-05:00	serialization_twitter	4633.2	0.75	3.45	perf: SIMD string escaping and batch integer formatting optimizations (#2605)
+clangpaper	005	af2a43610e7c	2026-02-16T11:50:27-05:00	serialization_citm	2813.16	1.23	6.06	perf: SIMD string escaping and batch integer formatting optimizations (#2605)
+clangpaper	005	af2a43610e7c	2026-02-16T11:50:27-05:00	parsing_twitter	4821.86	0.72	2.6	perf: SIMD string escaping and batch integer formatting optimizations (#2605)
+clangpaper	005	af2a43610e7c	2026-02-16T11:50:27-05:00	parsing_citm	2300.99	1.5	6.14	perf: SIMD string escaping and batch integer formatting optimizations (#2605)
+clangpaper	006	95d8c8181008	2026-02-18T20:08:53-05:00	serialization_twitter	4618.98	0.75	3.45	When using C++11, we could violate the one definition rule (#2606)
+clangpaper	006	95d8c8181008	2026-02-18T20:08:53-05:00	serialization_citm	2811.77	1.24	6.06	When using C++11, we could violate the one definition rule (#2606)
+clangpaper	006	95d8c8181008	2026-02-18T20:08:53-05:00	parsing_twitter	4750.44	0.72	2.6	When using C++11, we could violate the one definition rule (#2606)
+clangpaper	006	95d8c8181008	2026-02-18T20:08:53-05:00	parsing_citm	2303.46	1.5	6.14	When using C++11, we could violate the one definition rule (#2606)
+clangpaper	007	06c774c655d5	2026-02-18T23:50:58-05:00	serialization_twitter	4634.19	0.75	3.45	4.3.0
+clangpaper	007	06c774c655d5	2026-02-18T23:50:58-05:00	serialization_citm	2808.17	1.23	6.06	4.3.0
+clangpaper	007	06c774c655d5	2026-02-18T23:50:58-05:00	parsing_twitter	4827.38	0.72	2.6	4.3.0
+clangpaper	007	06c774c655d5	2026-02-18T23:50:58-05:00	parsing_citm	2293.58	1.5	6.14	4.3.0
+clangpaper	008	dbe0c1543ebe	2026-02-20T16:16:37-05:00	serialization_twitter	4635.28	0.75	3.44	fix bad hint (#2610)
+clangpaper	008	dbe0c1543ebe	2026-02-20T16:16:37-05:00	serialization_citm	2815.56	1.22	6.05	fix bad hint (#2610)
+clangpaper	008	dbe0c1543ebe	2026-02-20T16:16:37-05:00	parsing_twitter	4775.86	0.72	2.6	fix bad hint (#2610)
+clangpaper	008	dbe0c1543ebe	2026-02-20T16:16:37-05:00	parsing_citm	2291.72	1.5	6.14	fix bad hint (#2610)
+clangpaper	009	e829566589ce	2026-02-20T16:17:16-05:00	serialization_twitter	4636.3	0.75	3.44	4.3.1
+clangpaper	009	e829566589ce	2026-02-20T16:17:16-05:00	serialization_citm	2791.19	1.23	6.05	4.3.1
+clangpaper	009	e829566589ce	2026-02-20T16:17:16-05:00	parsing_twitter	4735.34	0.72	2.6	4.3.1
+clangpaper	009	e829566589ce	2026-02-20T16:17:16-05:00	parsing_citm	2290.85	1.5	6.14	4.3.1
+clangpaper	010	817f10dd7d4e	2026-02-23T15:00:26-05:00	serialization_twitter	4614.54	0.75	3.44	Add LoongArch LSX support for find_next_json_quotable_character (#2608)
+clangpaper	010	817f10dd7d4e	2026-02-23T15:00:26-05:00	serialization_citm	2813.94	1.23	6.05	Add LoongArch LSX support for find_next_json_quotable_character (#2608)
+clangpaper	010	817f10dd7d4e	2026-02-23T15:00:26-05:00	parsing_twitter	4761.56	0.73	2.6	Add LoongArch LSX support for find_next_json_quotable_character (#2608)
+clangpaper	010	817f10dd7d4e	2026-02-23T15:00:26-05:00	parsing_citm	2291.5	1.5	6.14	Add LoongArch LSX support for find_next_json_quotable_character (#2608)
+clangpaper	011	3cd9875f1f1a	2026-02-25T01:06:08-05:00	serialization_twitter	4610.44	0.75	3.44	simplifying the find_next_json_quotable_character fnc for neon processors (#2613)
+clangpaper	011	3cd9875f1f1a	2026-02-25T01:06:08-05:00	serialization_citm	2807.18	1.23	6.05	simplifying the find_next_json_quotable_character fnc for neon processors (#2613)
+clangpaper	011	3cd9875f1f1a	2026-02-25T01:06:08-05:00	parsing_twitter	4781.33	0.72	2.6	simplifying the find_next_json_quotable_character fnc for neon processors (#2613)
+clangpaper	011	3cd9875f1f1a	2026-02-25T01:06:08-05:00	parsing_citm	2291.42	1.5	6.14	simplifying the find_next_json_quotable_character fnc for neon processors (#2613)
+clangpaper	012	ec675d9c6188	2026-02-28T13:11:47-05:00	serialization_twitter	4612.17	0.75	3.44	Add RISC-V RVV support for find_next_json_quotable_character (#2617)
+clangpaper	012	ec675d9c6188	2026-02-28T13:11:47-05:00	serialization_citm	2809.37	1.23	6.05	Add RISC-V RVV support for find_next_json_quotable_character (#2617)
+clangpaper	012	ec675d9c6188	2026-02-28T13:11:47-05:00	parsing_twitter	4787.47	0.72	2.6	Add RISC-V RVV support for find_next_json_quotable_character (#2617)
+clangpaper	012	ec675d9c6188	2026-02-28T13:11:47-05:00	parsing_citm	2292.27	1.51	6.14	Add RISC-V RVV support for find_next_json_quotable_character (#2617)
+clangpaper	013	2922822622d8	2026-03-08T14:06:01-04:00	serialization_twitter	4560.7	0.76	3.44	altivec version of find_next_json_quotable_character (#2622)
+clangpaper	013	2922822622d8	2026-03-08T14:06:01-04:00	serialization_citm	2807.54	1.23	6.05	altivec version of find_next_json_quotable_character (#2622)
+clangpaper	013	2922822622d8	2026-03-08T14:06:01-04:00	parsing_twitter	4778.85	0.72	2.6	altivec version of find_next_json_quotable_character (#2622)
+clangpaper	013	2922822622d8	2026-03-08T14:06:01-04:00	parsing_citm	2298.22	1.5	6.14	altivec version of find_next_json_quotable_character (#2622)
+clangpaper	014	019bf1dfe031	2026-03-12T14:36:01-04:00	serialization_twitter	4652.89	0.75	3.44	adding memory-file mapping (#2625)
+clangpaper	014	019bf1dfe031	2026-03-12T14:36:01-04:00	serialization_citm	2801.93	1.23	6.05	adding memory-file mapping (#2625)
+clangpaper	014	019bf1dfe031	2026-03-12T14:36:01-04:00	parsing_twitter	4789.14	0.72	2.6	adding memory-file mapping (#2625)
+clangpaper	014	019bf1dfe031	2026-03-12T14:36:01-04:00	parsing_citm	2294.2	1.5	6.14	adding memory-file mapping (#2625)
+clangpaper	015	6065b3b4240d	2026-03-12T20:40:43-04:00	serialization_twitter	4626.36	0.75	3.44	disabling loongson LASX runtime dispatching everywhere but GCC15+ (#2626)
+clangpaper	015	6065b3b4240d	2026-03-12T20:40:43-04:00	serialization_citm	2833.72	1.23	6.05	disabling loongson LASX runtime dispatching everywhere but GCC15+ (#2626)
+clangpaper	015	6065b3b4240d	2026-03-12T20:40:43-04:00	parsing_twitter	4783.96	0.72	2.6	disabling loongson LASX runtime dispatching everywhere but GCC15+ (#2626)
+clangpaper	015	6065b3b4240d	2026-03-12T20:40:43-04:00	parsing_citm	2297.86	1.5	6.14	disabling loongson LASX runtime dispatching everywhere but GCC15+ (#2626)
+clangpaper	016	be9469429077	2026-03-12T20:43:36-04:00	serialization_twitter	4625.04	0.75	3.44	v4.4.0
+clangpaper	016	be9469429077	2026-03-12T20:43:36-04:00	serialization_citm	2808.92	1.23	6.05	v4.4.0
+clangpaper	016	be9469429077	2026-03-12T20:43:36-04:00	parsing_twitter	4764.35	0.73	2.6	v4.4.0
+clangpaper	016	be9469429077	2026-03-12T20:43:36-04:00	parsing_citm	2290.14	1.5	6.14	v4.4.0
+clangpaper	017	03e8d14eee6b	2026-03-15T18:40:08-04:00	serialization_twitter	4635.08	0.75	3.44	fix failing CI and rename misleading workflow name (#2630)
+clangpaper	017	03e8d14eee6b	2026-03-15T18:40:08-04:00	serialization_citm	2813.98	1.22	6.05	fix failing CI and rename misleading workflow name (#2630)
+clangpaper	017	03e8d14eee6b	2026-03-15T18:40:08-04:00	parsing_twitter	4782.26	0.72	2.6	fix failing CI and rename misleading workflow name (#2630)
+clangpaper	017	03e8d14eee6b	2026-03-15T18:40:08-04:00	parsing_citm	2291.51	1.5	6.14	fix failing CI and rename misleading workflow name (#2630)
+clangpaper	018	781ea4b495b5	2026-03-17T12:38:11-04:00	serialization_twitter	4585.86	0.75	3.44	fixing issue https://github.com/nodejs/node/pull/62257 (#2631)
+clangpaper	018	781ea4b495b5	2026-03-17T12:38:11-04:00	serialization_citm	2811.65	1.23	6.05	fixing issue https://github.com/nodejs/node/pull/62257 (#2631)
+clangpaper	018	781ea4b495b5	2026-03-17T12:38:11-04:00	parsing_twitter	4773.09	0.72	2.6	fixing issue https://github.com/nodejs/node/pull/62257 (#2631)
+clangpaper	018	781ea4b495b5	2026-03-17T12:38:11-04:00	parsing_citm	2292.64	1.5	6.14	fixing issue https://github.com/nodejs/node/pull/62257 (#2631)
+clangpaper	019	5395aacb8b63	2026-03-17T12:39:07-04:00	serialization_twitter	4644.09	0.75	3.44	v4.4.1
+clangpaper	019	5395aacb8b63	2026-03-17T12:39:07-04:00	serialization_citm	2802.17	1.23	6.05	v4.4.1
+clangpaper	019	5395aacb8b63	2026-03-17T12:39:07-04:00	parsing_twitter	4795.42	0.72	2.6	v4.4.1
+clangpaper	019	5395aacb8b63	2026-03-17T12:39:07-04:00	parsing_citm	2298.66	1.5	6.14	v4.4.1
+clangpaper	020	a1ff05a5e89c	2026-03-20T11:11:38-04:00	serialization_twitter	4666.41	0.74	3.44	Fix RISC-V compilation without RVV (#2637)
+clangpaper	020	a1ff05a5e89c	2026-03-20T11:11:38-04:00	serialization_citm	2819.68	1.22	6.05	Fix RISC-V compilation without RVV (#2637)
+clangpaper	020	a1ff05a5e89c	2026-03-20T11:11:38-04:00	parsing_twitter	4796.33	0.73	2.6	Fix RISC-V compilation without RVV (#2637)
+clangpaper	020	a1ff05a5e89c	2026-03-20T11:11:38-04:00	parsing_citm	2296.8	1.5	6.14	Fix RISC-V compilation without RVV (#2637)
+clangpaper	021	b4a0fd3ff4f0	2026-03-20T11:12:35-04:00	serialization_twitter	4627.2	0.75	3.44	4.4.2
+clangpaper	021	b4a0fd3ff4f0	2026-03-20T11:12:35-04:00	serialization_citm	2800.27	1.24	6.05	4.4.2
+clangpaper	021	b4a0fd3ff4f0	2026-03-20T11:12:35-04:00	parsing_twitter	4773.81	0.72	2.6	4.4.2
+clangpaper	021	b4a0fd3ff4f0	2026-03-20T11:12:35-04:00	parsing_citm	2302.45	1.5	6.14	4.4.2
+clangpaper	022	bddb23177e0c	2026-03-25T17:25:37-04:00	serialization_twitter	4614.93	0.75	3.44	feat: Add DOM tape support for big integers (opt-in) (#2640)
+clangpaper	022	bddb23177e0c	2026-03-25T17:25:37-04:00	serialization_citm	2810.71	1.22	6.05	feat: Add DOM tape support for big integers (opt-in) (#2640)
+clangpaper	022	bddb23177e0c	2026-03-25T17:25:37-04:00	parsing_twitter	4842.91	0.72	2.6	feat: Add DOM tape support for big integers (opt-in) (#2640)
+clangpaper	022	bddb23177e0c	2026-03-25T17:25:37-04:00	parsing_citm	2294.3	1.5	6.14	feat: Add DOM tape support for big integers (opt-in) (#2640)
+clangpaper	023	18d612df15b2	2026-03-25T17:26:13-04:00	serialization_twitter	4604.69	0.75	3.44	4.5.0
+clangpaper	023	18d612df15b2	2026-03-25T17:26:13-04:00	serialization_citm	2764.42	1.25	6.05	4.5.0
+clangpaper	023	18d612df15b2	2026-03-25T17:26:13-04:00	parsing_twitter	4754.98	0.72	2.6	4.5.0
+clangpaper	023	18d612df15b2	2026-03-25T17:26:13-04:00	parsing_citm	2292.18	1.51	6.14	4.5.0
+clangpaper	024	9973f7b3a387	2026-03-29T15:54:11-04:00	serialization_twitter	4623.42	0.75	3.44	Fix fopen usage with string_view (#2652)
+clangpaper	024	9973f7b3a387	2026-03-29T15:54:11-04:00	serialization_citm	2776.97	1.24	6.05	Fix fopen usage with string_view (#2652)
+clangpaper	024	9973f7b3a387	2026-03-29T15:54:11-04:00	parsing_twitter	4801.78	0.72	2.6	Fix fopen usage with string_view (#2652)
+clangpaper	024	9973f7b3a387	2026-03-29T15:54:11-04:00	parsing_citm	2281.61	1.51	6.14	Fix fopen usage with string_view (#2652)
+clangpaper	025	afb1c9f4b1dc	2026-03-29T15:54:28-04:00	serialization_twitter	4617.66	0.75	3.44	correct inverted clamp in set_max_capacity (#2651)
+clangpaper	025	afb1c9f4b1dc	2026-03-29T15:54:28-04:00	serialization_citm	2821.5	1.23	6.05	correct inverted clamp in set_max_capacity (#2651)
+clangpaper	025	afb1c9f4b1dc	2026-03-29T15:54:28-04:00	parsing_twitter	4797.2	0.72	2.6	correct inverted clamp in set_max_capacity (#2651)
+clangpaper	025	afb1c9f4b1dc	2026-03-29T15:54:28-04:00	parsing_citm	2288.25	1.51	6.14	correct inverted clamp in set_max_capacity (#2651)
+clangpaper	026	307ddd44150f	2026-03-30T10:13:08-04:00	serialization_twitter	4638.94	0.75	3.44	Avoid overflow in padded_string_builder::reserve (#2654)
+clangpaper	026	307ddd44150f	2026-03-30T10:13:08-04:00	serialization_citm	2811.62	1.23	6.05	Avoid overflow in padded_string_builder::reserve (#2654)
+clangpaper	026	307ddd44150f	2026-03-30T10:13:08-04:00	parsing_twitter	4803.42	0.72	2.6	Avoid overflow in padded_string_builder::reserve (#2654)
+clangpaper	026	307ddd44150f	2026-03-30T10:13:08-04:00	parsing_citm	2284.4	1.51	6.14	Avoid overflow in padded_string_builder::reserve (#2654)
+clangpaper	027	12fb30ae9cb5	2026-03-30T10:16:31-04:00	serialization_twitter	4639.33	0.75	3.44	add get_int32() and get_uint32() to the On Demand API (#2638)
+clangpaper	027	12fb30ae9cb5	2026-03-30T10:16:31-04:00	serialization_citm	2823.46	1.23	6.05	add get_int32() and get_uint32() to the On Demand API (#2638)
+clangpaper	027	12fb30ae9cb5	2026-03-30T10:16:31-04:00	parsing_twitter	4745.92	0.72	2.6	add get_int32() and get_uint32() to the On Demand API (#2638)
+clangpaper	027	12fb30ae9cb5	2026-03-30T10:16:31-04:00	parsing_citm	2289.88	1.51	6.14	add get_int32() and get_uint32() to the On Demand API (#2638)
+clangpaper	028	f25d5f9fc244	2026-03-30T19:51:00-04:00	serialization_twitter	4593.4	0.75	3.44	4.6.0 (#2655)
+clangpaper	028	f25d5f9fc244	2026-03-30T19:51:00-04:00	serialization_citm	2810.02	1.23	6.05	4.6.0 (#2655)
+clangpaper	028	f25d5f9fc244	2026-03-30T19:51:00-04:00	parsing_twitter	4797.56	0.72	2.6	4.6.0 (#2655)
+clangpaper	028	f25d5f9fc244	2026-03-30T19:51:00-04:00	parsing_citm	2289.4	1.51	6.14	4.6.0 (#2655)
+clangpaper	029	769364abb269	2026-03-30T20:01:35-04:00	serialization_twitter	4617.43	0.75	3.44	simplifying the logic
+clangpaper	029	769364abb269	2026-03-30T20:01:35-04:00	serialization_citm	2840.0	1.22	6.05	simplifying the logic
+clangpaper	029	769364abb269	2026-03-30T20:01:35-04:00	parsing_twitter	4803.85	0.72	2.6	simplifying the logic
+clangpaper	029	769364abb269	2026-03-30T20:01:35-04:00	parsing_citm	2285.84	1.51	6.14	simplifying the logic
+clangpaper	030	542cd7af7118	2026-04-03T15:25:03-04:00	serialization_twitter	4601.97	0.75	3.44	parser.load(string_view) does not respect view length when opening files (#2659)
+clangpaper	030	542cd7af7118	2026-04-03T15:25:03-04:00	serialization_citm	2801.71	1.24	6.05	parser.load(string_view) does not respect view length when opening files (#2659)
+clangpaper	030	542cd7af7118	2026-04-03T15:25:03-04:00	parsing_twitter	4763.63	0.72	2.6	parser.load(string_view) does not respect view length when opening files (#2659)
+clangpaper	030	542cd7af7118	2026-04-03T15:25:03-04:00	parsing_citm	2285.33	1.51	6.14	parser.load(string_view) does not respect view length when opening files (#2659)
+clangpaper	031	fb83b114efce	2026-04-03T15:26:12-04:00	serialization_twitter	4625.55	0.75	3.44	4.6.1
+clangpaper	031	fb83b114efce	2026-04-03T15:26:12-04:00	serialization_citm	2826.92	1.22	6.05	4.6.1
+clangpaper	031	fb83b114efce	2026-04-03T15:26:12-04:00	parsing_twitter	4789.92	0.72	2.6	4.6.1
+clangpaper	031	fb83b114efce	2026-04-03T15:26:12-04:00	parsing_citm	2290.31	1.51	6.14	4.6.1
+clangpaper	032	73e69a5e8463	2026-04-03T15:32:42-04:00	serialization_twitter	4833.38	0.72	3.27	Get reflection working without warnings under GCC 16 (#2658)
+clangpaper	032	73e69a5e8463	2026-04-03T15:32:42-04:00	serialization_citm	3140.79	1.1	5.37	Get reflection working without warnings under GCC 16 (#2658)
+clangpaper	032	73e69a5e8463	2026-04-03T15:32:42-04:00	parsing_twitter	4758.77	0.72	2.6	Get reflection working without warnings under GCC 16 (#2658)
+clangpaper	032	73e69a5e8463	2026-04-03T15:32:42-04:00	parsing_citm	2279.62	1.51	6.14	Get reflection working without warnings under GCC 16 (#2658)
+clangpaper	033	bc48e720702d	2026-04-09T14:07:29-04:00	serialization_twitter	4848.01	0.72	3.27	literals should be guarded (#2669)
+clangpaper	033	bc48e720702d	2026-04-09T14:07:29-04:00	serialization_citm	3142.71	1.09	5.37	literals should be guarded (#2669)
+clangpaper	033	bc48e720702d	2026-04-09T14:07:29-04:00	parsing_twitter	4841.08	0.72	2.6	literals should be guarded (#2669)
+clangpaper	033	bc48e720702d	2026-04-09T14:07:29-04:00	parsing_citm	2305.15	1.51	6.14	literals should be guarded (#2669)
+clangpaper	034	85cadf4074b7	2026-04-09T14:07:44-04:00	serialization_twitter	4803.82	0.72	3.27	adding a C++17 padded_input for convenience. (#2667)
+clangpaper	034	85cadf4074b7	2026-04-09T14:07:44-04:00	serialization_citm	3126.73	1.1	5.37	adding a C++17 padded_input for convenience. (#2667)
+clangpaper	034	85cadf4074b7	2026-04-09T14:07:44-04:00	parsing_twitter	4762.37	0.72	2.6	adding a C++17 padded_input for convenience. (#2667)
+clangpaper	034	85cadf4074b7	2026-04-09T14:07:44-04:00	parsing_citm	2284.99	1.51	6.14	adding a C++17 padded_input for convenience. (#2667)
+clangpaper	035	1a57afec1fe7	2026-04-10T20:19:46-04:00	serialization_twitter	4791.23	0.72	3.27	Various guards (#2673)
+clangpaper	035	1a57afec1fe7	2026-04-10T20:19:46-04:00	serialization_citm	3166.69	1.09	5.37	Various guards (#2673)
+clangpaper	035	1a57afec1fe7	2026-04-10T20:19:46-04:00	parsing_twitter	4764.64	0.72	2.6	Various guards (#2673)
+clangpaper	035	1a57afec1fe7	2026-04-10T20:19:46-04:00	parsing_citm	2287.08	1.51	6.14	Various guards (#2673)
+clangpaper	036	72e51a9a81e7	2026-04-10T20:26:00-04:00	serialization_twitter	4794.91	0.72	3.27	Add support for RFC 7464 JSON text sequences and comma-delimited documents (#2664)
+clangpaper	036	72e51a9a81e7	2026-04-10T20:26:00-04:00	serialization_citm	3148.16	1.09	5.37	Add support for RFC 7464 JSON text sequences and comma-delimited documents (#2664)
+clangpaper	036	72e51a9a81e7	2026-04-10T20:26:00-04:00	parsing_twitter	4752.38	0.72	2.6	Add support for RFC 7464 JSON text sequences and comma-delimited documents (#2664)
+clangpaper	036	72e51a9a81e7	2026-04-10T20:26:00-04:00	parsing_citm	2294.96	1.5	6.14	Add support for RFC 7464 JSON text sequences and comma-delimited documents (#2664)
+clangpaper	037	94c429aa70d2	2026-04-11T14:16:43-04:00	serialization_twitter	4815.95	0.72	3.27	finishing up the new streaming (#2674)
+clangpaper	037	94c429aa70d2	2026-04-11T14:16:43-04:00	serialization_citm	3175.52	1.08	5.37	finishing up the new streaming (#2674)
+clangpaper	037	94c429aa70d2	2026-04-11T14:16:43-04:00	parsing_twitter	4790.58	0.72	2.6	finishing up the new streaming (#2674)
+clangpaper	037	94c429aa70d2	2026-04-11T14:16:43-04:00	parsing_citm	2289.36	1.51	6.14	finishing up the new streaming (#2674)
+clangpaper	038	8ea4c1c2e6b9	2026-04-12T17:06:27-04:00	serialization_twitter	4828.44	0.72	3.27	being more precise
+clangpaper	038	8ea4c1c2e6b9	2026-04-12T17:06:27-04:00	serialization_citm	3181.47	1.09	5.37	being more precise
+clangpaper	038	8ea4c1c2e6b9	2026-04-12T17:06:27-04:00	parsing_twitter	4783.07	0.72	2.6	being more precise
+clangpaper	038	8ea4c1c2e6b9	2026-04-12T17:06:27-04:00	parsing_citm	2293.25	1.5	6.14	being more precise
+clangpaper	039	ede31290819a	2026-04-12T18:09:46-04:00	serialization_twitter	4591.56	0.76	3.27	modernizing the benchmarks (#2679)
+clangpaper	039	ede31290819a	2026-04-12T18:09:46-04:00	serialization_citm	3155.58	1.1	5.37	modernizing the benchmarks (#2679)
+clangpaper	039	ede31290819a	2026-04-12T18:09:46-04:00	parsing_twitter	4774.04	0.72	2.6	modernizing the benchmarks (#2679)
+clangpaper	039	ede31290819a	2026-04-12T18:09:46-04:00	parsing_citm	2275.81	1.51	6.14	modernizing the benchmarks (#2679)
+clangpaper	040	4ec44e88c99a	2026-04-12T18:12:31-04:00	serialization_twitter	4620.47	0.75	3.27	adding memory-file mapping to Windows + better doc (#2676)
+clangpaper	040	4ec44e88c99a	2026-04-12T18:12:31-04:00	serialization_citm	3147.61	1.09	5.37	adding memory-file mapping to Windows + better doc (#2676)
+clangpaper	040	4ec44e88c99a	2026-04-12T18:12:31-04:00	parsing_twitter	4796.49	0.72	2.6	adding memory-file mapping to Windows + better doc (#2676)
+clangpaper	040	4ec44e88c99a	2026-04-12T18:12:31-04:00	parsing_citm	2277.25	1.51	6.14	adding memory-file mapping to Windows + better doc (#2676)
+clangpaper	041	3ecda9ee990a	2026-04-13T17:54:35-04:00	serialization_twitter	4604.24	0.75	3.27	pedantic checks for 32-bit systems who try to allocate enormous capacities.
+clangpaper	041	3ecda9ee990a	2026-04-13T17:54:35-04:00	serialization_citm	3187.03	1.09	5.37	pedantic checks for 32-bit systems who try to allocate enormous capacities.
+clangpaper	041	3ecda9ee990a	2026-04-13T17:54:35-04:00	parsing_twitter	4802.44	0.72	2.6	pedantic checks for 32-bit systems who try to allocate enormous capacities.
+clangpaper	041	3ecda9ee990a	2026-04-13T17:54:35-04:00	parsing_citm	2273.36	1.52	6.14	pedantic checks for 32-bit systems who try to allocate enormous capacities.
+clangpaper	042	7cc60672e33f	2026-04-13T17:55:05-04:00	serialization_twitter	4619.81	0.75	3.27	Merge branch 'master' of github.com:simdjson/simdjson
+clangpaper	042	7cc60672e33f	2026-04-13T17:55:05-04:00	serialization_citm	3167.83	1.09	5.37	Merge branch 'master' of github.com:simdjson/simdjson
+clangpaper	042	7cc60672e33f	2026-04-13T17:55:05-04:00	parsing_twitter	4779.42	0.72	2.6	Merge branch 'master' of github.com:simdjson/simdjson
+clangpaper	042	7cc60672e33f	2026-04-13T17:55:05-04:00	parsing_citm	2276.98	1.51	6.14	Merge branch 'master' of github.com:simdjson/simdjson
+clangpaper	043	30d720431290	2026-04-15T12:52:31-04:00	serialization_twitter	4636.0	0.75	3.27	pedantic guard
+clangpaper	043	30d720431290	2026-04-15T12:52:31-04:00	serialization_citm	3194.12	1.08	5.37	pedantic guard
+clangpaper	043	30d720431290	2026-04-15T12:52:31-04:00	parsing_twitter	4752.31	0.72	2.6	pedantic guard
+clangpaper	043	30d720431290	2026-04-15T12:52:31-04:00	parsing_citm	2297.41	1.5	6.14	pedantic guard
+clangpaper	044	2e7ad956eb6d	2026-04-15T12:52:47-04:00	serialization_twitter	4673.78	0.74	3.27	Merge branch 'master' of github.com:simdjson/simdjson
+clangpaper	044	2e7ad956eb6d	2026-04-15T12:52:47-04:00	serialization_citm	3200.62	1.08	5.37	Merge branch 'master' of github.com:simdjson/simdjson
+clangpaper	044	2e7ad956eb6d	2026-04-15T12:52:47-04:00	parsing_twitter	4779.42	0.72	2.6	Merge branch 'master' of github.com:simdjson/simdjson
+clangpaper	044	2e7ad956eb6d	2026-04-15T12:52:47-04:00	parsing_citm	2295.7	1.5	6.14	Merge branch 'master' of github.com:simdjson/simdjson
+clangpaper	045	df16e967678b	2026-04-17T14:20:57-04:00	serialization_twitter	4667.2	0.74	3.27	fix: ondemand for wildcard matches  (#2686)
+clangpaper	045	df16e967678b	2026-04-17T14:20:57-04:00	serialization_citm	3170.74	1.09	5.37	fix: ondemand for wildcard matches  (#2686)
+clangpaper	045	df16e967678b	2026-04-17T14:20:57-04:00	parsing_twitter	4776.73	0.72	2.6	fix: ondemand for wildcard matches  (#2686)
+clangpaper	045	df16e967678b	2026-04-17T14:20:57-04:00	parsing_citm	2322.33	1.5	6.14	fix: ondemand for wildcard matches  (#2686)
+clangpaper	046	3b782fab7a58	2026-04-20T12:09:39-04:00	serialization_twitter	4687.6	0.75	3.27	fixes 2690 (typo)
+clangpaper	046	3b782fab7a58	2026-04-20T12:09:39-04:00	serialization_citm	3197.58	1.09	5.37	fixes 2690 (typo)
+clangpaper	046	3b782fab7a58	2026-04-20T12:09:39-04:00	parsing_twitter	4769.37	0.72	2.6	fixes 2690 (typo)
+clangpaper	046	3b782fab7a58	2026-04-20T12:09:39-04:00	parsing_citm	2307.2	1.5	6.14	fixes 2690 (typo)
+clangpaper	047	63b10bca2131	2026-04-20T17:16:50-04:00	serialization_twitter	4627.44	0.75	3.27	new optimization to the ARM NEON kernel (#2692)
+clangpaper	047	63b10bca2131	2026-04-20T17:16:50-04:00	serialization_citm	3182.5	1.08	5.37	new optimization to the ARM NEON kernel (#2692)
+clangpaper	047	63b10bca2131	2026-04-20T17:16:50-04:00	parsing_twitter	4812.79	0.72	2.6	new optimization to the ARM NEON kernel (#2692)
+clangpaper	047	63b10bca2131	2026-04-20T17:16:50-04:00	parsing_citm	2299.47	1.5	6.14	new optimization to the ARM NEON kernel (#2692)
+clangpaper	048	c1681e9d0af3	2026-04-22T13:17:25-04:00	serialization_twitter	4664.39	0.74	3.27	build with filc (#2695)
+clangpaper	048	c1681e9d0af3	2026-04-22T13:17:25-04:00	serialization_citm	3165.51	1.08	5.37	build with filc (#2695)
+clangpaper	048	c1681e9d0af3	2026-04-22T13:17:25-04:00	parsing_twitter	4790.96	0.72	2.6	build with filc (#2695)
+clangpaper	048	c1681e9d0af3	2026-04-22T13:17:25-04:00	parsing_citm	2297.98	1.5	6.14	build with filc (#2695)
+clangpaper	049	b3fe96cdb277	2026-04-29T13:05:45-04:00	serialization_twitter	4679.23	0.74	3.27	Align source() output for comma-delimited streams with json_sequence behavior (#2699)
+clangpaper	049	b3fe96cdb277	2026-04-29T13:05:45-04:00	serialization_citm	3197.89	1.08	5.37	Align source() output for comma-delimited streams with json_sequence behavior (#2699)
+clangpaper	049	b3fe96cdb277	2026-04-29T13:05:45-04:00	parsing_twitter	4790.53	0.72	2.6	Align source() output for comma-delimited streams with json_sequence behavior (#2699)
+clangpaper	049	b3fe96cdb277	2026-04-29T13:05:45-04:00	parsing_citm	2296.97	1.5	6.14	Align source() output for comma-delimited streams with json_sequence behavior (#2699)
+clangpaper	050	32b52e3f34a2	2026-04-30T21:02:41-04:00	serialization_twitter	4973.34	0.7	3.0	builder: coalesce per-field separator+key+colon into one constexpr write (#2698)
+clangpaper	050	32b52e3f34a2	2026-04-30T21:02:41-04:00	serialization_citm	3535.12	0.97	4.75	builder: coalesce per-field separator+key+colon into one constexpr write (#2698)
+clangpaper	050	32b52e3f34a2	2026-04-30T21:02:41-04:00	parsing_twitter	4811.27	0.72	2.6	builder: coalesce per-field separator+key+colon into one constexpr write (#2698)
+clangpaper	050	32b52e3f34a2	2026-04-30T21:02:41-04:00	parsing_citm	2293.78	1.5	6.14	builder: coalesce per-field separator+key+colon into one constexpr write (#2698)
+clangpaper	051	389f7ce8e3ee	2026-04-30T21:59:36-04:00	serialization_twitter	4951.5	0.7	3.0	fixing issue 2703 (#2705)
+clangpaper	051	389f7ce8e3ee	2026-04-30T21:59:36-04:00	serialization_citm	3548.11	0.97	4.75	fixing issue 2703 (#2705)
+clangpaper	051	389f7ce8e3ee	2026-04-30T21:59:36-04:00	parsing_twitter	4816.26	0.72	2.6	fixing issue 2703 (#2705)
+clangpaper	051	389f7ce8e3ee	2026-04-30T21:59:36-04:00	parsing_citm	2296.79	1.5	6.14	fixing issue 2703 (#2705)
+clangpaper	052	f902769b353d	2026-05-04T13:55:49-04:00	serialization_twitter	5228.25	0.66	2.65	builder: force-inline atom templates and replace integer writer (#2707)
+clangpaper	052	f902769b353d	2026-05-04T13:55:49-04:00	serialization_citm	3749.82	0.91	3.63	builder: force-inline atom templates and replace integer writer (#2707)
+clangpaper	052	f902769b353d	2026-05-04T13:55:49-04:00	parsing_twitter	4819.14	0.72	2.6	builder: force-inline atom templates and replace integer writer (#2707)
+clangpaper	052	f902769b353d	2026-05-04T13:55:49-04:00	parsing_citm	2294.91	1.5	6.14	builder: force-inline atom templates and replace integer writer (#2707)
+clangpaper	053	b9b20be80e9e	2026-05-04T15:24:26-04:00	serialization_twitter	5253.32	0.66	2.65	Add support for parsing NaN and Infinity as requested in #1540, #2414, and #2540 (#2696)
+clangpaper	053	b9b20be80e9e	2026-05-04T15:24:26-04:00	serialization_citm	3868.15	0.89	3.63	Add support for parsing NaN and Infinity as requested in #1540, #2414, and #2540 (#2696)
+clangpaper	053	b9b20be80e9e	2026-05-04T15:24:26-04:00	parsing_twitter	4804.9	0.72	2.6	Add support for parsing NaN and Infinity as requested in #1540, #2414, and #2540 (#2696)
+clangpaper	053	b9b20be80e9e	2026-05-04T15:24:26-04:00	parsing_citm	2303.09	1.5	6.14	Add support for parsing NaN and Infinity as requested in #1540, #2414, and #2540 (#2696)
+clangpaper	054	9803884546df	2026-05-06T17:37:18-04:00	serialization_twitter	5382.83	0.64	2.67	overflow patch.
+clangpaper	054	9803884546df	2026-05-06T17:37:18-04:00	serialization_citm	3741.8	0.92	3.63	overflow patch.
+clangpaper	054	9803884546df	2026-05-06T17:37:18-04:00	parsing_twitter	4816.55	0.72	2.6	overflow patch.
+clangpaper	054	9803884546df	2026-05-06T17:37:18-04:00	parsing_citm	2308.17	1.5	6.14	overflow patch.
+clangpaper	055	376ef7e8e91f	2026-05-07T13:11:03-04:00	serialization_twitter	5441.75	0.64	2.67	Add support for writing NaN/Infinity if SIMDJSON_ENABLE_NAN_INF is enabled (#2711)
+clangpaper	055	376ef7e8e91f	2026-05-07T13:11:03-04:00	serialization_citm	3786.25	0.91	3.63	Add support for writing NaN/Infinity if SIMDJSON_ENABLE_NAN_INF is enabled (#2711)
+clangpaper	055	376ef7e8e91f	2026-05-07T13:11:03-04:00	parsing_twitter	4811.47	0.72	2.6	Add support for writing NaN/Infinity if SIMDJSON_ENABLE_NAN_INF is enabled (#2711)
+clangpaper	055	376ef7e8e91f	2026-05-07T13:11:03-04:00	parsing_citm	2306.67	1.5	6.14	Add support for writing NaN/Infinity if SIMDJSON_ENABLE_NAN_INF is enabled (#2711)
+clangpaper	056	42c047a927ae	2026-05-07T13:28:03-04:00	serialization_twitter	5343.01	0.65	2.43	builder: position-as-local writer for reflection serializer (#2708)
+clangpaper	056	42c047a927ae	2026-05-07T13:28:03-04:00	serialization_citm	5953.37	0.58	2.92	builder: position-as-local writer for reflection serializer (#2708)
+clangpaper	056	42c047a927ae	2026-05-07T13:28:03-04:00	parsing_twitter	4773.06	0.72	2.6	builder: position-as-local writer for reflection serializer (#2708)
+clangpaper	056	42c047a927ae	2026-05-07T13:28:03-04:00	parsing_citm	2306.96	1.5	6.14	builder: position-as-local writer for reflection serializer (#2708)
+clangpaper	057	7d30ff257474	2026-05-07T19:07:39-04:00	serialization_twitter	5350.68	0.65	2.43	JSON Pointer array index overflow handling (#2713)
+clangpaper	057	7d30ff257474	2026-05-07T19:07:39-04:00	serialization_citm	5959.47	0.58	2.92	JSON Pointer array index overflow handling (#2713)
+clangpaper	057	7d30ff257474	2026-05-07T19:07:39-04:00	parsing_twitter	4761.93	0.72	2.6	JSON Pointer array index overflow handling (#2713)
+clangpaper	057	7d30ff257474	2026-05-07T19:07:39-04:00	parsing_citm	2295.54	1.5	6.14	JSON Pointer array index overflow handling (#2713)
+clangpaper	058	bd42858383f1	2026-05-07T21:46:52-04:00	serialization_twitter	5374.09	0.65	2.43	fix -Wunneeded-internal-declaration warning (#2714)
+clangpaper	058	bd42858383f1	2026-05-07T21:46:52-04:00	serialization_citm	5891.23	0.59	2.92	fix -Wunneeded-internal-declaration warning (#2714)
+clangpaper	058	bd42858383f1	2026-05-07T21:46:52-04:00	parsing_twitter	4823.19	0.72	2.6	fix -Wunneeded-internal-declaration warning (#2714)
+clangpaper	058	bd42858383f1	2026-05-07T21:46:52-04:00	parsing_citm	2300.26	1.5	6.14	fix -Wunneeded-internal-declaration warning (#2714)
+clangpaper	059	a16e5128fe17	2026-05-07T23:13:40-04:00	serialization_twitter	5247.39	0.66	2.51	pendantic guard
+clangpaper	059	a16e5128fe17	2026-05-07T23:13:40-04:00	serialization_citm	5497.11	0.63	3.2	pendantic guard
+clangpaper	059	a16e5128fe17	2026-05-07T23:13:40-04:00	parsing_twitter	4817.53	0.72	2.6	pendantic guard
+clangpaper	059	a16e5128fe17	2026-05-07T23:13:40-04:00	parsing_citm	2304.07	1.5	6.14	pendantic guard
+clangpaper	060	ec49efa5dac7	2026-05-08T00:26:57-04:00	serialization_twitter	5298.91	0.65	2.51	avoid unnecessary pointer member (#2715)
+clangpaper	060	ec49efa5dac7	2026-05-08T00:26:57-04:00	serialization_citm	5527.92	0.62	3.2	avoid unnecessary pointer member (#2715)
+clangpaper	060	ec49efa5dac7	2026-05-08T00:26:57-04:00	parsing_twitter	4798.12	0.72	2.6	avoid unnecessary pointer member (#2715)
+clangpaper	060	ec49efa5dac7	2026-05-08T00:26:57-04:00	parsing_citm	2294.7	1.5	6.14	avoid unnecessary pointer member (#2715)
+clangpaper	061	396ca141fd73	2026-05-18T17:13:43-04:00	serialization_twitter	5294.84	0.65	2.51	perf(builder): add LSX fast_needs_escaping for LoongArch (#2727)
+clangpaper	061	396ca141fd73	2026-05-18T17:13:43-04:00	serialization_citm	5536.57	0.63	3.2	perf(builder): add LSX fast_needs_escaping for LoongArch (#2727)
+clangpaper	061	396ca141fd73	2026-05-18T17:13:43-04:00	parsing_twitter	4824.21	0.72	2.6	perf(builder): add LSX fast_needs_escaping for LoongArch (#2727)
+clangpaper	061	396ca141fd73	2026-05-18T17:13:43-04:00	parsing_citm	2307.31	1.5	6.14	perf(builder): add LSX fast_needs_escaping for LoongArch (#2727)
+clangpaper	062	1ae93a70d4ca	2026-05-18T17:18:58-04:00	serialization_twitter	5843.01	0.6	2.51	Bug fix for get_string() crash when parse incomplete json string (in option disabled my default) (#2720)
+clangpaper	062	1ae93a70d4ca	2026-05-18T17:18:58-04:00	serialization_citm	5516.31	0.63	3.2	Bug fix for get_string() crash when parse incomplete json string (in option disabled my default) (#2720)
+clangpaper	062	1ae93a70d4ca	2026-05-18T17:18:58-04:00	parsing_twitter	4860.54	0.71	2.6	Bug fix for get_string() crash when parse incomplete json string (in option disabled my default) (#2720)
+clangpaper	062	1ae93a70d4ca	2026-05-18T17:18:58-04:00	parsing_citm	2343.49	1.47	6.14	Bug fix for get_string() crash when parse incomplete json string (in option disabled my default) (#2720)
+clangpaper	063	7732480b25c6	2026-05-18T17:24:56-04:00	serialization_twitter	5814.92	0.6	2.51	we need to require rvv for the risc64 kernel
+clangpaper	063	7732480b25c6	2026-05-18T17:24:56-04:00	serialization_citm	5400.07	0.64	3.2	we need to require rvv for the risc64 kernel
+clangpaper	063	7732480b25c6	2026-05-18T17:24:56-04:00	parsing_twitter	4852.24	0.71	2.6	we need to require rvv for the risc64 kernel
+clangpaper	063	7732480b25c6	2026-05-18T17:24:56-04:00	parsing_citm	2341.89	1.47	6.14	we need to require rvv for the risc64 kernel
+gcc16	032	73e69a5e8463	2026-04-03T15:32:42-04:00	serialization_twitter	5021.35	0.7	3.06	Get reflection working without warnings under GCC 16 (#2658)
+gcc16	032	73e69a5e8463	2026-04-03T15:32:42-04:00	serialization_citm	3278.74	1.05	4.93	Get reflection working without warnings under GCC 16 (#2658)
+gcc16	032	73e69a5e8463	2026-04-03T15:32:42-04:00	parsing_twitter	4328.6	0.79	3.13	Get reflection working without warnings under GCC 16 (#2658)
+gcc16	032	73e69a5e8463	2026-04-03T15:32:42-04:00	parsing_citm	2378.52	1.45	5.92	Get reflection working without warnings under GCC 16 (#2658)
+gcc16	033	bc48e720702d	2026-04-09T14:07:29-04:00	serialization_twitter	4989.8	0.7	3.06	literals should be guarded (#2669)
+gcc16	033	bc48e720702d	2026-04-09T14:07:29-04:00	serialization_citm	3308.06	1.05	4.93	literals should be guarded (#2669)
+gcc16	033	bc48e720702d	2026-04-09T14:07:29-04:00	parsing_twitter	4312.33	0.8	3.13	literals should be guarded (#2669)
+gcc16	033	bc48e720702d	2026-04-09T14:07:29-04:00	parsing_citm	2373.65	1.45	5.92	literals should be guarded (#2669)
+gcc16	034	85cadf4074b7	2026-04-09T14:07:44-04:00	serialization_twitter	4998.29	0.69	3.06	adding a C++17 padded_input for convenience. (#2667)
+gcc16	034	85cadf4074b7	2026-04-09T14:07:44-04:00	serialization_citm	3292.76	1.05	4.93	adding a C++17 padded_input for convenience. (#2667)
+gcc16	034	85cadf4074b7	2026-04-09T14:07:44-04:00	parsing_twitter	4317.79	0.8	3.13	adding a C++17 padded_input for convenience. (#2667)
+gcc16	034	85cadf4074b7	2026-04-09T14:07:44-04:00	parsing_citm	2384.4	1.45	5.92	adding a C++17 padded_input for convenience. (#2667)
+gcc16	035	1a57afec1fe7	2026-04-10T20:19:46-04:00	serialization_twitter	4972.93	0.69	3.06	Various guards (#2673)
+gcc16	035	1a57afec1fe7	2026-04-10T20:19:46-04:00	serialization_citm	3269.48	1.06	4.93	Various guards (#2673)
+gcc16	035	1a57afec1fe7	2026-04-10T20:19:46-04:00	parsing_twitter	4318.8	0.8	3.13	Various guards (#2673)
+gcc16	035	1a57afec1fe7	2026-04-10T20:19:46-04:00	parsing_citm	2378.17	1.45	5.92	Various guards (#2673)
+gcc16	036	72e51a9a81e7	2026-04-10T20:26:00-04:00	serialization_twitter	5004.55	0.69	3.06	Add support for RFC 7464 JSON text sequences and comma-delimited documents (#2664)
+gcc16	036	72e51a9a81e7	2026-04-10T20:26:00-04:00	serialization_citm	3318.77	1.04	4.93	Add support for RFC 7464 JSON text sequences and comma-delimited documents (#2664)
+gcc16	036	72e51a9a81e7	2026-04-10T20:26:00-04:00	parsing_twitter	4318.16	0.8	3.13	Add support for RFC 7464 JSON text sequences and comma-delimited documents (#2664)
+gcc16	036	72e51a9a81e7	2026-04-10T20:26:00-04:00	parsing_citm	2377.2	1.45	5.92	Add support for RFC 7464 JSON text sequences and comma-delimited documents (#2664)
+gcc16	037	94c429aa70d2	2026-04-11T14:16:43-04:00	serialization_twitter	5021.41	0.69	3.06	finishing up the new streaming (#2674)
+gcc16	037	94c429aa70d2	2026-04-11T14:16:43-04:00	serialization_citm	3344.32	1.04	4.93	finishing up the new streaming (#2674)
+gcc16	037	94c429aa70d2	2026-04-11T14:16:43-04:00	parsing_twitter	4332.24	0.8	3.13	finishing up the new streaming (#2674)
+gcc16	037	94c429aa70d2	2026-04-11T14:16:43-04:00	parsing_citm	2384.47	1.45	5.92	finishing up the new streaming (#2674)
+gcc16	038	8ea4c1c2e6b9	2026-04-12T17:06:27-04:00	serialization_twitter	5052.64	0.69	3.06	being more precise
+gcc16	038	8ea4c1c2e6b9	2026-04-12T17:06:27-04:00	serialization_citm	3299.61	1.04	4.93	being more precise
+gcc16	038	8ea4c1c2e6b9	2026-04-12T17:06:27-04:00	parsing_twitter	4329.5	0.8	3.13	being more precise
+gcc16	038	8ea4c1c2e6b9	2026-04-12T17:06:27-04:00	parsing_citm	2380.81	1.45	5.92	being more precise
+gcc16	039	ede31290819a	2026-04-12T18:09:46-04:00	serialization_twitter	5007.87	0.7	3.06	modernizing the benchmarks (#2679)
+gcc16	039	ede31290819a	2026-04-12T18:09:46-04:00	serialization_citm	3278.64	1.05	4.93	modernizing the benchmarks (#2679)
+gcc16	039	ede31290819a	2026-04-12T18:09:46-04:00	parsing_twitter	4303.04	0.8	3.13	modernizing the benchmarks (#2679)
+gcc16	039	ede31290819a	2026-04-12T18:09:46-04:00	parsing_citm	2376.25	1.46	5.93	modernizing the benchmarks (#2679)
+gcc16	040	4ec44e88c99a	2026-04-12T18:12:31-04:00	serialization_twitter	4965.23	0.7	3.06	adding memory-file mapping to Windows + better doc (#2676)
+gcc16	040	4ec44e88c99a	2026-04-12T18:12:31-04:00	serialization_citm	3285.05	1.06	4.93	adding memory-file mapping to Windows + better doc (#2676)
+gcc16	040	4ec44e88c99a	2026-04-12T18:12:31-04:00	parsing_twitter	4294.35	0.81	3.13	adding memory-file mapping to Windows + better doc (#2676)
+gcc16	040	4ec44e88c99a	2026-04-12T18:12:31-04:00	parsing_citm	2363.03	1.46	5.93	adding memory-file mapping to Windows + better doc (#2676)
+gcc16	041	3ecda9ee990a	2026-04-13T17:54:35-04:00	serialization_twitter	4988.18	0.7	3.06	pedantic checks for 32-bit systems who try to allocate enormous capacities.
+gcc16	041	3ecda9ee990a	2026-04-13T17:54:35-04:00	serialization_citm	3245.87	1.07	4.93	pedantic checks for 32-bit systems who try to allocate enormous capacities.
+gcc16	041	3ecda9ee990a	2026-04-13T17:54:35-04:00	parsing_twitter	4276.71	0.8	3.13	pedantic checks for 32-bit systems who try to allocate enormous capacities.
+gcc16	041	3ecda9ee990a	2026-04-13T17:54:35-04:00	parsing_citm	2353.3	1.46	5.93	pedantic checks for 32-bit systems who try to allocate enormous capacities.
+gcc16	042	7cc60672e33f	2026-04-13T17:55:05-04:00	serialization_twitter	4922.61	0.7	3.06	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	042	7cc60672e33f	2026-04-13T17:55:05-04:00	serialization_citm	3308.72	1.05	4.93	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	042	7cc60672e33f	2026-04-13T17:55:05-04:00	parsing_twitter	4303.78	0.8	3.13	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	042	7cc60672e33f	2026-04-13T17:55:05-04:00	parsing_citm	2365.09	1.46	5.93	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	043	30d720431290	2026-04-15T12:52:31-04:00	serialization_twitter	4970.33	0.7	3.06	pedantic guard
+gcc16	043	30d720431290	2026-04-15T12:52:31-04:00	serialization_citm	3321.78	1.04	4.93	pedantic guard
+gcc16	043	30d720431290	2026-04-15T12:52:31-04:00	parsing_twitter	4227.08	0.81	3.13	pedantic guard
+gcc16	043	30d720431290	2026-04-15T12:52:31-04:00	parsing_citm	2352.99	1.46	5.93	pedantic guard
+gcc16	044	2e7ad956eb6d	2026-04-15T12:52:47-04:00	serialization_twitter	4968.76	0.7	3.06	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	044	2e7ad956eb6d	2026-04-15T12:52:47-04:00	serialization_citm	3285.88	1.05	4.93	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	044	2e7ad956eb6d	2026-04-15T12:52:47-04:00	parsing_twitter	4257.46	0.81	3.13	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	044	2e7ad956eb6d	2026-04-15T12:52:47-04:00	parsing_citm	2355.43	1.46	5.93	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	045	df16e967678b	2026-04-17T14:20:57-04:00	serialization_twitter	5007.93	0.69	3.06	fix: ondemand for wildcard matches  (#2686)
+gcc16	045	df16e967678b	2026-04-17T14:20:57-04:00	serialization_citm	3271.04	1.06	4.93	fix: ondemand for wildcard matches  (#2686)
+gcc16	045	df16e967678b	2026-04-17T14:20:57-04:00	parsing_twitter	4269.39	0.8	3.13	fix: ondemand for wildcard matches  (#2686)
+gcc16	045	df16e967678b	2026-04-17T14:20:57-04:00	parsing_citm	2363.94	1.46	5.93	fix: ondemand for wildcard matches  (#2686)
+gcc16	046	3b782fab7a58	2026-04-20T12:09:39-04:00	serialization_twitter	4967.74	0.7	3.06	fixes 2690 (typo)
+gcc16	046	3b782fab7a58	2026-04-20T12:09:39-04:00	serialization_citm	3260.77	1.06	4.93	fixes 2690 (typo)
+gcc16	046	3b782fab7a58	2026-04-20T12:09:39-04:00	parsing_twitter	4260.72	0.81	3.13	fixes 2690 (typo)
+gcc16	046	3b782fab7a58	2026-04-20T12:09:39-04:00	parsing_citm	2360.99	1.46	5.93	fixes 2690 (typo)
+gcc16	047	63b10bca2131	2026-04-20T17:16:50-04:00	serialization_twitter	4982.36	0.69	3.06	new optimization to the ARM NEON kernel (#2692)
+gcc16	047	63b10bca2131	2026-04-20T17:16:50-04:00	serialization_citm	3294.2	1.04	4.93	new optimization to the ARM NEON kernel (#2692)
+gcc16	047	63b10bca2131	2026-04-20T17:16:50-04:00	parsing_twitter	4300.2	0.8	3.13	new optimization to the ARM NEON kernel (#2692)
+gcc16	047	63b10bca2131	2026-04-20T17:16:50-04:00	parsing_citm	2350.15	1.47	5.93	new optimization to the ARM NEON kernel (#2692)
+gcc16	048	c1681e9d0af3	2026-04-22T13:17:25-04:00	serialization_twitter	4992.45	0.69	3.06	build with filc (#2695)
+gcc16	048	c1681e9d0af3	2026-04-22T13:17:25-04:00	serialization_citm	3278.67	1.06	4.93	build with filc (#2695)
+gcc16	048	c1681e9d0af3	2026-04-22T13:17:25-04:00	parsing_twitter	4299.3	0.81	3.13	build with filc (#2695)
+gcc16	048	c1681e9d0af3	2026-04-22T13:17:25-04:00	parsing_citm	2352.97	1.47	5.93	build with filc (#2695)
+gcc16	049	b3fe96cdb277	2026-04-29T13:05:45-04:00	serialization_twitter	4974.17	0.7	3.06	Align source() output for comma-delimited streams with json_sequence behavior (#2699)
+gcc16	049	b3fe96cdb277	2026-04-29T13:05:45-04:00	serialization_citm	3276.77	1.06	4.93	Align source() output for comma-delimited streams with json_sequence behavior (#2699)
+gcc16	049	b3fe96cdb277	2026-04-29T13:05:45-04:00	parsing_twitter	4262.58	0.81	3.13	Align source() output for comma-delimited streams with json_sequence behavior (#2699)
+gcc16	049	b3fe96cdb277	2026-04-29T13:05:45-04:00	parsing_citm	2357.88	1.46	5.93	Align source() output for comma-delimited streams with json_sequence behavior (#2699)
+gcc16	050	32b52e3f34a2	2026-04-30T21:02:41-04:00	serialization_twitter	5355.55	0.65	2.73	builder: coalesce per-field separator+key+colon into one constexpr write (#2698)
+gcc16	050	32b52e3f34a2	2026-04-30T21:02:41-04:00	serialization_citm	3979.98	0.87	4.22	builder: coalesce per-field separator+key+colon into one constexpr write (#2698)
+gcc16	050	32b52e3f34a2	2026-04-30T21:02:41-04:00	parsing_twitter	4261.0	0.81	3.13	builder: coalesce per-field separator+key+colon into one constexpr write (#2698)
+gcc16	050	32b52e3f34a2	2026-04-30T21:02:41-04:00	parsing_citm	2346.8	1.47	5.93	builder: coalesce per-field separator+key+colon into one constexpr write (#2698)
+gcc16	051	389f7ce8e3ee	2026-04-30T21:59:36-04:00	serialization_twitter	5436.38	0.64	2.73	fixing issue 2703 (#2705)
+gcc16	051	389f7ce8e3ee	2026-04-30T21:59:36-04:00	serialization_citm	4007.0	0.87	4.22	fixing issue 2703 (#2705)
+gcc16	051	389f7ce8e3ee	2026-04-30T21:59:36-04:00	parsing_twitter	4298.76	0.81	3.13	fixing issue 2703 (#2705)
+gcc16	051	389f7ce8e3ee	2026-04-30T21:59:36-04:00	parsing_citm	2354.72	1.47	5.93	fixing issue 2703 (#2705)
+gcc16	052	f902769b353d	2026-05-04T13:55:49-04:00	serialization_twitter	5711.51	0.61	2.62	builder: force-inline atom templates and replace integer writer (#2707)
+gcc16	052	f902769b353d	2026-05-04T13:55:49-04:00	serialization_citm	4567.12	0.76	3.65	builder: force-inline atom templates and replace integer writer (#2707)
+gcc16	052	f902769b353d	2026-05-04T13:55:49-04:00	parsing_twitter	4304.91	0.8	3.13	builder: force-inline atom templates and replace integer writer (#2707)
+gcc16	052	f902769b353d	2026-05-04T13:55:49-04:00	parsing_citm	2352.14	1.46	5.93	builder: force-inline atom templates and replace integer writer (#2707)
+gcc16	053	b9b20be80e9e	2026-05-04T15:24:26-04:00	serialization_twitter	5695.24	0.61	2.62	Add support for parsing NaN and Infinity as requested in #1540, #2414, and #2540 (#2696)
+gcc16	053	b9b20be80e9e	2026-05-04T15:24:26-04:00	serialization_citm	4496.28	0.77	3.65	Add support for parsing NaN and Infinity as requested in #1540, #2414, and #2540 (#2696)
+gcc16	053	b9b20be80e9e	2026-05-04T15:24:26-04:00	parsing_twitter	4274.72	0.8	3.13	Add support for parsing NaN and Infinity as requested in #1540, #2414, and #2540 (#2696)
+gcc16	053	b9b20be80e9e	2026-05-04T15:24:26-04:00	parsing_citm	2353.44	1.46	5.93	Add support for parsing NaN and Infinity as requested in #1540, #2414, and #2540 (#2696)
+gcc16	054	9803884546df	2026-05-06T17:37:18-04:00	serialization_twitter	5695.41	0.61	2.61	overflow patch.
+gcc16	054	9803884546df	2026-05-06T17:37:18-04:00	serialization_citm	4480.56	0.77	3.65	overflow patch.
+gcc16	054	9803884546df	2026-05-06T17:37:18-04:00	parsing_twitter	4249.78	0.81	3.13	overflow patch.
+gcc16	054	9803884546df	2026-05-06T17:37:18-04:00	parsing_citm	2365.16	1.46	5.93	overflow patch.
+gcc16	055	376ef7e8e91f	2026-05-07T13:11:03-04:00	serialization_twitter	5726.34	0.61	2.61	Add support for writing NaN/Infinity if SIMDJSON_ENABLE_NAN_INF is enabled (#2711)
+gcc16	055	376ef7e8e91f	2026-05-07T13:11:03-04:00	serialization_citm	4462.4	0.77	3.65	Add support for writing NaN/Infinity if SIMDJSON_ENABLE_NAN_INF is enabled (#2711)
+gcc16	055	376ef7e8e91f	2026-05-07T13:11:03-04:00	parsing_twitter	4267.36	0.8	3.13	Add support for writing NaN/Infinity if SIMDJSON_ENABLE_NAN_INF is enabled (#2711)
+gcc16	055	376ef7e8e91f	2026-05-07T13:11:03-04:00	parsing_citm	2351.78	1.47	5.93	Add support for writing NaN/Infinity if SIMDJSON_ENABLE_NAN_INF is enabled (#2711)
+gcc16	056	42c047a927ae	2026-05-07T13:28:03-04:00	serialization_twitter	5952.67	0.58	2.41	builder: position-as-local writer for reflection serializer (#2708)
+gcc16	056	42c047a927ae	2026-05-07T13:28:03-04:00	serialization_citm	5356.05	0.64	3.04	builder: position-as-local writer for reflection serializer (#2708)
+gcc16	056	42c047a927ae	2026-05-07T13:28:03-04:00	parsing_twitter	4280.83	0.8	3.13	builder: position-as-local writer for reflection serializer (#2708)
+gcc16	056	42c047a927ae	2026-05-07T13:28:03-04:00	parsing_citm	2347.99	1.47	5.93	builder: position-as-local writer for reflection serializer (#2708)
+gcc16	057	7d30ff257474	2026-05-07T19:07:39-04:00	serialization_twitter	5917.39	0.59	2.41	JSON Pointer array index overflow handling (#2713)
+gcc16	057	7d30ff257474	2026-05-07T19:07:39-04:00	serialization_citm	5379.58	0.64	3.04	JSON Pointer array index overflow handling (#2713)
+gcc16	057	7d30ff257474	2026-05-07T19:07:39-04:00	parsing_twitter	4267.38	0.81	3.13	JSON Pointer array index overflow handling (#2713)
+gcc16	057	7d30ff257474	2026-05-07T19:07:39-04:00	parsing_citm	2346.85	1.47	5.93	JSON Pointer array index overflow handling (#2713)
+gcc16	058	bd42858383f1	2026-05-07T21:46:52-04:00	serialization_twitter	5928.73	0.58	2.41	fix -Wunneeded-internal-declaration warning (#2714)
+gcc16	058	bd42858383f1	2026-05-07T21:46:52-04:00	serialization_citm	5326.29	0.65	3.04	fix -Wunneeded-internal-declaration warning (#2714)
+gcc16	058	bd42858383f1	2026-05-07T21:46:52-04:00	parsing_twitter	4293.19	0.81	3.13	fix -Wunneeded-internal-declaration warning (#2714)
+gcc16	058	bd42858383f1	2026-05-07T21:46:52-04:00	parsing_citm	2342.5	1.47	5.93	fix -Wunneeded-internal-declaration warning (#2714)
+gcc16	059	a16e5128fe17	2026-05-07T23:13:40-04:00	serialization_twitter	5947.05	0.58	2.43	pendantic guard
+gcc16	059	a16e5128fe17	2026-05-07T23:13:40-04:00	serialization_citm	5034.85	0.69	3.15	pendantic guard
+gcc16	059	a16e5128fe17	2026-05-07T23:13:40-04:00	parsing_twitter	4295.13	0.8	3.13	pendantic guard
+gcc16	059	a16e5128fe17	2026-05-07T23:13:40-04:00	parsing_citm	2353.01	1.47	5.93	pendantic guard
+gcc16	060	ec49efa5dac7	2026-05-08T00:26:57-04:00	serialization_twitter	5943.33	0.59	2.43	avoid unnecessary pointer member (#2715)
+gcc16	060	ec49efa5dac7	2026-05-08T00:26:57-04:00	serialization_citm	5033.25	0.69	3.15	avoid unnecessary pointer member (#2715)
+gcc16	060	ec49efa5dac7	2026-05-08T00:26:57-04:00	parsing_twitter	4296.89	0.81	3.13	avoid unnecessary pointer member (#2715)
+gcc16	060	ec49efa5dac7	2026-05-08T00:26:57-04:00	parsing_citm	2342.78	1.47	5.93	avoid unnecessary pointer member (#2715)
+gcc16	061	396ca141fd73	2026-05-18T17:13:43-04:00	serialization_twitter	5986.12	0.58	2.43	perf(builder): add LSX fast_needs_escaping for LoongArch (#2727)
+gcc16	061	396ca141fd73	2026-05-18T17:13:43-04:00	serialization_citm	4961.56	0.69	3.15	perf(builder): add LSX fast_needs_escaping for LoongArch (#2727)
+gcc16	061	396ca141fd73	2026-05-18T17:13:43-04:00	parsing_twitter	4305.63	0.8	3.13	perf(builder): add LSX fast_needs_escaping for LoongArch (#2727)
+gcc16	061	396ca141fd73	2026-05-18T17:13:43-04:00	parsing_citm	2362.32	1.47	5.93	perf(builder): add LSX fast_needs_escaping for LoongArch (#2727)
+gcc16	062	1ae93a70d4ca	2026-05-18T17:18:58-04:00	serialization_twitter	5910.59	0.59	2.43	Bug fix for get_string() crash when parse incomplete json string (in option disabled my default) (#2720)
+gcc16	062	1ae93a70d4ca	2026-05-18T17:18:58-04:00	serialization_citm	5042.01	0.68	3.15	Bug fix for get_string() crash when parse incomplete json string (in option disabled my default) (#2720)
+gcc16	062	1ae93a70d4ca	2026-05-18T17:18:58-04:00	parsing_twitter	4242.83	0.81	3.13	Bug fix for get_string() crash when parse incomplete json string (in option disabled my default) (#2720)
+gcc16	062	1ae93a70d4ca	2026-05-18T17:18:58-04:00	parsing_citm	2351.49	1.47	5.93	Bug fix for get_string() crash when parse incomplete json string (in option disabled my default) (#2720)
+gcc16	063	7732480b25c6	2026-05-18T17:24:56-04:00	serialization_twitter	5839.36	0.59	2.43	we need to require rvv for the risc64 kernel
+gcc16	063	7732480b25c6	2026-05-18T17:24:56-04:00	serialization_citm	5046.27	0.68	3.15	we need to require rvv for the risc64 kernel
+gcc16	063	7732480b25c6	2026-05-18T17:24:56-04:00	parsing_twitter	4273.7	0.81	3.13	we need to require rvv for the risc64 kernel
+gcc16	063	7732480b25c6	2026-05-18T17:24:56-04:00	parsing_citm	2348.35	1.47	5.93	we need to require rvv for the risc64 kernel
+gcc16	064	5db72ab9d3b8	2026-05-26T12:58:46-04:00	serialization_twitter	5943.19	0.58	2.43	add: C++26 annotations support for rename and skip (#2730)
+gcc16	064	5db72ab9d3b8	2026-05-26T12:58:46-04:00	serialization_citm	5033.39	0.69	3.15	add: C++26 annotations support for rename and skip (#2730)
+gcc16	064	5db72ab9d3b8	2026-05-26T12:58:46-04:00	parsing_twitter	4267.96	0.81	3.13	add: C++26 annotations support for rename and skip (#2730)
+gcc16	064	5db72ab9d3b8	2026-05-26T12:58:46-04:00	parsing_citm	2346.63	1.47	5.93	add: C++26 annotations support for rename and skip (#2730)
+gcc16	065	57561f64f4da	2026-05-26T15:19:32-04:00	serialization_twitter	5935.15	0.59	2.43	adding warning that this is experimental.
+gcc16	065	57561f64f4da	2026-05-26T15:19:32-04:00	serialization_citm	5029.03	0.69	3.15	adding warning that this is experimental.
+gcc16	065	57561f64f4da	2026-05-26T15:19:32-04:00	parsing_twitter	4225.49	0.81	3.13	adding warning that this is experimental.
+gcc16	065	57561f64f4da	2026-05-26T15:19:32-04:00	parsing_citm	2355.98	1.46	5.93	adding warning that this is experimental.
+gcc16	066	dc485f845db1	2026-05-29T17:43:33-04:00	serialization_twitter	5949.24	0.58	2.43	let us use lower-case words for layout_mode (#2740)
+gcc16	066	dc485f845db1	2026-05-29T17:43:33-04:00	serialization_citm	5062.56	0.68	3.15	let us use lower-case words for layout_mode (#2740)
+gcc16	066	dc485f845db1	2026-05-29T17:43:33-04:00	parsing_twitter	4264.73	0.81	3.13	let us use lower-case words for layout_mode (#2740)
+gcc16	066	dc485f845db1	2026-05-29T17:43:33-04:00	parsing_citm	2351.85	1.47	5.93	let us use lower-case words for layout_mode (#2740)
+gcc16	067	0fa2ff0bccf7	2026-06-15T11:51:37-04:00	serialization_twitter	5964.21	0.58	2.43	DOM without padding (experimental) (#2775)
+gcc16	067	0fa2ff0bccf7	2026-06-15T11:51:37-04:00	serialization_citm	4991.65	0.69	3.15	DOM without padding (experimental) (#2775)
+gcc16	067	0fa2ff0bccf7	2026-06-15T11:51:37-04:00	parsing_twitter	4228.1	0.81	3.13	DOM without padding (experimental) (#2775)
+gcc16	067	0fa2ff0bccf7	2026-06-15T11:51:37-04:00	parsing_citm	2348.93	1.47	5.93	DOM without padding (experimental) (#2775)
+gcc16	068	9b33047a8782	2026-06-15T12:00:56-04:00	serialization_twitter	5934.26	0.58	2.43	Compile-time key selectors: single-pass, order-independent field extraction (#2776)
+gcc16	068	9b33047a8782	2026-06-15T12:00:56-04:00	serialization_citm	4997.06	0.69	3.14	Compile-time key selectors: single-pass, order-independent field extraction (#2776)
+gcc16	068	9b33047a8782	2026-06-15T12:00:56-04:00	parsing_twitter	4669.56	0.74	2.94	Compile-time key selectors: single-pass, order-independent field extraction (#2776)
+gcc16	068	9b33047a8782	2026-06-15T12:00:56-04:00	parsing_citm	2505.08	1.37	5.06	Compile-time key selectors: single-pass, order-independent field extraction (#2776)
+gcc16	069	43918a4c1f57	2026-07-10T15:54:36-04:00	serialization_twitter	5901.63	0.59	2.43	grisu2 to dragonbox as underlying logic for to_chars (#2777)
+gcc16	069	43918a4c1f57	2026-07-10T15:54:36-04:00	serialization_citm	5051.95	0.68	3.14	grisu2 to dragonbox as underlying logic for to_chars (#2777)
+gcc16	069	43918a4c1f57	2026-07-10T15:54:36-04:00	parsing_twitter	4647.96	0.74	2.94	grisu2 to dragonbox as underlying logic for to_chars (#2777)
+gcc16	069	43918a4c1f57	2026-07-10T15:54:36-04:00	parsing_citm	2509.5	1.37	5.06	grisu2 to dragonbox as underlying logic for to_chars (#2777)
+gcc16	070	b485fb2af486	2026-07-10T16:35:32-04:00	serialization_twitter	5933.61	0.59	2.43	using __builtin_popcountll in the hope that it will pick up better (#2779)
+gcc16	070	b485fb2af486	2026-07-10T16:35:32-04:00	serialization_citm	5017.36	0.69	3.14	using __builtin_popcountll in the hope that it will pick up better (#2779)
+gcc16	070	b485fb2af486	2026-07-10T16:35:32-04:00	parsing_twitter	4668.25	0.74	2.94	using __builtin_popcountll in the hope that it will pick up better (#2779)
+gcc16	070	b485fb2af486	2026-07-10T16:35:32-04:00	parsing_citm	2504.94	1.37	5.06	using __builtin_popcountll in the hope that it will pick up better (#2779)
+gcc16	071	209cb925dc99	2026-07-13T09:01:38-04:00	serialization_twitter	5889.82	0.59	2.43	to_chars.cpp, refactored dragonbox() to do 2 digits at a time and avoid reversal loop (#2781)
+gcc16	071	209cb925dc99	2026-07-13T09:01:38-04:00	serialization_citm	5025.78	0.69	3.14	to_chars.cpp, refactored dragonbox() to do 2 digits at a time and avoid reversal loop (#2781)
+gcc16	071	209cb925dc99	2026-07-13T09:01:38-04:00	parsing_twitter	4675.2	0.74	2.94	to_chars.cpp, refactored dragonbox() to do 2 digits at a time and avoid reversal loop (#2781)
+gcc16	071	209cb925dc99	2026-07-13T09:01:38-04:00	parsing_citm	2526.62	1.38	5.06	to_chars.cpp, refactored dragonbox() to do 2 digits at a time and avoid reversal loop (#2781)
+gcc16	072	1421ae9cecb6	2026-07-13T09:01:53-04:00	serialization_twitter	5951.73	0.59	2.43	to_chars.cpp, fast path to avoid i128 emulation when possible (#2780)
+gcc16	072	1421ae9cecb6	2026-07-13T09:01:53-04:00	serialization_citm	5063.37	0.68	3.14	to_chars.cpp, fast path to avoid i128 emulation when possible (#2780)
+gcc16	072	1421ae9cecb6	2026-07-13T09:01:53-04:00	parsing_twitter	4658.35	0.74	2.94	to_chars.cpp, fast path to avoid i128 emulation when possible (#2780)
+gcc16	072	1421ae9cecb6	2026-07-13T09:01:53-04:00	parsing_citm	2512.68	1.37	5.06	to_chars.cpp, fast path to avoid i128 emulation when possible (#2780)
+gcc16	073	0bafb824a8c2	2026-07-13T15:10:48-04:00	serialization_twitter	5944.72	0.59	2.43	Add LASX (LoongArch 256-bit SIMD) fast path for JSON string escaping (#2778)
+gcc16	073	0bafb824a8c2	2026-07-13T15:10:48-04:00	serialization_citm	5093.89	0.68	3.14	Add LASX (LoongArch 256-bit SIMD) fast path for JSON string escaping (#2778)
+gcc16	073	0bafb824a8c2	2026-07-13T15:10:48-04:00	parsing_twitter	4709.75	0.74	2.94	Add LASX (LoongArch 256-bit SIMD) fast path for JSON string escaping (#2778)
+gcc16	073	0bafb824a8c2	2026-07-13T15:10:48-04:00	parsing_citm	2509.87	1.38	5.06	Add LASX (LoongArch 256-bit SIMD) fast path for JSON string escaping (#2778)
+gcc16	074	8e6bac94877f	2026-07-14T16:36:12-04:00	serialization_twitter	5904.87	0.59	2.43	Fix incorrect doc comments (#2784)
+gcc16	074	8e6bac94877f	2026-07-14T16:36:12-04:00	serialization_citm	5052.88	0.68	3.14	Fix incorrect doc comments (#2784)
+gcc16	074	8e6bac94877f	2026-07-14T16:36:12-04:00	parsing_twitter	4673.81	0.74	2.94	Fix incorrect doc comments (#2784)
+gcc16	074	8e6bac94877f	2026-07-14T16:36:12-04:00	parsing_citm	2501.02	1.38	5.06	Fix incorrect doc comments (#2784)
+gcc16	075	e3720ba82450	2026-07-27T20:44:43-04:00	serialization_twitter	5946.49	0.58	2.43	Treat 20-digit positive overflows as big integers (#2793)
+gcc16	075	e3720ba82450	2026-07-27T20:44:43-04:00	serialization_citm	5014.55	0.69	3.14	Treat 20-digit positive overflows as big integers (#2793)
+gcc16	075	e3720ba82450	2026-07-27T20:44:43-04:00	parsing_twitter	4672.76	0.74	2.94	Treat 20-digit positive overflows as big integers (#2793)
+gcc16	075	e3720ba82450	2026-07-27T20:44:43-04:00	parsing_citm	2503.81	1.38	5.06	Treat 20-digit positive overflows as big integers (#2793)
+gcc16	076	6816b847cc56	2026-07-27T20:45:01-04:00	serialization_twitter	5911.33	0.59	2.43	Remove dead structural_iterator class (#2792)
+gcc16	076	6816b847cc56	2026-07-27T20:45:01-04:00	serialization_citm	5046.83	0.68	3.14	Remove dead structural_iterator class (#2792)
+gcc16	076	6816b847cc56	2026-07-27T20:45:01-04:00	parsing_twitter	4664.61	0.74	2.94	Remove dead structural_iterator class (#2792)
+gcc16	076	6816b847cc56	2026-07-27T20:45:01-04:00	parsing_citm	2503.61	1.37	5.06	Remove dead structural_iterator class (#2792)
+gcc16	077	04c41fc7fd0c	2026-07-27T20:45:19-04:00	serialization_twitter	5918.6	0.59	2.43	Remove unused add_overflow from all architecture backends (#2790)
+gcc16	077	04c41fc7fd0c	2026-07-27T20:45:19-04:00	serialization_citm	5009.06	0.69	3.14	Remove unused add_overflow from all architecture backends (#2790)
+gcc16	077	04c41fc7fd0c	2026-07-27T20:45:19-04:00	parsing_twitter	4637.9	0.74	2.94	Remove unused add_overflow from all architecture backends (#2790)
+gcc16	077	04c41fc7fd0c	2026-07-27T20:45:19-04:00	parsing_citm	2505.54	1.38	5.06	Remove unused add_overflow from all architecture backends (#2790)
+gcc16	078	78d8acdd9ee8	2026-07-28T10:28:45-04:00	serialization_twitter	5892.11	0.59	2.43	arm64: test comparison masks with shrn+fcmp instead of a horizontal reduce (#2796)
+gcc16	078	78d8acdd9ee8	2026-07-28T10:28:45-04:00	serialization_citm	5096.15	0.68	3.14	arm64: test comparison masks with shrn+fcmp instead of a horizontal reduce (#2796)
+gcc16	078	78d8acdd9ee8	2026-07-28T10:28:45-04:00	parsing_twitter	4657.1	0.74	2.94	arm64: test comparison masks with shrn+fcmp instead of a horizontal reduce (#2796)
+gcc16	078	78d8acdd9ee8	2026-07-28T10:28:45-04:00	parsing_citm	2503.79	1.38	5.06	arm64: test comparison masks with shrn+fcmp instead of a horizontal reduce (#2796)
+gcc16	079	ebe5e1bf3c06	2026-07-28T20:49:13-04:00	serialization_twitter	5899.46	0.59	2.43	Reuse parser buffers when the requested capacity shrinks
+gcc16	079	ebe5e1bf3c06	2026-07-28T20:49:13-04:00	serialization_citm	5062.89	0.68	3.14	Reuse parser buffers when the requested capacity shrinks
+gcc16	079	ebe5e1bf3c06	2026-07-28T20:49:13-04:00	parsing_twitter	4638.84	0.74	2.94	Reuse parser buffers when the requested capacity shrinks
+gcc16	079	ebe5e1bf3c06	2026-07-28T20:49:13-04:00	parsing_citm	2509.6	1.38	5.06	Reuse parser buffers when the requested capacity shrinks
+gcc16	080	93fce66af808	2026-07-29T14:29:27-04:00	serialization_twitter	7483.18	0.47	2.15	Faster write_string_escaped: single-pass block escaping (SSE2, NEON) (#2795)
+gcc16	080	93fce66af808	2026-07-29T14:29:27-04:00	serialization_citm	5474.76	0.63	3.09	Faster write_string_escaped: single-pass block escaping (SSE2, NEON) (#2795)
+gcc16	080	93fce66af808	2026-07-29T14:29:27-04:00	parsing_twitter	4680.85	0.74	2.94	Faster write_string_escaped: single-pass block escaping (SSE2, NEON) (#2795)
+gcc16	080	93fce66af808	2026-07-29T14:29:27-04:00	parsing_citm	2506.42	1.38	5.06	Faster write_string_escaped: single-pass block escaping (SSE2, NEON) (#2795)
+gcc16	081	8c06c443301c	2026-07-30T23:14:39-04:00	serialization_twitter	7479.14	0.47	2.15	Fix throw on unterminated bracket-quoted JSONPath keys in wildcard walks (#2801)
+gcc16	081	8c06c443301c	2026-07-30T23:14:39-04:00	serialization_citm	5406.92	0.64	3.09	Fix throw on unterminated bracket-quoted JSONPath keys in wildcard walks (#2801)
+gcc16	081	8c06c443301c	2026-07-30T23:14:39-04:00	parsing_twitter	4644.53	0.74	2.94	Fix throw on unterminated bracket-quoted JSONPath keys in wildcard walks (#2801)
+gcc16	081	8c06c443301c	2026-07-30T23:14:39-04:00	parsing_citm	2511.64	1.38	5.06	Fix throw on unterminated bracket-quoted JSONPath keys in wildcard walks (#2801)
+gcc16	082	cbca9e9b2d5d	2026-08-03T17:55:48-04:00	serialization_twitter	7459.47	0.47	2.15	minor tweaks (#2804)
+gcc16	082	cbca9e9b2d5d	2026-08-03T17:55:48-04:00	serialization_citm	5485.43	0.63	3.09	minor tweaks (#2804)
+gcc16	082	cbca9e9b2d5d	2026-08-03T17:55:48-04:00	parsing_twitter	4669.6	0.74	2.94	minor tweaks (#2804)
+gcc16	082	cbca9e9b2d5d	2026-08-03T17:55:48-04:00	parsing_citm	2520.43	1.38	5.06	minor tweaks (#2804)
+gcc16	083	6deddc5b73d8	2026-08-04T14:10:03-04:00	serialization_twitter	7362.13	0.47	2.15	Detect C++26 static reflection instead of requiring a build flag (#2798)
+gcc16	083	6deddc5b73d8	2026-08-04T14:10:03-04:00	serialization_citm	5462.48	0.63	3.09	Detect C++26 static reflection instead of requiring a build flag (#2798)
+gcc16	083	6deddc5b73d8	2026-08-04T14:10:03-04:00	parsing_twitter	4647.25	0.74	2.94	Detect C++26 static reflection instead of requiring a build flag (#2798)
+gcc16	083	6deddc5b73d8	2026-08-04T14:10:03-04:00	parsing_citm	2509.44	1.37	5.06	Detect C++26 static reflection instead of requiring a build flag (#2798)
+gcc16	084	b3072d2524b7	2026-08-04T14:10:22-04:00	serialization_twitter	7443.06	0.47	2.15	perf: eliminate libc memcpy/memset/memmove calls in to_chars hotpath (#2805)
+gcc16	084	b3072d2524b7	2026-08-04T14:10:22-04:00	serialization_citm	5421.1	0.64	3.09	perf: eliminate libc memcpy/memset/memmove calls in to_chars hotpath (#2805)
+gcc16	084	b3072d2524b7	2026-08-04T14:10:22-04:00	parsing_twitter	4724.2	0.74	2.94	perf: eliminate libc memcpy/memset/memmove calls in to_chars hotpath (#2805)
+gcc16	084	b3072d2524b7	2026-08-04T14:10:22-04:00	parsing_citm	2505.9	1.38	5.06	perf: eliminate libc memcpy/memset/memmove calls in to_chars hotpath (#2805)
+gcc16	085	2607341b066c	2026-08-07T19:10:49-04:00	serialization_twitter	7465.6	0.47	2.15	Merge branch 'lemire/to_chars_no_memmove' of github.com:simdjson/simdjson
+gcc16	085	2607341b066c	2026-08-07T19:10:49-04:00	serialization_citm	5402.08	0.64	3.09	Merge branch 'lemire/to_chars_no_memmove' of github.com:simdjson/simdjson
+gcc16	085	2607341b066c	2026-08-07T19:10:49-04:00	parsing_twitter	4656.02	0.74	2.94	Merge branch 'lemire/to_chars_no_memmove' of github.com:simdjson/simdjson
+gcc16	085	2607341b066c	2026-08-07T19:10:49-04:00	parsing_citm	2507.69	1.38	5.06	Merge branch 'lemire/to_chars_no_memmove' of github.com:simdjson/simdjson
+gcc16	086	3d1fe707ffac	2026-08-10T11:19:11-04:00	serialization_twitter	7446.09	0.47	2.15	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	086	3d1fe707ffac	2026-08-10T11:19:11-04:00	serialization_citm	5394.65	0.64	3.09	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	086	3d1fe707ffac	2026-08-10T11:19:11-04:00	parsing_twitter	4674.49	0.74	2.94	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	086	3d1fe707ffac	2026-08-10T11:19:11-04:00	parsing_citm	2507.93	1.37	5.06	Merge branch 'master' of github.com:simdjson/simdjson
+gcc16	087	49ee50210506	2026-08-12T19:04:31-04:00	serialization_twitter	7438.11	0.47	2.15	Fix just_ascii test failure: replace em dashes with ASCII (#2821)
+gcc16	087	49ee50210506	2026-08-12T19:04:31-04:00	serialization_citm	5496.96	0.63	3.09	Fix just_ascii test failure: replace em dashes with ASCII (#2821)
+gcc16	087	49ee50210506	2026-08-12T19:04:31-04:00	parsing_twitter	4664.15	0.74	2.94	Fix just_ascii test failure: replace em dashes with ASCII (#2821)
+gcc16	087	49ee50210506	2026-08-12T19:04:31-04:00	parsing_citm	2505.57	1.38	5.06	Fix just_ascii test failure: replace em dashes with ASCII (#2821)
+gcc16	088	9b89b82d61a9	2026-08-12T19:43:24-04:00	serialization_twitter	7458.64	0.47	2.15	Add newline_delimited, slice_at, and skip documents by delimiter (#2803)
+gcc16	088	9b89b82d61a9	2026-08-12T19:43:24-04:00	serialization_citm	5397.36	0.64	3.09	Add newline_delimited, slice_at, and skip documents by delimiter (#2803)
+gcc16	088	9b89b82d61a9	2026-08-12T19:43:24-04:00	parsing_twitter	4656.46	0.74	2.94	Add newline_delimited, slice_at, and skip documents by delimiter (#2803)
+gcc16	088	9b89b82d61a9	2026-08-12T19:43:24-04:00	parsing_citm	2503.74	1.38	5.06	Add newline_delimited, slice_at, and skip documents by delimiter (#2803)
+gcc16	089	07b325404bd3	2026-08-14T11:56:33-04:00	serialization_twitter	7432.38	0.47	2.15	Reject malformed big integers with trailing non-structural characters (#2820)
+gcc16	089	07b325404bd3	2026-08-14T11:56:33-04:00	serialization_citm	5437.73	0.64	3.09	Reject malformed big integers with trailing non-structural characters (#2820)
+gcc16	089	07b325404bd3	2026-08-14T11:56:33-04:00	parsing_twitter	4705.06	0.74	2.94	Reject malformed big integers with trailing non-structural characters (#2820)
+gcc16	089	07b325404bd3	2026-08-14T11:56:33-04:00	parsing_citm	2512.79	1.37	5.06	Reject malformed big integers with trailing non-structural characters (#2820)
+gcc16	090	5d37e84afc40	2026-08-18T13:38:57-04:00	serialization_twitter	7449.99	0.47	2.15	Fix ambiguous atom()/append() on optional serialization (#2827) (#2828)
+gcc16	090	5d37e84afc40	2026-08-18T13:38:57-04:00	serialization_citm	5459.39	0.63	3.09	Fix ambiguous atom()/append() on optional serialization (#2827) (#2828)
+gcc16	090	5d37e84afc40	2026-08-18T13:38:57-04:00	parsing_twitter	4636.18	0.74	2.94	Fix ambiguous atom()/append() on optional serialization (#2827) (#2828)
+gcc16	090	5d37e84afc40	2026-08-18T13:38:57-04:00	parsing_citm	2513.16	1.38	5.06	Fix ambiguous atom()/append() on optional serialization (#2827) (#2828)
+gcc16	091	cc6cd4a09dba	2026-08-18T13:40:28-04:00	serialization_twitter	7432.62	0.47	2.15	Add 32-bit binary float support to the On Demand API (#2825)
+gcc16	091	cc6cd4a09dba	2026-08-18T13:40:28-04:00	serialization_citm	5380.66	0.64	3.09	Add 32-bit binary float support to the On Demand API (#2825)
+gcc16	091	cc6cd4a09dba	2026-08-18T13:40:28-04:00	parsing_twitter	4632.12	0.74	2.94	Add 32-bit binary float support to the On Demand API (#2825)
+gcc16	091	cc6cd4a09dba	2026-08-18T13:40:28-04:00	parsing_citm	2506.43	1.38	5.06	Add 32-bit binary float support to the On Demand API (#2825)
+gcc16	092	2dfd49e97036	2026-08-20T14:00:53-04:00	serialization_twitter	7388.28	0.47	2.15	Vendor fast_float without old-style casts (#2833)
+gcc16	092	2dfd49e97036	2026-08-20T14:00:53-04:00	serialization_citm	5437.65	0.63	3.09	Vendor fast_float without old-style casts (#2833)
+gcc16	092	2dfd49e97036	2026-08-20T14:00:53-04:00	parsing_twitter	4685.95	0.74	2.94	Vendor fast_float without old-style casts (#2833)
+gcc16	092	2dfd49e97036	2026-08-20T14:00:53-04:00	parsing_citm	2506.27	1.38	5.06	Vendor fast_float without old-style casts (#2833)
+gcc16	093	f807de973580	2026-08-20T15:57:14-04:00	serialization_twitter	7396.68	0.47	2.15	feat(ondemand): protect object iteration via state-based container locking (#2809)
+gcc16	093	f807de973580	2026-08-20T15:57:14-04:00	serialization_citm	5386.7	0.64	3.09	feat(ondemand): protect object iteration via state-based container locking (#2809)
+gcc16	093	f807de973580	2026-08-20T15:57:14-04:00	parsing_twitter	4649.98	0.74	2.94	feat(ondemand): protect object iteration via state-based container locking (#2809)
+gcc16	093	f807de973580	2026-08-20T15:57:14-04:00	parsing_citm	2496.62	1.38	5.06	feat(ondemand): protect object iteration via state-based container locking (#2809)
+gcc16	094	daca126bcfc2	2026-08-24T11:25:41-04:00	serialization_twitter	7438.55	0.47	2.15	printing ondemand::json_type::unknown is undefined behavior (#2835)
+gcc16	094	daca126bcfc2	2026-08-24T11:25:41-04:00	serialization_citm	5358.17	0.64	3.09	printing ondemand::json_type::unknown is undefined behavior (#2835)
+gcc16	094	daca126bcfc2	2026-08-24T11:25:41-04:00	parsing_twitter	4591.72	0.75	2.9	printing ondemand::json_type::unknown is undefined behavior (#2835)
+gcc16	094	daca126bcfc2	2026-08-24T11:25:41-04:00	parsing_citm	2610.86	1.32	4.67	printing ondemand::json_type::unknown is undefined behavior (#2835)
+gcc16	095	6ff07f24e4be	2026-08-24T14:03:31-04:00	serialization_twitter	7409.28	0.47	2.15	fix at_path bug (#2841)
+gcc16	095	6ff07f24e4be	2026-08-24T14:03:31-04:00	serialization_citm	5406.15	0.64	3.09	fix at_path bug (#2841)
+gcc16	095	6ff07f24e4be	2026-08-24T14:03:31-04:00	parsing_twitter	4586.01	0.75	2.9	fix at_path bug (#2841)
+gcc16	095	6ff07f24e4be	2026-08-24T14:03:31-04:00	parsing_citm	2622.58	1.32	4.67	fix at_path bug (#2841)
+gcc16	096	7137e40356e6	2026-08-24T16:37:35-04:00	serialization_twitter	7439.16	0.47	2.15	Add C++20 u8 variants of string access methods (#2731) (#2786)
+gcc16	096	7137e40356e6	2026-08-24T16:37:35-04:00	serialization_citm	5462.3	0.63	3.09	Add C++20 u8 variants of string access methods (#2731) (#2786)
+gcc16	096	7137e40356e6	2026-08-24T16:37:35-04:00	parsing_twitter	4550.61	0.75	2.9	Add C++20 u8 variants of string access methods (#2731) (#2786)
+gcc16	096	7137e40356e6	2026-08-24T16:37:35-04:00	parsing_citm	2615.26	1.32	4.67	Add C++20 u8 variants of string access methods (#2731) (#2786)
+gcc16	097	50e8271b4436	2026-08-24T21:20:59-04:00	serialization_twitter	7429.22	0.47	2.15	fix wildcard path recursion depth (#2844)
+gcc16	097	50e8271b4436	2026-08-24T21:20:59-04:00	serialization_citm	5436.09	0.64	3.09	fix wildcard path recursion depth (#2844)
+gcc16	097	50e8271b4436	2026-08-24T21:20:59-04:00	parsing_twitter	4569.85	0.75	2.9	fix wildcard path recursion depth (#2844)
+gcc16	097	50e8271b4436	2026-08-24T21:20:59-04:00	parsing_citm	2620.82	1.32	4.67	fix wildcard path recursion depth (#2844)
+gcc16	098	cb99bf4a9f76	2026-08-25T15:57:56-04:00	serialization_twitter	7416.81	0.47	2.15	keep the wildcard depth test off the Windows debug stack
+gcc16	098	cb99bf4a9f76	2026-08-25T15:57:56-04:00	serialization_citm	5472.01	0.63	3.09	keep the wildcard depth test off the Windows debug stack
+gcc16	098	cb99bf4a9f76	2026-08-25T15:57:56-04:00	parsing_twitter	4588.88	0.75	2.9	keep the wildcard depth test off the Windows debug stack
+gcc16	098	cb99bf4a9f76	2026-08-25T15:57:56-04:00	parsing_citm	2618.83	1.32	4.67	keep the wildcard depth test off the Windows debug stack
