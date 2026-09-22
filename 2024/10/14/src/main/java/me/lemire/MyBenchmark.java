@@ -35,20 +35,16 @@ public class MyBenchmark {
     }
 
     private static final byte[] silly_table3;
-    private static final short[] replacementsAndLengthsTables = new short[256 * 2];
+    private static final int[] replacements = new int[256];
 
     static {
         for (int i = 0; i < 256; i++) {
-            replacementsAndLengthsTables[i * 2] = (short) (i & 0xFF);
-            replacementsAndLengthsTables[(i * 2) + 1] = 1;
+            replacements[i] = (i & 0xFF) | (1 << 16);
         }
         // we need to override the default values
-        replacementsAndLengthsTables['\\' * 2] = (short) (0x005c | (('\\' & 0xFF) << 8));
-        replacementsAndLengthsTables[('\\' * 2) + 1] = 2;
-        replacementsAndLengthsTables['\n' * 2] = (short) (0x005c | (('n' & 0xFF) << 8));
-        replacementsAndLengthsTables[('\n' * 2) + 1] = 2;
-        replacementsAndLengthsTables['\t' * 2] = (short) (0x005c | (('t' & 0xFF) << 8));
-        replacementsAndLengthsTables[('\t' * 2) + 1] = 2;
+        replacements['\\'] = (0x005c | (('\\' & 0xFF) << 8)) | (2 << 16);
+        replacements['\n'] = (0x005c | (('n' & 0xFF) << 8)) | (2 << 16);
+        replacements['\t'] = (0x005c | (('t' & 0xFF) << 8)) | (2 << 16);
 
         silly_table3 = new byte[256];
         silly_table3['\\'] = '\\';
@@ -263,9 +259,11 @@ public class MyBenchmark {
         int outputOffset = 0;
         for (byte b : original) {
             int latin = b & 0xFF;
-            short replacement = replacementsAndLengthsTables[2 * latin];
+            int replacementAndLength = replacements[latin];
+            short replacement = (short) replacementAndLength;
             SHORT_WRITER.set(newArray, outputOffset, replacement);
-            outputOffset += replacementsAndLengthsTables[(2 * latin) + 1];
+            int length =  replacementAndLength >> 16;
+            outputOffset += length;
         }
         return outputOffset;
     }
