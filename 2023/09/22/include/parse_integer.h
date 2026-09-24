@@ -22,4 +22,6 @@ bool parse_unsigned_avx512(const char *start_digits,
                                               const char *end_digits, uint64_t& value) noexcept;
 bool parse_unsigned_avx512_perforated(const char *start_digits,
                                               const char *end_digits, uint64_t& value) noexcept;
+bool parse_unsigned_avx512_dpbusd(const char *start_digits,
+                                   const char *end_digits, uint64_t& value) noexcept;
 #endif // PARSE_INTEGER_H

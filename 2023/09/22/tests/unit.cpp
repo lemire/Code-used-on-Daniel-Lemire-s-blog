@@ -74,6 +74,17 @@ bool basic_test() {
       return false;
     }
 
+    r = parse_unsigned_avx512_dpbusd(input.data(), input.data() + input.size() - 1,
+                              value);
+    if (!r) {
+      printf("parse_unsigned_avx512_dpbusd rejected\n");
+      return false;
+    }
+    if (value != target) {
+      printf("bad %zu\n", value);
+      return false;
+    }
+
   }
 
   printf("SUCCESS\n");

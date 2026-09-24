@@ -160,6 +160,45 @@ parse_unsigned_avx512_perforated_inline(const char *start,
   }
 }
 
+// Single-path version: one masked load, one vpdpbusd, one 64-bit multiply-add.
+inline bool
+parse_unsigned_avx512_dpbusd_inline(const char *start,
+                              const char *end, uint64_t& value) noexcept {
+  const size_t n = size_t(end - start);
+  if (n == 0 || n > 20) {
+    return false;
+  }
+  if (n > 1 && *start == '0') {
+    return false;
+  }
+  const uint32_t mask = 0xFFFFFFFFu << (32 - n);
+  const __m256i in = _mm256_maskz_loadu_epi8(mask, end - 32);
+  const __m256i digits = _mm256_maskz_sub_epi8(mask, in, _mm256_set1_epi8('0'));
+  if (_mm256_mask_cmpgt_epu8_mask(mask, digits, _mm256_set1_epi8(9))) {
+    return false;
+  }
+  // dwords 3..7 = A,B,C,D,E (most -> least significant), each <= 9999
+  const __m256i scaled = _mm256_mask_slli_epi16(digits, 0x5555, digits, 2);
+  const __m256i g = _mm256_dpbusd_epi32(_mm256_setzero_si256(),
+                                        _mm256_set1_epi32(0x010A19FA), scaled);
+  // qword = low_dword*10^4 + high_dword  ->  q1 = A, q2 = B*1e4+C, q3 = D*1e4+E
+  const __m256i q = _mm256_add_epi64(
+      _mm256_mul_epu32(g, _mm256_set1_epi64x(10000)), _mm256_srli_epi64(g, 32));
+  const __m128i qhi = _mm256_extracti128_si256(q, 1);
+  const uint64_t A = (uint64_t)_mm_extract_epi64(_mm256_castsi256_si128(q), 1);
+  const uint64_t lo = (uint64_t)_mm_cvtsi128_si64(qhi) * 100000000ull +
+                      (uint64_t)_mm_extract_epi64(qhi, 1);
+  if (A > 1844) {
+    return false;
+  }
+  const uint64_t r = lo + 10000000000000000ull * A;
+  if (r < lo) {
+    return false;
+  }
+  value = r;
+  return true;
+}
+
 void pretty_print(size_t volume, size_t bytes, std::string name,
                   event_aggregate agg) {
   printf("%-40s : ", name.c_str());
@@ -197,10 +236,28 @@ int main(int argc, char **argv) {
         }
       }));
   pretty_print(
+      numbers, volume, "parse_unsigned_avx512_dpbusd_inline", bench([&input, &sum]() {
+        uint64_t value;
+        for (const std::string &s : input) {
+          if (parse_unsigned_avx512_dpbusd_inline(s.data(), s.data() + s.size(), value)) {
+            sum += value;
+          }
+        }
+      }));
+  pretty_print(
       numbers, volume, "parse_unsigned_avx512_perforated_inline", bench([&input, &sum]() {
         uint64_t value;
         for (const std::string &s : input) {
           if (parse_unsigned_avx512_perforated_inline(s.data(), s.data() + s.size(), value)) {
+            sum += value;
+          }
+        }
+      }));
+  pretty_print(
+      numbers, volume, "parse_unsigned_avx512_dpbusd", bench([&input, &sum]() {
+        uint64_t value;
+        for (const std::string &s : input) {
+          if (parse_unsigned_avx512_dpbusd(s.data(), s.data() + s.size(), value)) {
             sum += value;
           }
         }
