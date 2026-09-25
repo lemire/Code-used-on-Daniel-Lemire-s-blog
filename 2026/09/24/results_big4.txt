@@ -1,0 +1,29 @@
+Python 3.14.6
+loop only          18.83 ns/string      53.1 M/s
+""                 18.84 ns/string      53.1 M/s
+str()              25.70 ns/string      38.9 M/s
+str(i)             53.21 ns/string      18.8 M/s
+p[i&15] + 'x'      46.59 ns/string      21.5 M/s
+Node v25.9.0
+loop only           0.50 ns/string    1992.6 M/s
+""                  0.50 ns/string    1992.9 M/s
+String()            3.16 ns/string     316.5 M/s
+String(i)          20.29 ns/string      49.3 M/s
+p[i&15] + 'x'       8.55 ns/string     117.0 M/s
+Bun 1.4.2
+loop only           0.35 ns/string    2870.3 M/s
+""                  0.57 ns/string    1743.6 M/s
+String()            0.57 ns/string    1743.8 M/s
+String(i)          31.57 ns/string      31.7 M/s
+p[i&15] + 'x'       3.36 ns/string     297.4 M/s
+C++ (16.1.0)
+to_string(i)                9.74 ns/string     102.7 M/s   (check 8192)
+Rust
+i.to_string()              16.87 ns/string      59.3 M/s   (check 8192)
+itoa + to_owned()          14.11 ns/string      70.9 M/s   (check 8192)
+Go go1.26.3 (Red Hat 1.26.3-4.el10_2)
+strconv.Itoa(i)            17.14 ns/string      58.3 M/s   (check 8192)
+Nim 2.2.12
+$i                         14.01 ns/string      71.4 M/s   (check 8192)
+C++ (Clang 21.1.8 (RESF 21.1.8-1.el10))
+to_string(i)               10.92 ns/string      91.6 M/s   (check 8192)
