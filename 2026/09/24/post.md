@@ -64,6 +64,19 @@ The integers go from 0 to 100 million (10 million in Python), so each string has
 
 ![Time to convert an integer to a new string on an Apple M4 Max](strings.png)
 
+Millions of strings per second:
+
+| | million strings per second |
+| --- | ---: |
+| C++ `std::to_string` | 183.8 |
+| Nim `$i` | 85.9 |
+| Go `strconv.Itoa` | 84.3 |
+| Node.js `String(i)` | 73.1 |
+| Rust `itoa` | 71.0 |
+| Bun `String(i)` | 68.5 |
+| Rust `to_string()` | 63.6 |
+| Python `str(i)` | 22.9 |
+
 Python is the slowest at 44 ns per string, about three times slower than JavaScript and eight times slower than C++. 
 
 The compiled languages that allocate each string on the heap (Rust, Go, Nim) end up in the same range as JavaScript: 12 to 16 ns per string. Rust with its standard `to_string()` is even a bit slower than Node.js and Bun. Garbage-collected runtimes like Go and JavaScript are very good at allocating many small, short-lived objects.
