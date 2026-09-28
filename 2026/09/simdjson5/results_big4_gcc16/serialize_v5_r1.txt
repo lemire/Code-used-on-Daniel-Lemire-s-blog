@@ -1,0 +1,13 @@
+twitter.json           serialize    0.960 GB/s (output 466906 bytes) 6
+citm_catalog.json      serialize    1.073 GB/s (output 500299 bytes) 2
+canada.json            serialize    0.508 GB/s (output 2090234 bytes) 6
+github_events.json     serialize    1.863 GB/s (output 53329 bytes) 3
+gsoc-2018.json         serialize    1.229 GB/s (output 3070045 bytes) 6
+marine_ik.json         serialize    0.365 GB/s (output 1828112 bytes) 6
+mesh.json              serialize    0.472 GB/s (output 650573 bytes) 0
+numbers.json           serialize    0.491 GB/s (output 150121 bytes) 6
+random.json            serialize    1.175 GB/s (output 461466 bytes) 5
+twitterescaped.json    serialize    1.664 GB/s (output 466906 bytes) 6
+update-center.json     serialize    1.286 GB/s (output 532959 bytes) 0
+instruments.json       serialize    1.074 GB/s (output 108313 bytes) 2
+apache_builds.json     serialize    1.447 GB/s (output 94653 bytes) 6
