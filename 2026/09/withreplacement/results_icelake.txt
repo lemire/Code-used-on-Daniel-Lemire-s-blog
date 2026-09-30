@@ -1,0 +1,115 @@
+impl icelake
+file english bytes 1827601
+plan english valid errors 0 more 0
+english valid scalar 4.579
+english valid replacement 10.051
+english valid pair_replacement 8.040
+english valid plain 10.015
+english valid pair_plain 7.593
+plan english eight errors 8 more 0
+english eight scalar 4.595
+english eight replacement 10.007
+english eight pair_replacement 7.977
+plan english per4k errors 16 more 1
+english per4k scalar 4.482
+english per4k replacement 8.992
+english per4k pair_replacement 6.678
+plan english per64 errors 16 more 1
+english per64 scalar 2.556
+english per64 replacement 2.603
+english per64 pair_replacement 1.115
+file chinese bytes 1486620
+plan chinese valid errors 0 more 0
+chinese valid scalar 1.999
+chinese valid replacement 6.839
+chinese valid pair_replacement 4.401
+chinese valid plain 6.441
+chinese valid pair_plain 5.149
+plan chinese eight errors 8 more 0
+chinese eight scalar 1.992
+chinese eight replacement 6.755
+chinese eight pair_replacement 4.371
+plan chinese per4k errors 16 more 1
+chinese per4k scalar 1.951
+chinese per4k replacement 4.838
+chinese per4k pair_replacement 3.174
+plan chinese per64 errors 16 more 1
+chinese per64 scalar 1.254
+chinese per64 replacement 1.233
+chinese per64 pair_replacement 0.660
+file arabic bytes 1420318
+plan arabic valid errors 0 more 0
+arabic valid scalar 1.338
+arabic valid replacement 8.359
+arabic valid pair_replacement 4.842
+arabic valid plain 7.250
+arabic valid pair_plain 5.756
+plan arabic eight errors 12 more 0
+arabic eight scalar 1.343
+arabic eight replacement 8.424
+arabic eight pair_replacement 4.836
+plan arabic per4k errors 16 more 1
+arabic per4k scalar 1.320
+arabic per4k replacement 5.854
+arabic per4k pair_replacement 3.534
+plan arabic per64 errors 16 more 1
+arabic per64 scalar 0.949
+arabic per64 replacement 0.903
+arabic per64 pair_replacement 0.526
+file hindi bytes 1066332
+plan hindi valid errors 0 more 0
+hindi valid scalar 1.475
+hindi valid replacement 7.914
+hindi valid pair_replacement 5.387
+hindi valid plain 7.350
+hindi valid pair_plain 6.018
+plan hindi eight errors 11 more 0
+hindi eight scalar 1.472
+hindi eight replacement 7.925
+hindi eight pair_replacement 5.421
+plan hindi per4k errors 16 more 1
+hindi per4k scalar 1.462
+hindi per4k replacement 5.684
+hindi per4k pair_replacement 3.726
+plan hindi per64 errors 16 more 1
+hindi per64 scalar 1.068
+hindi per64 replacement 1.077
+hindi per64 pair_replacement 0.597
+file japanese bytes 1061808
+plan japanese valid errors 0 more 0
+japanese valid scalar 1.668
+japanese valid replacement 6.992
+japanese valid pair_replacement 4.726
+japanese valid plain 6.541
+japanese valid pair_plain 5.382
+plan japanese eight errors 12 more 0
+japanese eight scalar 1.671
+japanese eight replacement 6.982
+japanese eight pair_replacement 4.820
+plan japanese per4k errors 16 more 1
+japanese per4k scalar 1.642
+japanese per4k replacement 4.836
+japanese per4k pair_replacement 3.252
+plan japanese per64 errors 16 more 1
+japanese per64 scalar 1.126
+japanese per64 replacement 1.098
+japanese per64 pair_replacement 0.557
+file russian bytes 1881579
+plan russian valid errors 0 more 0
+russian valid scalar 1.388
+russian valid replacement 7.904
+russian valid pair_replacement 4.616
+russian valid plain 7.269
+russian valid pair_plain 5.641
+plan russian eight errors 9 more 0
+russian eight scalar 1.387
+russian eight replacement 7.876
+russian eight pair_replacement 4.591
+plan russian per4k errors 16 more 1
+russian per4k scalar 1.372
+russian per4k replacement 5.440
+russian per4k pair_replacement 3.347
+plan russian per64 errors 16 more 1
+russian per64 scalar 0.967
+russian per64 replacement 0.949
+russian per64 pair_replacement 0.500
