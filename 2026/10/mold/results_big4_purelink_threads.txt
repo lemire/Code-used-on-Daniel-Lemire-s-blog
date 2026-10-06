@@ -1,0 +1,12 @@
+mold-threads1 .493316085
+mold-threads1 .487924491
+mold-threads1 .490578387
+mold-threads1 .491409831
+mold-threads1 .491019902
+mold-threads1 .487815134
+mold-threads8 .128890990
+mold-threads8 .126943558
+mold-threads8 .127731796
+mold-threads8 .130129012
+mold-threads8 .135454041
+mold-threads8 .127123533

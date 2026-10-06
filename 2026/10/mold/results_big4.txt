@@ -1,0 +1,21 @@
+gcc: gcc (GCC) 14.3.1 20251022 (Red Hat 14.3.1-4); ld: GNU ld version 2.41-63.el10; mold: mold 3.0.0 (8de38c35a2df16a25f7ff87ac3ad07156a925beb; compatible with GNU ld)
+node commit: c4af8665f6230541de568b5d4161d7707faf7332
+full build node-ld: 370.153229957 s
+full build node-mold: 365.996393812 s
+relink node-ld run 1: 29.057941784 s
+relink node-ld run 2: 28.936134665 s
+relink node-ld run 3: 29.094698588 s
+relink node-ld run 4: 28.954069906 s
+relink node-ld run 5: 29.103587183 s
+relink node-ld run 6: 28.989488851 s
+node-ld .comment: 
+node-ld size: 159613152
+relink node-mold run 1: 22.843994377 s
+relink node-mold run 2: 23.300976936 s
+relink node-mold run 3: 22.812584455 s
+relink node-mold run 4: 22.749148546 s
+relink node-mold run 5: 22.993721024 s
+relink node-mold run 6: 22.948089953 s
+node-mold .comment: mold 3.0.0
+node-mold size: 161934888
+DONE
