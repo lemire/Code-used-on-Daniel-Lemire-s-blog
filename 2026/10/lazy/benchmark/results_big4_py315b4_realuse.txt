@@ -1,0 +1,6 @@
+requests.get (real request)    (normal) median   87.9 ms   272 modules
+requests.get (real request)    (all   ) median   63.1 ms   116 modules
+rich.console.Console().print   (normal) median   37.0 ms    79 modules
+rich.console.Console().print   (all   ) median   33.5 ms    47 modules
+numpy array computation        (normal) median   57.1 ms   130 modules
+numpy array computation        (all   ) median   44.1 ms    76 modules
