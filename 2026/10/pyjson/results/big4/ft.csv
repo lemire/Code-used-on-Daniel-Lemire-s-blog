@@ -1,0 +1,5 @@
+method,python,gil,workers,seconds,gbps,events
+threads-json,3.14.6t,off,64,2.3901,3.170,2247806
+threads-msgspec,3.14.6t,off,64,0.3084,24.565,2247806
+threads-fastsimdjson,3.14.6t,off,64,0.2542,29.805,2247806
+threads-fastsimdjson-lazy,3.14.6t,off,64,0.1154,65.680,2247806

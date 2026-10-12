@@ -1,0 +1,2 @@
+fastsimdjson==0.6.0
+msgspec==0.22.0
