@@ -22,7 +22,8 @@ for path in glob.glob(os.path.join(sys.argv[1], "*.csv")):
         size, events = float(r["gbps"]) * float(r["seconds"]), int(r["events"])
 
 # Colours by library (validated categorical slots; every bar carries its value).
-COLOR = {"fastsimdjson": "#2a78d6", "msgspec": "#eb6834", "orjson": "#1baf7a", "json": "#eda100"}
+COLOR = {"fastsimdjson": "#2a78d6", "msgspec": "#eb6834", "orjson": "#1baf7a", "json": "#eda100",
+         "jiter": "#e87ba4", "ssrjson": "#7c3aed"}
 INK, MUTED, GRID, SURFACE = "#0b0b0b", "#52514e", "#e4e3df", "#fcfcfb"
 
 ONE = [  # (method, label, library)
@@ -30,6 +31,9 @@ ONE = [  # (method, label, library)
     ("msgspec", "msgspec (typed Struct)", "msgspec"),
     ("fastsimdjson", "fastsimdjson map_many", "fastsimdjson"),
     ("orjson", "orjson", "orjson"),
+    ("ssrjson", "ssrjson", "ssrjson"),
+    ("jiter", "jiter (string cache)", "jiter"),
+    ("jiter-nocache", "jiter (no string cache)", "jiter"),
     ("json", "json (standard library)", "json"),
 ]
 MANY = [
@@ -37,6 +41,9 @@ MANY = [
     ("threads-fastsimdjson", "fastsimdjson map_many\n64 threads", "fastsimdjson"),
     ("threads-msgspec", "msgspec (typed Struct)\n64 threads", "msgspec"),
     ("threads-json", "json (standard library)\n64 threads", "json"),
+    ("threads-ssrjson", "ssrjson\n64 threads", "ssrjson"),
+    ("threads-jiter", "jiter (no string cache)\n64 threads", "jiter"),
+    ("threads-jiter-cache", "jiter (string cache)\n64 threads", "jiter"),
 ]
 
 
@@ -80,7 +87,7 @@ def chart(name, items, title, subtitle, height):
 chart("one_thread.png", ONE, "One core",
       f"{events / 1e6:.1f} million GitHub events ({size:.1f} GB): count them by type, "
       "and pull requests by language",
-      6.2)
+      7.8)
 chart("many_cores.png", MANY, "64 cores, one process",
       "Same task, free-threaded Python 3.14t, one CPU per core",
-      6.4)
+      8.2)

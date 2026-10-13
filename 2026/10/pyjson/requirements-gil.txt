@@ -1,4 +1,5 @@
 fastsimdjson==0.6.0
 orjson==3.13.0
 msgspec==0.22.0
+jiter==0.17.0
 matplotlib

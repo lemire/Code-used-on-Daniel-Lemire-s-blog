@@ -15,3 +15,5 @@ six==1.17.0
 
 fastsimdjson==0.6.0
 msgspec==0.22.0
+jiter==0.17.0
+ssrjson==0.0.24

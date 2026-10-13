@@ -1,2 +1,3 @@
 fastsimdjson==0.6.0
 msgspec==0.22.0
+jiter==0.17.0

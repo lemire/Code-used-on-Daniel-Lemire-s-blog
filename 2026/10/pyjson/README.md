@@ -18,18 +18,23 @@ HOURS=4 WORKERS=16 ./run.sh   # less data, fewer workers
 
 The methods (see `bench.py`):
 
-- `json`, `orjson`: parse each line into dictionaries, one thread;
+- `json`, `orjson`, `jiter`: parse each line into dictionaries, one thread;
 - `msgspec`: decode the lines into typed structs that declare only the fields
   used (`decode_lines`), one thread;
 - `fastsimdjson`, `fastsimdjson-lazy`: `fastsimdjson.map_many(fn, data,
   format="lines")` with dictionaries, or with lazy views (`lazy=True`);
-- `processes-orjson`, `processes-msgspec`: a pool of forked processes
+- `processes-orjson`, `processes-jiter`, `processes-msgspec`: a pool of forked processes
   (`multiprocessing`) that inherit the input and receive line ranges;
-- `threads-json`, `threads-msgspec`: a thread pool on free-threaded Python;
+- `threads-json`, `threads-jiter`, `threads-msgspec`: a thread pool on
+  free-threaded Python (jiter without its string cache, `cache_mode=False`:
+  the cache is shared by the threads, and with it 64 threads are no faster
+  than one);
 - `threads-fastsimdjson`, `threads-fastsimdjson-lazy`: `map_many(...,
   threads=64)` on free-threaded Python.
 
 The input is decompressed in memory before timing. We report the best of seven
 runs (one run for the slow one-thread methods). The results of the post are in
 `results/big4/` (two Intel Xeon Gold 6548N, 64 cores), with
-`CPUS=0-63 ./run.sh`: one CPU per core.
+`CPUS=0-63 ./run.sh`: one CPU per core. The jiter rows were added on
+2026-10-13 from a later run of all the methods on the same machine, in which
+the other one-thread methods were within 3% of the earlier run.

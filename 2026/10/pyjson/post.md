@@ -66,7 +66,8 @@ only for the values I access. The lazy approach was first developed by
 [pysimdjson](https://github.com/TkTech/pysimdjson).
 
 How does it compare? I tried the usual suspects: the standard library
-(`json`), [orjson](https://github.com/ijl/orjson) and
+(`json`), [orjson](https://github.com/ijl/orjson),
+[jiter](https://github.com/pydantic/jiter) (the parser of pydantic) and
 [msgspec](https://github.com/jcrist/msgspec). msgspec deserves special
 mention: it can decode JSON into typed structures that declare only the fields
 you need, skipping the rest. It is a lot like our lazy views, except that you
@@ -75,7 +76,7 @@ I verify that we get exactly the same counts.
 
 I use a server with two Intel Xeon Gold 6548N processors (64 cores),
 Python 3.14.6, and the current versions of the libraries (fastsimdjson 0.6.0,
-orjson 3.13.0, msgspec 0.22.0). The data is decompressed in memory
+orjson 3.13.0, jiter 0.17.0, msgspec 0.22.0). The data is decompressed in memory
 before the timer starts. I report the best of seven runs, and one run
 for the slow methods: the single-thread parsers, and the standard
 library on 64 threads. Let us first use a single core.
@@ -85,26 +86,32 @@ library on 64 threads. Let us first use a single core.
 | method                              | GB/s |
 | ----------------------------------- | ---: |
 | json (standard library)             | 0.18 |
+| jiter (string cache)                | 0.36 |
+| jiter (no string cache)             | 0.37 |
 | orjson                              | 0.42 |
+| ssrjson                             | 0.47 |
 | fastsimdjson `map_many`             | 0.63 |
 | msgspec (typed structures)          | 1.29 |
 | fastsimdjson `map_many` (lazy)      | 2.13 |
 
 The standard library needs 42 seconds to go through the eight hours. With
 fastsimdjson and lazy views, it takes 3.6 seconds. Notice how the methods
-that materialize everything (json, orjson and fastsimdjson without lazy views)
+that materialize everything (json, orjson, jiter and fastsimdjson without lazy views)
 are slow: most of the time goes into creating Python objects that we
 discard right away.
 
 Now let us use all 64 cores, still in one process. On free-threaded Python,
-I use a thread pool for json and msgspec, and `map_many(..., threads=64)`
+I use a thread pool for json, jiter and msgspec, and `map_many(..., threads=64)`
 for fastsimdjson. The threads share the input.
 
 ![64 cores](many_cores.webp)
 
 | method                                     | GB/s |
 | ------------------------------------------ | ---: |
+| jiter (string cache), 64 threads           | 0.48 |
 | json (standard library), 64 threads        | 3.17 |
+| jiter (no string cache), 64 threads        | 3.19 |
+| ssrjson, 64 threads                        | 13.8 |
 | msgspec (typed structures), 64 threads     | 24.6 |
 | fastsimdjson `map_many`, 64 threads        | 29.8 |
 | fastsimdjson `map_many` (lazy), 64 threads | 65.7 |
@@ -112,6 +119,11 @@ for fastsimdjson. The threads share the input.
 We go through 7.6 GB of JSON in about 0.12 seconds, at 66 GB/s, in one
 Python process. That is 31 times faster than with one core. It is faster
 than msgspec using 64 threads (25 GB/s).
+
+jiter is a special case. By default, it caches the strings it creates, and
+the cache is shared by all threads: with it, 64 threads go no faster than one
+(0.48 GB/s). I turned the cache off (`cache_mode=False`) for the 64-thread
+run.
 
 So, can you parse JSON at tens of gigabytes per second in Python? Yes. 
 

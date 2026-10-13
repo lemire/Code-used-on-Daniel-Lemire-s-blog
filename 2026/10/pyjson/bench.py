@@ -10,15 +10,18 @@ two counters, checked against the first one.
   python bench.py --methods all --workers 64      # methods available in this Python
 
 Methods (name: what runs):
-  json, orjson, msgspec                        one thread, one event at a time
+  json, orjson, jiter, msgspec                 one thread, one event at a time
+  jiter-nocache                                (jiter without its string cache)
                                                (msgspec decodes into a typed Struct
                                                that declares only the fields used)
   fastsimdjson, fastsimdjson-lazy              one thread: map_many(fn, data, threads=1)
-  processes-orjson, processes-msgspec          N forked processes (multiprocessing):
-                                               they inherit the input, get line ranges,
+  processes-orjson, processes-jiter,           N forked processes (multiprocessing):
+  processes-msgspec                            they inherit the input, get line ranges,
                                                and return their counters
-  threads-json, threads-msgspec                N threads (concurrent.futures) over
+  threads-json, threads-jiter, threads-msgspec N threads (concurrent.futures) over
                                                line ranges; free-threaded Python
+                                               (jiter without its string cache)
+  threads-jiter-cache                          jiter with its string cache, N threads
   threads-fastsimdjson, threads-fastsimdjson-lazy
                                                map_many(fn, data, threads=N), with
                                                per-thread counters; free-threaded Python
@@ -126,6 +129,11 @@ def one_orjson(data):
     return count_dicts(orjson.loads(line) for line in data.split(b"\n"))
 
 
+def one_jiter(data, cache=True):
+    import jiter
+    return count_dicts(jiter.from_json(line, cache_mode=cache) for line in data.split(b"\n"))
+
+
 def one_msgspec(data):
     count = msgspec_decoder()
     mv = memoryview(data)
@@ -172,6 +180,12 @@ def _proc_orjson(span):
     return count_dicts(orjson.loads(line) for line in SHARED[s:e].rstrip(b"\n").split(b"\n"))
 
 
+def _proc_jiter(span):
+    import jiter
+    s, e = span
+    return count_dicts(jiter.from_json(line) for line in SHARED[s:e].rstrip(b"\n").split(b"\n"))
+
+
 _DEC = None
 
 
@@ -188,6 +202,17 @@ def threads_json(data, ex, n):
     def work(span):
         s, e = span
         return count_dicts(json.loads(line) for line in data[s:e].rstrip(b"\n").split(b"\n"))
+    return merge(ex.map(work, line_ranges(data, n * 8)))
+
+
+# jiter's string cache is shared by all threads: with it (the default, or
+# cache_mode="keys"), 64 threads run no faster than one. Without it, they scale.
+def threads_jiter(data, ex, n, cache=False):
+    import jiter
+
+    def work(span):
+        s, e = span
+        return count_dicts(jiter.from_json(line, cache_mode=cache) for line in data[s:e].rstrip(b"\n").split(b"\n"))
     return merge(ex.map(work, line_ranges(data, n * 8)))
 
 
@@ -218,6 +243,8 @@ def main():
     if gil:
         methods["json"] = (lambda: one_json(data), 1, True)
         methods["orjson"] = (lambda: one_orjson(data), 1, True)
+        methods["jiter"] = (lambda: one_jiter(data), 1, True)
+        methods["jiter-nocache"] = (lambda: one_jiter(data, False), 1, True)
         methods["msgspec"] = (lambda: one_msgspec(data), 1, True)
         methods["fastsimdjson"] = (lambda: map_many_counts(data, 1, False), 1, True)
         methods["fastsimdjson-lazy"] = (lambda: map_many_counts(data, 1, True), 1, True)
@@ -226,11 +253,14 @@ def main():
         pool.map(abs, range(n))  # start the workers
         spans = line_ranges(data, n * 8)
         methods["processes-orjson"] = (lambda: merge(pool.map(_proc_orjson, spans)), n, False)
+        methods["processes-jiter"] = (lambda: merge(pool.map(_proc_jiter, spans)), n, False)
         methods["processes-msgspec"] = (lambda: merge(pool.map(_proc_msgspec, spans)), n, False)
     else:
         ex = concurrent.futures.ThreadPoolExecutor(n)
         list(ex.map(abs, range(n)))  # start the threads
         methods["threads-json"] = (lambda: threads_json(data, ex, n), n, True)
+        methods["threads-jiter"] = (lambda: threads_jiter(data, ex, n), n, False)
+        methods["threads-jiter-cache"] = (lambda: threads_jiter(data, ex, n, True), n, True)
         methods["threads-msgspec"] = (lambda: threads_msgspec(data, ex, n), n, False)
         methods["threads-fastsimdjson"] = (lambda: map_many_counts(data, n, False), n, False)
         methods["threads-fastsimdjson-lazy"] = (lambda: map_many_counts(data, n, True), n, False)
