@@ -1,0 +1,269 @@
+{
+ "dau_0.1pct": {
+  "description": "0.1% of 100M user ids, random",
+  "bitcounts": [
+   100000,
+   100000,
+   105
+  ],
+  "results": {
+   "bitset": {
+    "SETBIT (build)": 0.23,
+    "memory (bytes)": 12582950,
+    "GETBIT": 0.06,
+    "SETBIT (update)": 0.1,
+    "BITCOUNT": 350.1,
+    "BITCOUNT range": 25.09,
+    "BITPOS": 0.18,
+    "BITFIELD_RO GET u16": 0.13,
+    "BITOP AND": 5486.61,
+    "BITOP OR": 5357.0,
+    "BITOP XOR": 5357.97
+   },
+   "roaring": {
+    "SETBIT (build)": 0.22,
+    "memory (bytes)": 343967,
+    "GETBIT": 0.15,
+    "SETBIT (update)": 0.38,
+    "BITCOUNT": 11.74,
+    "BITCOUNT range": 2.95,
+    "BITPOS": 0.2,
+    "BITFIELD_RO GET u16": 0.31,
+    "BITOP AND": 1294.65,
+    "BITOP OR": 1249.65,
+    "BITOP XOR": 1310.57
+   },
+   "module": {
+    "SETBIT (build)": 0.25,
+    "memory (bytes)": 212257,
+    "GETBIT": 0.23,
+    "SETBIT (update)": 0.27,
+    "BITCOUNT": 1.43,
+    "BITOP AND": 316.34,
+    "BITOP OR": 757.11,
+    "BITOP XOR": 790.2
+   }
+  }
+ },
+ "dau_1pct": {
+  "description": "1% of 100M user ids, random",
+  "bitcounts": [
+   1000000,
+   1000000,
+   10001
+  ],
+  "results": {
+   "bitset": {
+    "SETBIT (build)": 0.1,
+    "memory (bytes)": 14680100,
+    "GETBIT": 0.06,
+    "SETBIT (update)": 0.09,
+    "BITCOUNT": 350.35,
+    "BITCOUNT range": 25.09,
+    "BITPOS": 0.17,
+    "BITFIELD_RO GET u16": 0.14,
+    "BITOP AND": 5585.28,
+    "BITOP OR": 5418.28,
+    "BITOP XOR": 5504.39
+   },
+   "roaring": {
+    "SETBIT (build)": 0.25,
+    "memory (bytes)": 2442781,
+    "GETBIT": 0.26,
+    "SETBIT (update)": 0.43,
+    "BITCOUNT": 11.81,
+    "BITCOUNT range": 2.97,
+    "BITPOS": 0.24,
+    "BITFIELD_RO GET u16": 0.45,
+    "BITOP AND": 8281.8,
+    "BITOP OR": 10889.2,
+    "BITOP XOR": 11159.07
+   },
+   "module": {
+    "SETBIT (build)": 0.28,
+    "memory (bytes)": 2012257,
+    "GETBIT": 0.26,
+    "SETBIT (update)": 0.31,
+    "BITCOUNT": 1.47,
+    "BITOP AND": 1963.21,
+    "BITOP OR": 8956.59,
+    "BITOP XOR": 8362.94
+   }
+  }
+ },
+ "dau_10pct": {
+  "description": "10% of 100M user ids, random",
+  "bitcounts": [
+   10000000,
+   10000000,
+   1000126
+  ],
+  "results": {
+   "bitset": {
+    "memory (bytes)": 12582949,
+    "GETBIT": 0.07,
+    "SETBIT (update)": 0.09,
+    "BITCOUNT": 361.32,
+    "BITCOUNT range": 26.0,
+    "BITPOS": 0.15,
+    "BITFIELD_RO GET u16": 0.15,
+    "BITOP AND": 5296.95,
+    "BITOP OR": 5360.1,
+    "BITOP XOR": 5529.09
+   },
+   "roaring": {
+    "memory (bytes)": 12577022,
+    "GETBIT": 0.1,
+    "SETBIT (update)": 0.28,
+    "BITCOUNT": 11.79,
+    "BITCOUNT range": 3.12,
+    "BITPOS": 0.15,
+    "BITFIELD_RO GET u16": 0.23,
+    "BITOP AND": 13043.5,
+    "BITOP OR": 3244.3,
+    "BITOP XOR": 3288.27
+   },
+   "module": {
+    "memory (bytes)": 12513249,
+    "GETBIT": 0.24,
+    "SETBIT (update)": 0.22,
+    "BITCOUNT": 2.41,
+    "BITOP AND": 11756.13,
+    "BITOP OR": 3883.23,
+    "BITOP XOR": 3831.6
+   }
+  }
+ },
+ "dense_50pct": {
+  "description": "50% of 100M user ids, random",
+  "bitcounts": [
+   50000000,
+   50000000,
+   25000487
+  ],
+  "results": {
+   "bitset": {
+    "memory (bytes)": 12582951,
+    "GETBIT": 0.11,
+    "SETBIT (update)": 0.1,
+    "BITCOUNT": 350.62,
+    "BITCOUNT range": 25.15,
+    "BITPOS": 0.13,
+    "BITFIELD_RO GET u16": 0.16,
+    "BITOP AND": 5489.03,
+    "BITOP OR": 5498.26,
+    "BITOP XOR": 5398.07
+   },
+   "roaring": {
+    "memory (bytes)": 12577024,
+    "GETBIT": 0.15,
+    "SETBIT (update)": 0.28,
+    "BITCOUNT": 11.81,
+    "BITCOUNT range": 3.14,
+    "BITPOS": 0.14,
+    "BITFIELD_RO GET u16": 0.21,
+    "BITOP AND": 3556.68,
+    "BITOP OR": 3390.77,
+    "BITOP XOR": 3189.46
+   },
+   "module": {
+    "memory (bytes)": 12513249,
+    "GETBIT": 0.27,
+    "SETBIT (update)": 0.23,
+    "BITCOUNT": 2.62,
+    "BITOP AND": 4081.73,
+    "BITOP OR": 3853.61,
+    "BITOP XOR": 3915.32
+   }
+  }
+ },
+ "hashed_2e32": {
+  "description": "100k random 32-bit ids",
+  "bitcounts": [
+   100000,
+   100000,
+   4
+  ],
+  "results": {
+   "bitset": {
+    "SETBIT (build)": 5.11,
+    "memory (bytes)": 536870951,
+    "GETBIT": 0.07,
+    "SETBIT (update)": 0.1,
+    "BITCOUNT": 27902.35,
+    "BITCOUNT range": 1537.4,
+    "BITPOS": 0.85,
+    "BITFIELD_RO GET u16": 0.24,
+    "BITOP AND": 342531.19,
+    "BITOP OR": 345397.0,
+    "BITOP XOR": 343455.41
+   },
+   "roaring": {
+    "SETBIT (build)": 0.25,
+    "memory (bytes)": 4178992,
+    "GETBIT": 0.16,
+    "SETBIT (update)": 0.35,
+    "BITCOUNT": 852.25,
+    "BITCOUNT range": 100.55,
+    "BITPOS": 0.24,
+    "BITFIELD_RO GET u16": 0.25,
+    "BITOP AND": 12535.4,
+    "BITOP OR": 17929.77,
+    "BITOP XOR": 16232.47
+   },
+   "module": {
+    "SETBIT (build)": 1.51,
+    "memory (bytes)": 400045,
+    "GETBIT": 0.26,
+    "SETBIT (update)": 1.36,
+    "BITCOUNT": 47.08,
+    "BITOP AND": 6015.61,
+    "BITOP OR": 10255.71,
+    "BITOP XOR": 10496.5
+   }
+  }
+ },
+ "runs": {
+  "description": "10 runs of 1M ids in 100M",
+  "bitcounts": [
+   10000000,
+   10000000,
+   10000000
+  ],
+  "results": {
+   "bitset": {
+    "memory (bytes)": 12582944,
+    "GETBIT": 0.07,
+    "SETBIT (update)": 0.1,
+    "BITCOUNT": 318.92,
+    "BITCOUNT range": 22.87,
+    "BITPOS": 20.55,
+    "BITFIELD_RO GET u16": 0.15,
+    "BITOP AND": 4803.93,
+    "BITOP OR": 4781.13,
+    "BITOP XOR": 4814.02
+   },
+   "roaring": {
+    "memory (bytes)": 12649,
+    "GETBIT": 0.09,
+    "SETBIT (update)": 0.4,
+    "BITCOUNT": 2.2,
+    "BITCOUNT range": 0.53,
+    "BITPOS": 0.17,
+    "BITFIELD_RO GET u16": 0.14,
+    "BITOP AND": 30.06,
+    "BITOP OR": 26.06,
+    "BITOP XOR": 28.02
+   },
+   "module": {
+    "memory (bytes)": 2326,
+    "GETBIT": 0.15,
+    "SETBIT (update)": 0.21,
+    "BITCOUNT": 0.83,
+    "BITOP AND": 20.48,
+    "BITOP OR": 21.43,
+    "BITOP XOR": 18.53
+   }
+  }
+ }
+}
