@@ -43,7 +43,8 @@ October 14, 2026, adds a native Roaring bitmap. It should ship in Redis 8.12.
 - There is a new type: `TYPE key` returns `bitmap` and `OBJECT ENCODING key`
   returns `bitmap-roaring`.
 - It is opt-in: `CONFIG SET bitmap-default-roaring yes`.
-- It is not a drop-in replacement.
+- It is not a drop-in replacement. `GET` and the other string commands
+  return `WRONGTYPE`.
 
 I built Redis at the merge commit and ran the server on one core of an Intel
 Xeon Gold 6548N. For each workload, I create two bitmaps, `a` and `b`, once as
@@ -58,17 +59,17 @@ exclude the network and the client. My workloads:
   (think: cohorts of users who signed up in the same week);
 - *hashed 32-bit ids*: 100,000 random 32-bit values, so the string is 512 MB.
 
-![BITCOUNT](bitcount.png)
+![BITCOUNT](bitcount.webp)
 
-![BITOP AND](bitop_and.png)
+![BITOP AND](bitop_and.webp)
 
-![BITOP OR](bitop_or.png)
+![BITOP OR](bitop_or.webp)
 
 The hashed ids are a different story. The string must span all four billion
 bit positions, and each `BITOP` scans 512 MB. I put them on a separate chart
 because they would dwarf the others.
 
-![BITOP AND, hashed ids](bitop_and_hashed.png)
+![BITOP AND, hashed ids](bitop_and_hashed.webp)
 
 Compressed bitmaps like Roaring are not always better. There are many
 tradeoffs. But turning them on will soon take one configuration setting.
