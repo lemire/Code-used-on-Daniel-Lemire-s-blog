@@ -1,0 +1,3 @@
+fastpybase64==0.1.0
+pybase64==1.5.1
+matplotlib
