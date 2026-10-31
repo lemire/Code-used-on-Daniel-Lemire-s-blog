@@ -1,0 +1,25 @@
+# constant divisor
+compiler x / d d=7 (throughput)                  :  0.503 ns   3.45 GHz    1.76 c   10.50 i 
+compiler x / d d=7 (latency)                     :  2.983 ns   3.42 GHz   10.44 c   11.51 i 
+div32 d=7 (throughput)                           :  0.394 ns   3.44 GHz    1.38 c    8.50 i 
+div32 d=7 (latency)                              :  2.290 ns   3.45 GHz    8.02 c   10.01 i 
+compiler x / d d=60 (throughput)                 :  0.503 ns   3.45 GHz    1.76 c   10.50 i 
+compiler x / d d=60 (latency)                    :  2.985 ns   3.41 GHz   10.44 c   11.51 i 
+div32 d=60 (throughput)                          :  0.396 ns   3.44 GHz    1.38 c    8.50 i 
+div32 d=60 (latency)                             :  2.290 ns   3.45 GHz    8.02 c   10.01 i 
+compiler x / d d=365 (throughput)                :  0.503 ns   3.48 GHz    1.76 c   10.50 i 
+compiler x / d d=365 (latency)                   :  3.023 ns   3.42 GHz   10.57 c   11.51 i 
+div32 d=365 (throughput)                         :  0.395 ns   3.43 GHz    1.38 c    8.50 i 
+div32 d=365 (latency)                            :  2.291 ns   3.44 GHz    8.02 c   10.01 i 
+compiler x / d d=1000 (throughput)               :  0.387 ns   3.48 GHz    1.35 c    8.50 i 
+compiler x / d d=1000 (latency)                  :  2.299 ns   3.48 GHz    8.04 c    9.51 i 
+div32 d=1000 (throughput)                        :  0.396 ns   3.43 GHz    1.38 c    8.50 i 
+div32 d=1000 (latency)                           :  2.290 ns   3.45 GHz    8.02 c   10.01 i 
+# divisor known at runtime
+instruction x / d d=7 (throughput)               :  1.718 ns   3.44 GHz    6.00 c    5.50 i 
+instruction x / d d=7 (latency)                  :  4.009 ns   3.48 GHz   14.02 c    5.51 i 
+fastmod 0.1.0 d=7 (throughput)                   :  3.415 ns   3.48 GHz   11.94 c   18.51 i 
+fastmod 0.1.0 d=7 (latency)                      :  3.435 ns   3.48 GHz   12.01 c   17.01 i 
+fastmod 0.2.0 d=7 (throughput)                   :  0.779 ns   3.45 GHz    2.72 c   16.20 i 
+fastmod 0.2.0 d=7 (latency)                      :  2.863 ns   3.49 GHz   10.02 c   10.51 i 
+clang version 21.1.8 (RESF 21.1.8-1.el10)

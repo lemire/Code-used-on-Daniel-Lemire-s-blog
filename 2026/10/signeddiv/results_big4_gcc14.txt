@@ -1,0 +1,25 @@
+# constant divisor
+compiler x / d d=7 (throughput)                  :  0.575 ns   3.44 GHz    2.01 c   12.00 i 
+compiler x / d d=7 (latency)                     :  2.863 ns   3.41 GHz   10.02 c   14.01 i 
+div32 d=7 (throughput)                           :  0.574 ns   3.45 GHz    2.01 c   10.00 i 
+div32 d=7 (latency)                              :  2.291 ns   3.46 GHz    8.02 c   10.01 i 
+compiler x / d d=60 (throughput)                 :  0.574 ns   3.49 GHz    2.01 c   12.00 i 
+compiler x / d d=60 (latency)                    :  2.863 ns   3.49 GHz   10.02 c   14.01 i 
+div32 d=60 (throughput)                          :  0.574 ns   3.45 GHz    2.00 c   10.00 i 
+div32 d=60 (latency)                             :  2.291 ns   3.46 GHz    8.02 c   10.01 i 
+compiler x / d d=365 (throughput)                :  0.574 ns   3.45 GHz    2.01 c   12.00 i 
+compiler x / d d=365 (latency)                   :  2.863 ns   3.49 GHz   10.02 c   14.01 i 
+div32 d=365 (throughput)                         :  0.574 ns   3.44 GHz    2.01 c   10.00 i 
+div32 d=365 (latency)                            :  2.291 ns   3.46 GHz    8.02 c   10.01 i 
+compiler x / d d=1000 (throughput)               :  0.573 ns   3.45 GHz    2.00 c   10.00 i 
+compiler x / d d=1000 (latency)                  :  2.291 ns   3.46 GHz    8.02 c   12.01 i 
+div32 d=1000 (throughput)                        :  0.574 ns   3.45 GHz    2.01 c   10.00 i 
+div32 d=1000 (latency)                           :  2.291 ns   3.45 GHz    8.02 c   10.01 i 
+# divisor known at runtime
+instruction x / d d=7 (throughput)               :  1.718 ns   3.46 GHz    6.00 c    7.00 i 
+instruction x / d d=7 (latency)                  :  4.009 ns   3.44 GHz   14.02 c    7.01 i 
+fastmod 0.1.0 d=7 (throughput)                   :  3.074 ns   3.43 GHz   10.75 c   19.51 i 
+fastmod 0.1.0 d=7 (latency)                      :  4.224 ns   3.49 GHz   14.77 c   10.02 i 
+fastmod 0.2.0 d=7 (throughput)                   :  0.765 ns   3.46 GHz    2.67 c   16.00 i 
+fastmod 0.2.0 d=7 (latency)                      :  3.179 ns   3.43 GHz   11.12 c   16.01 i 
+g++ (GCC) 14.3.1 20251022 (Red Hat 14.3.1-4)

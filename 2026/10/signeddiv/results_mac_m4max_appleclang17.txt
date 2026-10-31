@@ -1,0 +1,25 @@
+# constant divisor
+compiler x / d d=7 (throughput)                  :  0.343 ns 
+compiler x / d d=7 (latency)                     :  2.007 ns 
+div32 d=7 (throughput)                           :  0.294 ns 
+div32 d=7 (latency)                              :  1.768 ns 
+compiler x / d d=60 (throughput)                 :  0.314 ns 
+compiler x / d d=60 (latency)                    :  2.004 ns 
+div32 d=60 (throughput)                          :  0.269 ns 
+div32 d=60 (latency)                             :  1.770 ns 
+compiler x / d d=365 (throughput)                :  0.339 ns 
+compiler x / d d=365 (latency)                   :  2.004 ns 
+div32 d=365 (throughput)                         :  0.277 ns 
+div32 d=365 (latency)                            :  1.770 ns 
+compiler x / d d=1000 (throughput)               :  0.285 ns 
+compiler x / d d=1000 (latency)                  :  1.567 ns 
+div32 d=1000 (throughput)                        :  0.269 ns 
+div32 d=1000 (latency)                           :  1.767 ns 
+# divisor known at runtime
+instruction x / d d=7 (throughput)               :  0.443 ns 
+instruction x / d d=7 (latency)                  :  2.207 ns 
+fastmod 0.1.0 d=7 (throughput)                   :  0.393 ns 
+fastmod 0.1.0 d=7 (latency)                      :  2.001 ns 
+fastmod 0.2.0 d=7 (throughput)                   :  0.382 ns 
+fastmod 0.2.0 d=7 (latency)                      :  1.991 ns 
+Apple clang version 17.0.0 (clang-1700.6.4.2)
