@@ -115,6 +115,8 @@ I divide 16384 random signed integers. In the *throughput* test, the divisions a
 
 *Intel, cycles per division: throughput (latency)*
 
+![Latency in cycles on Intel](intel-latency.webp)
+
 | divisor | GCC: x / d | GCC: div32 | clang: x / d | clang: div32 |
 | ------: | ---------: | ---------: | -----------: | -----------: |
 | 7       | 2.0 (10.0) | 2.0 (8.0)  | 1.76 (10.4)  | 1.38 (8.0)   |
@@ -166,6 +168,8 @@ Here are the results for a divisor (7) passed on the command line, with random s
 | Intel, GCC 14    | 1.72 (4.0)           | 3.07 (4.2)    | 0.77 (3.2)    |
 | Intel, clang 21  | 1.72 (4.0)           | 3.42 (3.4)    | 0.78 (2.9)    |
 | Apple M4         | 0.44 (2.2)           | 0.39 (2.0)    | 0.38 (2.0)    |
+
+![Latency in nanoseconds when the divisor is known only at runtime](runtime-latency.webp)
 
 On the Intel processor, the previous version of the library was *slower* than the division instruction with random signs because of the mispredicted branches. The new version is four times faster than the previous one, and more than twice as fast as the division instruction. On the Apple M4, the previous version did not branch (the compiler computed both cases and selected one), so there is little difference in scalar code. However, without the branch, clang can partially vectorize a loop calling the new function: if I allow autovectorization, the new version takes 0.22 ns on the M4.
 
