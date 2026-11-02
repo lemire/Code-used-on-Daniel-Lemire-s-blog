@@ -1,0 +1,24 @@
+# one core (taskset -c 8), Intel Xeon Gold 6548N, -O2 -march=x86-64
+# walk(&pad, 100'000'000), best of 5
+# counter 25000000250000000 = 5 * sum(1..100000000)
+
+g++ (GCC) 14.3.1 20251022 (Red Hat 14.3.1-4)
+span() = default: 1.73 ns per span
+span() {}       : 1.74 ns per span
+
+g++ (GCC) 15.2.1 20260123 (Red Hat 15.2.1-7)
+span() = default: 7.75 ns per span
+span() {}       : 1.73 ns per span
+
+g++ (dlemire build) 16.2.0
+span() = default: 8.04 ns per span
+span() {}       : 1.73 ns per span
+ld_blocks.store_forward: 500050180 default, 5000 braces (five runs)
+
+clang version 21.1.8 (RESF 21.1.8-1.el10)
+span() = default: 1.75 ns per span
+span() {}       : 1.74 ns per span
+
+# -O2 -march=x86-64-v3
+GCC 16.2: default 1.76, braces 1.76
+GCC 15.2: default 1.78, braces 1.78
