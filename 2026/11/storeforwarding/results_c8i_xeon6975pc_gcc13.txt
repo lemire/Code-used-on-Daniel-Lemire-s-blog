@@ -1,0 +1,28 @@
+# cpu: Intel(R) Xeon(R) 6975P-C
+# compiler: 13.3.0
+# counters: yes
+# median iterations: 4000000
+# counter iterations: 1024
+# throughput elements: 2048, repeated 4000
+# c is mean cycles per iteration from the counters
+# cmin is the cycle count of the shortest sample
+# checks ok
+
+# latency, one dependent iteration
+register                              0.259 ns   3.87 GHz    1.03 c    1.03 cmin    4.01 i   (min 0.258 max 0.260)
+store 8 / load 8                      0.259 ns   3.87 GHz    1.03 c    1.03 cmin    5.01 i   (min 0.258 max 0.261)
+store 8 / load 4                      0.258 ns   3.87 GHz    1.03 c    1.03 cmin    5.01 i   (min 0.258 max 0.260)
+store 8 / load 4 at +4                1.354 ns   3.87 GHz    4.85 c    4.84 cmin    5.02 i   (min 1.291 max 1.417)
+store 4 / load 8                      5.167 ns   3.87 GHz   19.34 c   18.99 cmin    5.04 i   (min 5.070 max 5.170)
+store 1 / load 8                      5.166 ns   3.87 GHz   19.34 c   16.10 cmin    5.04 i   (min 5.120 max 5.172)
+store 4+4 / load 8                    5.063 ns   3.87 GHz   20.01 c   19.90 cmin    7.04 i   (min 5.042 max 5.122)
+store 8 / load 8 at +4                4.911 ns   3.88 GHz   19.10 c   19.06 cmin    5.04 i   (min 4.907 max 4.923)
+store 8 / load 8 at +1                4.909 ns   3.88 GHz   19.10 c   19.06 cmin    5.04 i   (min 4.904 max 4.914)
+store 8 / load 8 at +64               0.258 ns   3.87 GHz    1.03 c    1.03 cmin    5.01 i   (min 0.258 max 0.259)
+store 8 / load 8 at +4096             0.258 ns   3.87 GHz    1.03 c    1.03 cmin    5.01 i   (min 0.258 max 0.259)
+
+# throughput, one element
+flip byte, reload word                0.358 ns   3.87 GHz    1.39 c    1.38 cmin    5.01 i   (min 0.358 max 0.359)
+flip bit, in a register               0.264 ns   3.88 GHz    1.02 c    1.02 cmin    7.01 i   (min 0.263 max 0.265)
+join two stores, reload               4.392 ns   3.87 GHz   17.07 c   17.04 cmin    8.02 i   (min 4.391 max 4.395)
+join in a register                    0.307 ns   3.87 GHz    1.19 c    1.19 cmin    8.01 i   (min 0.306 max 0.308)

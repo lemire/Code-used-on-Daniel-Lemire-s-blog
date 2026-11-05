@@ -1,0 +1,28 @@
+# cpu: AMD EPYC 9R45
+# compiler: 13.3.0
+# counters: yes
+# median iterations: 4000000
+# counter iterations: 1024
+# throughput elements: 2048, repeated 4000
+# c is mean cycles per iteration from the counters
+# cmin is the cycle count of the shortest sample
+# checks ok
+
+# latency, one dependent iteration
+register                              0.223 ns   4.50 GHz    1.11 c    1.11 cmin    4.01 i   (min 0.221 max 0.223)
+store 8 / load 8                      0.223 ns   4.49 GHz    1.09 c    1.09 cmin    5.01 i   (min 0.222 max 0.223)
+store 8 / load 4                      0.223 ns   4.49 GHz    1.09 c    1.09 cmin    5.01 i   (min 0.221 max 0.223)
+store 8 / load 4 at +4                1.557 ns   4.50 GHz    6.68 c    6.67 cmin    5.02 i   (min 1.555 max 1.558)
+store 4 / load 8                      3.114 ns   4.50 GHz   14.05 c   14.04 cmin    5.04 i   (min 3.113 max 3.116)
+store 1 / load 8                      3.115 ns   4.50 GHz   14.05 c   14.04 cmin    5.04 i   (min 3.112 max 3.116)
+store 4+4 / load 8                    3.334 ns   4.50 GHz   15.05 c   15.04 cmin    7.04 i   (min 3.333 max 3.338)
+store 8 / load 8 at +4                3.113 ns   4.50 GHz   14.05 c   14.04 cmin    5.04 i   (min 3.111 max 3.114)
+store 8 / load 8 at +1                3.111 ns   4.50 GHz   14.04 c   14.04 cmin    5.04 i   (min 3.110 max 3.114)
+store 8 / load 8 at +64               0.223 ns   4.49 GHz    1.10 c    1.10 cmin    5.01 i   (min 0.222 max 0.223)
+store 8 / load 8 at +4096             0.226 ns   4.49 GHz    1.12 c    1.12 cmin    5.01 i   (min 0.226 max 0.227)
+
+# throughput, one element
+flip byte, reload word                3.131 ns   4.50 GHz   14.11 c   14.10 cmin    5.02 i   (min 3.130 max 3.133)
+flip bit, in a register               0.276 ns   4.50 GHz    1.24 c    1.24 cmin    7.01 i   (min 0.276 max 0.277)
+join two stores, reload               3.116 ns   4.50 GHz   14.03 c   14.02 cmin    8.02 i   (min 3.115 max 3.129)
+join in a register                    0.263 ns   4.50 GHz    1.18 c    1.17 cmin    8.01 i   (min 0.263 max 0.264)

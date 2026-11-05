@@ -1,0 +1,28 @@
+# cpu: Apple M4 Max
+# compiler: Apple LLVM 17.0.0 (clang-1700.6.4.2)
+# counters: yes
+# median iterations: 4000000
+# counter iterations: 1024
+# throughput elements: 2048, repeated 4000
+# c is mean cycles per iteration from the counters
+# cmin is the cycle count of the shortest sample
+# checks ok
+
+# latency, one dependent iteration
+register                              0.241 ns   4.21 GHz    1.04 c    1.03 cmin    3.02 i   (min 0.234 max 0.251)
+store 8 / load 8                      1.188 ns   4.23 GHz    4.91 c    2.72 cmin    4.16 i   (min 1.152 max 1.243)
+store 8 / load 4                      1.163 ns   4.34 GHz    1.76 c    1.06 cmin    4.15 i   (min 1.144 max 1.183)
+store 8 / load 4 at +4                1.145 ns   4.47 GHz    4.90 c    4.88 cmin    4.15 i   (min 1.132 max 1.222)
+store 4 / load 8                      1.118 ns   4.46 GHz    4.85 c    3.80 cmin    4.15 i   (min 1.111 max 1.148)
+store 1 / load 8                      1.124 ns   4.38 GHz    5.05 c    3.80 cmin    4.16 i   (min 1.113 max 1.146)
+store 4+4 / load 8                    2.432 ns   4.39 GHz    7.92 c    7.02 cmin    6.16 i   (min 1.616 max 2.771)
+store 8 / load 8 at +4                1.151 ns   4.41 GHz    5.06 c    5.03 cmin    4.15 i   (min 1.115 max 1.170)
+store 8 / load 8 at +1                1.145 ns   4.43 GHz    5.06 c    5.03 cmin    4.15 i   (min 1.109 max 1.213)
+store 8 / load 8 at +64               0.227 ns   4.39 GHz    1.04 c    1.03 cmin    4.02 i   (min 0.222 max 0.262)
+store 8 / load 8 at +4096             0.226 ns   4.39 GHz    1.04 c    1.03 cmin    4.03 i   (min 0.222 max 0.232)
+
+# throughput, one element
+flip byte, reload word                0.258 ns   4.16 GHz    1.08 c    1.07 cmin    7.07 i   (min 0.247 max 0.282)
+flip bit, in a register               0.249 ns   4.22 GHz    1.06 c    1.05 cmin    6.07 i   (min 0.242 max 0.265)
+join two stores, reload               0.431 ns   4.11 GHz    1.78 c    1.76 cmin    8.08 i   (min 0.428 max 0.435)
+join in a register                    0.280 ns   4.15 GHz    1.15 c    1.14 cmin    6.08 i   (min 0.277 max 0.287)

@@ -1,0 +1,27 @@
+# cpu: INTEL(R) XEON(R) GOLD 6548N
+# compiler: 14.3.1 20251022 (Red Hat 14.3.1-4)
+# counters: yes
+# median iterations: 4000000
+# counter iterations: 1024
+# throughput elements: 2048, repeated 4000
+# c is cycles from the counters, or time divided by a dependent add
+# checks ok
+
+# latency, one dependent iteration
+register                              0.629 ns   3.46 GHz    1.04 c    4.01 i   (min 0.511 max 0.774)
+store 8 / load 8                      0.287 ns   3.46 GHz    1.10 c    5.02 i   (min 0.287 max 0.330)
+store 8 / load 4                      0.287 ns   3.44 GHz    1.06 c    5.02 i   (min 0.287 max 0.487)
+store 8 / load 4 at +4                1.595 ns   3.46 GHz    4.83 c    5.01 i   (min 1.452 max 1.933)
+store 4 / load 8                      5.451 ns   3.44 GHz   19.03 c    5.03 i   (min 5.450 max 5.453)
+store 1 / load 8                      5.452 ns   3.47 GHz   19.03 c    5.03 i   (min 5.449 max 5.452)
+store 4+4 / load 8                    5.518 ns   3.43 GHz   19.93 c    7.04 i   (min 5.508 max 5.522)
+store 8 / load 8 at +4                5.450 ns   3.49 GHz   19.03 c    5.03 i   (min 5.450 max 5.452)
+store 8 / load 8 at +1                5.452 ns   3.44 GHz   19.02 c    5.03 i   (min 5.450 max 7.104)
+store 8 / load 8 at +64               0.287 ns   3.46 GHz    1.04 c    5.01 i   (min 0.287 max 0.287)
+store 8 / load 8 at +4096             0.287 ns   3.49 GHz    1.04 c    5.02 i   (min 0.287 max 0.287)
+
+# throughput, one element
+flip byte, reload word                4.591 ns   3.45 GHz   16.02 c    5.02 i   (min 4.590 max 4.592)
+flip bit, in a register               0.292 ns   3.43 GHz    1.02 c    7.01 i   (min 0.292 max 0.294)
+join two stores, reload               4.878 ns   3.49 GHz   17.02 c    8.02 i   (min 4.877 max 4.880)
+join in a register                    0.339 ns   3.44 GHz    1.18 c    8.01 i   (min 0.338 max 0.342)

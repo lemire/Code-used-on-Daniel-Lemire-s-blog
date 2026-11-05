@@ -1,0 +1,28 @@
+# cpu: Linux
+# compiler: 13.3.0
+# counters: yes
+# median iterations: 4000000
+# counter iterations: 1024
+# throughput elements: 2048, repeated 4000
+# c is mean cycles per iteration from the counters
+# cmin is the cycle count of the shortest sample
+# checks ok
+
+# latency, one dependent iteration
+register                              0.304 ns   3.27 GHz    1.03 c    1.03 cmin    4.01 i   (min 0.304 max 0.306)
+store 8 / load 8                      1.641 ns   3.27 GHz    5.20 c    5.17 cmin    5.01 i   (min 1.617 max 1.687)
+store 8 / load 4                      1.826 ns   3.27 GHz    5.88 c    5.87 cmin    6.02 i   (min 1.825 max 1.837)
+store 8 / load 4 at +4                1.827 ns   3.28 GHz    5.88 c    5.87 cmin    6.01 i   (min 1.825 max 1.835)
+store 4 / load 8                      1.640 ns   3.27 GHz    5.20 c    5.17 cmin    5.01 i   (min 1.622 max 1.661)
+store 1 / load 8                      3.215 ns   3.27 GHz   10.62 c   10.56 cmin    5.04 i   (min 3.209 max 3.230)
+store 4+4 / load 8                    1.521 ns   3.27 GHz    4.99 c    4.98 cmin    7.02 i   (min 1.520 max 1.548)
+store 8 / load 8 at +4                1.639 ns   3.27 GHz    5.22 c    5.18 cmin    5.02 i   (min 1.618 max 1.654)
+store 8 / load 8 at +1                3.198 ns   3.26 GHz   10.56 c   10.52 cmin    5.04 i   (min 3.194 max 3.222)
+store 8 / load 8 at +64               0.305 ns   3.26 GHz    1.05 c    1.03 cmin    5.02 i   (min 0.304 max 0.335)
+store 8 / load 8 at +4096             0.304 ns   3.26 GHz    1.03 c    1.03 cmin    5.02 i   (min 0.304 max 0.335)
+
+# throughput, one element
+flip byte, reload word                3.547 ns   3.27 GHz   11.67 c   11.51 cmin    7.02 i   (min 3.546 max 3.552)
+flip bit, in a register               0.391 ns   3.27 GHz    1.27 c    1.24 cmin    6.01 i   (min 0.391 max 0.408)
+join two stores, reload               0.438 ns   3.27 GHz    1.52 c    1.40 cmin    9.01 i   (min 0.432 max 0.454)
+join in a register                    0.392 ns   3.27 GHz    1.24 c    1.06 cmin    7.01 i   (min 0.391 max 0.401)
