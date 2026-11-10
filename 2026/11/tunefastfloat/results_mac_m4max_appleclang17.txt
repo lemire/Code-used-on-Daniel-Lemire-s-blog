@@ -1,0 +1,33 @@
+# cpu: Apple M4 Max
+# compiler: Apple clang version 17.0.0 (clang-1700.6.4.2)
+# counters: no
+# 100000 numbers per data set, the sums are checked
+# data set, hints, ns per number, millions of numbers per second [, cycles, instructions, branch misses per number]
+price_changes      no hint                     6.54 ns    152.8 M/s
+price_changes      unpredictable_sign          4.38 ns    228.2 M/s
+price_changes      short_numbers               4.82 ns    207.5 M/s
+price_changes      assume_round_to_nearest     6.80 ns    147.0 M/s
+price_changes      sign + nearest              4.21 ns    237.4 M/s
+price_changes      short + nearest             2.88 ns    346.9 M/s
+price_changes      all three                   2.90 ns    345.3 M/s
+account_balances   no hint                     7.55 ns    132.5 M/s
+account_balances   unpredictable_sign          5.00 ns    200.1 M/s
+account_balances   short_numbers               7.23 ns    138.2 M/s
+account_balances   assume_round_to_nearest     7.41 ns    135.0 M/s
+account_balances   sign + nearest              5.02 ns    199.0 M/s
+account_balances   short + nearest             7.31 ns    136.8 M/s
+account_balances   all three                   5.05 ns    198.0 M/s
+sensor_readings    no hint                     8.12 ns    123.2 M/s
+sensor_readings    unpredictable_sign          9.14 ns    109.4 M/s
+sensor_readings    short_numbers               4.04 ns    247.5 M/s
+sensor_readings    assume_round_to_nearest     8.29 ns    120.7 M/s
+sensor_readings    sign + nearest              9.09 ns    110.0 M/s
+sensor_readings    short + nearest             4.00 ns    250.3 M/s
+sensor_readings    all three                   3.95 ns    253.0 M/s
+regular_prices     no hint                     3.99 ns    250.7 M/s
+regular_prices     unpredictable_sign          3.32 ns    300.8 M/s
+regular_prices     short_numbers               2.82 ns    354.7 M/s
+regular_prices     assume_round_to_nearest     3.99 ns    250.7 M/s
+regular_prices     sign + nearest              3.57 ns    279.9 M/s
+regular_prices     short + nearest             2.82 ns    355.1 M/s
+regular_prices     all three                   2.83 ns    352.9 M/s

@@ -1,0 +1,33 @@
+# cpu: Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz
+# compiler: g++-15 (GCC) 15.2.1 20260123 (Red Hat 15.2.1-7)
+# counters: yes
+# 100000 numbers per data set, the sums are checked
+# data set, hints, ns per number, millions of numbers per second [, cycles, instructions, branch misses per number]
+price_changes      no hint                    13.77 ns     72.6 M/s    43.9 c   114.2 i  0.60 bm
+price_changes      unpredictable_sign         10.27 ns     97.4 M/s    32.7 c   127.6 i  0.10 bm
+price_changes      short_numbers              12.16 ns     82.2 M/s    38.8 c   127.5 i  0.48 bm
+price_changes      assume_round_to_nearest    14.00 ns     71.4 M/s    44.6 c   108.7 i  0.59 bm
+price_changes      sign + nearest              9.49 ns    105.4 M/s    30.2 c   119.6 i  0.11 bm
+price_changes      short + nearest            12.05 ns     83.0 M/s    38.4 c   120.5 i  0.48 bm
+price_changes      all three                   9.63 ns    103.8 M/s    30.7 c   121.0 i  0.00 bm
+account_balances   no hint                    16.36 ns     61.1 M/s    52.1 c   153.1 i  0.61 bm
+account_balances   unpredictable_sign         13.31 ns     75.2 M/s    42.4 c   167.6 i  0.10 bm
+account_balances   short_numbers              16.09 ns     62.1 M/s    51.3 c   167.2 i  0.59 bm
+account_balances   assume_round_to_nearest    15.27 ns     65.5 M/s    48.7 c   146.7 i  0.60 bm
+account_balances   sign + nearest             12.24 ns     81.7 M/s    39.0 c   159.6 i  0.10 bm
+account_balances   short + nearest            15.13 ns     66.1 M/s    48.2 c   159.3 i  0.58 bm
+account_balances   all three                  14.38 ns     69.6 M/s    45.8 c   158.3 i  0.10 bm
+sensor_readings    no hint                    14.96 ns     66.8 M/s    47.7 c    92.3 i  0.85 bm
+sensor_readings    unpredictable_sign         18.19 ns     55.0 M/s    58.0 c   107.5 i  0.93 bm
+sensor_readings    short_numbers              11.45 ns     87.3 M/s    36.5 c   124.5 i  0.24 bm
+sensor_readings    assume_round_to_nearest    15.13 ns     66.1 M/s    48.2 c    85.3 i  0.87 bm
+sensor_readings    sign + nearest             17.56 ns     57.0 M/s    55.9 c    99.2 i  0.96 bm
+sensor_readings    short + nearest            10.84 ns     92.2 M/s    34.6 c   117.0 i  0.25 bm
+sensor_readings    all three                  10.91 ns     91.6 M/s    34.8 c   117.8 i  0.25 bm
+regular_prices     no hint                     6.58 ns    152.0 M/s    21.0 c   101.0 i  0.00 bm
+regular_prices     unpredictable_sign          7.64 ns    131.0 M/s    24.4 c   116.0 i  0.00 bm
+regular_prices     short_numbers              10.06 ns     99.4 M/s    32.1 c   127.0 i  0.00 bm
+regular_prices     assume_round_to_nearest     6.58 ns    152.0 M/s    21.0 c    94.0 i  0.00 bm
+regular_prices     sign + nearest              6.83 ns    146.5 M/s    21.8 c   108.0 i  0.00 bm
+regular_prices     short + nearest             9.57 ns    104.5 M/s    30.6 c   120.0 i  0.00 bm
+regular_prices     all three                   9.63 ns    103.9 M/s    30.7 c   121.0 i  0.00 bm
