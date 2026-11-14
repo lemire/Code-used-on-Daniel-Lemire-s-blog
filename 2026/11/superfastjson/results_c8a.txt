@@ -1,0 +1,37 @@
+# Model name: AMD EPYC 9R45 96-Core Processor, 192 logical processors
+# 7576757810 bytes in /mnt/ram/events.ndjson
+json          process    1   26.9523 s    0.281 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+orjson        process    1   13.2988 s    0.570 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       process    1    3.2936 s    2.300 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       thread     1    3.5877 s    2.112 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+fastsimdjson  thread     1    0.9523 s    7.957 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+json          process   16    1.7838 s    4.248 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+orjson        process   16    0.8792 s    8.618 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       process   16    0.2456 s   30.855 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       thread    16    0.3608 s   20.999 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+fastsimdjson  thread    16    0.1272 s   59.570 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+json          process   32    0.9344 s    8.109 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+orjson        process   32    0.4661 s   16.255 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       process   32    0.1326 s   57.125 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       thread    32    0.2655 s   28.534 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+fastsimdjson  thread    32    0.0939 s   80.727 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+json          process   64    0.4729 s   16.022 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+orjson        process   64    0.2464 s   30.745 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       process   64    0.0717 s  105.716 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       thread    64    0.2232 s   33.951 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+fastsimdjson  thread    64    0.0591 s  128.284 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+json          process   96    0.3547 s   21.362 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+orjson        process   96    0.1834 s   41.317 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       process   96    0.0652 s  116.228 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       thread    96    0.2286 s   33.139 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+fastsimdjson  thread    96    0.0561 s  134.952 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+json          process  128    0.2907 s   26.062 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+orjson        process  128    0.1550 s   48.891 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       process  128    0.0826 s   91.689 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       thread   128    0.2527 s   29.980 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+fastsimdjson  thread   128    0.0561 s  134.988 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+json          process  192    0.2452 s   30.906 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+orjson        process  192    0.1648 s   45.989 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       process  192    0.1277 s   59.321 GB/s  python 3.14.10 gil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+msgspec       thread   192    0.1528 s   49.585 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
+fastsimdjson  thread   192    0.0550 s  137.751 GB/s  python 3.14.10 nogil  stars 90403 GustavoAntonio12/Game---ArqComp:789,YehiaEhab16/FOTA_Graduation-Project-2022:778,sheraz756/moduels:749
