@@ -1,0 +1,4 @@
+build/
+mime.txt
+dotnet/bin/
+dotnet/obj/

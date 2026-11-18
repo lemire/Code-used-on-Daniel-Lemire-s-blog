@@ -1,0 +1,21 @@
+Linux 6.12.0-124.31.1.el10_1.x86_64 x86_64
+model name	: INTEL(R) XEON(R) GOLD 6548N
+g++ (dlemire build) 16.2.0
+1000000 127503914
+simdutf 9.4.0, implementation icelake
+c++ simdutf mime base64_to_binary: 18.23 GB/s
+go go1.27.4 mime base64.StdEncoding.DecodeString: 1.54 GB/s
+go go1.27.4 mime base64.StdEncoding.Decode (preallocated): 1.63 GB/s
+zig 0.17.1 mime std.base64 decoderWithIgnore("\r\n"): 0.86 GB/s
+java 27.0.1.1+4 mime Base64.decode(byte[]): 1.20 GB/s
+node v26.13.1 mime Buffer.from(str,'base64'): 13.26 GB/s
+node v26.13.1 mime Uint8Array.fromBase64(str): 8.04 GB/s
+bun 1.4.4 mime Buffer.from(str,'base64'): 14.15 GB/s
+bun 1.4.4 mime Uint8Array.fromBase64(str): 9.39 GB/s
+deno 2.9.8 mime Buffer.from(str,'base64'): 6.33 GB/s
+deno 2.9.8 mime Uint8Array.fromBase64(str): 8.35 GB/s
+php 8.5.12 mime base64_decode(str): 0.61 GB/s
+php 8.7.0-dev (PR #25476) mime base64_decode(str): 17.11 GB/s
+.NET 11.0.0 mime Convert.FromBase64String(string): 2.15 GB/s
+.NET 11.0.0 mime Base64.DecodeFromUtf8(bytes): 4.94 GB/s
+python 3.15.2 mime fastpybase64 0.1.4 (PR #5) (icelake) b64decode: 16.44 GB/s
