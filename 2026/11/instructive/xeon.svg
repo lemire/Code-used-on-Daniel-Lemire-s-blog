@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420" font-family="Helvetica, Arial, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7785"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8412b"/></marker></defs>
+<rect width="1000" height="420" fill="white"/>
+<text x="30" y="36" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" font-style="normal" fill="#1f2933">Intel Xeon (AVX-512), JDK 25 and 27: eight words at a time, in 512-bit registers</text>
+<text x="180" y="102.0" text-anchor="end" font-family="Menlo, Consolas, monospace" font-size="14" font-weight="bold" font-style="normal" fill="#1f2933">vmovdqu32</text>
+<text x="776" y="102.0" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#6b7785">load 8 words</text>
+<rect x="200" y="80" width="560" height="34" rx="4" fill="#e4e7eb" stroke="#9aa5b1" stroke-width="1.5"/>
+<line x1="270.0" y1="80" x2="270.0" y2="114" stroke="#9aa5b1" stroke-width="0.8"/>
+<line x1="340.0" y1="80" x2="340.0" y2="114" stroke="#9aa5b1" stroke-width="0.8"/>
+<line x1="410.0" y1="80" x2="410.0" y2="114" stroke="#9aa5b1" stroke-width="0.8"/>
+<line x1="480.0" y1="80" x2="480.0" y2="114" stroke="#9aa5b1" stroke-width="0.8"/>
+<line x1="550.0" y1="80" x2="550.0" y2="114" stroke="#9aa5b1" stroke-width="0.8"/>
+<line x1="620.0" y1="80" x2="620.0" y2="114" stroke="#9aa5b1" stroke-width="0.8"/>
+<line x1="690.0" y1="80" x2="690.0" y2="114" stroke="#9aa5b1" stroke-width="0.8"/>
+<text x="235.0" y="100.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a[k]</text>
+<text x="305.0" y="100.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a[k+1]</text>
+<text x="375.0" y="100.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a[k+2]</text>
+<text x="445.0" y="100.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a[k+3]</text>
+<text x="515.0" y="100.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a[k+4]</text>
+<text x="585.0" y="100.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a[k+5]</text>
+<text x="655.0" y="100.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a[k+6]</text>
+<text x="725.0" y="100.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a[k+7]</text>
+<text x="180" y="162.0" text-anchor="end" font-family="Menlo, Consolas, monospace" font-size="14" font-weight="bold" font-style="normal" fill="#1f2933">vpandd</text>
+<text x="776" y="162.0" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#6b7785">AND with 8 words of b</text>
+<rect x="200" y="140" width="560" height="34" rx="4" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/>
+<line x1="270.0" y1="140" x2="270.0" y2="174" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="340.0" y1="140" x2="340.0" y2="174" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="410.0" y1="140" x2="410.0" y2="174" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="480.0" y1="140" x2="480.0" y2="174" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="550.0" y1="140" x2="550.0" y2="174" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="620.0" y1="140" x2="620.0" y2="174" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="690.0" y1="140" x2="690.0" y2="174" stroke="#2f8f74" stroke-width="0.8"/>
+<text x="235.0" y="160.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a&amp;b</text>
+<text x="305.0" y="160.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a&amp;b</text>
+<text x="375.0" y="160.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a&amp;b</text>
+<text x="445.0" y="160.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a&amp;b</text>
+<text x="515.0" y="160.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a&amp;b</text>
+<text x="585.0" y="160.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a&amp;b</text>
+<text x="655.0" y="160.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a&amp;b</text>
+<text x="725.0" y="160.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">a&amp;b</text>
+<line x1="270" y1="114" x2="270" y2="138" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="180" y="222.0" text-anchor="end" font-family="Menlo, Consolas, monospace" font-size="14" font-weight="bold" font-style="normal" fill="#1f2933">vpopcntq</text>
+<text x="776" y="222.0" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#6b7785">count the bits of each word</text>
+<rect x="200" y="200" width="560" height="34" rx="4" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/>
+<line x1="270.0" y1="200" x2="270.0" y2="234" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="340.0" y1="200" x2="340.0" y2="234" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="410.0" y1="200" x2="410.0" y2="234" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="480.0" y1="200" x2="480.0" y2="234" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="550.0" y1="200" x2="550.0" y2="234" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="620.0" y1="200" x2="620.0" y2="234" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="690.0" y1="200" x2="690.0" y2="234" stroke="#2f8f74" stroke-width="0.8"/>
+<text x="235.0" y="221.2" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="#1f2933">33</text>
+<text x="305.0" y="221.2" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="#1f2933">30</text>
+<text x="375.0" y="221.2" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="#1f2933">31</text>
+<text x="445.0" y="221.2" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="#1f2933">35</text>
+<text x="515.0" y="221.2" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="#1f2933">29</text>
+<text x="585.0" y="221.2" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="#1f2933">32</text>
+<text x="655.0" y="221.2" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="#1f2933">34</text>
+<text x="725.0" y="221.2" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="#1f2933">31</text>
+<line x1="270" y1="174" x2="270" y2="198" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="180" y="282.0" text-anchor="end" font-family="Menlo, Consolas, monospace" font-size="14" font-weight="bold" font-style="normal" fill="#1f2933">vpmovqd</text>
+<text x="496.0" y="282.0" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#6b7785">narrow to 32 bits</text>
+<rect x="200" y="260" width="280.0" height="34" rx="4" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/>
+<line x1="235.0" y1="260" x2="235.0" y2="294" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="270.0" y1="260" x2="270.0" y2="294" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="305.0" y1="260" x2="305.0" y2="294" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="340.0" y1="260" x2="340.0" y2="294" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="375.0" y1="260" x2="375.0" y2="294" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="410.0" y1="260" x2="410.0" y2="294" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="445.0" y1="260" x2="445.0" y2="294" stroke="#2f8f74" stroke-width="0.8"/>
+<text x="217.5" y="280.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">33</text>
+<text x="252.5" y="280.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">30</text>
+<text x="287.5" y="280.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">31</text>
+<text x="322.5" y="280.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">35</text>
+<text x="357.5" y="280.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">29</text>
+<text x="392.5" y="280.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">32</text>
+<text x="427.5" y="280.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">34</text>
+<text x="462.5" y="280.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">31</text>
+<line x1="270" y1="234" x2="270" y2="258" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="180" y="342.0" text-anchor="end" font-family="Menlo, Consolas, monospace" font-size="14" font-weight="bold" font-style="normal" fill="#1f2933">vpaddd</text>
+<text x="496.0" y="342.0" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#6b7785">add to running totals</text>
+<rect x="200" y="320" width="280.0" height="34" rx="4" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/>
+<line x1="235.0" y1="320" x2="235.0" y2="354" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="270.0" y1="320" x2="270.0" y2="354" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="305.0" y1="320" x2="305.0" y2="354" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="340.0" y1="320" x2="340.0" y2="354" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="375.0" y1="320" x2="375.0" y2="354" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="410.0" y1="320" x2="410.0" y2="354" stroke="#2f8f74" stroke-width="0.8"/>
+<line x1="445.0" y1="320" x2="445.0" y2="354" stroke="#2f8f74" stroke-width="0.8"/>
+<text x="217.5" y="340.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">Σ</text>
+<text x="252.5" y="340.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">Σ</text>
+<text x="287.5" y="340.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">Σ</text>
+<text x="322.5" y="340.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">Σ</text>
+<text x="357.5" y="340.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">Σ</text>
+<text x="392.5" y="340.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">Σ</text>
+<text x="427.5" y="340.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">Σ</text>
+<text x="462.5" y="340.85" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" fill="#1f2933">Σ</text>
+<line x1="270" y1="294" x2="270" y2="318" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="40" y="390" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="normal" font-style="normal" fill="#1f2933">One instruction (vpopcntq) counts the bits of eight words. Eight such blocks per iteration: 64 words.</text>
+</svg>

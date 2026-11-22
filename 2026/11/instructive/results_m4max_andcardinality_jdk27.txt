@@ -1,0 +1,32 @@
+15,63 us per call, 0,238 ns per word
+org.roaringbitmap.RoaringBitmap.andCardinality(Lorg/roaringbitmap/RoaringBitmap;Lorg/roaringbitmap/RoaringBitmap;)I
+  tier 4 (C2), compile id 466, 1656 bytes at 0x00000001482e8d00, 134 samples
+
+  pc                  bytes        instruction              count        %
+  0x00000001482e8dec  0c 3e 08 4e  .word 0x4e083e0c             3    2.24%
+  0x00000001482e8df0  21 00 0c 0b  add w1, w1, w12              1    0.75%
+  0x00000001482e8ef0  c1 0a 40 b9  ldr w1, [x22, #0x8]          5    3.73%
+  0x00000001482e8f58  5f 00 0c 6b  cmp w2, w12                  1    0.75%
+  0x00000001482e8fb8  93 0e c0 3d  ldr q19, [x20, #0x30]        3    2.24%
+  0x00000001482e8fcc  f5 12 c0 3d  ldr q21, [x23, #0x40]        4    2.99%
+  0x00000001482e8fd0  96 12 c0 3d  ldr q22, [x20, #0x40]        5    3.73%
+  0x00000001482e8fec  f4 16 c0 3d  ldr q20, [x23, #0x50]        3    2.24%
+  0x00000001482e8ff0  98 16 c0 3d  ldr q24, [x20, #0x50]        8    5.97%
+  0x00000001482e900c  52 2a a1 0e  .word 0x0ea12a52             1    0.75%
+  0x00000001482e9010  f3 1a c0 3d  ldr q19, [x23, #0x60]        7    5.22%
+  0x00000001482e9018  92 1a c0 3d  ldr q18, [x20, #0x60]        9    6.72%
+  0x00000001482e9034  96 1e c0 3d  ldr q22, [x20, #0x70]        2    1.49%
+  0x00000001482e9038  f8 1e c0 3d  ldr q24, [x23, #0x70]       12    8.96%
+  0x00000001482e9054  73 2a a0 6e  .word 0x6ea02a73             2    1.49%
+  0x00000001482e9058  f4 22 c0 3d  ldr q20, [x23, #0x80]       10    7.46%
+  0x00000001482e9064  91 22 c0 3d  ldr q17, [x20, #0x80]        9    6.72%
+  0x00000001482e9080  70 86 b0 0e  .word 0x0eb08670            17   12.69%
+  0x00000001482e9090  73 2a 60 6e  .word 0x6e602a73             1    0.75%
+  0x00000001482e9098  50 86 b0 0e  .word 0x0eb08650             1    0.75%
+  0x00000001482e909c  31 5a 20 4e  .word 0x4e205a31            10    7.46%
+  0x00000001482e90a4  31 2a 60 6e  .word 0x6e602a31             1    0.75%
+  0x00000001482e90ac  72 2a a1 0e  .word 0x0ea12a72             2    1.49%
+  0x00000001482e90b0  50 86 b0 0e  .word 0x0eb08650             3    2.24%
+  0x00000001482e90b4  31 2a a1 0e  .word 0x0ea12a31             1    0.75%
+  0x00000001482e90b8  30 86 b0 0e  .word 0x0eb08630            13    9.70%
+115179350000

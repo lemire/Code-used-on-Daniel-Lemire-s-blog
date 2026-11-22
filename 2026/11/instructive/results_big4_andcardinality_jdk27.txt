@@ -1,0 +1,42 @@
+9.98 us per call, 0.152 ns per word
+org.roaringbitmap.RoaringBitmap.andCardinality(Lorg/roaringbitmap/RoaringBitmap;Lorg/roaringbitmap/RoaringBitmap;)I
+  tier 4 (C2), compile id 444, 2144 bytes at 0x00007fa743cee480, 98 samples
+
+  pc                  bytes                             instruction                                             count        %
+  0x00007fa743cee58e  62 91 75 48 db 8c c1 10 00 00 00  vpandd zmm1, zmm1, zmmword ptr [r9 + 8*r8 + 0x10]           1    1.02%
+  0x00007fa743cee599  62 b1 7e 48 6f 9c c5 50 00 00 00  vmovdqu32 zmm3, zmmword ptr [rbp + 8*r8 + 0x50]             2    2.04%
+  0x00007fa743cee5a4  62 81 65 48 db 8c c1 50 00 00 00  vpandd zmm17, zmm3, zmmword ptr [r9 + 8*r8 + 0x50]          1    1.02%
+  0x00007fa743cee5ba  62 81 65 48 db 94 c1 90 00 00 00  vpandd zmm18, zmm3, zmmword ptr [r9 + 8*r8 + 0x90]          3    3.06%
+  0x00007fa743cee5c5  62 b1 7e 48 6f 9c c5 d0 00 00 00  vmovdqu32 zmm3, zmmword ptr [rbp + 8*r8 + 0xd0]             3    3.06%
+  0x00007fa743cee5d0  62 81 65 48 db 9c c1 d0 00 00 00  vpandd zmm19, zmm3, zmmword ptr [r9 + 8*r8 + 0xd0]          3    3.06%
+  0x00007fa743cee5db  62 b1 7e 48 6f 9c c5 10 01 00 00  vmovdqu32 zmm3, zmmword ptr [rbp + 8*r8 + 0x110]            7    7.14%
+  0x00007fa743cee5f1  62 b1 7e 48 6f 9c c5 50 01 00 00  vmovdqu32 zmm3, zmmword ptr [rbp + 8*r8 + 0x150]            3    3.06%
+  0x00007fa743cee5fc  62 91 65 48 db 9c c1 50 01 00 00  vpandd zmm3, zmm3, zmmword ptr [r9 + 8*r8 + 0x150]          1    1.02%
+  0x00007fa743cee607  62 b1 7e 48 6f a4 c5 90 01 00 00  vmovdqu32 zmm4, zmmword ptr [rbp + 8*r8 + 0x190]            6    6.12%
+  0x00007fa743cee612  62 91 5d 48 db a4 c1 90 01 00 00  vpandd zmm4, zmm4, zmmword ptr [r9 + 8*r8 + 0x190]          3    3.06%
+  0x00007fa743cee61d  62 a1 7e 48 6f 84 c5 d0 01 00 00  vmovdqu32 zmm16, zmmword ptr [rbp + 8*r8 + 0x1d0]           8    8.16%
+  0x00007fa743cee628  62 81 7d 40 db 84 c1 d0 01 00 00  vpandd zmm16, zmm16, zmmword ptr [r9 + 8*r8 + 0x1d0]        7    7.14%
+  0x00007fa743cee633  62 f2 fd 48 55 c9                 vpopcntq zmm1, zmm1                                         8    8.16%
+  0x00007fa743cee63f  62 f2 7e 48 35 c9                 vpmovqd ymm1, zmm1                                          3    3.06%
+  0x00007fa743cee649  62 e2 7e 48 35 c2                 vpmovqd ymm2, zmm16                                         3    3.06%
+  0x00007fa743cee64f  62 f2 fd 48 55 e4                 vpopcntq zmm4, zmm4                                         2    2.04%
+  0x00007fa743cee661  62 e2 7e 48 35 c4                 vpmovqd ymm4, zmm16                                         1    1.02%
+  0x00007fa743cee67f  62 a2 fd 48 55 d2                 vpopcntq zmm18, zmm18                                       2    2.04%
+  0x00007fa743cee69d  62 f1 6d 20 fe c9                 vpaddd ymm1, ymm18, ymm1                                    3    3.06%
+  0x00007fa743cee6a3  62 f1 7d 20 fe c9                 vpaddd ymm1, ymm16, ymm1                                    3    3.06%
+  0x00007fa743cee6ad  c5 dd fe c9                       vpaddd ymm1, ymm4, ymm1                                     3    3.06%
+  0x00007fa743cee6b1  c5 e5 fe c9                       vpaddd ymm1, ymm3, ymm1                                     1    1.02%
+  0x00007fa743cee6b5  c5 ed fe d1                       vpaddd ymm2, ymm2, ymm1                                     5    5.10%
+  0x00007fa743cee6b9  41 8d 70 40                       lea esi, [r8 + 0x40]                                        3    3.06%
+  0x00007fa743cee6c6  4d 8b 57 30                       mov r10, qword ptr [r15 + 0x30]                             1    1.02%
+  0x00007fa743cee6d9  c4 e2 71 02 c9                    vphaddd xmm1, xmm1, xmm1                                    1    1.02%
+  0x00007fa743cee751  c4 e3 7d 39 d9 01                 vextracti128 xmm1, ymm3, 0x1                                2    2.04%
+  0x00007fa743cee760  c5 f9 6e c9                       vmovd xmm1, ecx                                             1    1.02%
+  0x00007fa743cee780  4e 8b 54 c5 10                    mov r10, qword ptr [rbp + 8*r8 + 0x10]                      1    1.02%
+  0x00007fa743cee792  41 ff c0                          inc r8d                                                     1    1.02%
+  0x00007fa743cee862  4f 8d 2c c4                       lea r13, [r12 + 8*r8]                                       1    1.02%
+  0x00007fa743cee87b  85 ff                             test edi, edi                                               1    1.02%
+  0x00007fa743cee8d6  4c 3b d1                          cmp r10, rcx                                                1    1.02%
+  0x00007fa743cee8f9  03 ce                             add ecx, esi                                                1    1.02%
+  0x00007fa743cee8fb  41 8d 70 01                       lea esi, [r8 + 0x1]                                         2    2.04%
+115179350000

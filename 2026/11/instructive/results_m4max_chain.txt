@@ -1,0 +1,3 @@
+ins, one register    1.787 ns/word (656080000)
+fmov, one register   0.293 ns/word (656080000)
+ins, two registers   0.850 ns/word (656080000)

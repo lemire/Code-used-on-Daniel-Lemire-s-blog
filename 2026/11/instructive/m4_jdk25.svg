@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" font-family="Helvetica, Arial, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7785"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c8412b"/></marker></defs>
+<rect width="960" height="560" fill="white"/>
+<text x="30" y="36" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" font-style="normal" fill="#1f2933">JDK 25 on Apple M4: one word at a time, each waiting for the previous one</text>
+<text x="125.0" y="76" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" font-style="normal" fill="#6b7785">word k</text>
+<rect x="40" y="90" width="170" height="34" rx="6" fill="#e4e7eb" stroke="#9aa5b1" stroke-width="1.5"/><text x="125.0" y="111.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">ldr a, b</text>
+<rect x="40" y="144" width="170" height="34" rx="6" fill="#cfe0f5" stroke="#4a78b5" stroke-width="1.5"/><text x="125.0" y="165.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">and x, a, b</text>
+<line x1="125.0" y1="124" x2="125.0" y2="142" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="198" width="170" height="34" rx="6" fill="#fde2dc" stroke="#c8412b" stroke-width="1.5"/><text x="125.0" y="219.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">mov v16.d[0], x</text>
+<line x1="125.0" y1="178" x2="125.0" y2="196" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="252" width="170" height="34" rx="6" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/><text x="125.0" y="273.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">cnt v16.8b</text>
+<line x1="125.0" y1="232" x2="125.0" y2="250" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="306" width="170" height="34" rx="6" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/><text x="125.0" y="327.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">addv b16</text>
+<line x1="125.0" y1="286" x2="125.0" y2="304" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="360" width="170" height="34" rx="6" fill="#fde2dc" stroke="#c8412b" stroke-width="1.5"/><text x="125.0" y="381.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">mov x, v16.d[0]</text>
+<line x1="125.0" y1="340" x2="125.0" y2="358" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="414" width="170" height="34" rx="6" fill="#cfe0f5" stroke="#4a78b5" stroke-width="1.5"/><text x="125.0" y="435.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">add sum, sum, x</text>
+<line x1="125.0" y1="394" x2="125.0" y2="412" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M210,323.0 C250,323.0 242,215.0 280,215.0" fill="none" stroke="#c8412b" stroke-width="2.5" marker-end="url(#r)"/>
+<text x="253.0" y="274.0" text-anchor="start" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="bold" font-style="normal" fill="#c8412b">v16</text>
+<line x1="212" y1="431.0" x2="280" y2="431.0" stroke="#6b7785" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<text x="367.0" y="76" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" font-style="normal" fill="#6b7785">word k+1</text>
+<rect x="282" y="90" width="170" height="34" rx="6" fill="#e4e7eb" stroke="#9aa5b1" stroke-width="1.5"/><text x="367.0" y="111.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">ldr a, b</text>
+<rect x="282" y="144" width="170" height="34" rx="6" fill="#cfe0f5" stroke="#4a78b5" stroke-width="1.5"/><text x="367.0" y="165.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">and x, a, b</text>
+<line x1="367.0" y1="124" x2="367.0" y2="142" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="282" y="198" width="170" height="34" rx="6" fill="#fde2dc" stroke="#c8412b" stroke-width="1.5"/><text x="367.0" y="219.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">mov v16.d[0], x</text>
+<line x1="367.0" y1="178" x2="367.0" y2="196" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="282" y="252" width="170" height="34" rx="6" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/><text x="367.0" y="273.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">cnt v16.8b</text>
+<line x1="367.0" y1="232" x2="367.0" y2="250" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="282" y="306" width="170" height="34" rx="6" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/><text x="367.0" y="327.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">addv b16</text>
+<line x1="367.0" y1="286" x2="367.0" y2="304" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="282" y="360" width="170" height="34" rx="6" fill="#fde2dc" stroke="#c8412b" stroke-width="1.5"/><text x="367.0" y="381.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">mov x, v16.d[0]</text>
+<line x1="367.0" y1="340" x2="367.0" y2="358" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="282" y="414" width="170" height="34" rx="6" fill="#cfe0f5" stroke="#4a78b5" stroke-width="1.5"/><text x="367.0" y="435.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">add sum, sum, x</text>
+<line x1="367.0" y1="394" x2="367.0" y2="412" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M452,323.0 C492,323.0 484,215.0 522,215.0" fill="none" stroke="#c8412b" stroke-width="2.5" marker-end="url(#r)"/>
+<text x="495.0" y="274.0" text-anchor="start" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="bold" font-style="normal" fill="#c8412b">v16</text>
+<line x1="454" y1="431.0" x2="522" y2="431.0" stroke="#6b7785" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<text x="609.0" y="76" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" font-style="normal" fill="#6b7785">word k+2</text>
+<rect x="524" y="90" width="170" height="34" rx="6" fill="#e4e7eb" stroke="#9aa5b1" stroke-width="1.5"/><text x="609.0" y="111.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">ldr a, b</text>
+<rect x="524" y="144" width="170" height="34" rx="6" fill="#cfe0f5" stroke="#4a78b5" stroke-width="1.5"/><text x="609.0" y="165.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">and x, a, b</text>
+<line x1="609.0" y1="124" x2="609.0" y2="142" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="524" y="198" width="170" height="34" rx="6" fill="#fde2dc" stroke="#c8412b" stroke-width="1.5"/><text x="609.0" y="219.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">mov v16.d[0], x</text>
+<line x1="609.0" y1="178" x2="609.0" y2="196" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="524" y="252" width="170" height="34" rx="6" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/><text x="609.0" y="273.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">cnt v16.8b</text>
+<line x1="609.0" y1="232" x2="609.0" y2="250" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="524" y="306" width="170" height="34" rx="6" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/><text x="609.0" y="327.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">addv b16</text>
+<line x1="609.0" y1="286" x2="609.0" y2="304" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="524" y="360" width="170" height="34" rx="6" fill="#fde2dc" stroke="#c8412b" stroke-width="1.5"/><text x="609.0" y="381.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">mov x, v16.d[0]</text>
+<line x1="609.0" y1="340" x2="609.0" y2="358" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="524" y="414" width="170" height="34" rx="6" fill="#cfe0f5" stroke="#4a78b5" stroke-width="1.5"/><text x="609.0" y="435.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">add sum, sum, x</text>
+<line x1="609.0" y1="394" x2="609.0" y2="412" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M694,323.0 C734,323.0 726,215.0 764,215.0" fill="none" stroke="#c8412b" stroke-width="2.5" marker-end="url(#r)"/>
+<text x="737.0" y="274.0" text-anchor="start" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="bold" font-style="normal" fill="#c8412b">v16</text>
+<line x1="696" y1="431.0" x2="764" y2="431.0" stroke="#6b7785" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<text x="851.0" y="76" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="bold" font-style="normal" fill="#6b7785">word k+3</text>
+<rect x="766" y="90" width="170" height="34" rx="6" fill="#e4e7eb" stroke="#9aa5b1" stroke-width="1.5"/><text x="851.0" y="111.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">ldr a, b</text>
+<rect x="766" y="144" width="170" height="34" rx="6" fill="#cfe0f5" stroke="#4a78b5" stroke-width="1.5"/><text x="851.0" y="165.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">and x, a, b</text>
+<line x1="851.0" y1="124" x2="851.0" y2="142" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="766" y="198" width="170" height="34" rx="6" fill="#fde2dc" stroke="#c8412b" stroke-width="1.5"/><text x="851.0" y="219.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">mov v16.d[0], x</text>
+<line x1="851.0" y1="178" x2="851.0" y2="196" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="766" y="252" width="170" height="34" rx="6" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/><text x="851.0" y="273.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">cnt v16.8b</text>
+<line x1="851.0" y1="232" x2="851.0" y2="250" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="766" y="306" width="170" height="34" rx="6" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/><text x="851.0" y="327.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">addv b16</text>
+<line x1="851.0" y1="286" x2="851.0" y2="304" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="766" y="360" width="170" height="34" rx="6" fill="#fde2dc" stroke="#c8412b" stroke-width="1.5"/><text x="851.0" y="381.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">mov x, v16.d[0]</text>
+<line x1="851.0" y1="340" x2="851.0" y2="358" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="766" y="414" width="170" height="34" rx="6" fill="#cfe0f5" stroke="#4a78b5" stroke-width="1.5"/><text x="851.0" y="435.55" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" font-weight="normal" fill="#1f2933">add sum, sum, x</text>
+<line x1="851.0" y1="394" x2="851.0" y2="412" stroke="#6b7785" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="40" y="482" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="normal" font-style="normal" fill="#1f2933">The first mov is an insert: it writes the low half of v16 and keeps the high half, so it must wait for the</text>
+<text x="40" y="504" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="normal" font-style="normal" fill="#1f2933">previous addv. The red chain (insert, cnt, addv) runs through every word: about 8 cycles per word.</text>
+<rect x="40" y="529" width="14" height="14" rx="3" fill="#e4e7eb" stroke="#9aa5b1" stroke-width="1.5"/><text x="60" y="540" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#6b7785">memory</text>
+<rect x="113.6" y="529" width="14" height="14" rx="3" fill="#cfe0f5" stroke="#4a78b5" stroke-width="1.5"/><text x="133.6" y="540" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#6b7785">general-purpose register</text>
+<rect x="306.0" y="529" width="14" height="14" rx="3" fill="#d3efe6" stroke="#2f8f74" stroke-width="1.5"/><text x="326.0" y="540" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#6b7785">vector register</text>
+<rect x="439.0" y="529" width="14" height="14" rx="3" fill="#fde2dc" stroke="#c8412b" stroke-width="1.5"/><text x="459.0" y="540" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#6b7785">most samples land here</text>
+</svg>

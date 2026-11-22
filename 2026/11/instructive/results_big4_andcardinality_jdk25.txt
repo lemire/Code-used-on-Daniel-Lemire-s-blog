@@ -1,0 +1,48 @@
+10.23 us per call, 0.156 ns per word
+org.roaringbitmap.RoaringBitmap.andCardinality(Lorg/roaringbitmap/RoaringBitmap;Lorg/roaringbitmap/RoaringBitmap;)I
+  tier 4 (C2), compile id 385, 2024 bytes at 0x00007fdda7ee9b80, 101 samples
+
+  pc                  bytes                             instruction                                              count        %
+  0x00007fdda7ee9c5f  62 f2 fd 48 55 c0                 vpopcntq zmm0, zmm0                                          1    0.99%
+  0x00007fdda7ee9c65  62 f2 7e 48 35 c0                 vpmovqd ymm0, zmm0                                           2    1.98%
+  0x00007fdda7ee9c7d  c4 e3 7d 39 d0 01                 vextracti128 xmm0, ymm2, 0x1                                 1    0.99%
+  0x00007fdda7ee9c8c  c5 f9 6e c0                       vmovd xmm0, eax                                              1    0.99%
+  0x00007fdda7ee9cae  62 b1 7d 48 db 84 d9 10 00 00 00  vpandd zmm0, zmm0, zmmword ptr [rcx + 8*r11 + 0x10]          3    2.97%
+  0x00007fdda7ee9cb9  62 b1 7e 48 6f 8c da 50 00 00 00  vmovdqu32 zmm1, zmmword ptr [rdx + 8*r11 + 0x50]             3    2.97%
+  0x00007fdda7ee9ccf  62 b1 7e 48 6f 8c da 90 00 00 00  vmovdqu32 zmm1, zmmword ptr [rdx + 8*r11 + 0x90]             2    1.98%
+  0x00007fdda7ee9ce5  62 b1 7e 48 6f 8c da d0 00 00 00  vmovdqu32 zmm1, zmmword ptr [rdx + 8*r11 + 0xd0]             2    1.98%
+  0x00007fdda7ee9cf0  62 31 75 48 db 84 d9 d0 00 00 00  vpandd zmm8, zmm1, zmmword ptr [rcx + 8*r11 + 0xd0]          4    3.96%
+  0x00007fdda7ee9cfb  62 b1 7e 48 6f 8c da 10 01 00 00  vmovdqu32 zmm1, zmmword ptr [rdx + 8*r11 + 0x110]            1    0.99%
+  0x00007fdda7ee9d06  62 31 75 48 db 8c d9 10 01 00 00  vpandd zmm9, zmm1, zmmword ptr [rcx + 8*r11 + 0x110]        10    9.90%
+  0x00007fdda7ee9d11  62 b1 7e 48 6f 8c da 50 01 00 00  vmovdqu32 zmm1, zmmword ptr [rdx + 8*r11 + 0x150]            1    0.99%
+  0x00007fdda7ee9d1c  62 31 75 48 db 9c d9 50 01 00 00  vpandd zmm11, zmm1, zmmword ptr [rcx + 8*r11 + 0x150]        6    5.94%
+  0x00007fdda7ee9d27  62 b1 7e 48 6f 8c da 90 01 00 00  vmovdqu32 zmm1, zmmword ptr [rdx + 8*r11 + 0x190]            4    3.96%
+  0x00007fdda7ee9d32  62 31 75 48 db a4 d9 90 01 00 00  vpandd zmm12, zmm1, zmmword ptr [rcx + 8*r11 + 0x190]        8    7.92%
+  0x00007fdda7ee9d3d  62 b1 7e 48 6f 8c da d0 01 00 00  vmovdqu32 zmm1, zmmword ptr [rdx + 8*r11 + 0x1d0]            5    4.95%
+  0x00007fdda7ee9d48  62 b1 75 48 db 8c d9 d0 01 00 00  vpandd zmm1, zmm1, zmmword ptr [rcx + 8*r11 + 0x1d0]         3    2.97%
+  0x00007fdda7ee9d53  62 f2 fd 48 55 c0                 vpopcntq zmm0, zmm0                                          2    1.98%
+  0x00007fdda7ee9d5f  62 f2 7e 48 35 c0                 vpmovqd ymm0, zmm0                                           1    0.99%
+  0x00007fdda7ee9d65  c5 fd fe c2                       vpaddd ymm0, ymm0, ymm2                                      1    0.99%
+  0x00007fdda7ee9d69  62 f2 7e 48 35 c9                 vpmovqd ymm1, zmm1                                           2    1.98%
+  0x00007fdda7ee9d81  62 52 7e 48 35 df                 vpmovqd ymm15, zmm11                                         1    0.99%
+  0x00007fdda7ee9d87  62 52 fd 48 55 c9                 vpopcntq zmm9, zmm9                                          1    0.99%
+  0x00007fdda7ee9d8d  62 52 fd 48 55 c0                 vpopcntq zmm8, zmm8                                          1    0.99%
+  0x00007fdda7ee9d93  62 52 7e 48 35 c9                 vpmovqd ymm9, zmm9                                           1    0.99%
+  0x00007fdda7ee9d9f  62 52 fd 48 55 de                 vpopcntq zmm11, zmm14                                        1    0.99%
+  0x00007fdda7ee9dc3  c5 b5 fe c0                       vpaddd ymm0, ymm9, ymm0                                      3    2.97%
+  0x00007fdda7ee9dc7  c5 85 fe c0                       vpaddd ymm0, ymm15, ymm0                                     5    4.95%
+  0x00007fdda7ee9dcb  c5 ed fe c0                       vpaddd ymm0, ymm2, ymm0                                      3    2.97%
+  0x00007fdda7ee9dcf  c5 f5 fe d0                       vpaddd ymm2, ymm1, ymm0                                      1    0.99%
+  0x00007fdda7ee9dd3  41 8d 5b 40                       lea ebx, [r11 + 0x40]                                        6    5.94%
+  0x00007fdda7ee9de9  c4 e3 7d 39 c8 01                 vextracti128 xmm0, ymm1, 0x1                                 4    3.96%
+  0x00007fdda7ee9e00  c5 f9 7e c8                       vmovd eax, xmm1                                              1    0.99%
+  0x00007fdda7ee9e22  f3 4d 0f b8 c9                    popcnt r9, r9                                                1    0.99%
+  0x00007fdda7ee9e2a  41 ff c3                          inc r11d                                                     1    0.99%
+  0x00007fdda7ee9ee3  c4 c1 f9 6e cb                    vmovq xmm1, r11                                              1    0.99%
+  0x00007fdda7ee9f13  41 8b 6b 0c                       mov ebp, dword ptr [r11 + 0xc]                               1    0.99%
+  0x00007fdda7ee9f2d  85 ed                             test ebp, ebp                                                1    0.99%
+  0x00007fdda7ee9f53  45 85 db                          test r11d, r11d                                              2    1.98%
+  0x00007fdda7ee9f9e  33 c0                             xor eax, eax                                                 1    0.99%
+  0x00007fdda7ee9fa5  4a 23 5c d9 10                    and rbx, qword ptr [rcx + 8*r11 + 0x10]                      1    0.99%
+  0x00007fdda7ee9fb1  41 8d 5b 01                       lea ebx, [r11 + 0x1]                                         1    0.99%
+115179350000
