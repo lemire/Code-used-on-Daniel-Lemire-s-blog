@@ -1,0 +1,46 @@
+# ./bench.sh from https://github.com/simdjson/simdjson_compressed_demo (commit 7d5b77f)
+# big4: 2 x Intel Xeon Gold 6548N (Emerald Rapids), 64 cores / 128 threads, Linux 6.12 (RHEL 10)
+# GCC 14.3.1, zlib-ng-compat 2.2.3, simdjson 5.0.1, zstd 1.5.7, lz4 1.10.0
+# 5,000,000 records, 812.0 MB of NDJSON. Median of 5 runs, MB/s of decompressed NDJSON.
+# file sizes: ndjson 811956952, gz 56931971, zst (256 KiB frames) 60643083, lz4 (256 KiB frames) 108507710
+| configuration | MB/s |
+|---|---:|
+| zlib decompression only (no parsing)             |   2346 |
+| gzip file, chunk 64 KiB                          |   1182 |
+| gzip file, chunk 256 KiB                         |   1230 |
+| gzip file, chunk 1024 KiB                        |   1151 |
+| gzip file, chunk 4096 KiB                        |   1132 |
+| gzip file, chunk 16384 KiB                       |   1137 |
+| uncompressed file, chunk 1024 KiB (parse only)   |   1776 |
+| uncompressed file, threads=1, chunk 64 KiB       |   1759 |
+| uncompressed file, threads=2, chunk 64 KiB       |   3437 |
+| uncompressed file, threads=4, chunk 64 KiB       |   6803 |
+| uncompressed file, threads=8, chunk 64 KiB       |  13375 |
+| uncompressed file, threads=16, chunk 64 KiB      |  24518 |
+| uncompressed file, threads=32, chunk 64 KiB      |  41359 |
+| uncompressed file, threads=64, chunk 64 KiB      |  51783 |
+| gzip file, threads=1 (+1 inflating), chunk 256 KiB |   2261 |
+| gzip file, threads=2 (+1 inflating), chunk 256 KiB |   2440 |
+| gzip file, threads=4 (+1 inflating), chunk 256 KiB |   2439 |
+| gzip file, threads=8 (+1 inflating), chunk 256 KiB |   2457 |
+| gzip file, threads=64 (+1 inflating), chunk 256 KiB |   2254 |
+| zst frames, decompression only, threads=1        |   2162 |
+| zst frames, decompression only, threads=64       |  47597 |
+| zst frames, threads=1                            |   1136 |
+| zst frames, threads=2                            |   2264 |
+| zst frames, threads=4                            |   4468 |
+| zst frames, threads=8                            |   8703 |
+| zst frames, threads=16                           |  16579 |
+| zst frames, threads=32                           |  28775 |
+| zst frames, threads=64                           |  39613 |
+| lz4 frames, decompression only, threads=1        |   2151 |
+| lz4 frames, decompression only, threads=64       |  40434 |
+| lz4 frames, threads=1                            |   1138 |
+| lz4 frames, threads=2                            |   2246 |
+| lz4 frames, threads=4                            |   4434 |
+| lz4 frames, threads=8                            |   8573 |
+| lz4 frames, threads=16                           |  16040 |
+| lz4 frames, threads=32                           |  26545 |
+| lz4 frames, threads=64                           |  34372 |
+| gzip -dc | demo --raw (2 processes)              |    291 |
+| pigz -dc | demo --raw (2+ processes)             |    787 |
