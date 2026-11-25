@@ -1,0 +1,9 @@
+01	minify (-c .)	tweets.ndjson
+02	pretty-print (.)	tweets.ndjson
+03	extract a field	tweets.ndjson
+04	select and build objects	tweets.ndjson
+05	string interpolation	tweets.ndjson
+06	regular expression	tweets.ndjson
+07	count elements	timeline.json
+08	minify (-c .)	timeline.json
+09	group_by	timeline.json
