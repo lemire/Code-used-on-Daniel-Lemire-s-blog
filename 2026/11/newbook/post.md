@@ -4,7 +4,7 @@ Robert Godin and I have a new book. The title is *Introduction to Machine Learni
 
 The [paperback](https://www.amazon.com/dp/B0HT2JWXQ5/?tag=daniellemires-20) is on Amazon. The [Kindle edition](https://www.amazon.com/dp/B0GX32CJ74?tag=daniellemires-20) is there too.
 
-Robert taught computer science at the Université du Québec à Montréal. My own work is on software performance. We wrote the book as a first course, in a college program or at university, and for a programmer who already writes Python and wants to see how these systems work.
+Robert is a retired professor of computer science at the Université du Québec à Montréal. My own work is on software performance. We wrote the book as a first course, in a college program or at university, and for a programmer who already writes Python and wants to see how these systems work.
 
 Basic Python is enough. Some probability, statistics or calculus makes a few chapters easier, and when one of those ideas appears we give you the intuition to keep going. The emphasis is on using the methods, and on implementing them.
 
